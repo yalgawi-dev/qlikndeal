@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 224 71% 4%;
+    /* Ultra Deep Blue/Black */
+    --foreground: 210 40% 98%;
+
+    --card: 224 71% 6%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Neon Cyan - Electric but refined */
+    --primary: 180 100% 50%;
+    --primary-foreground: 224 71% 4%;
+
+    /* Neon Purple for gradients */
+    --secondary: 270 100% 60%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 12%;
+    --muted-foreground: 215 20% 70%;
+
+    --accent: 180 100% 50%;
+    --accent-foreground: 224 71% 4%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 15%;
+    --input: 217 33% 15%;
+    --ring: 180 100% 50%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  @apply bg-white/5 backdrop-blur-lg border border-white/10;
+}
+
+.glass-card {
+  @apply bg-card/50 backdrop-blur-xl border border-border/50 shadow-xl;
+}

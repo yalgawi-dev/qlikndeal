@@ -1,0 +1,30 @@
+{
+    "manifest_version": 3,
+    "name": "Qlikndeal Admin Auto-Reply",
+    "version": "1.0",
+    "description": "Automatically detects new posts in your managed groups and suggests a safety comment.",
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://www.facebook.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.facebook.com/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    }
+}

@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite does not support Enums, so we use Strings
+// ShipmentStatus: DRAFT, SHARED, BUYER_REVIEW, NEEDS_REVISION, AGREED, PAID, SHIPPED, DELIVERED
+// AiStatus: PENDING, PASSED, FLAGGED
+
+model User {
+  id        String   @id @default(uuid()) // Can map to Clerk ID if passed manually, or internal ID
+  clerkId   String?  @unique // Optional: Link to Clerk
+  email     String?  @unique
+  phone     String?
+  firstName String?
+  lastName  String?
+  imageUrl  String?
+  city      String?
+  street    String?
+  houseNumber String?
+  isGuest   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  shipmentsAsSeller Shipment[] @relation("SellerShipments")
+  shipmentsAsBuyer  Shipment[] @relation("BuyerShipments")
+}
+
+model Shipment {
+  id        String   @id @default(uuid())
+  shortId   String   @unique // For the shareable link (e.g. "Ab3d9")
+
+  sellerId  String
+  seller    User     @relation("SellerShipments", fields: [sellerId], references: [id])
+
+  buyerId   String?
+  buyer     User?    @relation("BuyerShipments", fields: [buyerId], references: [id])
+
+  status    String   @default("DRAFT") // Originally Enum ShipmentStatus
+
+  // Relations
+  details   ShipmentDetails?
+  agreement Agreement?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ShipmentDetails {
+  id        String   @id @default(uuid())
+  shipmentId String  @unique
+  shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  itemName     String
+  value        Float
+  itemCondition String // New, Used, etc.
+
+  sellerNotes  String? // Defects list
+
+  aiStatus     String   @default("PENDING") // Originally Enum AiStatus
+
+  images       String   // SQLite doesn't support String[]. We will store this as a JSON string.
+
+  flexibleData String?  // SQLite support for Json is basic, usually stored as String or we can try Json type if supported, but String is safer for simple SQLite setup.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Agreement {
+  id        String   @id @default(uuid())
+  shipmentId String  @unique
+  shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  buyerAgreedAt DateTime @default(now())
+  buyerIp       String?
+  agreedVersion Int      @default(1)
+}
+
+model ShadowLead {
+  id        String   @id @default(uuid())
+  
+  // Scraped Data
+  sellerName String?
+  sellerLink String?
+  postText   String?
+  sourceUrl  String?
+  images     String?  // JSON string of image URLs
+
+  // Metadata
+  capturedBy String?  // Admin ID (if we track who ran the bot)
+  status     String   @default("NEW") // NEW, CONTACTED, CONVERTED, IGNORED
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
