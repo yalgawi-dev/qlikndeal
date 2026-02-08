@@ -101,7 +101,7 @@ export function ProfileEditor({ isOpen, onClose, initialData }: ProfileEditorPro
                             <label className="text-[10px] font-bold text-muted-foreground">טלפון נייד</label>
                             <div className="relative">
                                 <Phone className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                                <Input value={formData.phone} onChange={e => handleChange('phone', e.target.value)} className="h-9 pr-9" dir="ltr" className="text-right pr-9" />
+                                <Input value={formData.phone} onChange={e => handleChange('phone', e.target.value)} className="h-9 pr-9 text-right" dir="ltr" />
                             </div>
                         </div>
 
