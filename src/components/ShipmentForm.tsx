@@ -31,7 +31,8 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
         images: [] as number[], // Keep mainly for types, not used in UI currently
         condition: "used" as "new" | "like-new" | "used" | "damaged",
         defects: "",
-        agreement: false
+        agreement: false,
+        requestVideoCall: false
     });
 
     const [sender, setSender] = useState({
@@ -66,12 +67,12 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
 
     // Logic: Hide condition report in delivery mode by default
     useEffect(() => {
-        if (serviceType === "delivery") {
+        if (serviceType === "delivery" || userMode === "buyer") {
             setIncludeCondition(false);
         } else {
             setIncludeCondition(true);
         }
-    }, [serviceType]);
+    }, [serviceType, userMode]);
 
     const nextStep = () => setStep(s => s + 1);
     const prevStep = () => setStep(s => s - 1);
@@ -99,6 +100,8 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
             defects: details.defects,
             images: [],
             sender,
+            receiver, // Add receiver to payload
+            requestVideoCall: details.requestVideoCall, // Add video call request
             userMode
         };
 
@@ -292,113 +295,156 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
                                 </div>
                             </div>
 
-                            {/* Package Size - Formatted with LARGER TEXT */}
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-muted-foreground">גודל חבילה</label>
-                                <div className="grid grid-cols-4 gap-2">
-                                    {[
-                                        { id: "small", label: "קטנה", icon: <Box className="h-4 w-4" />, desc: "מעטפה/ספר" },
-                                        { id: "medium", label: "בינונית", icon: <Box className="h-5 w-5" />, desc: "קופסת נעליים" },
-                                        { id: "large", label: "גדולה", icon: <Box className="h-6 w-6" />, desc: "אריזה/מזוודה" },
-                                        { id: "huge", label: "ענקית", icon: <Truck className="h-6 w-6" />, desc: "ריהוט/משטח" }
-                                    ].map((size) => (
-                                        <button
-                                            key={size.id}
-                                            type="button"
-                                            onClick={() => setDetails({ ...details, packageSize: size.id as any })}
-                                            className={`flex flex-col items-center justify-center py-3 px-1 rounded-xl border transition-all ${details.packageSize === size.id ? "bg-primary/10 border-primary text-primary shadow-sm scale-[1.02] ring-1 ring-primary/20" : "bg-card border-border hover:bg-accent hover:border-accent-foreground/20"}`}
-                                        >
-                                            <div className="mb-1 opacity-80">{size.icon}</div>
-                                            <span className="text-sm font-bold leading-none">{size.label}</span>
-                                            <span className="text-[11px] text-muted-foreground leading-tight text-center mt-1 font-medium">{size.desc}</span>
-                                        </button>
-                                    ))}
+                            {/* Package Size - Formatted with LARGER TEXT - SELLER ONLY */}
+                            {userMode === "seller" && (
+                                <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-muted-foreground">גודל חבילה</label>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {[
+                                            { id: "small", label: "קטנה", icon: <Box className="h-4 w-4" />, desc: "מעטפה/ספר" },
+                                            { id: "medium", label: "בינונית", icon: <Box className="h-5 w-5" />, desc: "קופסת נעליים" },
+                                            { id: "large", label: "גדולה", icon: <Box className="h-6 w-6" />, desc: "אריזה/מזוודה" },
+                                            { id: "huge", label: "ענקית", icon: <Truck className="h-6 w-6" />, desc: "ריהוט/משטח" }
+                                        ].map((size) => (
+                                            <button
+                                                key={size.id}
+                                                type="button"
+                                                onClick={() => setDetails({ ...details, packageSize: size.id as any })}
+                                                className={`flex flex-col items-center justify-center py-3 px-1 rounded-xl border transition-all ${details.packageSize === size.id ? "bg-primary/10 border-primary text-primary shadow-sm scale-[1.02] ring-1 ring-primary/20" : "bg-card border-border hover:bg-accent hover:border-accent-foreground/20"}`}
+                                            >
+                                                <div className="mb-1 opacity-80">{size.icon}</div>
+                                                <span className="text-sm font-bold leading-none">{size.label}</span>
+                                                <span className="text-[11px] text-muted-foreground leading-tight text-center mt-1 font-medium">{size.desc}</span>
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* Condition Report - Digital Handshake with COLORED ICONS */}
-                            <div className="space-y-2 pt-3 border-t border-dashed">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5">
-                                        <Shield className="h-4 w-4 text-primary" />
-                                        <h3 className="font-bold text-xs uppercase tracking-wide">הצהרת מצב</h3>
+                            {/* Condition Report - Digital Handshake with COLORED ICONS - SELLER ONLY */}
+                            {userMode === "seller" && (
+                                <div className="space-y-2 pt-3 border-t border-dashed">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5">
+                                            <Shield className="h-4 w-4 text-primary" />
+                                            <h3 className="font-bold text-xs uppercase tracking-wide">הצהרת מצב</h3>
+                                        </div>
+
+                                        {/* Toggle for Delivery Mode */}
+                                        {serviceType === 'delivery' && (
+                                            <div className="flex items-center gap-2">
+                                                <label htmlFor="cond-toggle" className="text-[10px] text-muted-foreground cursor-pointer select-none">הוסף הצהרה</label>
+                                                <input
+                                                    id="cond-toggle"
+                                                    type="checkbox"
+                                                    checked={includeCondition}
+                                                    onChange={e => setIncludeCondition(e.target.checked)}
+                                                    className="h-3 w-3 rounded border-primary text-primary focus:ring-primary"
+                                                />
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Toggle for Delivery Mode */}
-                                    {serviceType === 'delivery' && (
-                                        <div className="flex items-center gap-2">
-                                            <label htmlFor="cond-toggle" className="text-[10px] text-muted-foreground cursor-pointer select-none">הוסף הצהרה</label>
-                                            <input
-                                                id="cond-toggle"
-                                                type="checkbox"
-                                                checked={includeCondition}
-                                                onChange={e => setIncludeCondition(e.target.checked)}
-                                                className="h-3 w-3 rounded border-primary text-primary focus:ring-primary"
+                                    {includeCondition && (
+                                        <div className="bg-muted/30 p-3 rounded-xl border border-border/50 space-y-3 animate-in slide-in-from-top-2 fade-in">
+                                            <div className="flex gap-2">
+                                                {[
+                                                    { id: 'new', label: 'חדש', icon: <Sparkles className="w-4 h-4 text-green-500" /> },
+                                                    { id: 'like-new', label: 'כמו חדש', icon: <Star className="w-4 h-4 text-blue-500" /> },
+                                                    { id: 'used', label: 'משומש', icon: <Box className="w-4 h-4 text-orange-500" /> },
+                                                    { id: 'damaged', label: 'פגום', icon: <AlertTriangle className="w-4 h-4 text-red-500" /> }
+                                                ].map((cond) => (
+                                                    <button
+                                                        key={cond.id}
+                                                        type="button"
+                                                        onClick={() => setDetails({ ...details, condition: cond.id as any })}
+                                                        className={`flex-1 py-3 flex flex-col items-center gap-1.5 rounded-lg text-[10px] font-bold border transition-all ${details.condition === cond.id ? 'bg-background border-primary shadow-[0_0_15px_rgba(var(--primary),0.15)] ring-1 ring-primary/30 scale-[1.05]' : 'bg-background/50 border-border hover:bg-background hover:border-primary/50'}`}
+                                                    >
+                                                        <div className={details.condition === cond.id ? 'drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]' : ''}>{cond.icon}</div>
+                                                        <span className={details.condition === cond.id ? 'text-primary drop-shadow-[0_0_5px_rgba(var(--primary),0.4)]' : 'text-muted-foreground'}>{cond.label}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            <textarea
+                                                value={details.description}
+                                                onChange={e => setDetails({ ...details, description: e.target.value })}
+                                                className="w-full text-xs p-2.5 bg-background border border-input rounded-lg h-16 resize-none focus:ring-1 focus:ring-primary"
+                                                placeholder="פרט כאן פגמים, שריטות או הערות חשובות לקונה..."
+                                                maxLength={300}
                                             />
+
+                                            <label className="flex items-start gap-2 cursor-pointer p-2 hover:bg-muted/50 rounded-lg transition-colors border border-transparent hover:border-border/50 select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={details.agreement}
+                                                    onChange={e => setDetails({ ...details, agreement: e.target.checked })}
+                                                    className="mt-0.5 rounded border-primary text-primary focus:ring-primary h-4 w-4 shrink-0"
+                                                />
+                                                <span className="text-[10px] font-medium leading-tight text-muted-foreground">
+                                                    אני מצהיר שהתיאור מדויק. ידוע לי שאי-גילוי פרטים עלול לבטל את העסקה.
+                                                </span>
+                                            </label>
+
+                                            {/* Video Call Option inside Condition Report (Seller Only for now) */}
+                                            <div className="mt-3 flex items-center justify-between bg-muted/30 p-2.5 rounded-lg border border-border/50">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="bg-blue-500/10 p-1.5 rounded-full text-blue-500">
+                                                        <Camera className="w-4 h-4" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-[11px] font-bold">שיחת וידאו לאימות</h4>
+                                                        <p className="text-[9px] text-muted-foreground">אפשר לקונה לבקש שיחת וידאו לראות את המוצר.</p>
+                                                    </div>
+                                                </div>
+                                                <label className="relative inline-flex items-center cursor-pointer">
+                                                    <input type="checkbox" className="sr-only peer" />
+                                                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
+                                                </label>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
+                            )}
 
-                                {includeCondition && (
-                                    <div className="bg-muted/30 p-3 rounded-xl border border-border/50 space-y-3 animate-in slide-in-from-top-2 fade-in">
-                                        <div className="flex gap-2">
-                                            {[
-                                                { id: 'new', label: 'חדש', icon: <Sparkles className="w-4 h-4 text-green-500" /> },
-                                                { id: 'like-new', label: 'כמו חדש', icon: <Star className="w-4 h-4 text-blue-500" /> },
-                                                { id: 'used', label: 'משומש', icon: <Box className="w-4 h-4 text-orange-500" /> },
-                                                { id: 'damaged', label: 'פגום', icon: <AlertTriangle className="w-4 h-4 text-red-500" /> }
-                                            ].map((cond) => (
-                                                <button
-                                                    key={cond.id}
-                                                    type="button"
-                                                    onClick={() => setDetails({ ...details, condition: cond.id as any })}
-                                                    className={`flex-1 py-3 flex flex-col items-center gap-1.5 rounded-lg text-[10px] font-bold border transition-all ${details.condition === cond.id ? 'bg-background border-primary shadow-[0_0_15px_rgba(var(--primary),0.15)] ring-1 ring-primary/30 scale-[1.05]' : 'bg-background/50 border-border hover:bg-background hover:border-primary/50'}`}
-                                                >
-                                                    <div className={details.condition === cond.id ? 'drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]' : ''}>{cond.icon}</div>
-                                                    <span className={details.condition === cond.id ? 'text-primary drop-shadow-[0_0_5px_rgba(var(--primary),0.4)]' : 'text-muted-foreground'}>{cond.label}</span>
-                                                </button>
-                                            ))}
+                            {/* BUYER ONLY - Request Video Call & Add Notes */}
+                            {userMode === "buyer" && (
+                                <div className="space-y-4 pt-4 border-t border-dashed">
+                                    {/* Video Call Request */}
+                                    <div className="flex items-center justify-between bg-blue-500/5 p-3 rounded-xl border border-blue-500/20">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-blue-500/10 p-2 rounded-full text-blue-500">
+                                                <Camera className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-sm font-bold text-foreground">בקש שיחת וידאו?</h4>
+                                                <p className="text-[10px] text-muted-foreground">מומלץ לראות את המוצר בשיחת וידאו לפני אישור סופי.</p>
+                                            </div>
                                         </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                className="sr-only peer"
+                                                checked={details.requestVideoCall}
+                                                onChange={e => setDetails({ ...details, requestVideoCall: e.target.checked })}
+                                            />
+                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                                        </label>
+                                    </div>
 
+                                    {/* Optional Note to Seller */}
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-bold text-muted-foreground">הערה למוכר (אופציונלי)</label>
                                         <textarea
                                             value={details.description}
                                             onChange={e => setDetails({ ...details, description: e.target.value })}
-                                            className="w-full text-xs p-2.5 bg-background border border-input rounded-lg h-16 resize-none focus:ring-1 focus:ring-primary"
-                                            placeholder="פרט כאן פגמים, שריטות או הערות חשובות לקונה..."
-                                            maxLength={300}
+                                            className="w-full text-xs p-3 bg-muted/30 border border-input rounded-xl h-20 resize-none focus:ring-1 focus:ring-primary"
+                                            placeholder="האם המוצר מגיע עם מטען? האם יש שריטות?"
+                                            maxLength={200}
                                         />
-
-                                        <label className="flex items-start gap-2 cursor-pointer p-2 hover:bg-muted/50 rounded-lg transition-colors border border-transparent hover:border-border/50 select-none">
-                                            <input
-                                                type="checkbox"
-                                                checked={details.agreement}
-                                                onChange={e => setDetails({ ...details, agreement: e.target.checked })}
-                                                className="mt-0.5 rounded border-primary text-primary focus:ring-primary h-4 w-4 shrink-0"
-                                            />
-                                            <span className="text-[10px] font-medium leading-tight text-muted-foreground">
-                                                אני מצהיר שהתיאור מדויק. ידוע לי שאי-גילוי פרטים עלול לבטל את העסקה.
-                                            </span>
-                                        </label>
-
-                                        {/* Video Call Option */}
-                                        <div className="mt-3 flex items-center justify-between bg-muted/30 p-2.5 rounded-lg border border-border/50">
-                                            <div className="flex items-center gap-2">
-                                                <div className="bg-blue-500/10 p-1.5 rounded-full text-blue-500">
-                                                    <Camera className="w-4 h-4" />
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-[11px] font-bold">שיחת וידאו לאימות</h4>
-                                                    <p className="text-[9px] text-muted-foreground">אפשר לקונה לבקש שיחת וידאו לראות את המוצר.</p>
-                                                </div>
-                                            </div>
-                                            <label className="relative inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" className="sr-only peer" />
-                                                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
-                                            </label>
-                                        </div>
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -513,10 +559,15 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
                             <div className="bg-muted/40 p-5 rounded-2xl text-sm border border-border/60 space-y-4 shadow-sm">
                                 <div className="flex justify-between border-b border-border/50 pb-3">
                                     <span className="text-muted-foreground text-xs font-medium">מוצר</span>
-                                    <span className="font-bold text-sm text-right">{details.itemName} <span className="text-muted-foreground font-normal">({details.condition === 'new' ? 'חדש' : details.condition === 'like-new' ? 'כמו חדש' : details.condition === 'used' ? 'משומש' : 'פגום'})</span></span>
+                                    <span className="font-bold text-sm text-right">
+                                        {details.itemName}
+                                        {userMode === 'seller' && (
+                                            <span className="text-muted-foreground font-normal"> ({details.condition === 'new' ? 'חדש' : details.condition === 'like-new' ? 'כמו חדש' : details.condition === 'used' ? 'משומש' : 'פגום'})</span>
+                                        )}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground text-xs font-medium">סה"כ לתשלום</span>
+                                    <span className="text-muted-foreground text-xs font-medium">סה&quot;כ לתשלום</span>
                                     <span className="font-black text-3xl text-primary tracking-tight">₪{Number(details.value).toLocaleString()}</span>
                                 </div>
                             </div>

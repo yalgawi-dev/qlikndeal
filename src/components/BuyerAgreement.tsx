@@ -2,15 +2,21 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, CheckCircle, Lock, Truck } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Lock, Truck, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+
+import { NegotiationPanel } from "./NegotiationPanel";
+
+import { useUser } from "@clerk/nextjs";
 
 interface BuyerAgreementProps {
     shipmentId: string;
     sellerName: string;
+    details: any; // Added details prop
 }
 
-export function BuyerAgreement({ shipmentId, sellerName }: BuyerAgreementProps) {
+export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreementProps) {
+    const { user, isLoaded } = useUser();
     const [isOpen, setIsOpen] = useState(false);
     const [step, setStep] = useState(1); // 1 = Details, 2 = Payment/Finalize
     const [loading, setLoading] = useState(false);
@@ -22,6 +28,15 @@ export function BuyerAgreement({ shipmentId, sellerName }: BuyerAgreementProps) 
         city: "",
         street: "",
     });
+
+    // Negotiation Logic
+    let flexibleData: any = {};
+    try { flexibleData = JSON.parse(details.flexibleData || '{}'); } catch (e) { }
+
+    const negotiationStatus = flexibleData.negotiationStatus || 'active';
+    const lastOfferBy = flexibleData.lastOfferBy || 'buyer';
+    const isPriceAgreed = negotiationStatus === 'agreed';
+    const isSellerFinalized = flexibleData.sellerApprovedAt;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setGuestDetails({ ...guestDetails, [e.target.name]: e.target.value });
@@ -36,6 +51,39 @@ export function BuyerAgreement({ shipmentId, sellerName }: BuyerAgreementProps) 
         alert("העסקה הושלמה! (לוגיקה בבנייה)");
     };
 
+    if (!isPriceAgreed) {
+        return (
+            <NegotiationPanel
+                shipmentId={shipmentId}
+                currentOffer={details.value}
+                lastOfferBy={lastOfferBy}
+                currentUserRole="buyer"
+                isGuest={isLoaded && !user}
+            />
+        );
+    }
+
+    if (isPriceAgreed && !isSellerFinalized) {
+        return (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center animate-in fade-in">
+                <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-600">
+                    <Clock className="w-8 h-8" />
+                </div>
+                <h3 className="font-bold text-lg text-amber-900 mb-2">המחיר סוכם! ממתין למוכר</h3>
+                <p className="text-amber-800 text-sm">
+                    הגעתם להסכמה על המחיר.<br />
+                    כעת המוכר צריך למלא את פרטי החבילה והמצב כדי שתוכל להתקדם לתשלום.
+                </p>
+                <div className="mt-4">
+                    <Button variant="outline" onClick={() => window.location.reload()}>
+                        בדוק אם המוכר סיים
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    // Original Flow (Ready to Pay)
     return (
         <>
             <Button

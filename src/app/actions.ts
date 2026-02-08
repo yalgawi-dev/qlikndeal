@@ -22,11 +22,25 @@ export async function createShipment(formData: any) {
 
         // 1. Ensure User Exists & Update Address if provided
         console.log("createShipment: Upserting user...");
-        const addressData = formData.sender ? {
+        const isBuyerMode = formData.userMode === 'buyer';
+
+        // Address data for the LOGGED IN USER
+        // If Buyer Mode: Address comes from 'receiver' field (My Details)
+        // If Seller Mode: Address comes from 'sender' field (My Details)
+        const currentUserAddressData = isBuyerMode ? (formData.receiver ? {
+            city: formData.receiver.city,
+            street: formData.receiver.street,
+            houseNumber: formData.receiver.number
+        } : {}) : (formData.sender ? {
             city: formData.sender.city,
             street: formData.sender.street,
             houseNumber: formData.sender.number
-        } : {};
+        } : {});
+
+        // Counterparty Data (The "Other Side")
+        // If Buyer Mode: Counterparty is Seller (formData.sender)
+        // If Seller Mode: Counterparty is Buyer (formData.receiver - usually empty in create link)
+        const counterpartyData = isBuyerMode ? formData.sender : formData.receiver;
 
         try {
             const dbUser = await prismadb.user.upsert({
@@ -36,7 +50,7 @@ export async function createShipment(formData: any) {
                     firstName: user.firstName,
                     lastName: user.lastName,
                     imageUrl: user.imageUrl,
-                    ...addressData
+                    ...currentUserAddressData
                 },
                 create: {
                     clerkId: user.id,
@@ -45,10 +59,42 @@ export async function createShipment(formData: any) {
                     lastName: user.lastName,
                     imageUrl: user.imageUrl,
                     isGuest: false,
-                    ...addressData
+                    ...currentUserAddressData
                 },
             });
             console.log("createShipment: User upserted:", dbUser.id);
+
+            // Determine Seller and Buyer IDs
+            let sellerId = dbUser.id;
+            let buyerId = undefined;
+
+            if (isBuyerMode) {
+                // The logged in user is the BUYER
+                buyerId = dbUser.id;
+
+                // Create a Guest User for Seller (Counterparty)
+                // We use phone to try to find existing, or create new
+                let guestSeller;
+                if (counterpartyData?.phone) {
+                    // Try to find by phone (assuming unique constraint or just first found)
+                    // Since phone isn't unique in schema, we might just create new for simplicity or findFirst
+                    const existing = await prismadb.user.findFirst({ where: { phone: counterpartyData.phone } });
+                    if (existing) {
+                        guestSeller = existing;
+                    }
+                }
+
+                if (!guestSeller) {
+                    guestSeller = await prismadb.user.create({
+                        data: {
+                            firstName: counterpartyData?.name || "Unknown Seller",
+                            phone: counterpartyData?.phone,
+                            isGuest: true
+                        }
+                    });
+                }
+                sellerId = guestSeller.id;
+            }
 
             // 2. Generate detailed images JSON
             const imagesJson = JSON.stringify(formData.images || []);
@@ -60,7 +106,8 @@ export async function createShipment(formData: any) {
             const shipment = await prismadb.shipment.create({
                 data: {
                     shortId: shortId,
-                    sellerId: dbUser.id,
+                    sellerId: sellerId,
+                    buyerId: buyerId,
                     status: "SHARED",
                     details: {
                         create: {
@@ -71,7 +118,18 @@ export async function createShipment(formData: any) {
                             images: imagesJson,
                             flexibleData: JSON.stringify({
                                 serviceType: formData.serviceType,
-                                senderAddress: formData.sender,
+                                senderAddress: isBuyerMode ? formData.sender : formData.sender, // Always sender field for sender address
+                                receiverAddress: isBuyerMode ? formData.receiver : undefined, // My address if buyer
+                                requestVideoCall: formData.requestVideoCall,
+                                createdByMode: isBuyerMode ? 'buyer' : 'seller',
+                                // Negotiation Data Initialization
+                                offers: [{
+                                    amount: parseFloat(formData.value) || 0,
+                                    by: isBuyerMode ? 'buyer' : 'seller',
+                                    createdAt: new Date().toISOString()
+                                }],
+                                lastOfferBy: isBuyerMode ? 'buyer' : 'seller',
+                                negotiationStatus: 'active'
                             }),
                         }
                     }
@@ -101,6 +159,15 @@ export async function getShipmentByShortId(shortId: string) {
                 details: true,
                 seller: {
                     select: {
+                        clerkId: true, // Needed for permission check
+                        firstName: true,
+                        lastName: true,
+                        imageUrl: true,
+                    }
+                },
+                buyer: { // Added buyer inclusion
+                    select: {
+                        clerkId: true, // Needed for permission check
                         firstName: true,
                         lastName: true,
                         imageUrl: true,
@@ -319,5 +386,205 @@ export async function updateUserDetails(data: any) {
     } catch (error) {
         console.error("Failed to update user details:", error);
         return { success: false, error: "Update failed" };
+    }
+}
+
+export async function updateShipmentBySeller(shipmentId: string, data: any) {
+    try {
+        // In a real app, we should verify the user is effectively the seller (or guest seller link with token)
+        // For MVP/Demo, we assume if they have the link and are on this page, they can update (Open Access to link bearer)
+
+        if (!prismadb) return { success: false, error: "Database error" };
+
+        // Get current flexible data to merge
+        const shipment = await prismadb.shipment.findUnique({ where: { id: shipmentId }, include: { details: true } });
+        let currentFlexible = {};
+        try {
+            if (shipment?.details?.flexibleData) {
+                currentFlexible = JSON.parse(shipment.details.flexibleData);
+            }
+        } catch (e) { }
+
+        const newFlexible = {
+            ...currentFlexible,
+            packageSize: data.packageSize, // Store package size in flexible data for now
+            sellerApprovedAt: new Date().toISOString()
+        };
+
+        await prismadb.shipmentDetails.update({
+            where: { shipmentId: shipmentId },
+            data: {
+                itemCondition: data.itemCondition,
+                sellerNotes: data.sellerNotes,
+                flexibleData: JSON.stringify(newFlexible),
+                aiStatus: "PASSED" // Simulating AI/Verification pass
+            }
+        });
+
+        // Update main status if needed
+        if (data.status) {
+            await prismadb.shipment.update({
+                where: { id: shipmentId },
+                data: { status: data.status } // e.g. "SELLER_APPROVED"
+            });
+        }
+
+        revalidatePath("/link/[shortId]");
+        return { success: true };
+
+    } catch (error) {
+        console.error("Failed to update shipment by seller:", error);
+        return { success: false, error: "Failed to update" };
+    }
+}
+
+// Negotiation Actions
+
+// Negotiation Actions
+
+export async function submitOffer(shipmentId: string, amount: number, role: 'buyer' | 'seller', buyerId?: string, guestDetails?: { name: string, phone: string }) {
+    try {
+        if (!prismadb) return { success: false, error: "Database error" };
+
+        const shipment = await prismadb.shipment.findUnique({ where: { id: shipmentId }, include: { details: true } });
+        if (!shipment || !shipment.details) return { success: false, error: "Not found" };
+
+        // Handle Guest User Creation if needed
+        if (role === 'buyer' && !buyerId && guestDetails?.name && guestDetails?.phone) {
+            // Check if user exists by phone (rudimentary check for MVP)
+            const existingUser = await prismadb.user.findFirst({ where: { phone: guestDetails.phone } });
+
+            if (existingUser) {
+                buyerId = existingUser.id;
+            } else {
+                const newUser = await prismadb.user.create({
+                    data: {
+                        firstName: guestDetails.name,
+                        phone: guestDetails.phone,
+                        isGuest: true
+                    }
+                });
+                buyerId = newUser.id;
+            }
+        }
+
+        let flexibleData: any = {};
+        try { flexibleData = JSON.parse(shipment.details.flexibleData || '{}'); } catch (e) { }
+
+        const newOffer = {
+            amount,
+            by: role,
+            createdAt: new Date().toISOString()
+        };
+
+        // Determine which negotiation thread to update
+        // If role is buyer, we need their ID (or session). If seller, we need to know WHICH buyer they are responding to.
+        // For simple 1-on-1 (legacy), we use the root 'offers'.
+        // For Public Listing, we use 'negotiations' map.
+
+        let newData = { ...flexibleData };
+
+        // Check if we are in "Public Mode" or if a specific buyerId was provided indicating a thread
+        if (buyerId && buyerId !== shipment.buyerId) {
+            // Multi-buyer mode
+            const negotiations = flexibleData.negotiations || {};
+            const thread = negotiations[buyerId] || { offers: [], status: 'active' };
+
+            thread.offers.push(newOffer);
+            thread.lastOfferBy = role;
+            thread.updatedAt = new Date().toISOString();
+
+            negotiations[buyerId] = thread;
+            newData.negotiations = negotiations;
+            newData.isPublicListing = true; // Mark as public implicitly if multiple threads start
+        } else {
+            // Legacy / Single Buyer Agreement Mode (or Seller responding to the main/only buyer)
+            const offers = [...(flexibleData.offers || []), newOffer];
+            newData = {
+                ...flexibleData,
+                offers,
+                lastOfferBy: role,
+                negotiationStatus: 'active'
+            };
+            // Also update the display value
+            await prismadb.shipmentDetails.update({
+                where: { shipmentId },
+                data: { value: amount } // Only update main display value for single-thread for now
+            });
+        }
+
+        // Update flexible data
+        await prismadb.shipmentDetails.update({
+            where: { shipmentId },
+            data: {
+                flexibleData: JSON.stringify(newData)
+            }
+        });
+
+        revalidatePath("/link/[shortId]");
+        return { success: true };
+
+    } catch (error) {
+        console.error("submitOffer error:", error);
+        return { success: false, error: "Failed to submit offer" };
+    }
+}
+
+export async function acceptOffer(shipmentId: string, role: 'buyer' | 'seller', guestDetails?: { name: string, phone: string }) {
+    try {
+        if (!prismadb) return { success: false, error: "Database error" };
+
+        const shipment = await prismadb.shipment.findUnique({ where: { id: shipmentId }, include: { details: true } });
+        if (!shipment || !shipment.details) return { success: false, error: "Not found" };
+
+        let buyerId = shipment.buyerId;
+
+        // Handle Guest Buyer on "Buy Now"
+        if (role === 'buyer' && !buyerId && guestDetails?.name && guestDetails?.phone) {
+            const existingUser = await prismadb.user.findFirst({ where: { phone: guestDetails.phone } });
+
+            if (existingUser) {
+                buyerId = existingUser.id;
+            } else {
+                const newUser = await prismadb.user.create({
+                    data: {
+                        firstName: guestDetails.name,
+                        phone: guestDetails.phone,
+                        isGuest: true
+                    }
+                });
+                buyerId = newUser.id;
+            }
+
+            // Update shipment with new buyerId immediately
+            await prismadb.shipment.update({
+                where: { id: shipmentId },
+                data: { buyerId }
+            });
+        }
+
+        let flexibleData: any = {};
+        try { flexibleData = JSON.parse(shipment.details.flexibleData || '{}'); } catch (e) { }
+
+        const newData = {
+            ...flexibleData,
+            negotiationStatus: 'agreed',
+            priceAgreedAt: new Date().toISOString(),
+            priceAgreedBy: role
+        };
+
+        await prismadb.shipmentDetails.update({
+            where: { shipmentId },
+            data: {
+                flexibleData: JSON.stringify(newData)
+            }
+        });
+
+        revalidatePath("/link/[shortId]");
+        return { success: true };
+
+    } catch (error) {
+        console.error("acceptOffer error:", error);
+        return { success: false, error: "Failed to accept offer" };
     }
 }

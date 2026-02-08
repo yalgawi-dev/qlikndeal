@@ -427,7 +427,11 @@ function ActionCard({ shipment, userMode, type, onDelete, onView }: { shipment: 
             {/* Image Placeholder */}
             <div className="w-full sm:w-24 h-24 bg-muted/50 rounded-xl shrink-0 flex items-center justify-center">
                 {details.images && JSON.parse(details.images).length > 0 ? (
-                    <img src={JSON.parse(details.images)[0]} className="w-full h-full object-cover rounded-xl" />
+                    <img
+                        src={JSON.parse(details.images)[0]}
+                        alt={details.itemName || "Product Image"}
+                        className="w-full h-full object-cover rounded-xl"
+                    />
                 ) : (
                     <Package className="h-8 w-8 text-muted-foreground" />
                 )}

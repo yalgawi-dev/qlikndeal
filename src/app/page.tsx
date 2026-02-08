@@ -93,7 +93,7 @@ export default function Home() {
                         </div>
                         <div className="bg-card p-8 rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-shadow">
                             <h3 className="text-2xl font-bold mb-4 text-primary">חוויה מנצחת</h3>
-                            <p className="text-muted-foreground">אנחנו הופכים את "הכאב ראש" של יד-2 למשחק ילדים. הכל אוטומטי, הכל מהיר, והכל מהנייד.</p>
+                            <p className="text-muted-foreground">אנחנו הופכים את &quot;הכאב ראש&quot; של יד-2 למשחק ילדים. הכל אוטומטי, הכל מהיר, והכל מהנייד.</p>
                         </div>
                     </div>
                 </div>
