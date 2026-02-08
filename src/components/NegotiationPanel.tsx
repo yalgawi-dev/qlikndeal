@@ -106,7 +106,7 @@ export function NegotiationPanel({
 
             {isMyTurn ? (
                 <div className="space-y-3">
-                    {/* Guest Identification Fields */}
+                    {/* Identification Fields (Guest or Logged In without phone) */}
                     {isGuest && (
                         <div className="bg-muted/50 p-3 rounded-xl border border-primary/20 space-y-3 mb-2 animate-in fade-in slide-in-from-top-2">
                             <h4 className="text-xs font-bold text-primary flex items-center gap-1">
@@ -124,7 +124,7 @@ export function NegotiationPanel({
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[10px] font-bold text-muted-foreground">טלפון</label>
+                                    <label className="text-[10px] font-bold text-muted-foreground">הטלפון שלך (לעדכונים)</label>
                                     <Input
                                         placeholder="050-0000000"
                                         className="h-8 text-xs bg-background"

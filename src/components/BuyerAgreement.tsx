@@ -51,6 +51,11 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
         alert("העסקה הושלמה! (לוגיקה בבנייה)");
     };
 
+    // Check if user is logged in but missing phone
+    const isGuestUser = isLoaded && !user;
+    const isMissingPhone = isLoaded && !!user && (!user.phoneNumbers || user.phoneNumbers.length === 0);
+    const needsIdentification = isGuestUser || isMissingPhone;
+
     if (!isPriceAgreed) {
         return (
             <NegotiationPanel
@@ -58,7 +63,7 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
                 currentOffer={details.value}
                 lastOfferBy={lastOfferBy}
                 currentUserRole="buyer"
-                isGuest={isLoaded && !user}
+                isGuest={needsIdentification} // Pass combined flag
             />
         );
     }

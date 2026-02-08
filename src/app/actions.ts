@@ -449,22 +449,46 @@ export async function submitOffer(shipmentId: string, amount: number, role: 'buy
         const shipment = await prismadb.shipment.findUnique({ where: { id: shipmentId }, include: { details: true } });
         if (!shipment || !shipment.details) return { success: false, error: "Not found" };
 
-        // Handle Guest User Creation if needed
-        if (role === 'buyer' && !buyerId && guestDetails?.name && guestDetails?.phone) {
-            // Check if user exists by phone (rudimentary check for MVP)
-            const existingUser = await prismadb.user.findFirst({ where: { phone: guestDetails.phone } });
-
-            if (existingUser) {
-                buyerId = existingUser.id;
-            } else {
-                const newUser = await prismadb.user.create({
-                    data: {
-                        firstName: guestDetails.name,
-                        phone: guestDetails.phone,
-                        isGuest: true
+        // Handle Buyer Identity (Guest or Logged In)
+        if (role === 'buyer' && !buyerId) {
+            // 1. Check if guest details provided
+            if (guestDetails?.name && guestDetails?.phone) {
+                // Check if user is actually logged in?
+                const user = await currentUser();
+                if (user) {
+                    // Logged in user updating phone
+                    const dbUser = await prismadb.user.findUnique({ where: { clerkId: user.id } });
+                    if (dbUser) {
+                        buyerId = dbUser.id;
+                        // Update phone if missing or different? For now, just update if provided specifically
+                        await prismadb.user.update({
+                            where: { id: dbUser.id },
+                            data: { phone: guestDetails.phone }
+                        });
                     }
-                });
-                buyerId = newUser.id;
+                } else {
+                    // Guest User
+                    const existingUser = await prismadb.user.findFirst({ where: { phone: guestDetails.phone } });
+                    if (existingUser) {
+                        buyerId = existingUser.id;
+                    } else {
+                        const newUser = await prismadb.user.create({
+                            data: {
+                                firstName: guestDetails.name,
+                                phone: guestDetails.phone,
+                                isGuest: true
+                            }
+                        });
+                        buyerId = newUser.id;
+                    }
+                }
+            } else {
+                // No guest details, maybe logged in user?
+                const user = await currentUser();
+                if (user) {
+                    const dbUser = await prismadb.user.findUnique({ where: { clerkId: user.id } });
+                    if (dbUser) buyerId = dbUser.id;
+                }
             }
         }
 
@@ -539,28 +563,42 @@ export async function acceptOffer(shipmentId: string, role: 'buyer' | 'seller', 
 
         let buyerId = shipment.buyerId;
 
-        // Handle Guest Buyer on "Buy Now"
-        if (role === 'buyer' && !buyerId && guestDetails?.name && guestDetails?.phone) {
-            const existingUser = await prismadb.user.findFirst({ where: { phone: guestDetails.phone } });
-
-            if (existingUser) {
-                buyerId = existingUser.id;
-            } else {
-                const newUser = await prismadb.user.create({
-                    data: {
-                        firstName: guestDetails.name,
-                        phone: guestDetails.phone,
-                        isGuest: true
+        // Handle Buyer Identity (Guest or Logged In)
+        if (role === 'buyer' && !buyerId) {
+            if (guestDetails?.name && guestDetails?.phone) {
+                const user = await currentUser();
+                if (user) {
+                    const dbUser = await prismadb.user.findUnique({ where: { clerkId: user.id } });
+                    if (dbUser) {
+                        buyerId = dbUser.id;
+                        await prismadb.user.update({ where: { id: dbUser.id }, data: { phone: guestDetails.phone } });
                     }
-                });
-                buyerId = newUser.id;
+                } else {
+                    const existingUser = await prismadb.user.findFirst({ where: { phone: guestDetails.phone } });
+                    if (existingUser) {
+                        buyerId = existingUser.id;
+                    } else {
+                        const newUser = await prismadb.user.create({
+                            data: { firstName: guestDetails.name, phone: guestDetails.phone, isGuest: true }
+                        });
+                        buyerId = newUser.id;
+                    }
+                }
+            } else {
+                const user = await currentUser();
+                if (user) {
+                    const dbUser = await prismadb.user.findUnique({ where: { clerkId: user.id } });
+                    if (dbUser) buyerId = dbUser.id;
+                }
             }
 
-            // Update shipment with new buyerId immediately
-            await prismadb.shipment.update({
-                where: { id: shipmentId },
-                data: { buyerId }
-            });
+            // Update shipment with new buyerId if found
+            if (buyerId) {
+                await prismadb.shipment.update({
+                    where: { id: shipmentId },
+                    data: { buyerId }
+                });
+            }
         }
 
         let flexibleData: any = {};
