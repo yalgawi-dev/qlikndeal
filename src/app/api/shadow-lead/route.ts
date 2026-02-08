@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
 
+export const dynamic = 'force-dynamic';
+
 // Handle Preflight (CORS) check
 export async function OPTIONS() {
     return NextResponse.json({}, {
