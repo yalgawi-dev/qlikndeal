@@ -107,3 +107,16 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: "Failed to update log" }, { status: 500 });
     }
 }
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const { id } = await req.json();
+        if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
+        await prisma.parserLog.delete({ where: { id } });
+        return NextResponse.json({ success: true });
+    } catch (err) {
+        console.error("[parser-log] DELETE Error:", err);
+        return NextResponse.json({ error: "Failed to delete log" }, { status: 500 });
+    }
+}

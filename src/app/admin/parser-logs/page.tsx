@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, CheckCircle, XCircle, AlertCircle, RefreshCw, Download, ArrowRight } from "lucide-react";
+import { ChevronDown, ChevronUp, CheckCircle, XCircle, AlertCircle, RefreshCw, Download, ArrowRight, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 interface ParserLog {
@@ -42,6 +42,16 @@ export default function AdminParserLogsPage() {
             body: JSON.stringify({ id, quality, reviewed: true }),
         });
         setLogs(prev => prev.map(l => l.id === id ? { ...l, quality, reviewed: true } : l));
+    };
+
+    const deleteLog = async (id: string) => {
+        if (!confirm("האם למחוק שורה זו?")) return;
+        await fetch("/api/parser-log", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id }),
+        });
+        setLogs(prev => prev.filter(l => l.id !== id));
     };
 
     const filteredLogs = logs.filter(l => {
@@ -199,6 +209,13 @@ export default function AdminParserLogsPage() {
                                         </div>
                                         <div className="flex items-center gap-2 shrink-0">
                                             {qualityBadge(log.quality, log.reviewed)}
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); deleteLog(log.id); }}
+                                                className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all"
+                                                title="מחק שורה"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                            </button>
                                             {isOpen ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
                                         </div>
                                     </div>
