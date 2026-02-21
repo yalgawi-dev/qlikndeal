@@ -54,6 +54,19 @@ export default function AdminParserLogsPage() {
         setLogs(prev => prev.filter(l => l.id !== id));
     };
 
+    const deleteAll = async () => {
+        if (!confirm(`האם למחוק את כל ${logs.length} הלוגים?\n\nטיפ: ייצא CSV לפני המחיקה לשמירת הנתונים.`)) return;
+        // Export before clearing
+        exportCSV();
+        // Delete all one by one (no bulk endpoint yet)
+        await Promise.all(logs.map(l => fetch("/api/parser-log", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: l.id }),
+        })));
+        setLogs([]);
+    };
+
     const filteredLogs = logs.filter(l => {
         if (filter === "unreviewed") return !l.reviewed;
         if (filter === "all") return true;
@@ -120,13 +133,23 @@ export default function AdminParserLogsPage() {
                         </div>
                     </div>
                     <div className="flex gap-3">
-                        <button onClick={fetchLogs} className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors">
+                        <button onClick={fetchLogs} className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors" title="רענן">
                             <RefreshCw className="w-4 h-4" />
                         </button>
                         <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-sm">
                             <Download className="w-4 h-4" />
                             ייצוא CSV
                         </button>
+                        {logs.length > 0 && (
+                            <button
+                                onClick={deleteAll}
+                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 hover:text-red-300 transition-all text-sm"
+                                title="ייצא CSV ואחר כך מחק"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                נקה הכל
+                            </button>
+                        )}
                     </div>
                 </div>
 
