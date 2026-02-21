@@ -24,16 +24,17 @@ export default function AdminParserLogsPage() {
     const [loading, setLoading] = useState(true);
     const [expanded, setExpanded] = useState<string | null>(null);
     const [filter, setFilter] = useState<"all" | "bad" | "partial" | "good" | "unreviewed">("all");
+    const [showArchived, setShowArchived] = useState(false);
 
     const fetchLogs = async () => {
         setLoading(true);
-        const res = await fetch("/api/parser-log?limit=100");
+        const res = await fetch(`/api/parser-log?limit=100${showArchived ? "&archived=true" : ""}`);
         const data = await res.json();
         if (data.success) setLogs(data.logs);
         setLoading(false);
     };
 
-    useEffect(() => { fetchLogs(); }, []);
+    useEffect(() => { fetchLogs(); }, [showArchived]);
 
     const markQuality = async (id: string, quality: string) => {
         await fetch("/api/parser-log", {
@@ -45,7 +46,7 @@ export default function AdminParserLogsPage() {
     };
 
     const deleteLog = async (id: string) => {
-        if (!confirm("האם למחוק שורה זו?")) return;
+        if (!confirm("האם למחוק שורה זו? (לא ניתן לבטל)")) return;
         await fetch("/api/parser-log", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
@@ -54,15 +55,13 @@ export default function AdminParserLogsPage() {
         setLogs(prev => prev.filter(l => l.id !== id));
     };
 
-    const deleteAll = async () => {
-        if (!confirm(`האם למחוק את כל ${logs.length} הלוגים?\n\nטיפ: ייצא CSV לפני המחיקה לשמירת הנתונים.`)) return;
-        // Export before clearing
-        exportCSV();
-        // Delete all one by one (no bulk endpoint yet)
+    const archiveBatch = async () => {
+        if (!confirm(`לעבור ${logs.length} לוגים לארכיב?\n\nהלוגים ישמרו במסד הנתונים ויהיו זמינים דרך הכפתור 'ארכיב'.`)) return;
+        exportCSV(); // Save a copy before archiving
         await Promise.all(logs.map(l => fetch("/api/parser-log", {
-            method: "DELETE",
+            method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: l.id }),
+            body: JSON.stringify({ id: l.id, archived: true }),
         })));
         setLogs([]);
     };
@@ -133,6 +132,12 @@ export default function AdminParserLogsPage() {
                         </div>
                     </div>
                     <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowArchived(v => !v)}
+                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-sm ${showArchived ? "bg-indigo-500/20 border-indigo-500/40 text-indigo-300" : "bg-white/5 hover:bg-white/10 border-white/10 text-gray-400"}`}
+                        >
+                            🗂️ {showArchived ? "ארכיב" : "פעיל"}
+                        </button>
                         <button onClick={fetchLogs} className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors" title="רענן">
                             <RefreshCw className="w-4 h-4" />
                         </button>
@@ -140,14 +145,13 @@ export default function AdminParserLogsPage() {
                             <Download className="w-4 h-4" />
                             ייצוא CSV
                         </button>
-                        {logs.length > 0 && (
+                        {!showArchived && logs.length > 0 && (
                             <button
-                                onClick={deleteAll}
-                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 hover:text-red-300 transition-all text-sm"
-                                title="ייצא CSV ואחר כך מחק"
+                                onClick={archiveBatch}
+                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-400 hover:text-indigo-300 transition-all text-sm"
+                                title="ייצא CSV ועבור לארכיב"
                             >
-                                <Trash2 className="w-4 h-4" />
-                                נקה הכל
+                                📁 ארכב אצווה
                             </button>
                         )}
                     </div>

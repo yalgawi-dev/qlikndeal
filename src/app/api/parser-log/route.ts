@@ -67,15 +67,17 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
-        const limit = parseInt(searchParams.get("limit") || "50");
-        const quality = searchParams.get("quality"); // filter by quality
-        const reviewed = searchParams.get("reviewed"); // "true" | "false"
+        const limit = parseInt(searchParams.get("limit") || "100");
+        const quality = searchParams.get("quality");
+        const reviewed = searchParams.get("reviewed");
+        const showArchived = searchParams.get("archived") === "true";
 
         const logs = await prisma.parserLog.findMany({
             where: {
+                archived: showArchived, // new field — client will regenerate on build
                 ...(quality ? { quality } : {}),
                 ...(reviewed !== null ? { reviewed: reviewed === "true" } : {}),
-            },
+            } as any,
             orderBy: { createdAt: "desc" },
             take: limit,
         });
@@ -89,7 +91,7 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
     try {
-        const { id, quality, reviewed, testerNote } = await req.json();
+        const { id, quality, reviewed, testerNote, archived } = await req.json();
         if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
 
         const updated = await prisma.parserLog.update({
@@ -98,6 +100,7 @@ export async function PATCH(req: NextRequest) {
                 ...(quality !== undefined ? { quality } : {}),
                 ...(reviewed !== undefined ? { reviewed } : {}),
                 ...(testerNote !== undefined ? { testerNote } : {}),
+                ...(archived !== undefined ? { archived, archivedAt: archived ? new Date() : null } : {}),
             },
         });
 

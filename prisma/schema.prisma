@@ -295,5 +295,9 @@ model ParserLog {
   reviewed Boolean @default(false)
   quality  String? // "good" | "partial" | "bad"
 
+  // Archive: moved to archive after AI treatment batch
+  archived   Boolean   @default(false)
+  archivedAt DateTime?
+
   createdAt DateTime @default(now())
 }
