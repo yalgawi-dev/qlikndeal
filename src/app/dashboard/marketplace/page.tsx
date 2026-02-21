@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { ListingForm } from "@/components/marketplace/ListingForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getListings } from "@/app/actions/marketplace";
-import { Search, Filter, Plus, Sparkles, ScanSearch } from "lucide-react";
+import { Search, Filter, Plus, Sparkles, ScanSearch, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
@@ -17,6 +18,8 @@ export default function MarketplacePage() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showManualForm, setShowManualForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const { user } = useUser();
+    const isAdmin = user?.primaryEmailAddress?.emailAddress === "yalgawi@gmail.com";
 
     const fetchListings = async () => {
         setLoading(true);
@@ -53,7 +56,16 @@ export default function MarketplacePage() {
                         </p>
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 flex-wrap">
+                        {/* Admin shortcut — only for admin user */}
+                        {isAdmin && (
+                            <Link href="/admin/parser-logs">
+                                <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 border border-purple-500/20 gap-1.5">
+                                    <Settings className="w-4 h-4" />
+                                    Admin
+                                </Button>
+                            </Link>
+                        )}
                         <Link href="/dashboard/marketplace/my-listings">
                             <Button variant="outline" className="border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800 h-full px-6">
                                 המודעות שלי
