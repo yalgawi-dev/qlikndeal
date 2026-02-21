@@ -114,7 +114,7 @@ export default function CreateListingPage() {
                     <div className="max-w-2xl mx-auto bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
                         <div className="p-6 border-b border-gray-800 relative flex items-center justify-center">
                             <h1 className="text-2xl font-bold text-center">
-                                {mode === "smart" ? "עריכת מודעה חכמה" : "יצירת מודעה חדשה"}
+                                {isSmartMode ? "עריכת מודעה חכמה" : "יצירת מודעה חדשה"}
                             </h1>
                             <a
                                 href="/dashboard/marketplace"
@@ -124,6 +124,27 @@ export default function CreateListingPage() {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                             </a>
                         </div>
+
+                        {/* Tester feedback banner — only shown when testerName is set */}
+                        {isSmartMode && typeof window !== "undefined" && localStorage.getItem("testerName") && (
+                            <div className="mx-6 mt-4 flex items-center justify-between gap-3 bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-amber-400 text-lg">🧪</span>
+                                    <div>
+                                        <p className="text-amber-300 text-sm font-semibold">מצב בדיקה — {localStorage.getItem("testerName")}</p>
+                                        <p className="text-amber-400/70 text-xs">בדוק את השדות שמילא ה-AI ותקן אם צריך</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowNoteModal(true)}
+                                    className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-sm font-bold transition-all"
+                                >
+                                    <MessageSquare className="w-4 h-4" />
+                                    הוסף הערה
+                                </button>
+                            </div>
+                        )}
+
                         <div className="p-6">
                             <ListingForm
                                 key={initialSmartData ? 'smart-loaded' : 'default'}
@@ -136,17 +157,6 @@ export default function CreateListingPage() {
                     </div>
                 </div>
             </div>
-
-            {/* Floating note button — only in smart mode */}
-            {isSmartMode && (
-                <button
-                    onClick={() => setShowNoteModal(true)}
-                    className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 text-sm font-medium backdrop-blur-md transition-all hover:scale-105 shadow-xl"
-                >
-                    <MessageSquare className="w-4 h-4" />
-                    💬 הוסף הערה
-                </button>
-            )}
 
             {/* Note modal */}
             {showNoteModal && (
