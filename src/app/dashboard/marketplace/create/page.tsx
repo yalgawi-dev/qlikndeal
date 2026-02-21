@@ -99,81 +99,79 @@ export default function CreateListingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white pb-20">
-            <Navbar />
-            <div className="container mx-auto px-4 pt-8">
-                <div className="max-w-2xl mx-auto bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-                    <div className="p-6 border-b border-gray-800 relative flex items-center justify-center">
-                        <h1 className="text-2xl font-bold text-center">
-                            {mode === "smart" ? "עריכת מודעה חכמה" : "יצירת מודעה חדשה"}
-                        </h1>
-                        <a
-                            href="/dashboard/marketplace"
-                            className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors text-white"
-                            title="ביטול וחזרה"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                        </a>
+        <>
+            <div className="min-h-screen bg-black text-white pb-20">
+                <Navbar />
+                <div className="container mx-auto px-4 pt-8">
+                    <div className="max-w-2xl mx-auto bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+                        <div className="p-6 border-b border-gray-800 relative flex items-center justify-center">
+                            <h1 className="text-2xl font-bold text-center">
+                                {mode === "smart" ? "עריכת מודעה חכמה" : "יצירת מודעה חדשה"}
+                            </h1>
+                            <a
+                                href="/dashboard/marketplace"
+                                className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors text-white"
+                                title="ביטול וחזרה"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                            </a>
+                        </div>
+                        <div className="p-6">
+                            <ListingForm
+                                key={initialSmartData ? 'smart-loaded' : 'default'}
+                                onComplete={() => window.location.href = "/dashboard/marketplace"}
+                                onCancel={() => window.location.href = "/dashboard/marketplace"}
+                                initialData={initialSmartData || sharedData}
+                                initialMagicText={!initialSmartData ? sharedData.magicText : undefined}
+                            />
+                        </div>
                     </div>
-                    <div className="p-6">
-                        <ListingForm
-                            key={initialSmartData ? 'smart-loaded' : 'default'}
-                            onComplete={() => window.location.href = "/dashboard/marketplace"}
-                            onCancel={() => window.location.href = "/dashboard/marketplace"}
-                            initialData={initialSmartData || sharedData}
-                            initialMagicText={!initialSmartData ? sharedData.magicText : undefined}
+                </div>
+            </div>
+
+            {/* Floating note button — only in smart mode */}
+            {mode === "smart" && (
+                <button
+                    onClick={() => setShowNoteModal(true)}
+                    className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 text-sm font-medium backdrop-blur-md transition-all hover:scale-105 shadow-xl"
+                >
+                    <MessageSquare className="w-4 h-4" />
+                    💬 הוסף הערה
+                </button>
+            )}
+
+            {/* Note modal */}
+            {showNoteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl" dir="rtl">
+                        <h3 className="text-lg font-bold mb-1">💬 הוסף הערה לבודק</h3>
+                        <p className="text-sm text-gray-400 mb-4">מה לא היה מדויק בפענוח? תאר בפירוט.</p>
+                        <textarea
+                            value={testerNote}
+                            onChange={e => setTesterNote(e.target.value)}
+                            placeholder="לדוגמה: זיהה גלקסי S24 במקום S24 Ultra, המחיר יצא 0, שכח לזהות כי הוא כמו חדש..."
+                            rows={5}
+                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-gray-600 outline-none focus:border-amber-500/40 resize-none"
+                            autoFocus
                         />
+                        <div className="flex gap-3 mt-4">
+                            <button
+                                onClick={submitNote}
+                                disabled={!testerNote.trim()}
+                                className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
+                            >
+                                שמור הערה
+                            </button>
+                            <button
+                                onClick={() => setShowNoteModal(false)}
+                                className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 text-sm transition-all"
+                            >
+                                ביטול
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        {/* Floating note button — only in smart mode */ }
-    {
-        mode === "smart" && (
-            <button
-                onClick={() => setShowNoteModal(true)}
-                className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 text-sm font-medium backdrop-blur-md transition-all hover:scale-105 shadow-xl"
-            >
-                <MessageSquare className="w-4 h-4" />
-                💬 הוסף הערה
-            </button>
-        )
-    }
-
-    {/* Note modal */ }
-    {
-        showNoteModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl" dir="rtl">
-                    <h3 className="text-lg font-bold mb-1">💬 הוסף הערה לבודק</h3>
-                    <p className="text-sm text-gray-400 mb-4">מה לא היה מדויק בפענוח? תאר בפירוט.</p>
-                    <textarea
-                        value={testerNote}
-                        onChange={e => setTesterNote(e.target.value)}
-                        placeholder="לדוגמה: זיהה גלקסי S24 במקום S24 Ultra, המחיר יצא 0, שכח לזהות כי הוא כמו חדש..."
-                        rows={5}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-gray-600 outline-none focus:border-amber-500/40 resize-none"
-                        autoFocus
-                    />
-                    <div className="flex gap-3 mt-4">
-                        <button
-                            onClick={submitNote}
-                            disabled={!testerNote.trim()}
-                            className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
-                        >
-                            שמור הערה
-                        </button>
-                        <button
-                            onClick={() => setShowNoteModal(false)}
-                            className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 text-sm transition-all"
-                        >
-                            ביטול
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )
-    }
+            )}
+        </>
     );
 }
