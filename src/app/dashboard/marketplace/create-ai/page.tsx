@@ -3,12 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SmartListingInput } from "@/components/marketplace/SmartListingInput";
-import { ArrowRight, X, Sparkles } from "lucide-react";
+import { ArrowRight, X, Sparkles, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
 export default function CreateAiPage() {
     const router = useRouter();
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [showNoteModal, setShowNoteModal] = useState(false);
+    const [pendingLogId, setPendingLogId] = useState<string | null>(null);
+    const [testerNote, setTesterNote] = useState("");
+
+    // Read tester name from localStorage (set once, persisted)
+    const getTesterName = () => {
+        if (typeof window === "undefined") return "";
+        return localStorage.getItem("testerName") || "";
+    };
 
     const handleAnalyze = async (text: string) => {
         setIsAnalyzing(true);
@@ -23,9 +32,31 @@ export default function CreateAiPage() {
 
             const data = await response.json();
 
-            // Store result in localStorage
-            console.log("Saving draft to localStorage:", data);
+            // Save to localStorage for the form
             localStorage.setItem("smartListingDraft", JSON.stringify(data));
+            // Also save original text for later diff logging
+            localStorage.setItem("smartListingOriginalText", text);
+            localStorage.setItem("smartListingAiResult", JSON.stringify(data));
+
+            // Log to ParserLog DB
+            try {
+                const logRes = await fetch("/api/parser-log", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        originalText: text,
+                        aiParsed: JSON.stringify(data),
+                        testerName: getTesterName(),
+                        category: data.category || null,
+                        inputMode: "text",
+                        sessionId: Date.now().toString(),
+                    }),
+                });
+                const logData = await logRes.json();
+                if (logData.id) localStorage.setItem("currentParserLogId", logData.id);
+            } catch {
+                // Non-critical: don't block the user if logging fails
+            }
 
             router.push("/dashboard/marketplace/create?mode=smart");
 
@@ -35,6 +66,20 @@ export default function CreateAiPage() {
         } finally {
             setIsAnalyzing(false);
         }
+    };
+
+    const submitNote = async () => {
+        const logId = localStorage.getItem("currentParserLogId");
+        if (logId && testerNote.trim()) {
+            await fetch("/api/parser-log", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: logId, testerNote: testerNote.trim() }),
+            });
+        }
+        setTesterNote("");
+        setShowNoteModal(false);
+        alert("תודה! ההערה נשמרה ✓");
     };
 
     return (
@@ -68,6 +113,20 @@ export default function CreateAiPage() {
                     </p>
                 </div>
 
+                {/* Tester name — persisted locally */}
+                <div className="mb-4 flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
+                    <span className="text-gray-400 text-sm whitespace-nowrap">👤 שם הבודק:</span>
+                    <input
+                        type="text"
+                        placeholder="הכנס שמך (נשמר אוטומטית)"
+                        defaultValue={typeof window !== "undefined" ? localStorage.getItem("testerName") || "" : ""}
+                        onChange={e => {
+                            if (typeof window !== "undefined") localStorage.setItem("testerName", e.target.value);
+                        }}
+                        className="bg-transparent text-white text-sm flex-1 outline-none placeholder-gray-600"
+                    />
+                </div>
+
                 <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl p-1 shadow-2xl border border-white/10 ring-1 ring-white/5">
                     <div className="bg-slate-950/80 rounded-[22px] p-6 md:p-10">
                         <SmartListingInput
@@ -77,6 +136,48 @@ export default function CreateAiPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Floating "הערות" button — always visible for tester */}
+            <button
+                onClick={() => setShowNoteModal(true)}
+                className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 text-sm font-medium backdrop-blur-md transition-all hover:scale-105 shadow-xl"
+            >
+                <MessageSquare className="w-4 h-4" />
+                הוסף הערה
+            </button>
+
+            {/* Note modal */}
+            {showNoteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl" dir="rtl">
+                        <h3 className="text-lg font-bold mb-1">💬 הוסף הערה לבודק</h3>
+                        <p className="text-sm text-gray-400 mb-4">מה לא היה טוב בפענוח האחרון? תאר בפירוט.</p>
+                        <textarea
+                            value={testerNote}
+                            onChange={e => setTesterNote(e.target.value)}
+                            placeholder="לדוגמה: לא זיהה נכון את דגם הטלפון, המחיר יצא 0, נפח האחסון התבלבל..."
+                            rows={5}
+                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-gray-600 outline-none focus:border-amber-500/40 resize-none"
+                            autoFocus
+                        />
+                        <div className="flex gap-3 mt-4">
+                            <button
+                                onClick={submitNote}
+                                disabled={!testerNote.trim()}
+                                className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
+                            >
+                                שמור הערה
+                            </button>
+                            <button
+                                onClick={() => setShowNoteModal(false)}
+                                className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 text-sm transition-all"
+                            >
+                                ביטול
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

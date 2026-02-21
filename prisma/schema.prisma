@@ -198,7 +198,7 @@ model ServiceRequest {
   shipmentId String   @unique
   shipment   Shipment @relation(fields: [shipmentId], references: [id])
 
-  status ServiceRequestStatus @default(OPEN)
+  status      ServiceRequestStatus @default(OPEN)
   description String?
 
   pickupLocation  String?
@@ -260,4 +260,40 @@ model BuyerRequest {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+// AI Self-Learning: logs every parse attempt + user corrections
+// ─────────────────────────────────────────────────────────────
+model ParserLog {
+  id String @id @default(uuid())
+
+  // The raw input text (from voice or typed)
+  originalText String
+
+  // What the AI parsed (JSON string of ListingAnalysisResult)
+  aiParsed String
+
+  // What the user actually submitted after corrections (JSON)
+  // null = user accepted AI result without changes
+  userFinal String?
+
+  // Diff: only the fields that were changed (JSON)
+  // e.g. {"storage": {"ai": "56 GB", "user": "256 GB"}}
+  corrections String?
+
+  // Free-text note from the tester explaining what was wrong
+  testerNote String?
+
+  // Metadata
+  testerName String? // who was testing (partner's name)
+  category   String? // detected category
+  inputMode  String? // "voice" | "text" | "paste"
+  sessionId  String? // group corrections from same session
+
+  // Was this a "good" parse? Set manually by admin after review
+  reviewed Boolean @default(false)
+  quality  String? // "good" | "partial" | "bad"
+
+  createdAt DateTime @default(now())
 }
