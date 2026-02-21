@@ -4,8 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import { Settings } from "lucide-react";
 
+// Admin emails — users who see the Admin panel link
+const ADMIN_EMAILS = ["yalgawi@gmail.com", "itay@qlikndeal.com"];
 
 export function Navbar() {
     return (
@@ -33,12 +36,28 @@ export function Navbar() {
                         </SignInButton>
                     </SignedOut>
                     <SignedIn>
+                        <AdminLink />
                         <DashboardLink />
                         <UserButton afterSignOutUrl="/" />
                     </SignedIn>
                 </div>
             </div>
         </nav>
+    );
+}
+
+function AdminLink() {
+    const { user } = useUser();
+    const email = user?.primaryEmailAddress?.emailAddress || "";
+    if (!ADMIN_EMAILS.includes(email)) return null;
+
+    return (
+        <Link href="/admin/parser-logs" title="Admin Panel">
+            <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 gap-1.5">
+                <Settings className="w-3.5 h-3.5" />
+                Admin
+            </Button>
+        </Link>
     );
 }
 
