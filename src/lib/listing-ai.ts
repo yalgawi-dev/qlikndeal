@@ -533,6 +533,8 @@ function extractPrice(text: string, options?: AiOptions): {
     const mediumPatterns = [
         /(?:מחיר|מוכר|נמכר|דורש|מבקש|רק|בלבד|תמורת|עכשיו|סופי)[^\d]{0,10}(\d{1,3}[,.]?\d{3}|\d{2,7})/i,
         /(?:ב-|ב–|ב )\s*(\d{1,3}[,.]?\d{3}|\d{2,7})(?:\s|$|,|\.)/,
+        // Price at start of line followed by selling verb: "13,500 לבוא לקחת"
+        /(?:^|\n)\s*(\d{1,3}[,.]?\d{3}|\d{4,7})\s+(?:לבוא|לקחת|למסירה|ניתן|בלבד|נא\s*ל|ל[א-ת])/im,
     ];
     for (const pattern of mediumPatterns) {
         const match = text.match(pattern);
@@ -699,10 +701,17 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
                     .replace(/שמינית|שמיני/i, "8")
             })
         },
-        // Test expiry date: "טסט עד 05/2026" or "טסט עד מאי 2026"
-        { key: "טסט עד", regex: /(?:טסט|רישיון)\s*(?:עד|עב|עב')?[:\s-]*(?:חודש\s*)?(?:ינואר|פברואר|מרץ|אפריל|מאי|יוני|יולי|אוגוסט|ספטמבר|אוקטובר|נובמבר|דצמבר)?\s*(?:0?(\d{1,2})\/?(\d{4})|(\d{4}))/i, format: (m) => ({ value: m[1] && m[2] ? `${m[1].padStart(2, '0')}/${m[2]}` : m[3] || m[0].replace(/.*?(?:עד|עב)[:\s-]*/i, '').trim() }) },
+        // Test expiry date: "טסט עד 05/2026" or "8/26" (2-digit year) or "טסט עד מאי 2026"
+        {
+            key: "טסט עד", regex: /(?:טסט|רישיון)\s*(?:עד|עב|עב')?[:\s-]*(?:חודש\s*)?(?:ינואר|פברואר|מרץ|אפריל|מאי|יוני|יולי|אוגוסט|ספטמבר|אוקטובר|נובמבר|דצמבר)?\s*(?:0?(\d{1,2})[\/-](\d{2,4})|(\d{4}))/i,
+            format: (m) => ({
+                value: m[1] && m[2]
+                    ? `${m[1].padStart(2, '0')}/${m[2].length === 2 ? '20' + m[2] : m[2]}`
+                    : m[3] || m[0].replace(/.*?(?:עד|עב)[:\s-]*/i, '').trim()
+            })
+        },
         // Test expiry from speech: "טסט עד 05 חודש מאי 2026"
-        { key: "טסט עד", regex: /(?:טסט|test)\s*(?:עד|until)?[:\s-]*(\d{1,2}[./-]\d{2,4})/i, format: (m) => ({ value: m[1] }) },
+        { key: "טסט עד", regex: /(?:טסט|test)\s*(?:עד|until)?[:\s-]*(\d{1,2}[.\/-]\d{2,4})/i, format: (m) => ({ value: m[1] }) },
         { key: "נפח אחסון", regex: /(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
         { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה)\s*(RAM|זיכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         { key: "עוצמה", regex: /(\d{1,5})\s*W(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1], unit: "W" }) },
