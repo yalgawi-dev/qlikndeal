@@ -1153,13 +1153,13 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 <Input
                                     placeholder="שם המאפיין"
                                     value={field.key}
-                                    onChange={(e) => updateField(index, "key", e.target.value)}
+                                    onChange={(e) => updateField(index, e.target.value, field.value)}
                                     className="bg-gray-800 border-gray-700"
                                 />
                                 <Input
                                     placeholder="ערך"
                                     value={field.value}
-                                    onChange={(e) => updateField(index, "value", e.target.value)}
+                                    onChange={(e) => updateField(index, field.key, e.target.value)}
                                     className={`bg-gray-800 border-gray-700 ${field.value.includes("?") ? "border-yellow-500 text-yellow-500" : ""}`}
                                 />
                                 <Button
