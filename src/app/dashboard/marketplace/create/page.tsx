@@ -158,35 +158,41 @@ export default function CreateListingPage() {
                 </div>
             </div>
 
-            {/* Note modal */}
+            {/* Note panel — small floating panel, doesn't block the form */}
             {showNoteModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl" dir="rtl">
-                        <h3 className="text-lg font-bold mb-1">💬 הוסף הערה לבודק</h3>
-                        <p className="text-sm text-gray-400 mb-4">מה לא היה מדויק בפענוח? תאר בפירוט.</p>
+                <div
+                    className="fixed bottom-6 left-6 z-50 w-80 bg-slate-900 border border-amber-500/30 rounded-2xl shadow-2xl shadow-black/60"
+                    dir="rtl"
+                >
+                    {/* Panel header */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                        <span className="text-sm font-bold text-amber-400">💬 הערה לבודק</span>
+                        <button
+                            onClick={() => setShowNoteModal(false)}
+                            className="text-gray-500 hover:text-white transition-colors text-lg leading-none"
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    {/* Panel body */}
+                    <div className="p-4">
+                        <p className="text-xs text-gray-500 mb-3">מה לא היה מדויק? כתוב בזמן שאתה ממלא את הטופס 👇</p>
                         <textarea
                             value={testerNote}
                             onChange={e => setTesterNote(e.target.value)}
-                            placeholder="לדוגמה: זיהה גלקסי S24 במקום S24 Ultra, המחיר יצא 0, שכח לזהות כי הוא כמו חדש..."
-                            rows={5}
+                            placeholder="לדוגמה: מחיר יצא 0, לא זיהה שהוא כמו חדש, כינוי שגוי..."
+                            rows={4}
                             className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-gray-600 outline-none focus:border-amber-500/40 resize-none"
                             autoFocus
                         />
-                        <div className="flex gap-3 mt-4">
-                            <button
-                                onClick={submitNote}
-                                disabled={!testerNote.trim()}
-                                className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
-                            >
-                                שמור הערה
-                            </button>
-                            <button
-                                onClick={() => setShowNoteModal(false)}
-                                className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 text-sm transition-all"
-                            >
-                                ביטול
-                            </button>
-                        </div>
+                        <button
+                            onClick={submitNote}
+                            disabled={!testerNote.trim()}
+                            className="w-full mt-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
+                        >
+                            שמור הערה ✓
+                        </button>
                     </div>
                 </div>
             )}
