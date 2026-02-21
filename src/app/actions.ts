@@ -49,7 +49,6 @@ export async function createShipment(formData: any) {
                     email: user.emailAddresses[0]?.emailAddress,
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    imageUrl: user.imageUrl,
                     ...currentUserAddressData
                 },
                 create: {
@@ -116,8 +115,10 @@ export async function createShipment(formData: any) {
                             itemCondition: formData.description || "Not specified",
                             sellerNotes: formData.description,
                             images: imagesJson,
+                            videos: JSON.stringify(formData.videos || []),
                             flexibleData: JSON.stringify({
                                 serviceType: formData.serviceType,
+                                dealType: formData.dealType || 'negotiation', // 'negotiation' | 'closed'
                                 senderAddress: isBuyerMode ? formData.sender : formData.sender, // Always sender field for sender address
                                 receiverAddress: isBuyerMode ? formData.receiver : undefined, // My address if buyer
                                 requestVideoCall: formData.requestVideoCall,
@@ -129,7 +130,8 @@ export async function createShipment(formData: any) {
                                     createdAt: new Date().toISOString()
                                 }],
                                 lastOfferBy: isBuyerMode ? 'buyer' : 'seller',
-                                negotiationStatus: 'active'
+                                // If Closed Deal -> Immediately 'agreed', else 'active'
+                                negotiationStatus: formData.dealType === 'closed' ? 'agreed' : 'active'
                             }),
                         }
                     }
@@ -185,7 +187,7 @@ export async function getShipmentByShortId(shortId: string) {
     }
 }
 
-export async function finalizeShipment(shipmentId: string, guestDetails: any) {
+export async function finalizeShipment(shipmentId: string, guestDetails: any, payer: 'buyer' | 'seller' = 'buyer') {
     try {
         if (!prismadb) return { success: false, error: "Database error" };
 
@@ -271,7 +273,6 @@ export async function getUserShipments(mode: "seller" | "buyer" = "seller") {
                 email: user.emailAddresses[0]?.emailAddress,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                imageUrl: user.imageUrl,
             },
             create: {
                 clerkId: user.id,
@@ -439,6 +440,36 @@ export async function updateShipmentBySeller(shipmentId: string, data: any) {
 }
 
 // Negotiation Actions
+
+// Video Call Action
+export async function toggleVideoRequest(shipmentId: string, requested: boolean) {
+    try {
+        if (!prismadb) return { success: false, error: "Database error" };
+
+        const targetShipment = await prismadb.shipment.findUnique({ where: { id: shipmentId }, include: { details: true } });
+
+        if (!targetShipment || !targetShipment.details) return { success: false, error: "Not found" };
+
+        let currentFlexible = {};
+        try { currentFlexible = JSON.parse(targetShipment.details.flexibleData || '{}'); } catch (e) { }
+
+        const newFlexible = {
+            ...currentFlexible,
+            requestVideoCall: requested
+        };
+
+        await prismadb.shipmentDetails.update({
+            where: { shipmentId },
+            data: { flexibleData: JSON.stringify(newFlexible) }
+        });
+
+        revalidatePath("/link/[shortId]");
+        return { success: true };
+    } catch (error) {
+        console.error("toggleVideoRequest error:", error);
+        return { success: false, error: "Failed to toggle" };
+    }
+}
 
 // Negotiation Actions
 
@@ -621,8 +652,45 @@ export async function acceptOffer(shipmentId: string, role: 'buyer' | 'seller', 
         revalidatePath("/link/[shortId]");
         return { success: true };
 
+
+        // ... end of acceptOffer try block ...
     } catch (error) {
         console.error("acceptOffer error:", error);
         return { success: false, error: "Failed to accept offer" };
+    }
+}
+
+// --- User Activity / Online Status ---
+export async function updateLastSeen(shipmentId: string, role: 'buyer' | 'seller') {
+    try {
+        if (!prismadb) return { success: false };
+
+        const shipment = await prismadb.shipment.findUnique({
+            where: { id: shipmentId },
+            include: { details: true }
+        });
+
+        if (!shipment || !shipment.details) return { success: false };
+
+        let currentFlexible = {};
+        try { currentFlexible = JSON.parse(shipment.details.flexibleData || '{}'); } catch (e) { }
+
+        // Update the timestamp for the specific role
+        const fieldToUpdate = role === 'buyer' ? 'buyerLastSeen' : 'sellerLastSeen';
+        const newFlexible = {
+            ...currentFlexible,
+            [fieldToUpdate]: new Date().toISOString()
+        };
+
+        await prismadb.shipmentDetails.update({
+            where: { shipmentId },
+            data: { flexibleData: JSON.stringify(newFlexible) }
+        });
+
+        // revalidatePath is implicit for next refresh
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to update last seen", error);
+        return { success: false };
     }
 }

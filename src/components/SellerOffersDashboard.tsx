@@ -7,6 +7,7 @@ import { User, Clock, ChevronRight, CheckCircle, AlertCircle } from "lucide-reac
 import { formatDistanceToNow } from "date-fns";
 import { he } from "date-fns/locale";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface SellerOffersDashboardProps {
     negotiations: any; // The map of negotiations
@@ -15,6 +16,14 @@ interface SellerOffersDashboardProps {
 
 export function SellerOffersDashboard({ negotiations, baseLink }: SellerOffersDashboardProps) {
     const router = useRouter();
+
+    // Auto-refresh every 5 seconds to check for new offers
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.refresh();
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [router]);
 
     const buyers = Object.keys(negotiations).map(buyerId => ({
         id: buyerId,

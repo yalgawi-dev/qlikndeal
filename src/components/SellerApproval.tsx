@@ -1,21 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Box, Truck, Shield, Sparkles, Star, AlertTriangle, CheckCircle, Smartphone } from "lucide-react";
-import { updateShipmentBySeller } from "@/app/actions";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Check, Clock, Edit2, Shield, Truck, Video, X, CheckCircle, Smartphone, Box, Sparkles, Star, AlertTriangle } from "lucide-react";
+import { updateShipmentBySeller, finalizeShipment } from "@/app/actions";
+import { useRouter } from "next/navigation";
 import { NegotiationPanel } from "./NegotiationPanel";
 
 interface SellerApprovalProps {
     shipmentId: string;
     details: any;
-    buyerName: string;
+    buyerName?: string;
 }
 
-export function SellerApproval({ shipmentId, details, buyerName }: SellerApprovalProps) {
-    // const router = useRouter(); // Removed useRouter
+export function SellerApproval({ shipmentId, details, buyerName = "הקונה" }: SellerApprovalProps) {
+    const router = useRouter();
+    const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    // Auto-Poll for updates (e.g., if buyer pays or updates something)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.refresh();
+        }, 5000); // Check every 5 seconds
+        return () => clearInterval(interval);
+    }, [router]);
     const [step, setStep] = useState(1);
 
     // Parse Flexible Data
@@ -95,6 +106,12 @@ export function SellerApproval({ shipmentId, details, buyerName }: SellerApprova
                     <div className="mt-3 bg-white/50 p-2 rounded-lg border border-blue-200 flex items-center gap-2">
                         <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                         <span className="text-xs font-bold text-blue-900">הקונה ביקש שיחת וידאו</span>
+                    </div>
+                )}
+                {flexibleData.shippingPayer && (
+                    <div className="mt-2 bg-white/50 p-2 rounded-lg border border-blue-200 flex items-center gap-2 text-xs font-bold text-blue-900">
+                        <Truck className="w-3 h-3" />
+                        תשלום משלוח: {flexibleData.shippingPayer === 'buyer' ? 'על הקונה' : 'על המוכר'}
                     </div>
                 )}
             </div>

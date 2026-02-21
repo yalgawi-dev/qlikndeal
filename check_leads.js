@@ -7,16 +7,27 @@ try {
     const envPath = path.resolve(__dirname, '.env');
     if (fs.existsSync(envPath)) {
         const envFile = fs.readFileSync(envPath, 'utf8');
-        envFile.split('\n').forEach(line => {
-            const parts = line.split('=');
-            // Simple parser for DATABASE_URL
-            if (parts.length >= 2 && parts[0].trim() === 'DATABASE_URL') {
-                // Join back if '=' was in the value, and clean quotes
-                const val = parts.slice(1).join('=').trim().replace(/"/g, '');
-                process.env.DATABASE_URL = val;
-                console.log('Loaded DATABASE_URL from .env: ' + val);
+        const lines = envFile.split('\n');
+        for (const line of lines) {
+            const trimmedLine = line.trim();
+            if (!trimmedLine || trimmedLine.startsWith('#')) continue;
+
+            const firstEq = trimmedLine.indexOf('=');
+            if (firstEq > -1) {
+                const key = trimmedLine.substring(0, firstEq).trim();
+                let val = trimmedLine.substring(firstEq + 1).trim();
+
+                // Remove quotes if present
+                if (val.startsWith('"') && val.endsWith('"')) {
+                    val = val.slice(1, -1);
+                }
+
+                if (key === 'DATABASE_URL') {
+                    process.env.DATABASE_URL = val;
+                    console.log('Loaded DATABASE_URL from .env successfully.');
+                }
             }
-        });
+        }
     } else {
         console.log('Warning: No .env file found at ' + envPath);
     }

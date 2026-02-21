@@ -21,30 +21,29 @@ const Dialog = ({
     return <>{children}</>;
 };
 
+import { Slot } from "@radix-ui/react-slot";
+
+// ... existing code ...
+
 const DialogTrigger = React.forwardRef<
     HTMLButtonElement,
     React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }
->(({ className, children, onClick, ...props }, ref) => {
-    // In a real radix implementation, this toggles context.
-    // Here in our simple version, we expect the parent (User) to handle the click on this trigger
-    // OR we just render the button. 
-    // NOTE: Our previous Dialog was fully controlled. To make this work like Radix/Shadcn, 
-    // we need context. Let's build a mini-context.
-
+>(({ className, children, onClick, asChild = false, ...props }, ref) => {
     const ctx = React.useContext(DialogContext);
+    const Comp = asChild ? Slot : "button";
 
     return (
-        <button
+        <Comp
             ref={ref}
             className={cn(className)}
-            onClick={(e) => {
+            onClick={(e: any) => {
                 ctx?.onOpenChange(true);
                 onClick?.(e);
             }}
             {...props}
         >
             {children}
-        </button>
+        </Comp>
     );
 });
 DialogTrigger.displayName = "DialogTrigger";

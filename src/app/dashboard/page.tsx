@@ -4,8 +4,9 @@ import { Navbar } from "@/components/Navbar";
 import { ShipmentForm } from "@/components/ShipmentForm";
 import { ReferralCard } from "@/components/ReferralCard";
 import { Button } from "@/components/ui/button";
-import { Package, Plus, Search, Filter, Inbox, Send, CheckCircle, Clock, Trash2, User } from "lucide-react";
+import { Package, Plus, Search, Filter, Inbox, Send, CheckCircle, Clock, Trash2, User, Store } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CameraCapture } from "@/components/mobile/CameraCapture";
 import { LocationRequest } from "@/components/mobile/LocationRequest";
 import { NotificationRequest } from "@/components/mobile/NotificationRequest";
@@ -57,16 +58,42 @@ const DEMO_SHIPMENTS = [
 
 export default function DashboardPage() {
     const { user, isLoaded } = useUser();
+    const router = useRouter();
+    const searchParams = useSearchParams(); // Added searchParams
     const [userMode, setUserMode] = useState<"seller" | "buyer">("seller");
     const [showForm, setShowForm] = useState(false);
+    const [activeTab, setActiveTab] = useState<"inbox" | "sent" | "active" | "history" | "recycle">("sent");
     const [shipments, setShipments] = useState<any[]>([]);
     const [dbImage, setDbImage] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<"inbox" | "sent" | "active" | "history" | "recycle">("sent");
     const [selectedShipment, setSelectedShipment] = useState<any>(null); // For Details Modal
     const [showPhoneOnboarding, setShowPhoneOnboarding] = useState(false);
     const [showProfileEditor, setShowProfileEditor] = useState(false); // New State
     const [userData, setUserData] = useState<any>(null); // Added userData state
+    const [initialShipmentData, setInitialShipmentData] = useState<any>(null); // Added initialShipmentData
+
+    // Check for "Magic Import" params
+    useEffect(() => {
+        const create = searchParams.get("create");
+        if (create === "true") {
+            const itemName = searchParams.get("itemName");
+            const value = searchParams.get("value");
+            const condition = searchParams.get("condition");
+            const description = searchParams.get("description");
+            const imagesStr = searchParams.get("images");
+
+            if (itemName) {
+                setInitialShipmentData({
+                    itemName,
+                    value,
+                    condition: condition === 'New' ? 'new' : condition === 'Like New' ? 'like-new' : 'used',
+                    description,
+                    images: imagesStr ? JSON.parse(imagesStr) : []
+                });
+                setShowForm(true);
+            }
+        }
+    }, [searchParams]);
 
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -181,14 +208,21 @@ export default function DashboardPage() {
                     phone: userData?.phone,
                     city: userData?.city,
                     street: userData?.street,
-                    houseNumber: userData?.houseNumber
+                    houseNumber: userData?.houseNumber,
+                    email: user?.primaryEmailAddress?.emailAddress
                 }}
             />
 
             {/* Modal for New Shipment */}
             <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogContent className="max-w-md w-full p-0 bg-transparent border-none shadow-none flex flex-col h-[600px] max-h-[80vh] scrollbar-hide">
-                    <ShipmentForm mode="dashboard" userMode={userMode} onCancel={() => setShowForm(false)} dbUser={userData} />
+                    <ShipmentForm
+                        mode="dashboard"
+                        userMode={userMode}
+                        onCancel={() => setShowForm(false)}
+                        dbUser={userData}
+                        initialData={initialShipmentData}
+                    />
                 </DialogContent>
             </Dialog>
 
@@ -256,6 +290,9 @@ export default function DashboardPage() {
                                     <span>🏆</span> Gold
                                 </span>
                             </div>
+                            <div className="text-xs text-muted-foreground mt-1 font-mono opacity-80 w-full text-center" dir="ltr">
+                                {user?.primaryEmailAddress?.emailAddress}
+                            </div>
                         </div>
                     </div>
 
@@ -288,6 +325,10 @@ export default function DashboardPage() {
                             <Button onClick={() => setShowForm(true)} className="rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform" size="sm">
                                 <Plus className="h-4 w-4 ml-2" />
                                 {userMode === 'seller' ? 'יצירת לינק' : 'בקשת משלוח'}
+                            </Button>
+                            <Button onClick={() => router.push('/dashboard/marketplace')} variant="outline" className="rounded-full mr-2 hover:bg-primary/10 transition-colors" size="sm">
+                                <Store className="h-4 w-4 ml-2" />
+                                מרקטפלייס
                             </Button>
                         </div>
 

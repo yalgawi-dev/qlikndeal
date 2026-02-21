@@ -25,3 +25,40 @@ ts-debug.log*
 # local env files
 .env*.local
 .env
+
+# local database (SQLite dev only — production uses Neon)
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db
+
+# uploaded files (stored externally in production)
+public/uploads/
+
+# test & debug scripts (not needed in production)
+test_*.ts
+test_*.js
+repro_*.ts
+repro_*.js
+debug-*.ts
+run_ai_test.ts
+demonstrate_ai_learning.ts
+fix_listing_form_v2.js
+inspect_images.js
+seed_leads.js
+check_db.js
+check_leads.js
+test-db.js
+reproduce_user_case.ts
+
+# local data
+/data/
+
+# IDE
+.vscode/
+*.code-workspace
+
+# agent notes (internal only)
+.agent/
+
+# TypeScript build info
+tsconfig.tsbuildinfo

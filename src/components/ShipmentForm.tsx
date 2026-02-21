@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Check, Package, MapPin, DollarSign, Calendar, Upload, Camera, CreditCard, Shield, User, Smartphone, X, Box, CheckCircle, Truck, Scale, Facebook, Twitter, Link as LinkIcon, Share2, MessageCircle, Sparkles, Star, AlertTriangle } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Package, MapPin, DollarSign, Calendar, Upload, Camera, CreditCard, Shield, User, Smartphone, X, Box, CheckCircle, Truck, Scale, Facebook, Twitter, Link as LinkIcon, Share2, MessageCircle, Sparkles, Star, AlertTriangle, Plus, Loader2, Image as ImageIcon } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { createShipment } from "@/app/actions";
 
@@ -9,31 +9,71 @@ interface ShipmentFormProps {
     userMode?: "seller" | "buyer";
     onCancel?: () => void;
     dbUser?: any; // Added dbUser prop
+    initialData?: {
+        itemName?: string;
+        value?: string;
+        condition?: string;
+        description?: string;
+    };
 }
 
-export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: ShipmentFormProps) {
+export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser, initialData }: ShipmentFormProps) {
+    // Force HMR update
     const { user } = useUser();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    // Media Upload State
+    const [imageUrlInput, setImageUrlInput] = useState("");
+    const [videoUrlInput, setVideoUrlInput] = useState("");
+    const [uploading, setUploading] = useState(false);
+
     // Filter defaults to prevent 'undefined' issues
     const [serviceType, setServiceType] = useState<"secure" | "delivery">("secure");
     const [includeCondition, setIncludeCondition] = useState(true);
 
     // Form State
-    const [details, setDetails] = useState({
+    const [details, setDetails] = useState<{
+        itemName: string;
+        value: string;
+        description: string;
+        packageSize: "small" | "medium" | "large" | "huge";
+        images: string[];
+        videos: string[];
+        condition: "new" | "like-new" | "used" | "damaged";
+        defects: string;
+        agreement: boolean;
+        requestVideoCall: boolean;
+        dealType: 'negotiation' | 'closed';
+    }>({
         itemName: "",
         value: "",
         description: "",
-        packageSize: "medium" as "small" | "medium" | "large" | "huge",
-        images: [] as number[], // Keep mainly for types, not used in UI currently
-        condition: "used" as "new" | "like-new" | "used" | "damaged",
+        packageSize: "medium",
+        images: [],
+        videos: [],
+        condition: "used",
         defects: "",
         agreement: false,
-        requestVideoCall: false
+        requestVideoCall: false,
+        dealType: 'negotiation'
     });
+
+    // Effect to apply initial data
+    useEffect(() => {
+        if (initialData) {
+            setDetails(prev => ({
+                ...prev,
+                itemName: initialData.itemName || prev.itemName,
+                value: initialData.value || prev.value,
+                condition: (initialData.condition as any) || prev.condition,
+                description: initialData.description || prev.description,
+                images: initialData.images || prev.images // Added images
+            }));
+        }
+    }, [initialData]);
 
     const [sender, setSender] = useState({
         name: "", phone: "", city: "", street: "", number: "",
@@ -65,14 +105,14 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
         }
     }, [user, userMode, dbUser]);
 
-    // Logic: Hide condition report in delivery mode by default
+    // Logic: Hide condition report in delivery mode by default OR if Deal Type is Closed (simplified flow)
     useEffect(() => {
-        if (serviceType === "delivery" || userMode === "buyer") {
+        if (serviceType === "delivery" || userMode === "buyer" || details.dealType === 'closed') {
             setIncludeCondition(false);
         } else {
             setIncludeCondition(true);
         }
-    }, [serviceType, userMode]);
+    }, [serviceType, userMode, details.dealType]);
 
     const nextStep = () => setStep(s => s + 1);
     const prevStep = () => setStep(s => s - 1);
@@ -87,6 +127,60 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
         }
     };
 
+    const addImage = () => {
+        if (imageUrlInput) {
+            setDetails(prev => ({ ...prev, images: [...prev.images, imageUrlInput] }));
+            setImageUrlInput("");
+        }
+    };
+
+    const removeImage = (index: number) => {
+        setDetails(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
+    };
+
+    const addVideo = () => {
+        if (videoUrlInput) {
+            setDetails(prev => ({ ...prev, videos: [...(prev.videos || []), videoUrlInput] }));
+            setVideoUrlInput("");
+        }
+    };
+
+    const removeVideo = (index: number) => {
+        setDetails(prev => ({ ...prev, videos: (prev.videos || []).filter((_, i) => i !== index) }));
+    };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video') => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                if (type === 'image') {
+                    setDetails(prev => ({ ...prev, images: [...prev.images, data.url] }));
+                } else {
+                    setDetails(prev => ({ ...prev, videos: [...(prev.videos || []), data.url] }));
+                }
+            } else {
+                alert("Upload failed: " + data.error);
+            }
+        } catch (err) {
+            console.error("Upload error:", err);
+            alert("Upload failed");
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const handleCreateLink = async () => {
         setLoading(true);
 
@@ -98,10 +192,12 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
             packageSize: details.packageSize,
             condition: details.condition,
             defects: details.defects,
-            images: [],
+            images: details.images,
+            videos: details.videos,
             sender,
             receiver, // Add receiver to payload
             requestVideoCall: details.requestVideoCall, // Add video call request
+            dealType: details.dealType, // Add deal type
             userMode
         };
 
@@ -260,23 +356,82 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
             </div>
 
             {/* Scrollable Content Area - Flex Grow - Hidden Scrollbar */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-3 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
                 <form id="shipment-form" onSubmit={handleSubmit} className="h-full flex flex-col">
 
                     {step === 1 && (
-                        <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
-                            {/* Service Type - Segmented Control */}
-                            {/* Service Type - Segmented Control with Neon Active State */}
-                            <div className="bg-muted px-1 py-1 rounded-xl flex text-xs font-bold gap-1 mt-1">
-                                <button type="button" onClick={() => setServiceType("secure")} className={`flex-1 py-3 rounded-lg transition-all flex items-center justify-center gap-2 ${serviceType === "secure" ? "bg-background shadow-[0_0_15px_rgba(var(--primary),0.15)] text-primary ring-1 ring-primary/40 border border-primary/20" : "text-muted-foreground hover:text-foreground hover:bg-background/50"}`}>
-                                    <Shield className={`w-4 h-4 ${serviceType === "secure" ? "text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.8)]" : "grayscale"}`} />
-                                    <span className={serviceType === "secure" ? "drop-shadow-[0_0_5px_rgba(var(--primary),0.5)]" : ""}>עסקה בטוחה</span>
-                                </button>
-                                <button type="button" onClick={() => setServiceType("delivery")} className={`flex-1 py-3 rounded-lg transition-all flex items-center justify-center gap-2 ${serviceType === "delivery" ? "bg-background shadow-[0_0_15px_rgba(59,130,246,0.15)] text-blue-500 ring-1 ring-blue-500/40 border border-blue-500/20" : "text-muted-foreground hover:text-foreground hover:bg-background/50"}`}>
-                                    <Truck className={`w-4 h-4 ${serviceType === "delivery" ? "text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" : "grayscale"}`} />
-                                    <span className={serviceType === "delivery" ? "drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]" : ""}>משלוח בלבד</span>
+                        <div className="space-y-3 animate-in fade-in zoom-in-95 duration-200">
+                            <div className="bg-muted/40 p-3 rounded-2xl border border-border/60 shadow-inner mb-3">
+                                <label className="text-xs font-bold text-foreground px-1 mb-2 flex items-center gap-1.5">
+                                    <span className="w-5 h-5 rounded-full bg-primary flex items-center justify-center text-[10px] text-white font-bold shadow-md shadow-primary/30">1</span>
+                                    בחר סוג עסקה
+                                </label>
+
+                                <div className="grid grid-cols-2 gap-3 h-20"> {/* Fixed height to keep it compact */}
+                                    <button
+                                        type="button"
+                                        onClick={() => setDetails({ ...details, dealType: 'negotiation' })}
+                                        className={`relative overflow-hidden rounded-xl px-2 flex flex-row items-center justify-start gap-3 transition-all duration-300 group ${details.dealType === 'negotiation'
+                                            ? 'bg-gradient-to-r from-primary/20 to-primary/5 border border-primary shadow-[0_0_15px_rgba(var(--primary),0.15)] ring-1 ring-primary/20'
+                                            : 'bg-background border border-transparent hover:border-primary/20 hover:bg-muted/50 grayscale opacity-80 hover:grayscale-0 hover:opacity-100'}`}
+                                    >
+                                        <div className={`p-2 rounded-full shrink-0 transition-all duration-300 ${details.dealType === 'negotiation' ? 'bg-primary text-white shadow-lg shadow-primary/40' : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'}`}>
+                                            <Scale className="w-4 h-4" />
+                                        </div>
+                                        <div className="text-right flex-1 min-w-0">
+                                            <span className={`block font-black text-sm truncate ${details.dealType === 'negotiation' ? 'text-primary drop-shadow-sm' : 'text-muted-foreground group-hover:text-foreground'}`}>משא ומתן</span>
+                                            <span className="block text-[9px] font-medium text-muted-foreground leading-tight truncate">אישור לפני תשלום</span>
+                                        </div>
+                                        {/* Status Dot */}
+                                        {details.dealType === 'negotiation' && (
+                                            <span className="absolute top-2 left-2 w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_5px_rgba(var(--primary),0.8)]" />
+                                        )}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setDetails({ ...details, dealType: 'closed' })}
+                                        className={`relative overflow-hidden rounded-xl px-2 flex flex-row items-center justify-start gap-3 transition-all duration-300 group ${details.dealType === 'closed'
+                                            ? 'bg-gradient-to-r from-blue-500/20 to-blue-500/5 border border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/20'
+                                            : 'bg-background border border-transparent hover:border-blue-500/20 hover:bg-muted/50 grayscale opacity-80 hover:grayscale-0 hover:opacity-100'}`}
+                                    >
+                                        <div className={`p-2 rounded-full shrink-0 transition-all duration-300 ${details.dealType === 'closed' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/40' : 'bg-muted text-muted-foreground group-hover:bg-blue-500/10 group-hover:text-blue-500'}`}>
+                                            <CheckCircle className="w-4 h-4" />
+                                        </div>
+                                        <div className="text-right flex-1 min-w-0">
+                                            <span className={`block font-black text-sm truncate ${details.dealType === 'closed' ? 'text-blue-500 drop-shadow-sm' : 'text-muted-foreground group-hover:text-foreground'}`}>עסקה סגורה</span>
+                                            <span className="block text-[9px] font-medium text-muted-foreground leading-tight truncate">תשלום מידי וסופי</span>
+                                        </div>
+                                        {/* Status Dot */}
+                                        {details.dealType === 'closed' && (
+                                            <span className="absolute top-2 left-2 w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_5px_rgba(59,130,246,0.8)]" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Service Type - Hidden by default (Defaults to Secure) to reduce clutter */}
+                            <div className="flex justify-end mb-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setServiceType(prev => prev === "secure" ? "delivery" : "secure")}
+                                    className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 opacity-70 hover:opacity-100"
+                                >
+                                    {serviceType === "secure" ? (
+                                        <><span>מעדיף משלוח בלבד ללא הגנת תשלום?</span><Truck className="w-3 h-3" /></>
+                                    ) : (
+                                        <><span>חזור לעסקה בטוחה (מומלץ)</span><Shield className="w-3 h-3 text-primary" /></>
+                                    )}
                                 </button>
                             </div>
+
+                            {/* Visual Indicator for Delivery Only Mode */}
+                            {serviceType === "delivery" && (
+                                <div className="bg-blue-50 text-blue-600 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-2 mb-3 border border-blue-200">
+                                    <Truck className="w-4 h-4" />
+                                    מצב משלוח בלבד (ללא תשלום מאובטח)
+                                </div>
+                            )}
 
                             {/* Item & Price Row */}
                             <div className="grid grid-cols-[1.2fr_1fr] gap-3">
@@ -295,9 +450,82 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
                                 </div>
                             </div>
 
-                            {/* Package Size - Formatted with LARGER TEXT - SELLER ONLY */}
-                            {userMode === "seller" && (
-                                <div className="space-y-1.5">
+                            {/* Image Upload Section */}
+                            {/* Image Upload Section */}
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-bold text-muted-foreground">תמונות (העלאה או קישור)</label>
+                                <div className="flex gap-2 items-center overflow-x-auto pb-2">
+                                    <input
+                                        value={imageUrlInput}
+                                        onChange={e => setImageUrlInput(e.target.value)}
+                                        placeholder="הדבק קישור לתמונה (URL)"
+                                        className="h-9 px-2.5 rounded-lg border text-xs bg-background min-w-[150px] focus:ring-1 focus:ring-primary"
+                                    />
+                                    <Button type="button" onClick={addImage} size="icon" className="shrink-0 h-9 w-9 bg-primary/10 hover:bg-primary/20 text-primary">
+                                        <Plus className="w-4 h-4" />
+                                    </Button>
+
+                                    <div className="relative">
+                                        <label className={`flex-shrink-0 w-9 h-9 rounded-lg border-2 border-dashed border-primary/30 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 transition-colors ${uploading ? 'opacity-50' : ''}`}>
+                                            {uploading ? <Loader2 className="w-4 h-4 text-primary animate-spin" /> : <Camera className="w-4 h-4 text-primary" />}
+                                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, 'image')} disabled={uploading} />
+                                        </label>
+                                    </div>
+
+                                    {details.images.map((img, i) => (
+                                        <div key={i} className="relative flex-shrink-0 w-9 h-9 rounded-lg overflow-hidden border border-border group">
+                                            <img src={img} alt={`Preview ${i}`} className="w-full h-full object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeImage(i)}
+                                                className="absolute top-0.5 right-0.5 p-0.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <X className="w-2 h-2" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Video Upload Section */}
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-bold text-muted-foreground">סרטונים (העלאה או קישור)</label>
+                                <div className="flex gap-2 items-center overflow-x-auto pb-2">
+                                    <input
+                                        value={videoUrlInput}
+                                        onChange={e => setVideoUrlInput(e.target.value)}
+                                        placeholder="הדבק קישור לסרטון (URL)"
+                                        className="h-9 px-2.5 rounded-lg border text-xs bg-background min-w-[150px] focus:ring-1 focus:ring-primary"
+                                    />
+                                    <Button type="button" onClick={addVideo} size="icon" className="shrink-0 h-9 w-9 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500">
+                                        <Plus className="w-4 h-4" />
+                                    </Button>
+
+                                    <div className="relative">
+                                        <label className={`flex-shrink-0 w-9 h-9 rounded-lg border-2 border-dashed border-blue-500/30 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-500/5 transition-colors ${uploading ? 'opacity-50' : ''}`}>
+                                            {uploading ? <Loader2 className="w-4 h-4 text-blue-500 animate-spin" /> : <span className="text-[8px] font-bold text-blue-500">MP4</span>}
+                                            <input type="file" accept="video/*" className="hidden" onChange={(e) => handleFileUpload(e, 'video')} disabled={uploading} />
+                                        </label>
+                                    </div>
+
+                                    {(details.videos || []).map((vid, i) => (
+                                        <div key={i} className="relative flex-shrink-0 w-16 h-9 rounded-lg overflow-hidden border border-border group bg-black">
+                                            <video src={vid} className="w-full h-full object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeVideo(i)}
+                                                className="absolute top-0.5 right-0.5 p-0.5 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <X className="w-2 h-2" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Package Size - Formatted with LARGER TEXT - SELLER ONLY - HIDDEN IN NEGOTIATION */}
+                            {userMode === "seller" && details.dealType === 'closed' && (
+                                <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
                                     <label className="text-xs font-bold text-muted-foreground">גודל חבילה</label>
                                     <div className="grid grid-cols-4 gap-2">
                                         {[
@@ -358,10 +586,10 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser }: Sh
                                                         key={cond.id}
                                                         type="button"
                                                         onClick={() => setDetails({ ...details, condition: cond.id as any })}
-                                                        className={`flex-1 py-3 flex flex-col items-center gap-1.5 rounded-lg text-[10px] font-bold border transition-all ${details.condition === cond.id ? 'bg-background border-primary shadow-[0_0_15px_rgba(var(--primary),0.15)] ring-1 ring-primary/30 scale-[1.05]' : 'bg-background/50 border-border hover:bg-background hover:border-primary/50'}`}
+                                                        className={`flex-1 py-3 flex flex-col items-center gap-1.5 rounded-lg text-[10px] font-bold border transition-all ${details.condition === cond.id ? 'bg-primary/10 border-primary text-primary shadow-sm scale-[1.02] ring-1 ring-primary/20' : 'bg-card border-border hover:bg-accent hover:border-accent-foreground/20'}`}
                                                     >
                                                         <div className={details.condition === cond.id ? 'drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]' : ''}>{cond.icon}</div>
-                                                        <span className={details.condition === cond.id ? 'text-primary drop-shadow-[0_0_5px_rgba(var(--primary),0.4)]' : 'text-muted-foreground'}>{cond.label}</span>
+                                                        <span className={details.condition === cond.id ? 'font-black drop-shadow-[0_0_5px_rgba(var(--primary),0.2)]' : 'text-muted-foreground'}>{cond.label}</span>
                                                     </button>
                                                 ))}
                                             </div>

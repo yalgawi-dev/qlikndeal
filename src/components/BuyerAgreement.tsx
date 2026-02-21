@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, CheckCircle, Lock, Truck, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Lock, Truck, Clock, Video } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 import { NegotiationPanel } from "./NegotiationPanel";
+import { finalizeShipment } from "@/app/actions";
+import { createServiceRequest } from "@/app/actions/service-provider";
 
 import { useUser } from "@clerk/nextjs";
 
@@ -27,7 +32,10 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
         phone: "",
         city: "",
         street: "",
+        needsDelivery: false
     });
+    const [payer, setPayer] = useState<'buyer' | 'seller'>('buyer'); // Default to buyer pays
+
 
     // Negotiation Logic
     let flexibleData: any = {};
@@ -44,17 +52,52 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
 
     const handleFinalize = async () => {
         setLoading(true);
-        // TODO: Call server action finalizeShipment
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setLoading(false);
-        // Show success / redirect
-        alert("העסקה הושלמה! (לוגיקה בבנייה)");
+        try {
+            // 1. Finalize shipment (Payment/Order)
+            const res = await finalizeShipment(shipmentId, {
+                ...guestDetails,
+                // Remove non-standard fields if finalizeShipment is strict, or assume it handles extras gracefully
+            }, payer);
+
+            if (res.success) {
+                // 2. If delivery requested, create Service Request
+                if (guestDetails.needsDelivery) {
+                    await createServiceRequest(
+                        shipmentId,
+                        `הובלה עבור ${details.itemName} (מ- ${guestDetails.city} ל- יעד המוכר)`,
+                        { pickup: "כתובת מוכר (TBD)", dropoff: `${guestDetails.street}, ${guestDetails.city}` }
+                    );
+                }
+
+                setStep(3);
+            } else {
+                alert("שגיאה: " + res.error);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("שגיאה בביצוע ההזמנה");
+        } finally {
+            setLoading(false);
+        }
     };
 
     // Check if user is logged in but missing phone
     const isGuestUser = isLoaded && !user;
     const isMissingPhone = isLoaded && !!user && (!user.phoneNumbers || user.phoneNumbers.length === 0);
     const needsIdentification = isGuestUser || isMissingPhone;
+
+    // Auto-Polling for Seller Approval (every 3 seconds)
+    // MOVED TO TOP LEVEL - Run always, but logic inside might depend on state if needed. 
+    // Actually, we only want this to run when waiting for seller.
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isPriceAgreed && !isSellerFinalized) {
+            interval = setInterval(() => {
+                window.location.reload(); // Simple reload to check status
+            }, 3000);
+        }
+        return () => clearInterval(interval);
+    }, [isPriceAgreed, isSellerFinalized]);
 
     if (!isPriceAgreed) {
         return (
@@ -70,20 +113,15 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
 
     if (isPriceAgreed && !isSellerFinalized) {
         return (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center animate-in fade-in">
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center animate-pulse">
                 <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-600">
-                    <Clock className="w-8 h-8" />
+                    <Clock className="w-8 h-8 animate-spin-slow" />
                 </div>
-                <h3 className="font-bold text-lg text-amber-900 mb-2">המחיר סוכם! ממתין למוכר</h3>
-                <p className="text-amber-800 text-sm">
-                    הגעתם להסכמה על המחיר.<br />
-                    כעת המוכר צריך למלא את פרטי החבילה והמצב כדי שתוכל להתקדם לתשלום.
+                <h3 className="font-bold text-lg text-amber-900 mb-2">ממתין לאישור המוכר...</h3>
+                <p className="text-amber-800 text-sm mb-4">
+                    המחיר סוכם! כעת המוכר מזין את פרטי החבילה הסופיים.<br />
+                    העמוד יתעדכן אוטומטית ברגע שהמוכר יסיים.
                 </p>
-                <div className="mt-4">
-                    <Button variant="outline" onClick={() => window.location.reload()}>
-                        בדוק אם המוכר סיים
-                    </Button>
-                </div>
             </div>
         );
     }
@@ -96,11 +134,11 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
                 size="lg"
                 className="w-full text-lg h-12 font-bold shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all"
             >
-                אני מאשר ורוצה להמשיך <ArrowLeft className="mr-2 h-5 w-5" />
+                {"אני מאשר ורוצה להמשיך"} <ArrowLeft className="mr-2 h-5 w-5" />
             </Button>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle className="text-center text-xl">
                             {step === 1 ? "פרטים למשלוח" : "סיום והזמנה"}
@@ -109,103 +147,118 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
 
                     {step === 1 && (
                         <div className="grid gap-4 py-4">
-                            <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800 flex gap-2 items-start">
-                                <Truck className="w-4 h-4 mt-1 shrink-0" />
-                                <div>
-                                    הכנס את הכתובת אליה תרצה ש{sellerName} ישלח את המוצר.
-                                    <span className="block font-bold mt-1 text-xs opacity-80">אין צורך להירשם לאפליקציה בשלב זה.</span>
-                                </div>
-                            </div>
+                            {!user && (
+                                <>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="fullName" className="text-right">שם מלא</Label>
+                                        <Input
+                                            id="fullName"
+                                            name="fullName"
+                                            value={guestDetails.fullName}
+                                            onChange={handleInputChange}
+                                            className="text-right"
+                                            placeholder="ישראל ישראלי"
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="phone" className="text-right">טלפון</Label>
+                                        <Input
+                                            id="phone"
+                                            name="phone"
+                                            value={guestDetails.phone}
+                                            onChange={handleInputChange}
+                                            className="text-right"
+                                            placeholder="050-0000000"
+                                        />
+                                    </div>
+                                </>
+                            )}
 
                             <div className="grid gap-2">
-                                <label className="text-sm font-medium">שם מלא</label>
-                                <input
-                                    name="fullName"
-                                    value={guestDetails.fullName}
+                                <Label htmlFor="city" className="text-right">עיר</Label>
+                                <Input
+                                    id="city"
+                                    name="city"
+                                    value={guestDetails.city}
                                     onChange={handleInputChange}
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    placeholder="ישראל ישראלי"
+                                    className="text-right"
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <label className="text-sm font-medium">טלפון (לעדכוני משלוח)</label>
-                                <input
-                                    name="phone"
-                                    value={guestDetails.phone}
+                                <Label htmlFor="street" className="text-right">רחוב ומספר</Label>
+                                <Input
+                                    id="street"
+                                    name="street"
+                                    value={guestDetails.street}
                                     onChange={handleInputChange}
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    placeholder="050-1234567"
+                                    className="text-right"
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                <div className="grid gap-2">
-                                    <label className="text-sm font-medium">עיר</label>
-                                    <input
-                                        name="city"
-                                        value={guestDetails.city}
-                                        onChange={handleInputChange}
-                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                        placeholder="תל אביב"
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <label className="text-sm font-medium">רחוב ומספר</label>
-                                    <input
-                                        name="street"
-                                        value={guestDetails.street}
-                                        onChange={handleInputChange}
-                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                        placeholder="דיזנגוף 10"
-                                    />
-                                </div>
+
+                            <div className="flex items-center justify-between space-x-2 border p-3 rounded-lg reverse-row">
+                                <Label htmlFor="delivery-mode" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    אני צריך הובלה לפריט זה
+                                </Label>
+                                <Switch
+                                    id="delivery-mode"
+                                    checked={guestDetails.needsDelivery}
+                                    onCheckedChange={(checked) => setGuestDetails(prev => ({ ...prev, needsDelivery: checked }))}
+                                />
                             </div>
 
                             <Button onClick={() => setStep(2)} className="w-full mt-4">
-                                המשך לתשלום <ArrowLeft className="mr-2 h-4 w-4" />
+                                המשך <ArrowLeft className="mr-2 h-4 w-4" />
                             </Button>
                         </div>
                     )}
 
                     {step === 2 && (
-                        <div className="grid gap-4 py-4 text-center">
-                            <div className="flex flex-col items-center justify-center py-6 gap-3">
-                                <div className="h-16 w-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-                                    <Lock className="w-8 h-8" />
-                                </div>
-                                <h3 className="font-bold text-lg">תשלום מאובטח</h3>
-                                <p className="text-muted-foreground text-sm max-w-[80%]">
-                                    הכסף מוחזק בנאמנות עד שתאשר שהמוצר הגיע ותואם את התיאור.
-                                </p>
+                        <div className="text-center space-y-4">
+                            <div className="bg-green-100 text-green-800 p-4 rounded-lg">
+                                <h4 className="font-bold">סיכום הזמנה</h4>
+                                <p>פריט: {details.itemName}</p>
+                                <p>מחיר: ₪{details.value}</p>
+                                {guestDetails.needsDelivery && <p className="text-sm mt-2 text-green-700">+ בקשה להצעת מחיר להובלה</p>}
                             </div>
+
+                            <p className="text-sm text-gray-500">
+                                בלחיצה על &quot;אישור וסיום&quot;, העסקה תיסגר ופרטי הקשר יועברו למוכר.
+                            </p>
 
                             <Button
                                 onClick={handleFinalize}
                                 disabled={loading}
-                                className="w-full h-12 text-lg bg-green-600 hover:bg-green-700"
+                                className="w-full h-12 text-lg"
                             >
-                                {loading ? "מבצע הזמנה..." : "שלם והזמן שליח"}
+                                {loading ? "מעבד..." : "אישור וסיום עסקה"}
                             </Button>
-                            <Button variant="ghost" onClick={() => setStep(1)} disabled={loading}>
-                                חזור
+                            <Button
+                                variant="ghost"
+                                onClick={() => setStep(1)}
+                                disabled={loading}
+                                className="w-full"
+                            >
+                                חזרה
                             </Button>
                         </div>
                     )}
+
                     {step === 3 && (
-                        <div className="grid gap-4 py-8 text-center animate-in fade-in zoom-in duration-300">
-                            <div className="mx-auto h-20 w-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-2">
+                        <div className="text-center py-6 space-y-4">
+                            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4">
                                 <CheckCircle className="w-10 h-10" />
                             </div>
-                            <h3 className="font-bold text-xl">ההזמנה התקבלה בהצלחה!</h3>
-                            <p className="text-muted-foreground text-sm px-4">
-                                פרטי המשלוח נשלחו ל-{sellerName}.<br />
-                                שליח יצור איתך קשר בטלפון שהזנת ({guestDetails.phone}) לתיאום המסירה.
+                            <h3 className="text-2xl font-bold text-green-700">העסקה הושלמה בהצלחה!</h3>
+                            <p className="text-gray-600">
+                                פרטי המוכר נשלחו אליך בוואטסאפ/סמס.<br />
+                                {guestDetails.needsDelivery && "בקשת ההובלה שלך נקלטה ונשלחה למובילים באזור."}
                             </p>
-
-                            <Button onClick={() => setIsOpen(false)} className="mt-4">
-                                סגור
+                            <Button onClick={() => window.location.reload()} className="mt-4">
+                                סגור ורענן
                             </Button>
                         </div>
                     )}
+
                 </DialogContent>
             </Dialog>
         </>

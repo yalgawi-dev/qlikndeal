@@ -86,6 +86,10 @@ export function ProfileEditor({ isOpen, onClose, initialData }: ProfileEditorPro
                     </div>
                 ) : (
                     <div className="space-y-4 py-4">
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold text-muted-foreground">אימייל (לא ניתן לשינוי)</label>
+                            <Input value={initialData?.email || ""} disabled className="h-9 bg-muted/50" dir="ltr" />
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                                 <label className="text-[10px] font-bold text-muted-foreground">שם פרטי</label>

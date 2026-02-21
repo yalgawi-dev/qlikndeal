@@ -9,6 +9,8 @@ import { BuyerAgreement } from "@/components/BuyerAgreement";
 import { SellerApproval } from "@/components/SellerApproval";
 import { SellerOffersDashboard } from "@/components/SellerOffersDashboard";
 import { currentUser } from "@clerk/nextjs/server";
+import { StatusStepper } from "@/components/StatusStepper";
+import { LastSeenUpdater } from "@/components/LastSeenUpdater";
 
 export default async function ShipmentLinkPage({ params, searchParams }: { params: { shortId: string }, searchParams: { buyerId?: string } }) {
     const { success, shipment, error } = await getShipmentByShortId(params.shortId);
@@ -127,7 +129,12 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <Package className="w-12 h-12 mb-2 opacity-50" />
+                                <div className="flex flex-col items-center justify-center opacity-40">
+                                    <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-2">
+                                        <Package className="w-10 h-10 text-gray-400" />
+                                    </div>
+                                    <span className="text-xs font-bold text-gray-400">אין תמונה</span>
+                                </div>
                             )}
                         </div>
 
@@ -173,16 +180,54 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
     // For Multi-Buyer, we probably need a 'Winner' field.
     // For now, let's assume if status is 'SELLER_APPROVED' and buyerId matches, it's done.
 
+
+    // Determine Stepper State
+    const dealType = flexibleData.dealType || 'negotiation';
+    const negotiationStatus = flexibleData.negotiationStatus || 'active';
+    const isCancelled = shipment.status === 'CANCELLED';
+
+    let currentStep: 'negotiation' | 'payment' | 'shipping' | 'delivery' = 'negotiation';
+
+    if (dealType === 'closed') {
+        currentStep = 'payment'; // Skip negotiation
+    } else if (negotiationStatus === 'agreed' || shipment.status === 'AGREED' || shipment.status === 'SELLER_APPROVED') {
+        currentStep = 'payment';
+    }
+
+    if (shipment.status === 'PAID') currentStep = 'shipping';
+    if (shipment.status === 'DELIVERED') currentStep = 'delivery';
+
+
+    // Extract Last Seen Data
+    const buyerLastSeen = flexibleData.buyerLastSeen;
+    const sellerLastSeen = flexibleData.sellerLastSeen;
+
     return (
         <main className="min-h-screen bg-muted/20 flex flex-col items-center p-4 md:p-8">
+            {/* Auto-Update Last Seen Component (Client Side Logic Wrapper) */}
+            <LastSeenUpdater shipmentId={shipment.id} role={viewerIsSeller ? 'seller' : 'buyer'} />
+
             <div className="w-full max-w-2xl">
-                <div className="flex items-center justify-center gap-2 mb-8 opacity-80">
+                <div className="flex items-center justify-center gap-2 mb-6 opacity-80">
                     <ShieldCheck className="w-6 h-6 text-primary" />
                     <span className="font-bold text-lg">Qlikndeal Secure Transaction</span>
                 </div>
 
+                {/* Status Stepper */}
+                <div className="mb-6">
+                    <StatusStepper
+                        currentStep={currentStep}
+                        isCancelled={isCancelled}
+                        buyerLastSeen={buyerLastSeen}
+                        sellerLastSeen={sellerLastSeen}
+                    />
+                </div>
+
                 <Card className="overflow-hidden border-primary/20 shadow-lg">
-                    {/* Product Section */}
+                    {/* ... existing card content ... */}
+
+                    {/* ... existing code ... */}
+
                     <div className="relative h-48 w-full bg-gray-100 flex items-center justify-center">
                         {details.images && JSON.parse(details.images).length > 0 ? (
                             <img

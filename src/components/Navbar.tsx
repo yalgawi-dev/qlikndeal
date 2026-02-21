@@ -20,6 +20,11 @@ export function Navbar() {
                             צור לינק בטוח
                         </Button>
                     </Link>
+                    <Link href="/provider/register" className="hidden md:block">
+                        <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                            הצטרף כמקצוען
+                        </Button>
+                    </Link>
                     <SignedOut>
                         <SignInButton mode="modal">
                             <Button variant="default" size="sm">

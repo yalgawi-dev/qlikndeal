@@ -10,74 +10,182 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// SQLite does not support Enums, so we use Strings
-// ShipmentStatus: DRAFT, SHARED, BUYER_REVIEW, NEEDS_REVISION, AGREED, PAID, SHIPPED, DELIVERED
-// AiStatus: PENDING, PASSED, FLAGGED
+// Enums
+enum UserRole {
+  BUYER
+  SELLER
+  PROVIDER
+  ADMIN
+}
+
+enum ServiceType {
+  DELIVERY
+  MOVING
+  PACKING
+  OTHER
+}
+
+enum ServiceRequestStatus {
+  OPEN
+  ASSIGNED
+  COMPLETED
+  CANCELLED
+}
+
+enum ServiceBidStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum ShipmentStatus {
+  DRAFT
+  SHARED
+  BUYER_REVIEW
+  NEEDS_REVISION
+  AGREED
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum AiStatus {
+  PENDING
+  PASSED
+  FLAGGED
+}
 
 model User {
-  id        String   @id @default(uuid()) // Can map to Clerk ID if passed manually, or internal ID
-  clerkId   String?  @unique // Optional: Link to Clerk
-  email     String?  @unique
-  phone     String?
-  firstName String?
-  lastName  String?
-  imageUrl  String?
-  city      String?
-  street    String?
+  id          String  @id @default(uuid()) // Can map to Clerk ID if passed manually, or internal ID
+  clerkId     String? @unique // Optional: Link to Clerk
+  email       String? @unique
+  phone       String?
+  firstName   String?
+  lastName    String?
+  imageUrl    String?
+  city        String?
+  street      String?
   houseNumber String?
-  isGuest   Boolean  @default(false)
+  isGuest     Boolean @default(false)
+
+  roles UserRole[] @default([BUYER])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  shipmentsAsSeller Shipment[] @relation("SellerShipments")
-  shipmentsAsBuyer  Shipment[] @relation("BuyerShipments")
+  shipmentsAsSeller Shipment[]     @relation("SellerShipments")
+  shipmentsAsBuyer  Shipment[]     @relation("BuyerShipments")
+  buyerRequests     BuyerRequest[]
+
+  serviceProfile ServiceProviderProfile?
+
+  // Marketplace Listings
+  listings MarketplaceListing[]
+}
+
+model ServiceProviderProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  serviceTypes ServiceType[]
+  displayName  String?
+  bio          String?
+  rating       Float         @default(0)
+  reviewCount  Int           @default(0) // Total number of reviews
+
+  isFixedPrice Boolean @default(false)
+  basePrice    Float?
+
+  // Relations
+  bids ServiceBid[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MarketplaceListing {
+  id       String @id @default(uuid())
+  sellerId String
+  seller   User   @relation(fields: [sellerId], references: [id])
+
+  title       String
+  description String
+  price       Float
+  condition   String // New, Used, etc.
+  images      String // JSON string of image URLs
+  videos      String? // JSON string of video URLs
+  category    String?
+  extraData   String?
+
+  status ListingStatus @default(ACTIVE)
+
+  // Relations
+  shipments Shipment[] // Deals created from this listing
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  ARCHIVED
 }
 
 model Shipment {
-  id        String   @id @default(uuid())
-  shortId   String   @unique // For the shareable link (e.g. "Ab3d9")
+  id      String @id @default(uuid())
+  shortId String @unique // For the shareable link (e.g. "Ab3d9")
 
-  sellerId  String
-  seller    User     @relation("SellerShipments", fields: [sellerId], references: [id])
+  sellerId String
+  seller   User   @relation("SellerShipments", fields: [sellerId], references: [id])
 
-  buyerId   String?
-  buyer     User?    @relation("BuyerShipments", fields: [buyerId], references: [id])
+  buyerId String?
+  buyer   User?   @relation("BuyerShipments", fields: [buyerId], references: [id])
 
-  status    String   @default("DRAFT") // Originally Enum ShipmentStatus
+  // Optional link to original Marketplace Listing
+  listingId String?
+  listing   MarketplaceListing? @relation(fields: [listingId], references: [id])
+
+  status ShipmentStatus @default(DRAFT)
 
   // Relations
   details   ShipmentDetails?
   agreement Agreement?
+
+  serviceRequest ServiceRequest?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ShipmentDetails {
-  id        String   @id @default(uuid())
-  shipmentId String  @unique
+  id         String   @id @default(uuid())
+  shipmentId String   @unique
   shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 
-  itemName     String
-  value        Float
+  itemName      String
+  value         Float
   itemCondition String // New, Used, etc.
 
-  sellerNotes  String? // Defects list
+  sellerNotes String? // Defects list
 
-  aiStatus     String   @default("PENDING") // Originally Enum AiStatus
+  aiStatus AiStatus @default(PENDING)
 
-  images       String   // SQLite doesn't support String[]. We will store this as a JSON string.
+  images String // SQLite doesn't support String[]. We will store this as a JSON string.
+  videos String? // JSON string of video URLs
 
-  flexibleData String?  // SQLite support for Json is basic, usually stored as String or we can try Json type if supported, but String is safer for simple SQLite setup.
+  flexibleData String? // Flexible JSON data stored as string
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Agreement {
-  id        String   @id @default(uuid())
-  shipmentId String  @unique
+  id         String   @id @default(uuid())
+  shipmentId String   @unique
   shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 
   buyerAgreedAt DateTime @default(now())
@@ -85,20 +193,71 @@ model Agreement {
   agreedVersion Int      @default(1)
 }
 
+model ServiceRequest {
+  id         String   @id @default(uuid())
+  shipmentId String   @unique
+  shipment   Shipment @relation(fields: [shipmentId], references: [id])
+
+  status ServiceRequestStatus @default(OPEN)
+  description String?
+
+  pickupLocation  String?
+  dropoffLocation String?
+
+  // Relations
+  bids ServiceBid[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ServiceBid {
+  id        String         @id @default(uuid())
+  requestId String
+  request   ServiceRequest @relation(fields: [requestId], references: [id])
+
+  providerId String
+  provider   ServiceProviderProfile @relation(fields: [providerId], references: [id])
+
+  amount   Float
+  currency String           @default("ILS")
+  status   ServiceBidStatus @default(PENDING)
+  note     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model ShadowLead {
-  id        String   @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   // Scraped Data
   sellerName String?
   sellerLink String?
   postText   String?
   sourceUrl  String?
-  images     String?  // JSON string of image URLs
+  images     String? // JSON string of image URLs
+  videos     String? // JSON string of video URLs
 
   // Metadata
-  capturedBy String?  // Admin ID (if we track who ran the bot)
-  status     String   @default("NEW") // NEW, CONTACTED, CONVERTED, IGNORED
+  capturedBy String? // Admin ID (if we track who ran the bot)
+  status     String  @default("NEW") // NEW, CONTACTED, CONVERTED, IGNORED
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BuyerRequest {
+  id String @id @default(uuid())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  query  String
+  status String @default("ACTIVE") // ACTIVE, FULFILLED, CANCELLED
+
+  extraData String? // JSON string for dynamic fields (e.g. { "mileage": 50000, "storage": "128GB" })
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
