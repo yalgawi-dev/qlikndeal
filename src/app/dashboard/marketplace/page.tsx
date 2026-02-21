@@ -19,7 +19,9 @@ export default function MarketplacePage() {
     const [showManualForm, setShowManualForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const { user } = useUser();
-    const isAdmin = user?.primaryEmailAddress?.emailAddress === "yalgawi@gmail.com";
+    const isAdmin = ["yalgawi@gmail.com", "darohadd@walla.com"].includes(
+        user?.primaryEmailAddress?.emailAddress || ""
+    );
 
     const fetchListings = async () => {
         setLoading(true);
