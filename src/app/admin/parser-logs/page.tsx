@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, CheckCircle, XCircle, AlertCircle, RefreshCw, Download } from "lucide-react";
+import { ChevronDown, ChevronUp, CheckCircle, XCircle, AlertCircle, RefreshCw, Download, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface ParserLog {
     id: string;
@@ -93,11 +94,20 @@ export default function AdminParserLogsPage() {
 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
-                            🧠 לוגי AI Parser
-                        </h1>
-                        <p className="text-gray-400 mt-1">ניתוח שגיאות ולמידה עצמית של מנגנון הפענוח</p>
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href="/dashboard/marketplace"
+                            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-gray-400 hover:text-white"
+                            title="חזרה ללוח בקרה"
+                        >
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                        <div>
+                            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
+                                🧠 לוגי AI Parser
+                            </h1>
+                            <p className="text-gray-400 mt-1">ניתוח שגיאות ולמידה עצמית של מנגנון הפענוח</p>
+                        </div>
                     </div>
                     <div className="flex gap-3">
                         <button onClick={fetchLogs} className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors">
