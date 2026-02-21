@@ -10,7 +10,9 @@ import { MessageSquare } from "lucide-react";
 export default function CreateListingPage() {
     const searchParams = useSearchParams();
 
-    const mode = searchParams.get("mode");
+    // Store mode in state so URL cleanup doesn't lose it
+    const [mode, setMode] = useState<string | null>(null);
+    const [isSmartMode, setIsSmartMode] = useState(false);
     const [initialSmartData, setInitialSmartData] = useState<any>(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [showNoteModal, setShowNoteModal] = useState(false);
@@ -30,8 +32,14 @@ export default function CreateListingPage() {
     };
 
     useEffect(() => {
-        console.log("CreateListingPage mounted, mode:", mode);
-        if (mode === "smart") {
+        // Capture mode ONCE before URL cleanup removes it
+        const m = searchParams.get("mode");
+        if (m) {
+            setMode(m);
+            setIsSmartMode(m === "smart");
+        }
+        console.log("CreateListingPage mounted, mode:", m);
+        if (m === "smart") {
             const draft = localStorage.getItem("smartListingDraft");
             console.log("Found draft in localStorage:", draft ? "Yes" : "No");
 
@@ -130,7 +138,7 @@ export default function CreateListingPage() {
             </div>
 
             {/* Floating note button — only in smart mode */}
-            {mode === "smart" && (
+            {isSmartMode && (
                 <button
                     onClick={() => setShowNoteModal(true)}
                     className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 text-sm font-medium backdrop-blur-md transition-all hover:scale-105 shadow-xl"
