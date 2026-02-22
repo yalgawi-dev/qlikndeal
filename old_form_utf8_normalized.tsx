@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 
 import { useState, useEffect, useRef } from "react";
@@ -17,25 +17,25 @@ import { Loader2, Plus, Image as ImageIcon, X, Sparkles, Link as LinkIcon, Edit3
 import Link from "next/link";
 
 const CATEGORY_MAP: Record<string, string> = {
-    "רכב": "Vehicles",
-    "נדלן": "Real Estate",
-    "טלפונים": "Phones",
-    "מחשבים": "Computers",
-    "אלקטרוניקה": "Electronics",
-    "ריהוט": "Furniture",
-    "מוצרי חשמל לבית": "Appliances",
-    "מוצרי חשמל": "Appliances",
-    "ביגוד ואופנה": "Fashion",
-    "ספורט ופנאי": "Sports",
-    "תינוקות וילדים": "Kids",
-    "חיות מחמד": "Pets",
-    "כלי עבודה ומוסך": "Tools",
-    "בריאות וקוסמטיקה": "Health",
-    "כלי נגינה": "Audio",
-    "תחביבים ואמנות": "Hobbies",
-    "ספרים ומדיה": "Books",
-    "בית וגינה": "HomeDecor",
-    "כללי": "General"
+    "╫¿╫¢╫ס": "Vehicles",
+    "╫á╫ף╫£╫ƒ": "Real Estate",
+    "╫ר╫£╫ñ╫ץ╫á╫ש╫¥": "Phones",
+    "╫₧╫ק╫⌐╫ס╫ש╫¥": "Computers",
+    "╫נ╫£╫º╫ר╫¿╫ץ╫á╫ש╫º╫פ": "Electronics",
+    "╫¿╫ש╫פ╫ץ╫ר": "Furniture",
+    "╫₧╫ץ╫ª╫¿╫ש ╫ק╫⌐╫₧╫£ ╫£╫ס╫ש╫¬": "Appliances",
+    "╫₧╫ץ╫ª╫¿╫ש ╫ק╫⌐╫₧╫£": "Appliances",
+    "╫ס╫ש╫ע╫ץ╫ף ╫ץ╫נ╫ץ╫ñ╫á╫פ": "Fashion",
+    "╫í╫ñ╫ץ╫¿╫ר ╫ץ╫ñ╫á╫נ╫ש": "Sports",
+    "╫¬╫ש╫á╫ץ╫º╫ץ╫¬ ╫ץ╫ש╫£╫ף╫ש╫¥": "Kids",
+    "╫ק╫ש╫ץ╫¬ ╫₧╫ק╫₧╫ף": "Pets",
+    "╫¢╫£╫ש ╫ó╫ס╫ץ╫ף╫פ ╫ץ╫₧╫ץ╫í╫ת": "Tools",
+    "╫ס╫¿╫ש╫נ╫ץ╫¬ ╫ץ╫º╫ץ╫í╫₧╫ר╫ש╫º╫פ": "Health",
+    "╫¢╫£╫ש ╫á╫ע╫ש╫á╫פ": "Audio",
+    "╫¬╫ק╫ס╫ש╫ס╫ש╫¥ ╫ץ╫נ╫₧╫á╫ץ╫¬": "Hobbies",
+    "╫í╫ñ╫¿╫ש╫¥ ╫ץ╫₧╫ף╫ש╫פ": "Books",
+    "╫ס╫ש╫¬ ╫ץ╫ע╫ש╫á╫פ": "HomeDecor",
+    "╫¢╫£╫£╫ש": "General"
 };
 
 const CONDITION_MAP: Record<string, string> = {
@@ -50,17 +50,17 @@ const CONDITION_MAP: Record<string, string> = {
     "Used": "Used",
     "Refurbished": "Refurbished",
     // Hebrew fallbacks
-    "חדש": "New",
-    "כמו חדש": "Like New",
-    "משומש": "Used",
-    "מחודש": "Refurbished",
-    "לחלקים": "Refurbished"
+    "╫ק╫ף╫⌐": "New",
+    "╫¢╫₧╫ץ ╫ק╫ף╫⌐": "Like New",
+    "╫₧╫⌐╫ץ╫₧╫⌐": "Used",
+    "╫₧╫ק╫ץ╫ף╫⌐": "Refurbished",
+    "╫£╫ק╫£╫º╫ש╫¥": "Refurbished"
 };
 
 // --- Vehicle Field Helpers ---
-const isKmKey = (k: string) => /קילומט|ק"מ|קמ|km/i.test(k);
-const isYearKey = (k: string) => /שנת|שנה|model|year/i.test(k);
-const isHandKey = (k: string) => /יד|hand/i.test(k);
+const isKmKey = (k: string) => /╫º╫ש╫£╫ץ╫₧╫ר|╫º"╫₧|╫º╫₧|km/i.test(k);
+const isYearKey = (k: string) => /╫⌐╫á╫¬|╫⌐╫á╫פ|model|year/i.test(k);
+const isHandKey = (k: string) => /╫ש╫ף|hand/i.test(k);
 
 
 export function ListingForm({ onComplete, onCancel, initialData, initialMagicText, isEditing, listingId }: {
@@ -101,11 +101,11 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
         // 2. If 'attributes' array exists (from AI), merge it
         if (data?.attributes && Array.isArray(data.attributes)) {
-            // Separate Highlights ("דגשים")
-            const highlightsAttrs = data.attributes.filter((attr: any) => attr.key === "דגשים");
+            // Separate Highlights ("╫ף╫ע╫⌐╫ש╫¥")
+            const highlightsAttrs = data.attributes.filter((attr: any) => attr.key === "╫ף╫ע╫⌐╫ש╫¥");
             // Filter out highlights AND vehicle fields (year, hand, km) so they don't appear in extraData
             const otherAttrs = data.attributes.filter((attr: any) =>
-                attr.key !== "דגשים" &&
+                attr.key !== "╫ף╫ע╫⌐╫ש╫¥" &&
                 !isYearKey(attr.key) &&
                 !isHandKey(attr.key) &&
                 !isKmKey(attr.key)
@@ -195,14 +195,9 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
     const [aiKnowledge, setAiKnowledge] = useState<any>(null);
 
     // Tester fields
-    const [testerName, setTesterName] = useState(user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : "אורח");
+    const [testerName, setTesterName] = useState(user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : "╫נ╫ץ╫¿╫ק");
     const [testerNote, setTesterNote] = useState("");
-    const [isTestMode, setIsTestMode] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return !!initialMagicText || !!initialData?._logId || !!localStorage.getItem("currentParserLogId") || new URLSearchParams(window.location.search).get("mode") === "ai";
-        }
-        return false;
-    });
+    const [isTestMode, setIsTestMode] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -212,11 +207,11 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
     const submitTesterNote = async () => {
         const logId = localStorage.getItem("currentParserLogId");
         if (!logId) {
-            alert("לא נמצא תיעוד AI למודעה זו בסשן הנוכחי. נסה לבצע קריאת AI מחדש.");
+            alert("╫£╫נ ╫á╫₧╫ª╫נ ╫¬╫ש╫ó╫ץ╫ף AI ╫£╫₧╫ץ╫ף╫ó╫פ ╫צ╫ץ ╫ס╫í╫⌐╫ƒ ╫פ╫á╫ץ╫¢╫ק╫ש. ╫á╫í╫פ ╫£╫ס╫ª╫ó ╫º╫¿╫ש╫נ╫¬ AI ╫₧╫ק╫ף╫⌐.");
             return;
         }
         if (!testerNote.trim()) {
-            alert("אנא כתוב הערה לפני השמירה.");
+            alert("╫נ╫á╫נ ╫¢╫¬╫ץ╫ס ╫פ╫ó╫¿╫פ ╫£╫ñ╫á╫ש ╫פ╫⌐╫₧╫ש╫¿╫פ.");
             return;
         }
         try {
@@ -229,15 +224,15 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                     testerName
                 }),
             });
-            alert("ההערה נשמרה בהצלחה באדמין ✓");
+            alert("╫פ╫פ╫ó╫¿╫פ ╫á╫⌐╫₧╫¿╫פ ╫ס╫פ╫ª╫£╫ק╫פ ╫ס╫נ╫ף╫₧╫ש╫ƒ Γ£ף");
         } catch (error) {
             console.error(error);
-            alert("שגיאה בשמירת הערה.");
+            alert("╫⌐╫ע╫ש╫נ╫פ ╫ס╫⌐╫₧╫ש╫¿╫¬ ╫פ╫ó╫¿╫פ.");
         }
     };
 
     useEffect(() => {
-        if (user && (!testerName || testerName === "אורח")) {
+        if (user && (!testerName || testerName === "╫נ╫ץ╫¿╫ק")) {
             const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
             if (fullName) {
                 setTesterName(fullName);
@@ -320,7 +315,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
         if (res.success) {
             setShowPhoneUpdate(false);
         } else {
-            alert("שגיאה בעדכון הטלפון");
+            alert("╫⌐╫ע╫ש╫נ╫פ ╫ס╫ó╫ף╫¢╫ץ╫ƒ ╫פ╫ר╫£╫ñ╫ץ╫ƒ");
         }
     };
 
@@ -348,14 +343,14 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            setRecordingError("הדפדפן שלך לא תומך בהקלטת קול. נסה Chrome או Safari עדכני.");
+            setRecordingError("╫פ╫ף╫ñ╫ף╫ñ╫ƒ ╫⌐╫£╫ת ╫£╫נ ╫¬╫ץ╫₧╫ת ╫ס╫פ╫º╫£╫ר╫¬ ╫º╫ץ╫£. ╫á╫í╫פ Chrome ╫נ╫ץ Safari ╫ó╫ף╫¢╫á╫ש.");
             return;
         }
 
         const createAndStart = () => {
             const recognition = new SpeechRecognition();
             recognition.lang = "he-IL";
-            // iOS doesn't support continuous well — it auto-stops; we restart manually
+            // iOS doesn't support continuous well Γאפ it auto-stops; we restart manually
             recognition.continuous = false;
             recognition.interimResults = true;
             recognition.maxAlternatives = 1;
@@ -384,18 +379,18 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 if (event.error === "no-speech" || event.error === "aborted") return;
                 // Network errors on mobile are common
                 if (event.error === "network") {
-                    setRecordingError("שגיאת רשת. בדוק חיבור לאינטרנט.");
+                    setRecordingError("╫⌐╫ע╫ש╫נ╫¬ ╫¿╫⌐╫¬. ╫ס╫ף╫ץ╫º ╫ק╫ש╫ס╫ץ╫¿ ╫£╫נ╫ש╫á╫ר╫¿╫á╫ר.");
                     userStoppedRef.current = true;
                     setIsRecording(false);
                     return;
                 }
                 if (event.error === "not-allowed") {
-                    setRecordingError("אין הרשאה למיקרופון. אשר גישה בהגדרות הדפדפן.");
+                    setRecordingError("╫נ╫ש╫ƒ ╫פ╫¿╫⌐╫נ╫פ ╫£╫₧╫ש╫º╫¿╫ץ╫ñ╫ץ╫ƒ. ╫נ╫⌐╫¿ ╫ע╫ש╫⌐╫פ ╫ס╫פ╫ע╫ף╫¿╫ץ╫¬ ╫פ╫ף╫ñ╫ף╫ñ╫ƒ.");
                     userStoppedRef.current = true;
                     setIsRecording(false);
                     return;
                 }
-                setRecordingError("שגיאה: " + event.error);
+                setRecordingError("╫⌐╫ע╫ש╫נ╫פ: " + event.error);
             };
 
             recognition.onend = () => {
@@ -416,7 +411,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
             try {
                 recognition.start();
             } catch (e) {
-                // Already started — ignore
+                // Already started Γאפ ignore
             }
             return recognition;
         };
@@ -519,7 +514,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                     initialDataFromServer = res.data;
                     textToAnalyze = (res.data.title || "") + " \n " + (res.data.description || "");
                 } else {
-                    alert("לא הצלחנו לשאוב פרטים מהקישור הזה. נסה להעתיק את הטקסט ידנית.");
+                    alert("╫£╫נ ╫פ╫ª╫£╫ק╫á╫ץ ╫£╫⌐╫נ╫ץ╫ס ╫ñ╫¿╫ר╫ש╫¥ ╫₧╫פ╫º╫ש╫⌐╫ץ╫¿ ╫פ╫צ╫פ. ╫á╫í╫פ ╫£╫פ╫ó╫¬╫ש╫º ╫נ╫¬ ╫פ╫ר╫º╫í╫ר ╫ש╫ף╫á╫ש╫¬.");
                     setLoading(false);
                     return;
                 }
@@ -533,14 +528,14 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 alert(analysis.warning);
             }
 
-            // Extract highlights from attributes (key="דגשים")
+            // Extract highlights from attributes (key="╫ף╫ע╫⌐╫ש╫¥")
             const extractedHighlights = analysis.attributes
-                .filter(a => a.key === "דגשים")
+                .filter(a => a.key === "╫ף╫ע╫⌐╫ש╫¥")
                 .map(a => a.value);
 
             // Filter out highlights and now-native vehicle fields from attributes
             const filteredAttributes = analysis.attributes.filter(a =>
-                a.key !== "דגשים" &&
+                a.key !== "╫ף╫ע╫⌐╫ש╫¥" &&
                 !isYearKey(a.key) &&
                 !isHandKey(a.key) &&
                 !isKmKey(a.key)
@@ -550,7 +545,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
             const mappedCategory = CATEGORY_MAP[analysis.category] || "General";
             const mappedCondition = CONDITION_MAP[analysis.condition] || "Used";
 
-            const kmAttr = analysis.attributes.find(a => a.key.includes("קילומט") || a.key.includes("ק\"מ") || a.key === "קמ");
+            const kmAttr = analysis.attributes.find(a => a.key.includes("╫º╫ש╫£╫ץ╫₧╫ר") || a.key.includes("╫º\"╫₧") || a.key === "╫º╫₧");
             console.log("Kilometrage Debug:", {
                 allAttributes: analysis.attributes,
                 foundKmAttr: kmAttr,
@@ -619,7 +614,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         body: JSON.stringify({
                             originalText: textToAnalyze,
                             aiParsed: JSON.stringify(analysis),
-                            testerName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : 'אורח',
+                            testerName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : '╫נ╫ץ╫¿╫ק',
                             category: mappedCategory,
                             inputMode: mode
                         }),
@@ -631,7 +626,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
         } catch (error: any) {
             console.error("Magic parse failed:", error);
-            alert(`אירעה שגיאה בניתוח המודעה: ${error?.message || "שגיאה לא ידועה"}`);
+            alert(`╫נ╫ש╫¿╫ó╫פ ╫⌐╫ע╫ש╫נ╫פ ╫ס╫á╫ש╫¬╫ץ╫ק ╫פ╫₧╫ץ╫ף╫ó╫פ: ${error?.message || "╫⌐╫ע╫ש╫נ╫פ ╫£╫נ ╫ש╫ף╫ץ╫ó╫פ"}`);
         } finally {
             setLoading(false);
         }
@@ -705,26 +700,26 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
         // Add contact phone if present
         if (formData.contactPhone) {
-            extraDataObject["טלפון ליצירת קשר"] = formData.contactPhone;
+            extraDataObject["╫ר╫£╫ñ╫ץ╫ƒ ╫£╫ש╫ª╫ש╫¿╫¬ ╫º╫⌐╫¿"] = formData.contactPhone;
         }
 
         // Add highlights to extraData as a comma-separated string
         if (formData.highlights.length > 0) {
-            extraDataObject["דגשים"] = formData.highlights.join(", ");
+            extraDataObject["╫ף╫ע╫⌐╫ש╫¥"] = formData.highlights.join(", ");
         }
 
         // Add model if present
         if (formData.make) {
-            extraDataObject["יצרן"] = formData.make === "Other" ? customMake : formData.make;
+            extraDataObject["╫ש╫ª╫¿╫ƒ"] = formData.make === "Other" ? customMake : formData.make;
         }
         if (formData.model) {
-            extraDataObject["דגם"] = (formData.model === "Other" || formData.model === "OtherModel") ? customModel : formData.model;
+            extraDataObject["╫ף╫ע╫¥"] = (formData.model === "Other" || formData.model === "OtherModel") ? customModel : formData.model;
         }
 
         // Add vehicle specific fields if present
-        if (formData.year) extraDataObject["שנת ייצור"] = formData.year;
-        if (formData.hand) extraDataObject["יד"] = formData.hand;
-        if (formData.kilometrage) extraDataObject["קילומטראז'"] = formData.kilometrage;
+        if (formData.year) extraDataObject["╫⌐╫á╫¬ ╫ש╫ש╫ª╫ץ╫¿"] = formData.year;
+        if (formData.hand) extraDataObject["╫ש╫ף"] = formData.hand;
+        if (formData.kilometrage) extraDataObject["╫º╫ש╫£╫ץ╫₧╫ר╫¿╫נ╫צ'"] = formData.kilometrage;
 
         console.log("Submitting form data:", {
             title: formData.title,
@@ -768,7 +763,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         localStorage.removeItem("currentParserLogId");
                     }
                 }
-                alert("המודעה נשמרה בלוגי הבדיקה בהצלחה (לא פורסמה).");
+                alert("╫פ╫₧╫ץ╫ף╫ó╫פ ╫á╫⌐╫₧╫¿╫פ ╫ס╫£╫ץ╫ע╫ש ╫פ╫ס╫ף╫ש╫º╫פ ╫ס╫פ╫ª╫£╫ק╫פ (╫£╫נ ╫ñ╫ץ╫¿╫í╫₧╫פ).");
                 onComplete();
                 return;
             }
@@ -905,24 +900,24 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
     const getCategoryLabel = (cat: string) => {
         const map: Record<string, string> = {
-            "Vehicles": "רכב 🚗",
-            "Real Estate": "נדלן 🏠",
-            "Phones": "טלפונים 📱",
-            "Computers": "מחשבים 💻",
-            "Electronics": "אלקטרוניקה 📡",
-            "Furniture": "ריהוט 🛋️",
-            "Appliances": "מוצרי חשמל 🔌",
-            "Fashion": "אופנה וביגוד 👗",
-            "Sports": "ספורט ופנאי ⚽",
-            "Kids": "תינוקות וילדים 🧸",
-            "Pets": "חיות מחמד 🐾",
-            "Tools": "כלי עבודה 🔧",
-            "Health": "בריאות וקוסמטיקה 💊",
-            "Audio": "אודיו וסאונד 🔊",
-            "Hobbies": "תחביבים ואמנות 🎨",
-            "Books": "ספרים ומדיה 📚",
-            "HomeDecor": "עיצוב הבית 🖼️",
-            "General": "כללי וקשקושים 📦"
+            "Vehicles": "╫¿╫¢╫ס ≡ƒתק",
+            "Real Estate": "╫á╫ף╫£╫ƒ ≡ƒןá",
+            "Phones": "╫ר╫£╫ñ╫ץ╫á╫ש╫¥ ≡ƒף▒",
+            "Computers": "╫₧╫ק╫⌐╫ס╫ש╫¥ ≡ƒע╗",
+            "Electronics": "╫נ╫£╫º╫ר╫¿╫ץ╫á╫ש╫º╫פ ≡ƒףí",
+            "Furniture": "╫¿╫ש╫פ╫ץ╫ר ≡ƒ¢כ∩╕ן",
+            "Appliances": "╫₧╫ץ╫ª╫¿╫ש ╫ק╫⌐╫₧╫£ ≡ƒפל",
+            "Fashion": "╫נ╫ץ╫ñ╫á╫פ ╫ץ╫ס╫ש╫ע╫ץ╫ף ≡ƒסק",
+            "Sports": "╫í╫ñ╫ץ╫¿╫ר ╫ץ╫ñ╫á╫נ╫ש Γת╜",
+            "Kids": "╫¬╫ש╫á╫ץ╫º╫ץ╫¬ ╫ץ╫ש╫£╫ף╫ש╫¥ ≡ƒº╕",
+            "Pets": "╫ק╫ש╫ץ╫¬ ╫₧╫ק╫₧╫ף ≡ƒנ╛",
+            "Tools": "╫¢╫£╫ש ╫ó╫ס╫ץ╫ף╫פ ≡ƒפº",
+            "Health": "╫ס╫¿╫ש╫נ╫ץ╫¬ ╫ץ╫º╫ץ╫í╫₧╫ר╫ש╫º╫פ ≡ƒעך",
+            "Audio": "╫נ╫ץ╫ף╫ש╫ץ ╫ץ╫í╫נ╫ץ╫á╫ף ≡ƒפך",
+            "Hobbies": "╫¬╫ק╫ס╫ש╫ס╫ש╫¥ ╫ץ╫נ╫₧╫á╫ץ╫¬ ≡ƒמ¿",
+            "Books": "╫í╫ñ╫¿╫ש╫¥ ╫ץ╫₧╫ף╫ש╫פ ≡ƒףת",
+            "HomeDecor": "╫ó╫ש╫ª╫ץ╫ס ╫פ╫ס╫ש╫¬ ≡ƒצ╝∩╕ן",
+            "General": "╫¢╫£╫£╫ש ╫ץ╫º╫⌐╫º╫ץ╫⌐╫ש╫¥ ≡ƒףª"
         };
         return map[cat] || cat;
     };
@@ -934,7 +929,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
         return (
             <div className="space-y-6 py-4">
                 <div className="flex gap-2 justify-center">
-                    <Button variant="ghost" onClick={() => { stopRecording(); setMode('manual'); }} className="text-gray-400">חזור</Button>
+                    <Button variant="ghost" onClick={() => { stopRecording(); setMode('manual'); }} className="text-gray-400">╫ק╫צ╫ץ╫¿</Button>
                 </div>
 
                 {/* Recording UI */}
@@ -960,10 +955,10 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                     </div>
                     <div>
                         <h3 className="text-xl font-bold">
-                            {isRecording ? '🔴 מקליט... דברו!' : '🎙️ הקלטת קול'}
+                            {isRecording ? '≡ƒפ┤ ╫₧╫º╫£╫ש╫ר... ╫ף╫ס╫¿╫ץ!' : '≡ƒמש∩╕ן ╫פ╫º╫£╫ר╫¬ ╫º╫ץ╫£'}
                         </h3>
                         <p className="text-sm text-gray-400 mt-1">
-                            {isRecording ? 'לחצו שוב בסיום לעצור' : 'לחצו על המיקרופון כדי להתחיל'}
+                            {isRecording ? '╫£╫ק╫ª╫ץ ╫⌐╫ץ╫ס ╫ס╫í╫ש╫ץ╫¥ ╫£╫ó╫ª╫ץ╫¿' : '╫£╫ק╫ª╫ץ ╫ó╫£ ╫פ╫₧╫ש╫º╫¿╫ץ╫ñ╫ץ╫ƒ ╫¢╫ף╫ש ╫£╫פ╫¬╫ק╫ש╫£'}
                         </p>
                     </div>
                 </div>
@@ -971,7 +966,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {/* Live Transcript */}
                 {(displayText || interimText) && (
                     <div className="bg-gray-900 border border-gray-700 rounded-xl p-4 min-h-[80px] text-right">
-                        <p className="text-sm text-gray-400 mb-1">מה שנאמר:</p>
+                        <p className="text-sm text-gray-400 mb-1">╫₧╫פ ╫⌐╫á╫נ╫₧╫¿:</p>
                         <p className="text-white leading-relaxed">
                             {displayText}
                             {interimText && <span className="text-gray-500 italic">{interimText}</span>}
@@ -992,7 +987,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         disabled={loading}
                         className="w-full h-12 bg-purple-600 hover:bg-purple-700"
                     >
-                        {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> נתח את מה שאמרתי</span>}
+                        {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> ╫á╫¬╫ק ╫נ╫¬ ╫₧╫פ ╫⌐╫נ╫₧╫¿╫¬╫ש</span>}
                     </Button>
                 )}
             </div>
@@ -1003,7 +998,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
         return (
             <div className="space-y-6 py-4">
                 <div className="flex gap-2 justify-center">
-                    <Button variant="ghost" onClick={() => setMode('manual')} className="text-gray-400">חזור</Button>
+                    <Button variant="ghost" onClick={() => setMode('manual')} className="text-gray-400">╫ק╫צ╫ץ╫¿</Button>
                 </div>
 
                 <div className="text-center space-y-2">
@@ -1011,10 +1006,10 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         {mode === 'magic_link' ? <LinkIcon className="w-8 h-8" /> : <Edit3 className="w-8 h-8" />}
                     </div>
                     <h3 className="text-xl font-bold">
-                        {mode === 'magic_link' ? "הדבק קישור והמערכת תעבוד בשבילך" : "הדבק את הטקסט של המודעה"}
+                        {mode === 'magic_link' ? "╫פ╫ף╫ס╫º ╫º╫ש╫⌐╫ץ╫¿ ╫ץ╫פ╫₧╫ó╫¿╫¢╫¬ ╫¬╫ó╫ס╫ץ╫ף ╫ס╫⌐╫ס╫ש╫£╫ת" : "╫פ╫ף╫ס╫º ╫נ╫¬ ╫פ╫ר╫º╫í╫ר ╫⌐╫£ ╫פ╫₧╫ץ╫ף╫ó╫פ"}
                     </h3>
                     <p className="text-sm text-gray-400">
-                        המומחה שלנו ינתח את המודעה וימליץ על הפרטים החשובים לקונים.
+                        ╫פ╫₧╫ץ╫₧╫ק╫פ ╫⌐╫£╫á╫ץ ╫ש╫á╫¬╫ק ╫נ╫¬ ╫פ╫₧╫ץ╫ף╫ó╫פ ╫ץ╫ש╫₧╫£╫ש╫Ñ ╫ó╫£ ╫פ╫ñ╫¿╫ר╫ש╫¥ ╫פ╫ק╫⌐╫ץ╫ס╫ש╫¥ ╫£╫º╫ץ╫á╫ש╫¥.
                     </p>
                 </div>
 
@@ -1028,7 +1023,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         />
                     ) : (
                         <Textarea
-                            placeholder="למשל: למכירה ספה בצבע אפור, שמורה כחדשה, מחיר 500 ש״ח..."
+                            placeholder="╫£╫₧╫⌐╫£: ╫£╫₧╫¢╫ש╫¿╫פ ╫í╫ñ╫פ ╫ס╫ª╫ס╫ó ╫נ╫ñ╫ץ╫¿, ╫⌐╫₧╫ץ╫¿╫פ ╫¢╫ק╫ף╫⌐╫פ, ╫₧╫ק╫ש╫¿ 500 ╫⌐╫┤╫ק..."
                             className="h-32 bg-gray-800 border-gray-700"
                             value={magicInput}
                             onChange={e => setMagicInput(e.target.value)}
@@ -1040,7 +1035,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         disabled={loading || !magicInput}
                         className="w-full h-12 bg-purple-600 hover:bg-purple-700"
                     >
-                        {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> נתח בצורה חכמה</span>}
+                        {loading ? <Loader2 className="animate-spin" /> : <span className="flex items-center gap-2"><Sparkles className="w-4 h-4" /> ╫á╫¬╫ק ╫ס╫ª╫ץ╫¿╫פ ╫ק╫¢╫₧╫פ</span>}
                     </Button>
                 </div>
             </div>
@@ -1052,7 +1047,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
             {/* Category Badge (Auto-Detected) - RESTORED & IMPROVED */}
             <div className="flex justify-between items-center bg-gray-900 p-2 rounded-lg border border-gray-800 relative">
                 <div className="flex items-center gap-2">
-                    <span className="text-gray-400 text-sm">קטגוריה:</span>
+                    <span className="text-gray-400 text-sm">╫º╫ר╫ע╫ץ╫¿╫ש╫פ:</span>
                     <span className="font-bold text-purple-400 text-lg">{getCategoryLabel(formData.category)}</span>
                 </div>
 
@@ -1062,34 +1057,34 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             <span className="truncate">{getCategoryLabel(formData.category)}</span>
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="Vehicles">רכב 🚗</SelectItem>
-                            <SelectItem value="Real Estate">נדלן 🏠</SelectItem>
-                            <SelectItem value="Phones">טלפונים 📱</SelectItem>
-                            <SelectItem value="Computers">מחשבים 💻</SelectItem>
-                            <SelectItem value="Electronics">אלקטרוניקה 📡</SelectItem>
-                            <SelectItem value="Furniture">ריהוט 🛋️</SelectItem>
-                            <SelectItem value="Appliances">מוצרי חשמל 🔌</SelectItem>
-                            <SelectItem value="Fashion">אופנה וביגוד 👗</SelectItem>
-                            <SelectItem value="Sports">ספורט ופנאי ⚽</SelectItem>
-                            <SelectItem value="Kids">תינוקות וילדים 🧸</SelectItem>
-                            <SelectItem value="Pets">חיות מחמד 🐾</SelectItem>
-                            <SelectItem value="Tools">כלי עבודה 🔧</SelectItem>
-                            <SelectItem value="Health">בריאות וקוסמטיקה 💊</SelectItem>
-                            <SelectItem value="Audio">אודיו וסאונד 🔊</SelectItem>
-                            <SelectItem value="Hobbies">תחביבים ואמנות 🎨</SelectItem>
-                            <SelectItem value="Books">ספרים ומדיה 📚</SelectItem>
-                            <SelectItem value="HomeDecor">עיצוב הבית 🖼️</SelectItem>
-                            <SelectItem value="General">כללי / אחר 📦</SelectItem>
+                            <SelectItem value="Vehicles">╫¿╫¢╫ס ≡ƒתק</SelectItem>
+                            <SelectItem value="Real Estate">╫á╫ף╫£╫ƒ ≡ƒןá</SelectItem>
+                            <SelectItem value="Phones">╫ר╫£╫ñ╫ץ╫á╫ש╫¥ ≡ƒף▒</SelectItem>
+                            <SelectItem value="Computers">╫₧╫ק╫⌐╫ס╫ש╫¥ ≡ƒע╗</SelectItem>
+                            <SelectItem value="Electronics">╫נ╫£╫º╫ר╫¿╫ץ╫á╫ש╫º╫פ ≡ƒףí</SelectItem>
+                            <SelectItem value="Furniture">╫¿╫ש╫פ╫ץ╫ר ≡ƒ¢כ∩╕ן</SelectItem>
+                            <SelectItem value="Appliances">╫₧╫ץ╫ª╫¿╫ש ╫ק╫⌐╫₧╫£ ≡ƒפל</SelectItem>
+                            <SelectItem value="Fashion">╫נ╫ץ╫ñ╫á╫פ ╫ץ╫ס╫ש╫ע╫ץ╫ף ≡ƒסק</SelectItem>
+                            <SelectItem value="Sports">╫í╫ñ╫ץ╫¿╫ר ╫ץ╫ñ╫á╫נ╫ש Γת╜</SelectItem>
+                            <SelectItem value="Kids">╫¬╫ש╫á╫ץ╫º╫ץ╫¬ ╫ץ╫ש╫£╫ף╫ש╫¥ ≡ƒº╕</SelectItem>
+                            <SelectItem value="Pets">╫ק╫ש╫ץ╫¬ ╫₧╫ק╫₧╫ף ≡ƒנ╛</SelectItem>
+                            <SelectItem value="Tools">╫¢╫£╫ש ╫ó╫ס╫ץ╫ף╫פ ≡ƒפº</SelectItem>
+                            <SelectItem value="Health">╫ס╫¿╫ש╫נ╫ץ╫¬ ╫ץ╫º╫ץ╫í╫₧╫ר╫ש╫º╫פ ≡ƒעך</SelectItem>
+                            <SelectItem value="Audio">╫נ╫ץ╫ף╫ש╫ץ ╫ץ╫í╫נ╫ץ╫á╫ף ≡ƒפך</SelectItem>
+                            <SelectItem value="Hobbies">╫¬╫ק╫ס╫ש╫ס╫ש╫¥ ╫ץ╫נ╫₧╫á╫ץ╫¬ ≡ƒמ¿</SelectItem>
+                            <SelectItem value="Books">╫í╫ñ╫¿╫ש╫¥ ╫ץ╫₧╫ף╫ש╫פ ≡ƒףת</SelectItem>
+                            <SelectItem value="HomeDecor">╫ó╫ש╫ª╫ץ╫ס ╫פ╫ס╫ש╫¬ ≡ƒצ╝∩╕ן</SelectItem>
+                            <SelectItem value="General">╫¢╫£╫£╫ש / ╫נ╫ק╫¿ ≡ƒףª</SelectItem>
                         </SelectContent>
                     </Select>
 
-                    <Button variant="ghost" size="sm" onClick={() => setMode('magic_link')} className="text-blue-400 p-1 h-8 w-8" title="ייבוא מקישור">
+                    <Button variant="ghost" size="sm" onClick={() => setMode('magic_link')} className="text-blue-400 p-1 h-8 w-8" title="╫ש╫ש╫ס╫ץ╫נ ╫₧╫º╫ש╫⌐╫ץ╫¿">
                         <LinkIcon className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => setMode('magic_text')} className="text-green-400 p-1 h-8 w-8" title="העתק-הדבק טקסט">
+                    <Button variant="ghost" size="sm" onClick={() => setMode('magic_text')} className="text-green-400 p-1 h-8 w-8" title="╫פ╫ó╫¬╫º-╫פ╫ף╫ס╫º ╫ר╫º╫í╫ר">
                         <Edit3 className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => { setVoiceTranscript(""); setRecordingError(""); setMode('magic_voice'); }} className="text-red-400 p-1 h-8 w-8" title="הקלטת קול">
+                    <Button variant="ghost" size="sm" onClick={() => { setVoiceTranscript(""); setRecordingError(""); setMode('magic_voice'); }} className="text-red-400 p-1 h-8 w-8" title="╫פ╫º╫£╫ר╫¬ ╫º╫ץ╫£">
                         <Mic className="w-4 h-4" />
                     </Button>
 
@@ -1099,11 +1094,11 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                    <Label>כותרת המוצר</Label>
+                    <Label>╫¢╫ץ╫¬╫¿╫¬ ╫פ╫₧╫ץ╫ª╫¿</Label>
                     <Input
                         value={formData.title}
                         onChange={e => handleChange("title", e.target.value)}
-                        placeholder="למשל: ספה דו-מושבית במצב מצויין"
+                        placeholder="╫£╫₧╫⌐╫£: ╫í╫ñ╫פ ╫ף╫ץ-╫₧╫ץ╫⌐╫ס╫ש╫¬ ╫ס╫₧╫ª╫ס ╫₧╫ª╫ץ╫ש╫ש╫ƒ"
                         required
                         className="bg-gray-800 border-gray-700"
                     />
@@ -1111,7 +1106,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label>מחיר (₪) <span className="text-red-500">*</span></Label>
+                        <Label>╫₧╫ק╫ש╫¿ (Γג¬) <span className="text-red-500">*</span></Label>
                         <Input
                             type="text"
                             value={formData.price ? Number(formData.price.replace(/,/g, "")).toLocaleString() : ""}
@@ -1122,16 +1117,16 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label>מצב</Label>
+                        <Label>╫₧╫ª╫ס</Label>
                         <Select value={formData.condition} onValueChange={val => handleChange("condition", val)}>
                             <SelectTrigger className="bg-gray-800 border-gray-700">
-                                <SelectValue placeholder="בחר מצב" />
+                                <SelectValue placeholder="╫ס╫ק╫¿ ╫₧╫ª╫ס" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="New">חדש</SelectItem>
-                                <SelectItem value="Like New">כמו חדש</SelectItem>
-                                <SelectItem value="Used">משומש</SelectItem>
-                                <SelectItem value="Refurbished">מחודש</SelectItem>
+                                <SelectItem value="New">╫ק╫ף╫⌐</SelectItem>
+                                <SelectItem value="Like New">╫¢╫₧╫ץ ╫ק╫ף╫⌐</SelectItem>
+                                <SelectItem value="Used">╫₧╫⌐╫ץ╫₧╫⌐</SelectItem>
+                                <SelectItem value="Refurbished">╫₧╫ק╫ץ╫ף╫⌐</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -1141,7 +1136,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {formData.category === "Vehicles" && (
                     <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
                         <div className="space-y-2">
-                            <Label>יצרן</Label>
+                            <Label>╫ש╫ª╫¿╫ƒ</Label>
                             <Select
                                 value={formData.make}
                                 onValueChange={val => {
@@ -1150,10 +1145,10 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 }}
                             >
                                 <SelectTrigger className="bg-gray-800 border-gray-700">
-                                    <SelectValue placeholder="בחר יצרן" />
+                                    <SelectValue placeholder="╫ס╫ק╫¿ ╫ש╫ª╫¿╫ƒ" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[300px]">
-                                    <SelectItem value="Other" className="font-bold border-b mb-1">אחר (לא ברשימה)</SelectItem>
+                                    <SelectItem value="Other" className="font-bold border-b mb-1">╫נ╫ק╫¿ (╫£╫נ ╫ס╫¿╫⌐╫ש╫₧╫פ)</SelectItem>
                                     {Object.keys(CAR_MODELS).sort((a, b) => a.localeCompare(b, "he")).map(make => (
                                         <SelectItem key={make} value={make}>{make}</SelectItem>
                                     ))}
@@ -1161,7 +1156,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <Label>דגם</Label>
+                            <Label>╫ף╫ע╫¥</Label>
                             <Select
                                 value={formData.model}
                                 onValueChange={val => {
@@ -1171,7 +1166,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 disabled={!formData.make || formData.make === "Other"}
                             >
                                 <SelectTrigger className="bg-gray-800 border-gray-700">
-                                    <SelectValue placeholder="בחר דגם" />
+                                    <SelectValue placeholder="╫ס╫ק╫¿ ╫ף╫ע╫¥" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[200px]">
                                     {formData.make && CAR_MODELS[formData.make] ? (
@@ -1179,9 +1174,9 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                             <SelectItem key={model} value={model}>{model}</SelectItem>
                                         ))
                                     ) : (
-                                        <SelectItem value="Other" disabled>בחר יצרן תחילה</SelectItem>
+                                        <SelectItem value="Other" disabled>╫ס╫ק╫¿ ╫ש╫ª╫¿╫ƒ ╫¬╫ק╫ש╫£╫פ</SelectItem>
                                     )}
-                                    <SelectItem value="OtherModel">דגם אחר / לא ברשימה</SelectItem>
+                                    <SelectItem value="OtherModel">╫ף╫ע╫¥ ╫נ╫ק╫¿ / ╫£╫נ ╫ס╫¿╫⌐╫ש╫₧╫פ</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -1193,22 +1188,22 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                     <div className="grid grid-cols-2 gap-4">
                         {formData.make === "Other" && (
                             <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                                <Label>יצרן (אחר)</Label>
+                                <Label>╫ש╫ª╫¿╫ƒ (╫נ╫ק╫¿)</Label>
                                 <Input
                                     value={customMake}
                                     onChange={e => setCustomMake(e.target.value)}
-                                    placeholder="הכנס שם יצרן"
+                                    placeholder="╫פ╫¢╫á╫í ╫⌐╫¥ ╫ש╫ª╫¿╫ƒ"
                                     className="bg-gray-800 border-gray-700"
                                 />
                             </div>
                         )}
                         {(formData.model === "OtherModel" || (formData.make === "Other" && formData.make)) && (
                             <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                                <Label>דגם (אחר)</Label>
+                                <Label>╫ף╫ע╫¥ (╫נ╫ק╫¿)</Label>
                                 <Input
                                     value={customModel}
                                     onChange={e => setCustomModel(e.target.value)}
-                                    placeholder="הכנס שם דגם"
+                                    placeholder="╫פ╫¢╫á╫í ╫⌐╫¥ ╫ף╫ע╫¥"
                                     className="bg-gray-800 border-gray-700"
                                 />
                             </div>
@@ -1220,7 +1215,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {formData.category === "Vehicles" && (
                     <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-3">
                         <div className="space-y-2">
-                            <Label>שנת ייצור</Label>
+                            <Label>╫⌐╫á╫¬ ╫ש╫ש╫ª╫ץ╫¿</Label>
                             <Input
                                 value={formData.year}
                                 onChange={e => handleChange("year", e.target.value.replace(/\D/g, ""))}
@@ -1230,7 +1225,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>יד</Label>
+                            <Label>╫ש╫ף</Label>
                             <Input
                                 value={formData.hand}
                                 onChange={e => handleChange("hand", e.target.value)}
@@ -1239,14 +1234,14 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>קילומטראז&apos;</Label>
+                            <Label>╫º╫ש╫£╫ץ╫₧╫ר╫¿╫נ╫צ&apos;</Label>
                             <Input
                                 value={formData.kilometrage ? Number(formData.kilometrage.toString().replace(/,/g, "")).toLocaleString() : ""}
                                 onChange={e => {
                                     const val = e.target.value.replace(/,/g, "").replace(/\D/g, "");
                                     handleChange("kilometrage", val);
                                 }}
-                                placeholder="ק״מ"
+                                placeholder="╫º╫┤╫₧"
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
@@ -1257,28 +1252,28 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {formData.category === "Real Estate" && (
                     <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-3">
                         <div className="space-y-2">
-                            <Label>מספר חדרים</Label>
+                            <Label>╫₧╫í╫ñ╫¿ ╫ק╫ף╫¿╫ש╫¥</Label>
                             <Input
-                                value={getExtraVal("חדרים")}
-                                onChange={e => handleExtraChange("חדרים", e.target.value)}
+                                value={getExtraVal("╫ק╫ף╫¿╫ש╫¥")}
+                                onChange={e => handleExtraChange("╫ק╫ף╫¿╫ש╫¥", e.target.value)}
                                 placeholder="3.5"
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>קומה</Label>
+                            <Label>╫º╫ץ╫₧╫פ</Label>
                             <Input
-                                value={getExtraVal("קומה")}
-                                onChange={e => handleExtraChange("קומה", e.target.value)}
-                                placeholder="2 מתוך 4"
+                                value={getExtraVal("╫º╫ץ╫₧╫פ")}
+                                onChange={e => handleExtraChange("╫º╫ץ╫₧╫פ", e.target.value)}
+                                placeholder="2 ╫₧╫¬╫ץ╫ת 4"
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>מ״ר</Label>
+                            <Label>╫₧╫┤╫¿</Label>
                             <Input
-                                value={getExtraVal("מ\"ר")}
-                                onChange={e => handleExtraChange("מ\"ר", e.target.value)}
+                                value={getExtraVal("╫₧\"╫¿")}
+                                onChange={e => handleExtraChange("╫₧\"╫¿", e.target.value)}
                                 placeholder="100"
                                 className="bg-gray-800 border-gray-700"
                             />
@@ -1290,38 +1285,38 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {["Phones", "Computers"].includes(formData.category) && (
                     <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
                         <div className="space-y-2">
-                            <Label>יצרן</Label>
+                            <Label>╫ש╫ª╫¿╫ƒ</Label>
                             <Input
-                                value={getExtraVal("יצרן")}
-                                onChange={e => handleExtraChange("יצרן", e.target.value)}
-                                placeholder="למשל: Apple, Samsung"
+                                value={getExtraVal("╫ש╫ª╫¿╫ƒ")}
+                                onChange={e => handleExtraChange("╫ש╫ª╫¿╫ƒ", e.target.value)}
+                                placeholder="╫£╫₧╫⌐╫£: Apple, Samsung"
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>דגם</Label>
+                            <Label>╫ף╫ע╫¥</Label>
                             <Input
-                                value={getExtraVal("דגם")}
-                                onChange={e => handleExtraChange("דגם", e.target.value)}
+                                value={getExtraVal("╫ף╫ע╫¥")}
+                                onChange={e => handleExtraChange("╫ף╫ע╫¥", e.target.value)}
                                 placeholder="iPhone 13 / Galaxy S21"
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>נפח אחסון (GB)</Label>
+                            <Label>╫á╫ñ╫ק ╫נ╫ק╫í╫ץ╫ƒ (GB)</Label>
                             <Input
-                                value={getExtraVal("נפח אחסון")}
-                                onChange={e => handleExtraChange("נפח אחסון", e.target.value)}
+                                value={getExtraVal("╫á╫ñ╫ק ╫נ╫ק╫í╫ץ╫ƒ")}
+                                onChange={e => handleExtraChange("╫á╫ñ╫ק ╫נ╫ק╫í╫ץ╫ƒ", e.target.value)}
                                 placeholder="128 / 256 / 512"
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
                         {formData.category === "Computers" && (
                             <div className="space-y-2">
-                                <Label>זיכרון (RAM)</Label>
+                                <Label>╫צ╫ש╫¢╫¿╫ץ╫ƒ (RAM)</Label>
                                 <Input
-                                    value={getExtraVal("זיכרון RAM")}
-                                    onChange={e => handleExtraChange("זיכרון RAM", e.target.value)}
+                                    value={getExtraVal("╫צ╫ש╫¢╫¿╫ץ╫ƒ RAM")}
+                                    onChange={e => handleExtraChange("╫צ╫ש╫¢╫¿╫ץ╫ƒ RAM", e.target.value)}
                                     placeholder="16GB"
                                     className="bg-gray-800 border-gray-700"
                                 />
@@ -1329,10 +1324,10 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         )}
                         {formData.category === "Phones" && (
                             <div className="space-y-2">
-                                <Label>בריאות סוללה (%)</Label>
+                                <Label>╫ס╫¿╫ש╫נ╫ץ╫¬ ╫í╫ץ╫£╫£╫פ (%)</Label>
                                 <Input
-                                    value={getExtraVal("סוללה")}
-                                    onChange={e => handleExtraChange("סוללה", e.target.value)}
+                                    value={getExtraVal("╫í╫ץ╫£╫£╫פ")}
+                                    onChange={e => handleExtraChange("╫í╫ץ╫£╫£╫פ", e.target.value)}
                                     placeholder="85%"
                                     className="bg-gray-800 border-gray-700"
                                 />
@@ -1345,20 +1340,20 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {["Furniture", "HomeDecor"].includes(formData.category) && (
                     <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
                         <div className="space-y-2">
-                            <Label>חומר</Label>
+                            <Label>╫ק╫ץ╫₧╫¿</Label>
                             <Input
-                                value={getExtraVal("חומר")}
-                                onChange={e => handleExtraChange("חומר", e.target.value)}
-                                placeholder="עץ, מתכת, בד..."
+                                value={getExtraVal("╫ק╫ץ╫₧╫¿")}
+                                onChange={e => handleExtraChange("╫ק╫ץ╫₧╫¿", e.target.value)}
+                                placeholder="╫ó╫Ñ, ╫₧╫¬╫¢╫¬, ╫ס╫ף..."
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>צבע</Label>
+                            <Label>╫ª╫ס╫ó</Label>
                             <Input
-                                value={getExtraVal("צבע")}
-                                onChange={e => handleExtraChange("צבע", e.target.value)}
-                                placeholder="שחור, לבן, אפור..."
+                                value={getExtraVal("╫ª╫ס╫ó")}
+                                onChange={e => handleExtraChange("╫ª╫ס╫ó", e.target.value)}
+                                placeholder="╫⌐╫ק╫ץ╫¿, ╫£╫ס╫ƒ, ╫נ╫ñ╫ץ╫¿..."
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
@@ -1369,20 +1364,20 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {["Fashion", "Kids"].includes(formData.category) && (
                     <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
                         <div className="space-y-2">
-                            <Label>מותג</Label>
+                            <Label>╫₧╫ץ╫¬╫ע</Label>
                             <Input
-                                value={getExtraVal("מותג")}
-                                onChange={e => handleExtraChange("מותג", e.target.value)}
+                                value={getExtraVal("╫₧╫ץ╫¬╫ע")}
+                                onChange={e => handleExtraChange("╫₧╫ץ╫¬╫ע", e.target.value)}
                                 placeholder="Nike, Zara..."
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>מידה</Label>
+                            <Label>╫₧╫ש╫ף╫פ</Label>
                             <Input
-                                value={getExtraVal("מידה")}
-                                onChange={e => handleExtraChange("מידה", e.target.value)}
-                                placeholder="למשל: M, 42, גיל 3-4"
+                                value={getExtraVal("╫₧╫ש╫ף╫פ")}
+                                onChange={e => handleExtraChange("╫₧╫ש╫ף╫פ", e.target.value)}
+                                placeholder="╫£╫₧╫⌐╫£: M, 42, ╫ע╫ש╫£ 3-4"
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
@@ -1393,16 +1388,16 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {["Electronics", "Audio", "Appliances", "Sports"].includes(formData.category) && (
                     <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
                         <div className="space-y-2">
-                            <Label>יצרן / מותג</Label>
+                            <Label>╫ש╫ª╫¿╫ƒ / ╫₧╫ץ╫¬╫ע</Label>
                             <Input
-                                value={getExtraVal("יצרן")}
-                                onChange={e => handleExtraChange("יצרן", e.target.value)}
-                                placeholder="יצרן הפריט..."
+                                value={getExtraVal("╫ש╫ª╫¿╫ƒ")}
+                                onChange={e => handleExtraChange("╫ש╫ª╫¿╫ƒ", e.target.value)}
+                                placeholder="╫ש╫ª╫¿╫ƒ ╫פ╫ñ╫¿╫ש╫ר..."
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>שנת ייצור / קניה</Label>
+                            <Label>╫⌐╫á╫¬ ╫ש╫ש╫ª╫ץ╫¿ / ╫º╫á╫ש╫פ</Label>
                             <Input
                                 value={formData.year}
                                 onChange={e => handleChange("year", e.target.value.replace(/\D/g, ""))}
@@ -1421,9 +1416,9 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             <Sparkles className="w-5 h-5 text-orange-500" />
                         </div>
                         <div>
-                            <h4 className="font-bold text-orange-400 text-sm">שים לב!</h4>
+                            <h4 className="font-bold text-orange-400 text-sm">╫⌐╫ש╫¥ ╫£╫ס!</h4>
                             <p className="text-xs text-gray-300">
-                                זיהינו בטקסט שמדובר ברכב מסוג <span className="font-bold text-white">{detectedMake}</span>, אך בחרת <span className="font-bold text-white">{formData.make}</span>. האם אתה בטוח?
+                                ╫צ╫ש╫פ╫ש╫á╫ץ ╫ס╫ר╫º╫í╫ר ╫⌐╫₧╫ף╫ץ╫ס╫¿ ╫ס╫¿╫¢╫ס ╫₧╫í╫ץ╫ע <span className="font-bold text-white">{detectedMake}</span>, ╫נ╫ת ╫ס╫ק╫¿╫¬ <span className="font-bold text-white">{formData.make}</span>. ╫פ╫נ╫¥ ╫נ╫¬╫פ ╫ס╫ר╫ץ╫ק?
                             </p>
                         </div>
                         <Button
@@ -1441,10 +1436,10 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {/* Highlights Section */}
                 <div className="space-y-2">
                     <Label className="flex items-center gap-2 text-purple-400 font-bold">
-                        <Sparkles className="w-4 h-4" /> דגשים חשובים
+                        <Sparkles className="w-4 h-4" /> ╫ף╫ע╫⌐╫ש╫¥ ╫ק╫⌐╫ץ╫ס╫ש╫¥
                     </Label>
                     <div className="flex flex-wrap gap-2 mb-2 min-h-[30px] p-2 bg-gray-900/40 rounded-lg border border-gray-800/50">
-                        {formData.highlights.length === 0 && <span className="text-xs text-gray-500 italic">לא נבחרו דגשים עדיין...</span>}
+                        {formData.highlights.length === 0 && <span className="text-xs text-gray-500 italic">╫£╫נ ╫á╫ס╫ק╫¿╫ץ ╫ף╫ע╫⌐╫ש╫¥ ╫ó╫ף╫ש╫ש╫ƒ...</span>}
                         {formData.highlights.map((h, i) => (
                             <div key={i} className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 shadow-sm animate-in fade-in zoom-in duration-200">
                                 {h}
@@ -1457,28 +1452,28 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             value={highlightInput}
                             onChange={e => setHighlightInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addHighlight())}
-                            placeholder="הקלד דגש חשוב (למשל: יד ראשונה, מצבר חדש...)"
+                            placeholder="╫פ╫º╫£╫ף ╫ף╫ע╫⌐ ╫ק╫⌐╫ץ╫ס (╫£╫₧╫⌐╫£: ╫ש╫ף ╫¿╫נ╫⌐╫ץ╫á╫פ, ╫₧╫ª╫ס╫¿ ╫ק╫ף╫⌐...)"
                             className="bg-gray-800 border-gray-700 h-9 text-sm"
                         />
                         <Button type="button" onClick={addHighlight} variant="secondary" size="sm" className="h-9 px-4">
-                            <Plus className="w-4 h-4" /> הוסף
+                            <Plus className="w-4 h-4" /> ╫פ╫ץ╫í╫ú
                         </Button>
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <Label>מספר טלפון ליצירת קשר</Label>
+                    <Label>╫₧╫í╫ñ╫¿ ╫ר╫£╫ñ╫ץ╫ƒ ╫£╫ש╫ª╫ש╫¿╫¬ ╫º╫⌐╫¿</Label>
                     <Input
                         value={formData.contactPhone}
                         onChange={e => handleChange("contactPhone", e.target.value)}
                         placeholder="05X-XXXXXXX"
                         className="bg-gray-800 border-gray-700"
                     />
-                    <p className="text-xs text-gray-400">יוצג לקונים במודעה</p>
+                    <p className="text-xs text-gray-400">╫ש╫ץ╫ª╫ע ╫£╫º╫ץ╫á╫ש╫¥ ╫ס╫₧╫ץ╫ף╫ó╫פ</p>
                     {showPhoneUpdate && (
                         <div className="bg-blue-900/20 border border-blue-800 p-3 rounded-lg flex items-center justify-between gap-4 mt-2 animate-in fade-in slide-in-from-top-2">
                             <div className="text-sm text-blue-200">
-                                המספר במודעה שונה מהפרופיל שלך. לעדכן את הפרופיל?
+                                ╫פ╫₧╫í╫ñ╫¿ ╫ס╫₧╫ץ╫ף╫ó╫פ ╫⌐╫ץ╫á╫פ ╫₧╫פ╫ñ╫¿╫ץ╫ñ╫ש╫£ ╫⌐╫£╫ת. ╫£╫ó╫ף╫¢╫ƒ ╫נ╫¬ ╫פ╫ñ╫¿╫ץ╫ñ╫ש╫£?
                             </div>
                             <div className="flex gap-2">
                                 <Button
@@ -1488,7 +1483,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                     onClick={() => setShowPhoneUpdate(false)}
                                     className="h-7 text-gray-400 hover:text-white"
                                 >
-                                    לא
+                                    ╫£╫נ
                                 </Button>
                                 <Button
                                     type="button"
@@ -1497,7 +1492,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                     onClick={handleUpdateProfilePhone}
                                     className="h-7 border-blue-500 text-blue-400 hover:bg-blue-900/50"
                                 >
-                                    כן, עדכן
+                                    ╫¢╫ƒ, ╫ó╫ף╫¢╫ƒ
                                 </Button>
                             </div>
                         </div>
@@ -1505,24 +1500,24 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 </div>
 
                 <div className="space-y-2">
-                    <Label>תיאור</Label>
+                    <Label>╫¬╫ש╫נ╫ץ╫¿</Label>
                     <Textarea
                         value={formData.description}
                         onChange={e => handleChange("description", e.target.value)}
-                        placeholder="פרטים נוספים, מידות, סיבת מכירה..."
+                        placeholder="╫ñ╫¿╫ר╫ש╫¥ ╫á╫ץ╫í╫ñ╫ש╫¥, ╫₧╫ש╫ף╫ץ╫¬, ╫í╫ש╫ס╫¬ ╫₧╫¢╫ש╫¿╫פ..."
                         className="bg-gray-800 border-gray-700 min-h-[100px]"
                     />
                 </div>
 
                 {/* Suggestions / Missing Fields */}
-                {missingFields.filter(f => !["סוג דלק", "מיקום", "שנת ייצור"].includes(f)).length > 0 && (
+                {missingFields.filter(f => !["╫í╫ץ╫ע ╫ף╫£╫º", "╫₧╫ש╫º╫ץ╫¥", "╫⌐╫á╫¬ ╫ש╫ש╫ª╫ץ╫¿"].includes(f)).length > 0 && (
                     <div className="bg-yellow-900/10 border border-yellow-500/30 p-3 rounded-lg">
                         <div className="text-yellow-500 text-xs font-bold mb-2 flex items-center gap-2">
                             <Sparkles className="w-3 h-3" />
-                            המלצת המערכת: כדאי להוסיף את הפרטים הבאים
+                            ╫פ╫₧╫£╫ª╫¬ ╫פ╫₧╫ó╫¿╫¢╫¬: ╫¢╫ף╫נ╫ש ╫£╫פ╫ץ╫í╫ש╫ú ╫נ╫¬ ╫פ╫ñ╫¿╫ר╫ש╫¥ ╫פ╫ס╫נ╫ש╫¥
                         </div>
                         <div className="flex flex-wrap gap-2">
-                            {missingFields.filter(f => !["סוג דלק", "מיקום", "שנת ייצור"].includes(f)).map((field) => (
+                            {missingFields.filter(f => !["╫í╫ץ╫ע ╫ף╫£╫º", "╫₧╫ש╫º╫ץ╫¥", "╫⌐╫á╫¬ ╫ש╫ש╫ª╫ץ╫¿"].includes(f)).map((field) => (
                                 <button
                                     key={field}
                                     type="button"
@@ -1540,18 +1535,18 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 <div className="space-y-2 bg-gray-900/50 p-3 rounded-xl border border-gray-800">
                     <div className="space-y-4">
                         <Label className="flex items-center gap-2 text-purple-300">
-                            <Sparkles className="w-3 h-3" /> מפרט מקצועי (זוהה ל{formData.category === "General" ? "מודעה" : formData.category})
+                            <Sparkles className="w-3 h-3" /> ╫₧╫ñ╫¿╫ר ╫₧╫º╫ª╫ץ╫ó╫ש (╫צ╫ץ╫פ╫פ ╫£{formData.category === "General" ? "╫₧╫ץ╫ף╫ó╫פ" : formData.category})
                         </Label>
                         {formData.extraData.map((field, index) => (
                             <div key={index} className="flex gap-2 items-center">
                                 <Input
-                                    placeholder="שם המאפיין"
+                                    placeholder="╫⌐╫¥ ╫פ╫₧╫נ╫ñ╫ש╫ש╫ƒ"
                                     value={field.key}
                                     onChange={(e) => updateField(index, e.target.value, field.value)}
                                     className="bg-gray-800 border-gray-700"
                                 />
                                 <Input
-                                    placeholder="ערך"
+                                    placeholder="╫ó╫¿╫ת"
                                     value={field.value}
                                     onChange={(e) => updateField(index, field.key, e.target.value)}
                                     className={`bg-gray-800 border-gray-700 ${field.value.includes("?") ? "border-yellow-500 text-yellow-500" : ""}`}
@@ -1574,18 +1569,18 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             onClick={addField}
                             className="w-full border-dashed border-gray-700 hover:bg-gray-800"
                         >
-                            <Plus className="h-4 w-4 mr-2" /> הוסף מאפיין
+                            <Plus className="h-4 w-4 mr-2" /> ╫פ╫ץ╫í╫ú ╫₧╫נ╫ñ╫ש╫ש╫ƒ
                         </Button>
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <Label>תמונות (העלאה או קישור)</Label>
+                    <Label>╫¬╫₧╫ץ╫á╫ץ╫¬ (╫פ╫ó╫£╫נ╫פ ╫נ╫ץ ╫º╫ש╫⌐╫ץ╫¿)</Label>
                     <div className="flex gap-2 items-center">
                         <Input
                             value={imageUrlInput}
                             onChange={e => setImageUrlInput(e.target.value)}
-                            placeholder="הדבק קישור לתמונה (URL)"
+                            placeholder="╫פ╫ף╫ס╫º ╫º╫ש╫⌐╫ץ╫¿ ╫£╫¬╫₧╫ץ╫á╫פ (URL)"
                             className="bg-gray-800 border-gray-700"
                         />
                         <Button type="button" onClick={addImage} size="icon" className="shrink-0 bg-gray-700 hover:bg-gray-600">
@@ -1624,12 +1619,12 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 </div>
 
                 <div className="space-y-2">
-                    <Label>סרטונים (העלאה או קישור)</Label>
+                    <Label>╫í╫¿╫ר╫ץ╫á╫ש╫¥ (╫פ╫ó╫£╫נ╫פ ╫נ╫ץ ╫º╫ש╫⌐╫ץ╫¿)</Label>
                     <div className="flex gap-2 items-center">
                         <Input
                             value={videoUrlInput}
                             onChange={e => setVideoUrlInput(e.target.value)}
-                            placeholder="הדבק קישור לסרטון (URL)"
+                            placeholder="╫פ╫ף╫ס╫º ╫º╫ש╫⌐╫ץ╫¿ ╫£╫í╫¿╫ר╫ץ╫ƒ (URL)"
                             className="bg-gray-800 border-gray-700"
                         />
                         <Button type="button" onClick={addVideo} size="icon" className="shrink-0 bg-gray-700 hover:bg-gray-600">
@@ -1679,10 +1674,10 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 type="button"
                                 onClick={(e) => { e.preventDefault(); document.getElementById('ai-tester-panel')?.classList.toggle('hidden'); }}
                                 className="pointer-events-auto bg-amber-500 hover:bg-amber-400 text-black rounded-full px-4 py-3 shadow-xl shadow-amber-500/30 flex items-center gap-2 border border-amber-400/50 transition-all hover:scale-105 backdrop-blur-md cursor-pointer"
-                                title="הוסף הערת בדיקה"
+                                title="╫פ╫ץ╫í╫ú ╫פ╫ó╫¿╫¬ ╫ס╫ף╫ש╫º╫פ"
                             >
                                 <Sparkles className="w-5 h-5 text-black" />
-                                <span className="font-bold text-sm">הוסף הערת בדיקה (AI)</span>
+                                <span className="font-bold text-sm">╫פ╫ץ╫í╫ú ╫פ╫ó╫¿╫¬ ╫ס╫ף╫ש╫º╫פ (AI)</span>
                             </button>
                         )}
 
@@ -1694,23 +1689,23 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 onPointerUp={handlePointerUpPanel}
                                 onPointerCancel={handlePointerUpPanel}
                             >
-                                <h3 className="text-sm font-bold text-amber-500 flex items-center gap-2"><Sparkles className="w-4 h-4" /> הערות בודק למערכת AI</h3>
-                                <button type="button" onClick={() => document.getElementById('ai-tester-panel')?.classList.add('hidden')} className="text-gray-400 hover:text-white leading-none text-2xl p-1">×</button>
+                                <h3 className="text-sm font-bold text-amber-500 flex items-center gap-2"><Sparkles className="w-4 h-4" /> ╫פ╫ó╫¿╫ץ╫¬ ╫ס╫ץ╫ף╫º ╫£╫₧╫ó╫¿╫¢╫¬ AI</h3>
+                                <button type="button" onClick={() => document.getElementById('ai-tester-panel')?.classList.add('hidden')} className="text-gray-400 hover:text-white leading-none text-2xl p-1">├ק</button>
                             </div>
 
                             <div className="space-y-4">
                                 <div className="bg-amber-500/10 rounded-lg p-2.5 flex items-center justify-between border border-amber-500/20">
-                                    <span className="text-xs text-amber-200">בודק:</span>
+                                    <span className="text-xs text-amber-200">╫ס╫ץ╫ף╫º:</span>
                                     <span className="text-sm font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">{testerName}</span>
                                 </div>
                                 <div>
-                                    <Label className="text-xs text-amber-200 mb-1 block">הערות על זיהוי שגוי / חסר 👇</Label>
+                                    <Label className="text-xs text-amber-200 mb-1 block">╫פ╫ó╫¿╫ץ╫¬ ╫ó╫£ ╫צ╫ש╫פ╫ץ╫ש ╫⌐╫ע╫ץ╫ש / ╫ק╫í╫¿ ≡ƒסח</Label>
                                     <Textarea
                                         rows={4}
                                         className="text-sm bg-black/60 border-amber-500/30 resize-none focus:border-amber-500 text-white placeholder-gray-500"
                                         value={testerNote}
                                         onChange={e => setTesterNote(e.target.value)}
-                                        placeholder="לדוגמה: מחיר יצא 0, לא זיהה יד 2, דגם שגוי..."
+                                        placeholder="╫£╫ף╫ץ╫ע╫₧╫פ: ╫₧╫ק╫ש╫¿ ╫ש╫ª╫נ 0, ╫£╫נ ╫צ╫ש╫פ╫פ ╫ש╫ף 2, ╫ף╫ע╫¥ ╫⌐╫ע╫ץ╫ש..."
                                     />
                                 </div>
 
@@ -1720,35 +1715,35 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                     disabled={!testerNote.trim()}
                                     className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/20"
                                 >
-                                    שלח הערה למערכת ✓
+                                    ╫⌐╫£╫ק ╫פ╫ó╫¿╫פ ╫£╫⌐╫¿╫ף Γ£ף
                                 </button>
+
+                                <div className="border-t border-amber-500/20 mt-4 pt-4">
+                                    <label className="flex items-center gap-3 p-2 bg-black/40 hover:bg-black/60 rounded-lg cursor-pointer transition-colors border border-amber-500/10">
+                                        <div className="relative flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                className="w-4 h-4 peer appearance-none border border-amber-500/50 rounded bg-black checked:bg-amber-500 transition-all"
+                                                checked={isTestMode}
+                                                onChange={e => setIsTestMode(e.target.checked)}
+                                            />
+                                            <svg className="absolute w-2.5 h-2.5 text-black left-0.5 top-[3px] pointer-events-none opacity-0 peer-checked:opacity-100" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M1 5L5 9L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-amber-200 text-xs font-bold">╫⌐╫₧╫ץ╫¿ ╫£╫₧╫ר╫¿╫¬ ╫ר╫í╫ר╫ש╫¥ (AI)</span>
+                                            <span className="text-gray-400 text-[10px]">╫₧╫ץ╫ף╫ó╫פ ╫צ╫ץ ╫£╫נ ╫¬╫¬╫ñ╫¿╫í╫¥ ╫ס╫£╫ץ╫ק ╫פ╫נ╫₧╫ש╫¬╫ש</span>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                     , document.body)}
 
-                <div className="border-t border-amber-500/20 pt-4 mb-4">
-                    <label className="flex items-center gap-3 p-3 bg-slate-900/50 hover:bg-slate-900/80 rounded-xl cursor-pointer transition-colors border border-amber-500/20">
-                        <div className="relative flex items-center">
-                            <input
-                                type="checkbox"
-                                className="w-5 h-5 peer appearance-none border-2 border-amber-500/50 rounded-md bg-black checked:bg-amber-500 transition-all cursor-pointer"
-                                checked={isTestMode}
-                                onChange={e => setIsTestMode(e.target.checked)}
-                            />
-                            <svg className="absolute w-3 h-3 text-black left-1 top-[4px] pointer-events-none opacity-0 peer-checked:opacity-100" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M1 5L5 9L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-amber-200 text-sm font-bold">שמור כמודעת טסט (לא תפורסם בלוח הפומבי)</span>
-                            <span className="text-gray-400 text-xs mt-0.5">תוצאות ה-AI נשמרות אוטומטית למטרות בדיקה ושיפור המערכת</span>
-                        </div>
-                    </label>
-                </div>
-
                 <Button type="submit" disabled={loading} className={`w-full h-14 text-lg font-bold rounded-xl shadow-lg transition-all ${isTestMode ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/30" : "bg-green-600 hover:bg-green-700 shadow-green-500/30"}`}>
-                    {loading ? <Loader2 className="animate-spin" /> : isTestMode ? "שמור בדיקת AI" : isEditing ? "עדכן מודעה" : "פרסם מודעה"}
+                    {loading ? <Loader2 className="animate-spin" /> : isTestMode ? "╫⌐╫₧╫ץ╫¿ ╫ס╫ף╫ש╫º╫¬ AI" : isEditing ? "╫ó╫ף╫¢╫ƒ ╫₧╫ץ╫ף╫ó╫פ" : "╫ñ╫¿╫í╫¥ ╫₧╫ץ╫ף╫ó╫פ"}
                 </Button>
             </form>
         </div>
