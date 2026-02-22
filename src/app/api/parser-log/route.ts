@@ -91,18 +91,50 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
     try {
-        const { id, quality, reviewed, testerNote, testerImage, archived } = await req.json();
+        const { id, quality, reviewed, testerNote, testerImage, archived, userFinal, computedCorrections } = await req.json();
         if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
+        let dataToUpdate: any = {
+            ...(quality !== undefined ? { quality } : {}),
+            ...(reviewed !== undefined ? { reviewed } : {}),
+            ...(testerNote !== undefined ? { testerNote } : {}),
+            ...(testerImage !== undefined ? { testerImage } : {}),
+            ...(archived !== undefined ? { archived, archivedAt: archived ? new Date() : null } : {}),
+        };
+
+        if (userFinal !== undefined) {
+            dataToUpdate.userFinal = typeof userFinal === "string" ? userFinal : JSON.stringify(userFinal);
+
+            if (computedCorrections !== undefined) {
+                dataToUpdate.corrections = computedCorrections;
+            } else {
+                // Fallback to legacy diff if client doesn't send computedCorrections
+                const existingLog = await prisma.parserLog.findUnique({ where: { id } });
+                if (existingLog && existingLog.aiParsed) {
+                    let corrections: Record<string, { ai: unknown; user: unknown }> | null = null;
+                    try {
+                        const ai = typeof existingLog.aiParsed === "string" ? JSON.parse(existingLog.aiParsed) : existingLog.aiParsed;
+                        const user = typeof userFinal === "string" ? JSON.parse(userFinal) : userFinal;
+                        corrections = {};
+                        for (const key of new Set([...Object.keys(ai), ...Object.keys(user)])) {
+                            const aiVal = ai[key];
+                            const userVal = user[key];
+                            if (JSON.stringify(aiVal) !== JSON.stringify(userVal)) {
+                                corrections[key] = { ai: aiVal, user: userVal };
+                            }
+                        }
+                        if (Object.keys(corrections).length === 0) corrections = null;
+                    } catch {
+                        corrections = null;
+                    }
+                    dataToUpdate.corrections = corrections ? JSON.stringify(corrections) : null;
+                }
+            }
+        }
 
         const updated = await prisma.parserLog.update({
             where: { id },
-            data: {
-                ...(quality !== undefined ? { quality } : {}),
-                ...(reviewed !== undefined ? { reviewed } : {}),
-                ...(testerNote !== undefined ? { testerNote } : {}),
-                ...(testerImage !== undefined ? { testerImage } : {}),
-                ...(archived !== undefined ? { archived, archivedAt: archived ? new Date() : null } : {}),
-            },
+            data: dataToUpdate,
         });
 
         return NextResponse.json({ success: true, log: updated });

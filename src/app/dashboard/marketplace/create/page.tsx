@@ -10,6 +10,7 @@ import { useUser } from "@clerk/nextjs";
 import html2canvas from "html2canvas";
 
 import { Suspense } from "react";
+import Image from "next/image";
 
 function CreateListingContent() {
     const searchParams = useSearchParams();
@@ -253,7 +254,7 @@ function CreateListingContent() {
                                     >
                                         ×
                                     </button>
-                                    <img src={testerImageBase64} alt="Screenshot preview" className="rounded-lg border border-white/20 w-full object-cover max-h-32" />
+                                    <Image src={testerImageBase64} alt="Screenshot preview" className="rounded-lg border border-white/20 w-full object-cover max-h-32"  width={400} height={400}/>
                                 </div>
                             )}
 

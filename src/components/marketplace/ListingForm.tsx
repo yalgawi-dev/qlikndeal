@@ -17,15 +17,23 @@ import Link from "next/link";
 
 const CATEGORY_MAP: Record<string, string> = {
     "רכב": "Vehicles",
+    "נדלן": "Real Estate",
+    "טלפונים": "Phones",
+    "מחשבים": "Computers",
     "אלקטרוניקה": "Electronics",
     "ריהוט": "Furniture",
-    "נדלן": "Real Estate",
+    "מוצרי חשמל לבית": "Appliances",
+    "מוצרי חשמל": "Appliances",
     "ביגוד ואופנה": "Fashion",
     "ספורט ופנאי": "Sports",
-    "בית וגינה": "HomeDecor",
     "תינוקות וילדים": "Kids",
+    "חיות מחמד": "Pets",
+    "כלי עבודה ומוסך": "Tools",
+    "בריאות וקוסמטיקה": "Health",
     "כלי נגינה": "Audio",
-    "ספרים ומדיה": "General",
+    "תחביבים ואמנות": "Hobbies",
+    "ספרים ומדיה": "Books",
+    "בית וגינה": "HomeDecor",
     "כללי": "General"
 };
 
@@ -184,6 +192,18 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
     const [showConflictWarning, setShowConflictWarning] = useState(false);
     const [originalAI, setOriginalAI] = useState<any>(null);
     const [aiKnowledge, setAiKnowledge] = useState<any>(null);
+
+    // Tester fields
+    const [testerName, setTesterName] = useState(user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : "אורח");
+    const [testerNote, setTesterNote] = useState("");
+    const [isTestMode, setIsTestMode] = useState(false);
+
+    useEffect(() => {
+        const storedAI = localStorage.getItem("smartListingAiResult");
+        if (storedAI) {
+            try { setOriginalAI(JSON.parse(storedAI)); } catch (e) { }
+        }
+    }, []);
 
     // Fetch AI Knowledge on mount
     useEffect(() => {
@@ -399,6 +419,18 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
         setMissingFields(prev => prev.filter(f => f !== field));
     };
 
+    const handleExtraChange = (key: string, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            extraData: prev.extraData.some(e => e.key === key)
+                ? prev.extraData.map(e => e.key === key ? { ...e, value } : e)
+                : [...prev.extraData, { key, value }]
+        }));
+    };
+    const getExtraVal = (key: string) => {
+        return formData.extraData.find(e => e.key === key)?.value || "";
+    };
+
 
     // --- Magic Logic ---
     const handleMagicParse = async () => {
@@ -456,8 +488,10 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
             console.log("Setting Form Data with Phone:", analysis.contactInfo);
 
-            // 3. Merge Data
             // Store original analysis for feedback loop
+            setOriginalAI(analysis);
+
+            // 3. Merge Data
             setOriginalAI(analysis);
 
             setFormData(prev => ({
@@ -504,6 +538,25 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
             setMissingFields(analysis.missingFields || []);
             setMode('manual');
+
+            // Log inline magic parsing explicitly
+            try {
+                if (!localStorage.getItem("currentParserLogId")) {
+                    const logRes = await fetch("/api/parser-log", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            originalText: textToAnalyze,
+                            aiParsed: JSON.stringify(analysis),
+                            testerName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : 'אורח',
+                            category: mappedCategory,
+                            inputMode: mode
+                        }),
+                    });
+                    const logData = await logRes.json();
+                    if (logData.id) localStorage.setItem("currentParserLogId", logData.id);
+                }
+            } catch (err) { console.error("Auto log failed", err) }
 
         } catch (error: any) {
             console.error("Magic parse failed:", error);
@@ -613,6 +666,42 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
         setLoading(true);
         try {
+            if (isTestMode) {
+                // Skips DB insertion - simulates success and sends feedback
+                if (originalAI) {
+                    const finalPrice = parseFloat(formData.price.toString().replace(/,/g, "") || "0");
+                    let correctionsCount = 0;
+                    const diffs: Record<string, any> = {};
+
+                    if (originalAI.title?.trim() !== formData.title?.trim()) { correctionsCount++; diffs.title = { ai: originalAI.title, user: formData.title }; }
+                    if (originalAI.price !== undefined && Number(originalAI.price) !== finalPrice) { correctionsCount++; diffs.price = { ai: originalAI.price, user: finalPrice }; }
+
+                    const aiCategoryMapped = Object.keys(CATEGORY_MAP).find(k => CATEGORY_MAP[k] === formData.category) || formData.category;
+                    if (originalAI.category !== aiCategoryMapped && CATEGORY_MAP[originalAI.category] !== formData.category) { correctionsCount++; diffs.category = { ai: originalAI.category, user: formData.category }; }
+
+                    const logId = localStorage.getItem("currentParserLogId");
+                    if (logId) {
+                        await fetch("/api/parser-log", {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                id: logId,
+                                quality: correctionsCount > 3 ? "bad" : (correctionsCount > 0 ? "partial" : "good"),
+                                reviewed: true,
+                                testerName: testerName,
+                                testerNote: testerNote,
+                                userFinal: { ...formData, price: finalPrice, extraData: extraDataObject },
+                                computedCorrections: Object.keys(diffs).length > 0 ? JSON.stringify(diffs) : null
+                            })
+                        });
+                        localStorage.removeItem("currentParserLogId");
+                    }
+                }
+                alert("המודעה נשמרה בלוגי הבדיקה בהצלחה (לא פורסמה).");
+                onComplete();
+                return;
+            }
+
             const res = isEditing && listingId
                 ? await updateListing(listingId, {
                     title: formData.title,
@@ -646,11 +735,71 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 // If we started with AI data, log the final result vs original for learning
                 if (originalAI) {
                     try {
+                        const finalPrice = parseFloat(formData.price.toString().replace(/,/g, "") || "0");
+
+                        // Smart Diff comparing only what AI outputted to what user submitted
+                        let correctionsCount = 0;
+                        const diffs: Record<string, any> = {};
+
+                        if (originalAI.title?.trim() !== formData.title?.trim()) {
+                            correctionsCount++;
+                            diffs.title = { ai: originalAI.title, user: formData.title };
+                        }
+
+                        if (originalAI.price !== undefined && Number(originalAI.price) !== finalPrice) {
+                            correctionsCount++;
+                            diffs.price = { ai: originalAI.price, user: finalPrice };
+                        }
+
+                        const aiCategoryMapped = Object.keys(CATEGORY_MAP).find(k => CATEGORY_MAP[k] === formData.category) || formData.category;
+                        if (originalAI.category !== aiCategoryMapped && CATEGORY_MAP[originalAI.category] !== formData.category) {
+                            correctionsCount++;
+                            diffs.category = { ai: originalAI.category, user: formData.category };
+                        }
+
+                        // Condition check
+                        const aiConditionMapped = Object.keys(CONDITION_MAP).find(k => CONDITION_MAP[k] === formData.condition) || formData.condition;
+                        if (originalAI.condition && originalAI.condition !== aiConditionMapped && CONDITION_MAP[originalAI.condition] !== formData.condition) {
+                            correctionsCount++;
+                            diffs.condition = { ai: originalAI.condition, user: formData.condition };
+                        }
+
+                        // Vehicle fields check
+                        if (formData.category === "Vehicles") {
+                            if (originalAI.make && originalAI.make !== formData.make) { correctionsCount++; diffs.make = { ai: originalAI.make, user: formData.make }; }
+                            if (originalAI.model && originalAI.model !== formData.model) { correctionsCount++; diffs.model = { ai: originalAI.model, user: formData.model }; }
+
+                            const aiYear = originalAI.attributes?.find((a: any) => isYearKey(a.key))?.value;
+                            if (aiYear && aiYear != formData.year) { correctionsCount++; diffs.year = { ai: aiYear, user: formData.year }; }
+                        }
+
+                        // Determine quality
+                        let autoQuality = "good";
+                        if (correctionsCount > 3) autoQuality = "bad";
+                        else if (correctionsCount > 0) autoQuality = "partial";
+
+                        const logId = localStorage.getItem("currentParserLogId");
+                        if (logId) {
+                            fetch("/api/parser-log", {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    id: logId,
+                                    quality: autoQuality,
+                                    reviewed: true,
+                                    userFinal: { ...formData, price: finalPrice, extraData: extraDataObject },
+                                    computedCorrections: Object.keys(diffs).length > 0 ? JSON.stringify(diffs) : null
+                                })
+                            }).catch(err => console.error("Feedback patch failed", err));
+
+                            localStorage.removeItem("currentParserLogId"); // clear it out
+                        }
+
                         const feedbackData = {
                             originalAI,
                             finalUser: {
                                 title: formData.title,
-                                price: parseFloat(formData.price.toString().replace(/,/g, "") || "0"),
+                                price: finalPrice,
                                 description: formData.description,
                                 category: formData.category,
                                 extraData: extraDataObject,
@@ -685,17 +834,24 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
     const getCategoryLabel = (cat: string) => {
         const map: Record<string, string> = {
-            "General": "כללי / אחר 📦",
-            "Furniture": "ריהוט 🛋️",
-            "Electronics": "אלקטרוניקה 📱",
-            "Audio": "אודיו וסאונד 🔊",
-            "Appliances": "מוצרי חשמל 🔌",
             "Vehicles": "רכב 🚗",
+            "Real Estate": "נדלן 🏠",
+            "Phones": "טלפונים 📱",
+            "Computers": "מחשבים 💻",
+            "Electronics": "אלקטרוניקה 📡",
+            "Furniture": "ריהוט 🛋️",
+            "Appliances": "מוצרי חשמל 🔌",
             "Fashion": "אופנה וביגוד 👗",
             "Sports": "ספורט ופנאי ⚽",
             "Kids": "תינוקות וילדים 🧸",
+            "Pets": "חיות מחמד 🐾",
+            "Tools": "כלי עבודה 🔧",
+            "Health": "בריאות וקוסמטיקה 💊",
+            "Audio": "אודיו וסאונד 🔊",
+            "Hobbies": "תחביבים ואמנות 🎨",
+            "Books": "ספרים ומדיה 📚",
             "HomeDecor": "עיצוב הבית 🖼️",
-            "Real Estate": "נדלן 🏠"
+            "General": "כללי וקשקושים 📦"
         };
         return map[cat] || cat;
     };
@@ -835,17 +991,24 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             <span className="truncate">{getCategoryLabel(formData.category)}</span>
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="General">כללי / אחר 📦</SelectItem>
-                            <SelectItem value="Furniture">ריהוט 🛋️</SelectItem>
-                            <SelectItem value="Electronics">אלקטרוניקה 📱</SelectItem>
-                            <SelectItem value="Audio">אודיו וסאונד 🔊</SelectItem>
-                            <SelectItem value="Appliances">מוצרי חשמל 🔌</SelectItem>
                             <SelectItem value="Vehicles">רכב 🚗</SelectItem>
+                            <SelectItem value="Real Estate">נדלן 🏠</SelectItem>
+                            <SelectItem value="Phones">טלפונים 📱</SelectItem>
+                            <SelectItem value="Computers">מחשבים 💻</SelectItem>
+                            <SelectItem value="Electronics">אלקטרוניקה 📡</SelectItem>
+                            <SelectItem value="Furniture">ריהוט 🛋️</SelectItem>
+                            <SelectItem value="Appliances">מוצרי חשמל 🔌</SelectItem>
                             <SelectItem value="Fashion">אופנה וביגוד 👗</SelectItem>
                             <SelectItem value="Sports">ספורט ופנאי ⚽</SelectItem>
                             <SelectItem value="Kids">תינוקות וילדים 🧸</SelectItem>
+                            <SelectItem value="Pets">חיות מחמד 🐾</SelectItem>
+                            <SelectItem value="Tools">כלי עבודה 🔧</SelectItem>
+                            <SelectItem value="Health">בריאות וקוסמטיקה 💊</SelectItem>
+                            <SelectItem value="Audio">אודיו וסאונד 🔊</SelectItem>
+                            <SelectItem value="Hobbies">תחביבים ואמנות 🎨</SelectItem>
+                            <SelectItem value="Books">ספרים ומדיה 📚</SelectItem>
                             <SelectItem value="HomeDecor">עיצוב הבית 🖼️</SelectItem>
-                            <SelectItem value="Real Estate">נדלן 🏠</SelectItem>
+                            <SelectItem value="General">כללי / אחר 📦</SelectItem>
                         </SelectContent>
                     </Select>
 
@@ -1013,6 +1176,167 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                     handleChange("kilometrage", val);
                                 }}
                                 placeholder="ק״מ"
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Specific Fields for Real Estate */}
+                {formData.category === "Real Estate" && (
+                    <div className="grid grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-3">
+                        <div className="space-y-2">
+                            <Label>מספר חדרים</Label>
+                            <Input
+                                value={getExtraVal("חדרים")}
+                                onChange={e => handleExtraChange("חדרים", e.target.value)}
+                                placeholder="3.5"
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>קומה</Label>
+                            <Input
+                                value={getExtraVal("קומה")}
+                                onChange={e => handleExtraChange("קומה", e.target.value)}
+                                placeholder="2 מתוך 4"
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>מ״ר</Label>
+                            <Input
+                                value={getExtraVal("מ\"ר")}
+                                onChange={e => handleExtraChange("מ\"ר", e.target.value)}
+                                placeholder="100"
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Specific Fields for Phones & Computers */}
+                {["Phones", "Computers"].includes(formData.category) && (
+                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
+                        <div className="space-y-2">
+                            <Label>יצרן</Label>
+                            <Input
+                                value={getExtraVal("יצרן")}
+                                onChange={e => handleExtraChange("יצרן", e.target.value)}
+                                placeholder="למשל: Apple, Samsung"
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>דגם</Label>
+                            <Input
+                                value={getExtraVal("דגם")}
+                                onChange={e => handleExtraChange("דגם", e.target.value)}
+                                placeholder="iPhone 13 / Galaxy S21"
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>נפח אחסון (GB)</Label>
+                            <Input
+                                value={getExtraVal("נפח אחסון")}
+                                onChange={e => handleExtraChange("נפח אחסון", e.target.value)}
+                                placeholder="128 / 256 / 512"
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                        {formData.category === "Computers" && (
+                            <div className="space-y-2">
+                                <Label>זיכרון (RAM)</Label>
+                                <Input
+                                    value={getExtraVal("זיכרון RAM")}
+                                    onChange={e => handleExtraChange("זיכרון RAM", e.target.value)}
+                                    placeholder="16GB"
+                                    className="bg-gray-800 border-gray-700"
+                                />
+                            </div>
+                        )}
+                        {formData.category === "Phones" && (
+                            <div className="space-y-2">
+                                <Label>בריאות סוללה (%)</Label>
+                                <Input
+                                    value={getExtraVal("סוללה")}
+                                    onChange={e => handleExtraChange("סוללה", e.target.value)}
+                                    placeholder="85%"
+                                    className="bg-gray-800 border-gray-700"
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Specific Fields for Furniture / Home Decor */}
+                {["Furniture", "HomeDecor"].includes(formData.category) && (
+                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
+                        <div className="space-y-2">
+                            <Label>חומר</Label>
+                            <Input
+                                value={getExtraVal("חומר")}
+                                onChange={e => handleExtraChange("חומר", e.target.value)}
+                                placeholder="עץ, מתכת, בד..."
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>צבע</Label>
+                            <Input
+                                value={getExtraVal("צבע")}
+                                onChange={e => handleExtraChange("צבע", e.target.value)}
+                                placeholder="שחור, לבן, אפור..."
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Specific Fields for Fashion & Kids */}
+                {["Fashion", "Kids"].includes(formData.category) && (
+                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
+                        <div className="space-y-2">
+                            <Label>מותג</Label>
+                            <Input
+                                value={getExtraVal("מותג")}
+                                onChange={e => handleExtraChange("מותג", e.target.value)}
+                                placeholder="Nike, Zara..."
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>מידה</Label>
+                            <Input
+                                value={getExtraVal("מידה")}
+                                onChange={e => handleExtraChange("מידה", e.target.value)}
+                                placeholder="למשל: M, 42, גיל 3-4"
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Specific Fields for Electronics / Audio / Appliances / Sports */}
+                {["Electronics", "Audio", "Appliances", "Sports"].includes(formData.category) && (
+                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
+                        <div className="space-y-2">
+                            <Label>יצרן / מותג</Label>
+                            <Input
+                                value={getExtraVal("יצרן")}
+                                onChange={e => handleExtraChange("יצרן", e.target.value)}
+                                placeholder="יצרן הפריט..."
+                                className="bg-gray-800 border-gray-700"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>שנת ייצור / קניה</Label>
+                            <Input
+                                value={formData.year}
+                                onChange={e => handleChange("year", e.target.value.replace(/\D/g, ""))}
+                                placeholder="202X"
+                                maxLength={4}
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
@@ -1272,8 +1596,54 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                     )}
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full h-14 text-lg font-bold bg-green-600 hover:bg-green-700 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-                    {loading ? <Loader2 className="animate-spin" /> : isEditing ? "עדכן מודעה" : "פרסם מודעה"}
+                {/* Tester AI AI options box */}
+                {originalAI && (
+                    <div className="bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-4 mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="w-5 h-5 text-indigo-400" />
+                            <h3 className="font-bold text-indigo-200">בדיקת יכולות AI</h3>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <Label className="text-gray-300">שם הבודק</Label>
+                                <Input
+                                    className="bg-black/40 border-indigo-500/20"
+                                    value={testerName}
+                                    onChange={e => setTesterName(e.target.value)}
+                                    placeholder="מי בודק עכשיו?"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-gray-300">הערות לתיקון (אופציונלי)</Label>
+                                <Input
+                                    className="bg-black/40 border-indigo-500/20"
+                                    value={testerNote}
+                                    onChange={e => setTesterNote(e.target.value)}
+                                    placeholder="למשל: לא זיהה יד 2, זיהה מחיר שגוי"
+                                />
+                            </div>
+                        </div>
+
+                        <label className="flex items-center gap-3 mt-4 p-3 bg-black/20 rounded-lg cursor-pointer hover:bg-black/40 transition-colors border border-indigo-500/10">
+                            <div className="relative flex items-center">
+                                <input
+                                    type="checkbox"
+                                    className="w-5 h-5 peer appearance-none border border-indigo-500/50 rounded bg-black checked:bg-indigo-500 checked:border-indigo-500 transition-all"
+                                    checked={isTestMode}
+                                    onChange={e => setIsTestMode(e.target.checked)}
+                                />
+                                <svg className="absolute w-3 h-3 text-white left-1 pointer-events-none opacity-0 peer-checked:opacity-100" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 5L5 9L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </div>
+                            <span className="text-indigo-200 font-medium">שמור למטרת בדיקת AI בלבד (אל תפרסם מודעה אמיתית ללוח)</span>
+                        </label>
+                    </div>
+                )}
+
+                <Button type="submit" disabled={loading} className={`w-full h-14 text-lg font-bold rounded-xl shadow-lg transition-all ${isTestMode ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/30" : "bg-green-600 hover:bg-green-700 shadow-green-500/30"}`}>
+                    {loading ? <Loader2 className="animate-spin" /> : isTestMode ? "שמור בדיקת AI" : isEditing ? "עדכן מודעה" : "פרסם מודעה"}
                 </Button>
             </form>
         </div>

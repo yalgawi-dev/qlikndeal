@@ -7,6 +7,7 @@ import { ArrowRight, X, Sparkles, MessageSquare, Camera } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import html2canvas from "html2canvas";
+import Image from "next/image";
 
 export default function CreateAiPage() {
     const router = useRouter();
@@ -203,7 +204,7 @@ export default function CreateAiPage() {
                                     >
                                         ×
                                     </button>
-                                    <img src={testerImageBase64} alt="Screenshot preview" className="rounded-lg border border-white/20 w-full object-cover max-h-32" />
+                                    <Image src={testerImageBase64} alt="Screenshot preview" className="rounded-lg border border-white/20 w-full object-cover max-h-32"  width={400} height={400}/>
                                 </div>
                             )}
                         </div>
