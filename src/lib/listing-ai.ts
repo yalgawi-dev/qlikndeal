@@ -672,7 +672,15 @@ export const CATEGORIES: Record<string, { keywords: string[]; subCategories: Rec
     },
     "מחשבים": {
         keywords: [
-            "Apple", "MacBook", "מקבוק", "Lenovo", "ThinkPad", "ASUS", "Dell", "HP", "Acer", "MSI", "מחשב", "לפטופ", "macbook", "notebook", "laptop", "PC", "שולחני", "intel", "i5", "i7", "i9", "ryzen", "SSD", "RAM", "מעבד", "כרטיס מסך", "GPU", "גיימינג", "מסך", "מדפסת", "ראוטר"
+            "Apple", "MacBook", "מקבוק", "iMac", "אימאק", "Mac Mini", "Mac Studio", "Mac Pro",
+            "Lenovo", "ThinkPad", "Legion", "IdeaPad", "LOQ", "Yoga",
+            "ASUS", "Zenbook", "Vivobook", "ROG", "TUF Gaming",
+            "Dell", "XPS", "Inspiron", "Alienware", "Latitude",
+            "HP", "Spectre", "Envy", "EliteBook", "Omen", "Victus",
+            "MSI", "Acer", "Predator", "Samsung", "Galaxy Book",
+            "Microsoft", "Surface",
+            "מחשב", "לפטופ", "macbook", "notebook", "laptop", "PC", "שולחני",
+            "intel", "i5", "i7", "i9", "ryzen", "SSD", "RAM", "מעבד", "כרטיס מסך", "GPU", "גיימינג", "מסך", "מדפסת", "ראוטר"
         ],
         subCategories: {
             "מחשבים ניידים / לפטופים": ["לפטופ", "מקבוק", "macbook", "notebook", "laptop", "מחשב נייד", "ThinkPad", "מחשב פרימיום", "מחשב קל", "נייד"],
@@ -945,6 +953,8 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         { key: "קומה", regex: /(\d{1,2})(?:st|nd|rd|th)?\s*קומה/i, format: (m) => ({ value: m[1] }) }, // Suffix support
         { key: "מידה", regex: /(?:מידה|גודל|size)\s*(XS|S|M|L|XL|XXL|XXXL|\d{2,3})/i, format: (m) => ({ value: m[1].toUpperCase() }) },
         { key: "מידה", regex: /(XS|S|M|L|XL|XXL|XXXL|\d{2,3})\s*(?:מידה|גודל)/i, format: (m) => ({ value: m[1].toUpperCase() }) }, // Suffix support
+        { key: "מידות", regex: /(?:מידות|גודל)\s*[-:]?\s*(\d{2,4})\s*(?:[xX×\*]|על)\s*(\d{2,4})(?:\s*(?:[xX×\*]|על)\s*(\d{2,4}))?(?:\s*(ס"מ|cm))?/i, format: (m) => ({ value: m[3] ? `${m[1]}x${m[2]}x${m[3]}` : `${m[1]}x${m[2]}`, unit: m[4] || 'ס"מ' }) },
+        { key: "מידות", regex: /(\d{2,4})\s*(?:[xX×\*]|על)\s*(\d{2,4})(?:\s*(?:[xX×\*]|על)\s*(\d{2,4}))?(?:\s+מידות)?(?:\s*(ס"מ|cm))?/i, format: (m) => ({ value: m[3] ? `${m[1]}x${m[2]}x${m[3]}` : `${m[1]}x${m[2]}`, unit: m[4] || 'ס"מ' }) },
         { key: "צבע", regex: /(?:צבע|color)\s*([\u05D0-\u05EA]{2,15}|black|white|red|blue|green)/i, format: (m) => ({ value: m[1] }) },
     ];
     const seen = new Set<string>();
