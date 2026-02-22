@@ -261,6 +261,7 @@ import { CAR_MODELS } from "./car-data";
 import { findPhoneModel, correctStorageSize, KNOWN_STORAGE_SIZES } from "./phone-data";
 import { correctTVSize, KNOWN_TV_SIZES, KNOWN_AC_BTU, KNOWN_WASHER_SIZES_KG } from "./electronics-data";
 import { findMarketplaceProduct } from "./marketplace-data";
+import { COMPUTER_MODELS } from "./computer-data";
 
 
 // --- Main Analyzer Function ---
@@ -389,11 +390,36 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
                         }
                     }
                 } else if (category === "מחשבים" || category === "טלפונים") {
-                    foundMake = kw;
-                    const afterBrand = clean.substring(clean.indexOf(kw) + kw.length).trim();
-                    const modelMatch = afterBrand.match(/^([a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+){0,3})/);
-                    if (modelMatch && modelMatch[1] && !/^\d+$/.test(modelMatch[1])) {
-                        foundModel = modelMatch[1].trim();
+                    let canonicalBrand = kw;
+                    if (category === "מחשבים") {
+                        for (const brandKey of Object.keys(COMPUTER_MODELS)) {
+                            if (brandKey.toLowerCase() === kw.toLowerCase()) {
+                                canonicalBrand = brandKey;
+                                break;
+                            }
+                        }
+                        if (["macbook", "מקבוק"].includes(kw.toLowerCase())) canonicalBrand = "Apple";
+                        if (["thinkpad"].includes(kw.toLowerCase())) canonicalBrand = "Lenovo";
+                    }
+
+                    foundMake = canonicalBrand;
+
+                    if (category === "מחשבים" && COMPUTER_MODELS[foundMake]) {
+                        for (const model of COMPUTER_MODELS[foundMake]) {
+                            const escapedModel = model.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                            if (new RegExp(`(?:^|[\\s,.-])${escapedModel}(?:$|[\\s,.-])`, "i").test(clean)) {
+                                foundModel = model;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!foundModel) {
+                        const afterBrand = clean.substring(clean.indexOf(kw) + kw.length).trim();
+                        const modelMatch = afterBrand.match(/^([a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+){0,3})/);
+                        if (modelMatch && modelMatch[1] && !/^\d+$/.test(modelMatch[1])) {
+                            foundModel = modelMatch[1].trim();
+                        }
                     }
                 }
                 break;
