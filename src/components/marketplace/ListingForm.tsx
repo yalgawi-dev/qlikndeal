@@ -550,6 +550,15 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
             const mappedCategory = CATEGORY_MAP[analysis.category] || "General";
             const mappedCondition = CONDITION_MAP[analysis.condition] || "Used";
 
+            if (["Computers", "Phones", "Electronics", "Appliances"].includes(mappedCategory)) {
+                if (analysis.make && !filteredAttributes.some(a => a.key === "יצרן")) {
+                    filteredAttributes.push({ key: "יצרן", value: analysis.make });
+                }
+                if (analysis.model && !filteredAttributes.some(a => a.key === "דגם")) {
+                    filteredAttributes.push({ key: "דגם", value: analysis.model });
+                }
+            }
+
             const kmAttr = analysis.attributes.find(a => a.key.includes("קילומט") || a.key.includes("ק\"מ") || a.key === "קמ");
             console.log("Kilometrage Debug:", {
                 allAttributes: analysis.attributes,
@@ -1321,8 +1330,8 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 <div className="space-y-2">
                                     <Label>זיכרון (RAM)</Label>
                                     <Input
-                                        value={getExtraVal("זיכרון RAM")}
-                                        onChange={e => handleExtraChange("זיכרון RAM", e.target.value)}
+                                        value={getExtraVal("RAM")}
+                                        onChange={e => handleExtraChange("RAM", e.target.value)}
                                         placeholder="16GB"
                                         className="bg-gray-800 border-gray-700"
                                     />
@@ -1330,8 +1339,8 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 <div className="space-y-2">
                                     <Label>מעבד (CPU)</Label>
                                     <Input
-                                        value={getExtraVal("מעבד (CPU)")}
-                                        onChange={e => handleExtraChange("מעבד (CPU)", e.target.value)}
+                                        value={getExtraVal("מעבד")}
+                                        onChange={e => handleExtraChange("מעבד", e.target.value)}
                                         placeholder="למשל: Intel i7 / Apple M2"
                                         className="bg-gray-800 border-gray-700"
                                     />
@@ -1646,31 +1655,35 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         <Label className="flex items-center gap-2 text-purple-300">
                             <Sparkles className="w-3 h-3" /> מפרט מקצועי (זוהה ל{formData.category === "General" ? "מודעה" : formData.category})
                         </Label>
-                        {formData.extraData.map((field, index) => (
-                            <div key={index} className="flex gap-2 items-center">
-                                <Input
-                                    placeholder="שם המאפיין"
-                                    value={field.key}
-                                    onChange={(e) => updateField(index, e.target.value, field.value)}
-                                    className="bg-gray-800 border-gray-700"
-                                />
-                                <Input
-                                    placeholder="ערך"
-                                    value={field.value}
-                                    onChange={(e) => updateField(index, field.key, e.target.value)}
-                                    className={`bg-gray-800 border-gray-700 ${field.value.includes("?") ? "border-yellow-500 text-yellow-500" : ""}`}
-                                />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => removeField(index)}
-                                    className="text-gray-400 hover:text-red-400"
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        ))}
+                        {formData.extraData.map((field, index) => {
+                            const hiddenKeys = ["יצרן", "דגם", "נפח אחסון", "RAM", "מעבד", "גודל מסך", "סוג המחשב", "כרטיס מסך", "מערכת הפעלה", "לוח אם", "ספק כוח", "מארז וקירור", "החרגות", "סוללה", "חדרים", "קומה", "מ\"ר", "חומר", "צבע", "מותג", "מידה"];
+                            if (hiddenKeys.includes(field.key)) return null;
+                            return (
+                                <div key={index} className="flex gap-2 items-center">
+                                    <Input
+                                        placeholder="שם המאפיין"
+                                        value={field.key}
+                                        onChange={(e) => updateField(index, e.target.value, field.value)}
+                                        className="bg-gray-800 border-gray-700"
+                                    />
+                                    <Input
+                                        placeholder="ערך"
+                                        value={field.value}
+                                        onChange={(e) => updateField(index, field.key, e.target.value)}
+                                        className={`bg-gray-800 border-gray-700 ${field.value.includes("?") ? "border-yellow-500 text-yellow-500" : ""}`}
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => removeField(index)}
+                                        className="text-gray-400 hover:text-red-400"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            );
+                        })}
                         <Button
                             type="button"
                             variant="outline"

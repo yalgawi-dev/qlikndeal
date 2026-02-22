@@ -389,6 +389,7 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
                         }
                     }
                 } else if (category === "מחשבים" || category === "טלפונים") {
+                    foundMake = kw;
                     const afterBrand = clean.substring(clean.indexOf(kw) + kw.length).trim();
                     const modelMatch = afterBrand.match(/^([a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+){0,3})/);
                     if (modelMatch && modelMatch[1] && !/^\d+$/.test(modelMatch[1])) {
@@ -418,20 +419,24 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
         smartTitle = `${subCategory || "דירה"} ${rooms ? rooms + " חדרים" : ""} ${city}`.trim();
     } else {
         if (foundBrand) {
-            if (category === "מחשבים" || category === "טלפונים") {
+            if (category === "מחשבים") {
+                let prefix = "מחשב";
+                if (subCategory === "מחשבים ניידים / לפטופים" || clean.includes("נייד") || clean.includes("לפטופ")) prefix = "מחשב נייד";
+                else if (subCategory === "מחשבים שולחניים (PC)") prefix = "מחשב נייח";
+                smartTitle = `${prefix} ${foundBrand}`;
+                if (foundModel) smartTitle += ` ${foundModel}`;
+            } else if (category === "טלפונים") {
                 smartTitle = `${foundBrand}`;
+                if (foundModel) smartTitle += ` ${foundModel}`;
             } else {
                 let prefix = subCategory || category;
-                // shorten subcategories for title
-                if (prefix === "מחשבים ניידים / לפטופים") prefix = "לפטופ";
                 smartTitle = `${prefix} ${foundBrand}`;
-            }
-            if (foundModel) smartTitle += ` ${foundModel}`;
+                if (foundModel) smartTitle += ` ${foundModel}`;
 
-            const storageObj = attributes.find(a => a.key === "נפח אחסון");
-            if (storageObj) {
-                // If it's a small number without unit, and TB was inferred or explicit, let's use the unit.
-                smartTitle += ` ${storageObj.value}${storageObj.unit ? storageObj.unit : ''}`;
+                const storageObj = attributes.find(a => a.key === "נפח אחסון");
+                if (storageObj) {
+                    smartTitle += ` ${storageObj.value}${storageObj.unit ? storageObj.unit : ''}`;
+                }
             }
         }
     }
@@ -859,6 +864,7 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         { key: "RAM", regex: /(?:RAM|זיכרון|זכרון)\s*[-:]?\s*(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה)\s*(RAM|זיכרון|זכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         { key: "מעבד", regex: /(?:מעבד|processor)\s*[-:]?\s*([a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+){0,4})/i, format: (m) => ({ value: m[1].trim() }) },
+        { key: "מעבד", regex: /(?:^|[\s,.-])(Intel(?:\s+Core)?(?:\s+Ultra)?\s+[i\d][\w\-]*|AMD\s+Ryzen\s+\d[\w\-]*|Apple\s+M[1-4](?:\s+(?:Pro|Max|Ultra))?)(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "מערכת הפעלה", regex: /(?:מערכת\s*הפעלה לפני\s*[-:]?\s*)?(Windows\s*\d+|MacOS|Linux|ChromeOS|Ubuntu|iOS|Android|אנדרואיד)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "עוצמה", regex: /(\d{1,5})\s*W(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1], unit: "W" }) },
         { key: "סוללה", regex: /(\d{3,6})\s*(mAh|אמפר)/i, format: (m) => ({ value: m[1], unit: "mAh" }) },
