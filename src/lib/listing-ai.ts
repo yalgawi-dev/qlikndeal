@@ -894,19 +894,24 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         },
         // Test expiry from speech: "טסט עד 05 חודש מאי 2026"
         { key: "טסט עד", regex: /(?:טסט|test)\s*(?:עד|until)?[:\s-]*(\d{1,2}[.\/-]\d{2,4})/i, format: (m) => ({ value: m[1] }) },
+        { key: "תאריך קנייה", regex: /(?:נקנה|נקניתי|רכשתי|קניתי|purchased?)\s*(?:ב|ב-|\s)([0-9]{1,2}[\/.\-][0-9]{1,2}[\/.\-][0-9]{2,4}|[0-9]{1,2}[\/.][0-9]{2,4})/i, format: (m) => ({ value: m[1] }) },
         // Fallback for general storage: look behind to ensure we didn't just match RAM, but since RAM is captured first (sorting) it's ok
         { key: "נפח אחסון", regex: /(?:נפח|אחסון|דיסק|SSD|HDD)\s*[-:]?\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
         { key: "נפח אחסון", regex: /(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
 
         { key: "RAM", regex: /(?:RAM|זיכרון|זכרון)\s*[-:]?\s*(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה)\s*(RAM|זיכרון|זכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+        // CPU: match explicit keyword then capture the model name (no 'אינטל' here - it causes CUP to be captured instead of i5-xxx)
+        { key: "מעבד", regex: /(?:מעבד|processor)\s*(?:אינטל|Intel)?\s*(?:CU[PB]|CPU)?\s*[-:]?\s*(i[3579]-[\w]+)/i, format: (m) => ({ value: m[1].trim() }) },
+        { key: "מעבד", regex: /(?:CU[PB]|CPU)\s*[-:]\s*(i[3579]-[\w]+)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "מעבד", regex: /(?:מעבד|processor)\s*[-:]?\s*([a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+){0,4})/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "מעבד", regex: /(?:^|[\s,.-])(Intel(?:\s+Core)?(?:\s+Ultra)?\s+[i\d][\w\-]*|AMD\s+Ryzen\s+\d[\w\-]*|Apple\s+M[1-4](?:\s+(?:Pro|Max|Ultra))?)(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1].trim() }) },
+        { key: "מעבד", regex: /(?:^|[\s(,.-])(i[3579]-\d{4,5}[A-Z]{0,2})(?:[\s),.-]|$)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "מערכת הפעלה", regex: /(?:מערכת\s*הפעלה לפני\s*[-:]?\s*)?(Windows\s*\d+|MacOS|Linux|ChromeOS|Ubuntu|iOS|Android|אנדרואיד)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "עוצמה", regex: /(\d{1,5})\s*W(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1], unit: "W" }) },
         { key: "סוללה", regex: /(\d{3,6})\s*(mAh|אמפר)/i, format: (m) => ({ value: m[1], unit: "mAh" }) },
         { key: "מצב סוללה", regex: /(\d{2,3})%\s*(?:סוללה|battery)/i, format: (m) => ({ value: m[1], unit: "%" }) },
-        { key: "גודל מסך", regex: /(\d{1,3}(?:\.\d)?)\s*(?:אינץ|אינצ'|inch|")/i, format: (m) => ({ value: m[1], unit: "אינץ'" }) },
+        { key: "גודל מסך", regex: /(\d{1,3}(?:\.\d)?)\s*(?:אינץ|אינצ'|אינ'ץ|inch|")/i, format: (m) => ({ value: m[1], unit: "אינץ'" }) },
         { key: "רזולוציה", regex: /\b(1920|2560|3840|7680)[xX×](1080|1440|2160|4320)\b/, format: (m) => ({ value: `${m[1]}x${m[2]}` }) },
         { key: "תדר רענון", regex: /(\d{2,3})\s*(Hz|הרץ)\b/i, format: (m) => ({ value: m[1], unit: "Hz" }) },
         { key: "מצלמה", regex: /(\d{1,3})\s*(MP|מגה\s*פיקסל)\b/i, format: (m) => ({ value: m[1], unit: "MP" }) },
