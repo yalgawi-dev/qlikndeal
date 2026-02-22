@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
     try {
-        const { id, quality, reviewed, testerNote, archived } = await req.json();
+        const { id, quality, reviewed, testerNote, testerImage, archived } = await req.json();
         if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
 
         const updated = await prisma.parserLog.update({
@@ -100,6 +100,7 @@ export async function PATCH(req: NextRequest) {
                 ...(quality !== undefined ? { quality } : {}),
                 ...(reviewed !== undefined ? { reviewed } : {}),
                 ...(testerNote !== undefined ? { testerNote } : {}),
+                ...(testerImage !== undefined ? { testerImage } : {}),
                 ...(archived !== undefined ? { archived, archivedAt: archived ? new Date() : null } : {}),
             },
         });

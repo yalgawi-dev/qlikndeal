@@ -260,6 +260,13 @@ export default function AdminParserLogsPage() {
                                                 </div>
                                             )}
 
+                                            {log.testerImage && (
+                                                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                                                    <p className="text-xs text-gray-400 font-semibold mb-2">📸 צילום מסך מצורף</p>
+                                                    <img src={log.testerImage} alt="Screenshot attachment" className="rounded border border-white/20 max-w-full md:max-w-[400px]" />
+                                                </div>
+                                            )}
+
                                             {/* Corrections */}
                                             {corrections && correctionCount > 0 && (
                                                 <div>

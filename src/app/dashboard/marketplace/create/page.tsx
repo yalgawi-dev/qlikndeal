@@ -19,18 +19,35 @@ function CreateListingContent() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [showNoteModal, setShowNoteModal] = useState(false);
     const [testerNote, setTesterNote] = useState("");
+    const [testerImageBase64, setTesterImageBase64] = useState<string | null>(null);
 
     const submitNote = async () => {
         const logId = localStorage.getItem("currentParserLogId");
-        if (!testerNote.trim()) return;
+        if (!testerNote.trim() && !testerImageBase64) return;
         await fetch("/api/parser-log", {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: logId || "unknown", testerNote: testerNote.trim() }),
+            body: JSON.stringify({
+                id: logId || "unknown",
+                testerNote: testerNote.trim(),
+                testerImage: testerImageBase64
+            }),
         });
         setTesterNote("");
+        setTesterImageBase64(null);
         setShowNoteModal(false);
         alert("תודה! ההערה נשמרה ✓");
+    };
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setTesterImageBase64(reader.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
     useEffect(() => {
@@ -185,12 +202,30 @@ function CreateListingContent() {
                             onChange={e => setTesterNote(e.target.value)}
                             placeholder="לדוגמה: מחיר יצא 0, לא זיהה שהוא כמו חדש, כינוי שגוי..."
                             rows={4}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-gray-600 outline-none focus:border-amber-500/40 resize-none"
+                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-gray-600 outline-none focus:border-amber-500/40 resize-none mb-3"
                             autoFocus
                         />
+
+                        <div className="mb-4">
+                            <label className="block text-xs text-gray-400 mb-2">📸 צרף צילום מסך (אופציונלי):</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                className="block w-full text-xs text-slate-400
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-full file:border-0
+                                  file:text-xs file:font-semibold
+                                  file:bg-amber-500/10 file:text-amber-400
+                                  hover:file:bg-amber-500/20"
+                            />
+                            {testerImageBase64 && (
+                                <img src={testerImageBase64} alt="Preview" className="mt-2 max-h-32 rounded border border-white/10 object-contain" />
+                            )}
+                        </div>
                         <button
                             onClick={submitNote}
-                            disabled={!testerNote.trim()}
+                            disabled={!testerNote.trim() && !testerImageBase64}
                             className="w-full mt-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
                         >
                             שמור הערה ✓

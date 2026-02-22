@@ -285,6 +285,9 @@ model ParserLog {
   // Free-text note from the tester explaining what was wrong
   testerNote String?
 
+  // Image upload for tester note (e.g., screenshot)
+  testerImage String?
+
   // Metadata
   testerName String? // who was testing (partner's name)
   category   String? // detected category
