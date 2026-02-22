@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useRef } from "react";
 import { ListingForm } from "@/components/marketplace/ListingForm";
 import { Navbar } from "@/components/Navbar";
 import { useUser } from "@clerk/nextjs";
@@ -24,6 +24,44 @@ function CreateListingContent() {
     const [testerNote, setTesterNote] = useState("");
     const [testerImageBase64, setTesterImageBase64] = useState<string | null>(null);
     const [isCapturing, setIsCapturing] = useState(false);
+
+    const [noteWindowPos, setNoteWindowPos] = useState({ x: -1, y: -1 });
+    const noteWindowRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (showNoteModal && noteWindowPos.x === -1 && typeof window !== 'undefined') {
+            setNoteWindowPos({ x: Math.max(20, window.innerWidth - 450), y: Math.max(20, window.innerHeight - 500) });
+        }
+    }, [showNoteModal, noteWindowPos.x]);
+
+    const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'BUTTON' || target.closest('button')) return;
+
+        const el = noteWindowRef.current;
+        if (!el) return;
+
+        el.setPointerCapture(e.pointerId);
+
+        const startX = e.clientX - noteWindowPos.x;
+        const startY = e.clientY - noteWindowPos.y;
+
+        const onPointerMove = (moveEvent: PointerEvent) => {
+            setNoteWindowPos({
+                x: moveEvent.clientX - startX,
+                y: moveEvent.clientY - startY
+            });
+        };
+
+        const onPointerUp = (upEvent: PointerEvent) => {
+            el.releasePointerCapture(upEvent.pointerId);
+            el.removeEventListener('pointermove', onPointerMove);
+            el.removeEventListener('pointerup', onPointerUp);
+        };
+
+        el.addEventListener('pointermove', onPointerMove);
+        el.addEventListener('pointerup', onPointerUp);
+    };
 
     useEffect(() => {
         // Capture mode ONCE before URL cleanup removes it
@@ -166,64 +204,68 @@ function CreateListingContent() {
             </button>
 
             {showNoteModal && (
-                <div id="ai-note-modal-container" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl" dir="rtl">
-                        <h3 className="text-lg font-bold mb-1">💬 הוסף הערה לבודק</h3>
-                        <p className="text-sm text-gray-400 mb-4">מה לא היה טוב בפענוח ה-AI?</p>
-                        <textarea
-                            value={testerNote}
-                            onChange={(e) => setTesterNote(e.target.value)}
-                            placeholder="כמה מילים על מה ה-AI פספס..."
-                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-gray-600 outline-none focus:border-amber-500/40 resize-none min-h-[120px] mb-3"
-                            suppressHydrationWarning
-                        />
+                <div
+                    id="ai-note-modal-container"
+                    ref={noteWindowRef}
+                    onPointerDown={handlePointerDown}
+                    style={{ left: noteWindowPos.x === -1 ? 'auto' : noteWindowPos.x, top: noteWindowPos.y === -1 ? 'auto' : noteWindowPos.y }}
+                    className="fixed z-[100] bg-slate-900 border border-amber-500/50 rounded-3xl p-6 max-w-md w-full shadow-2xl cursor-grab active:cursor-grabbing"
+                    dir="rtl"
+                >
+                    <h3 className="text-lg font-bold mb-1 pointer-events-none">💬 הוסף הערה לבודק</h3>
+                    <p className="text-sm text-gray-400 mb-4 pointer-events-none">גרור את התיבה במידת הצורך. מה לא היה טוב בפענוח ה-AI?</p>
+                    <textarea
+                        value={testerNote}
+                        onChange={(e) => setTesterNote(e.target.value)}
+                        placeholder="כמה מילים על מה ה-AI פספס..."
+                        className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-gray-600 outline-none focus:border-amber-500/40 resize-none min-h-[120px] mb-3"
+                        suppressHydrationWarning
+                    />
 
-                        <div className="mb-4">
-                            <button
-                                onClick={captureScreenshot}
-                                disabled={isCapturing}
-                                className="w-full mb-3 flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-sm font-medium transition-all"
-                            >
-                                {isCapturing ? "מצלם..." : <><Camera className="w-4 h-4" /> צלם את המסך הנוכחי</>}
-                            </button>
+                    <div className="mb-4">
+                        <button
+                            onClick={captureScreenshot}
+                            disabled={isCapturing}
+                            className="w-full mb-3 flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-sm font-medium transition-all"
+                        >
+                            {isCapturing ? "מצלם..." : <><Camera className="w-4 h-4" /> צלם את המסך הנוכחי</>}
+                        </button>
 
-                            {testerImageBase64 && (
-                                <div className="mb-4 relative group">
-                                    <button
-                                        onClick={() => setTesterImageBase64(null)}
-                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                                        title="הסר תמונה"
-                                    >
-                                        ×
-                                    </button>
-                                    <Image src={testerImageBase64} alt="Screenshot preview" width={400} height={300} className="rounded-lg border border-white/20 w-full object-cover max-h-32" />
-                                </div>
-                            )}
+                        {testerImageBase64 && (
+                            <div className="mb-4 relative group">
+                                <button
+                                    onClick={() => setTesterImageBase64(null)}
+                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                    title="הסר תמונה"
+                                >
+                                    ×
+                                </button>
+                                <Image src={testerImageBase64} alt="Screenshot preview" width={400} height={300} className="rounded-lg border border-white/20 w-full object-cover max-h-32" />
+                            </div>
+                        )}
 
-                        </div>
+                    </div>
 
-                        <div className="flex gap-3 mt-4">
-                            <button
-                                onClick={submitNote}
-                                disabled={!testerNote.trim() && !testerImageBase64}
-                                className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
-                            >
-                                שמור הערה ✓
-                            </button>
-                            <button
-                                onClick={() => setShowNoteModal(false)}
-                                className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 text-sm transition-all"
-                            >
-                                ביטול
-                            </button>
-                        </div>
+                    <div className="flex gap-3 mt-4">
+                        <button
+                            onClick={submitNote}
+                            disabled={!testerNote.trim() && !testerImageBase64}
+                            className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
+                        >
+                            שמור הערה ✓
+                        </button>
+                        <button
+                            onClick={() => setShowNoteModal(false)}
+                            className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 text-sm transition-all"
+                        >
+                            ביטול
+                        </button>
                     </div>
                 </div>
             )}
         </div>
     );
 }
-
 export default function CreateListingPage() {
     return (
         <Suspense fallback={<div className="min-h-screen bg-black text-white flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div></div>}>
