@@ -1596,49 +1596,63 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                     )}
                 </div>
 
-                {/* Tester AI AI options box */}
+                {/* Tester AI floating panel */}
                 {originalAI && (
-                    <div className="bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-4 mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Sparkles className="w-5 h-5 text-indigo-400" />
-                            <h3 className="font-bold text-indigo-200">בדיקת יכולות AI</h3>
-                        </div>
+                    <div className="fixed bottom-6 left-6 z-[100] flex flex-col gap-2 items-start pointer-events-none" dir="rtl">
+                        {!isTestMode && !testerNote && (
+                            <button
+                                type="button"
+                                onClick={(e) => { e.preventDefault(); document.getElementById('ai-tester-panel')?.classList.toggle('hidden'); }}
+                                className="pointer-events-auto bg-indigo-600/90 hover:bg-indigo-500 text-white rounded-full px-4 py-3 shadow-lg shadow-indigo-500/30 flex items-center gap-2 border border-indigo-400/50 transition-all hover:scale-105 backdrop-blur-md"
+                                title="הוסף הערת בדיקה"
+                            >
+                                <Sparkles className="w-5 h-5" />
+                                <span className="font-bold text-sm">בדיקת יכולות AI</span>
+                            </button>
+                        )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <Label className="text-gray-300">שם הבודק</Label>
-                                <Input
-                                    className="bg-black/40 border-indigo-500/20"
-                                    value={testerName}
-                                    onChange={e => setTesterName(e.target.value)}
-                                    placeholder="מי בודק עכשיו?"
-                                />
+                        <div id="ai-tester-panel" className={`pointer-events-auto bg-indigo-950/95 border border-indigo-500/50 rounded-2xl p-4 w-80 shadow-2xl backdrop-blur-xl transition-all ${isTestMode || testerNote ? 'block' : 'hidden'} animate-in slide-in-from-bottom-5`}>
+                            <div className="flex justify-between items-center mb-3 border-b border-indigo-500/20 pb-2">
+                                <h3 className="text-sm font-bold text-indigo-300 flex items-center gap-2"><Sparkles className="w-4 h-4" /> הגדרות בדיקת AI</h3>
+                                <button type="button" onClick={() => document.getElementById('ai-tester-panel')?.classList.add('hidden')} className="text-indigo-400 hover:text-white leading-none text-xl p-1">×</button>
                             </div>
-                            <div className="space-y-1">
-                                <Label className="text-gray-300">הערות לתיקון (אופציונלי)</Label>
-                                <Input
-                                    className="bg-black/40 border-indigo-500/20"
-                                    value={testerNote}
-                                    onChange={e => setTesterNote(e.target.value)}
-                                    placeholder="למשל: לא זיהה יד 2, זיהה מחיר שגוי"
-                                />
+
+                            <div className="space-y-3">
+                                <div>
+                                    <Label className="text-xs text-indigo-200">שם הבודק</Label>
+                                    <Input
+                                        className="h-8 text-sm bg-black/40 border-indigo-500/30 focus:border-indigo-400"
+                                        value={testerName}
+                                        onChange={e => setTesterName(e.target.value)}
+                                        placeholder="מי בודק עכשיו?"
+                                    />
+                                </div>
+                                <div>
+                                    <Label className="text-xs text-indigo-200">הערות בזמן אמת</Label>
+                                    <Textarea
+                                        rows={3}
+                                        className="text-sm bg-black/40 border-indigo-500/30 resize-none focus:border-indigo-400"
+                                        value={testerNote}
+                                        onChange={e => setTesterNote(e.target.value)}
+                                        placeholder="למשל: לא זיהה יד 2, זיהה מחיר שגוי..."
+                                    />
+                                </div>
+                                <label className="flex items-center gap-3 mt-4 p-2 bg-black/30 rounded-lg cursor-pointer hover:bg-black/50 transition-colors border border-indigo-500/20">
+                                    <div className="relative flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            className="w-4 h-4 peer appearance-none border border-indigo-500/50 rounded bg-black checked:bg-indigo-500 transition-all"
+                                            checked={isTestMode}
+                                            onChange={e => setIsTestMode(e.target.checked)}
+                                        />
+                                        <svg className="absolute w-2.5 h-2.5 text-white left-0.5 pointer-events-none opacity-0 peer-checked:opacity-100" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 5L5 9L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <span className="text-indigo-200 text-xs font-medium">בדיקה בלבד (אל תפרסם אמיתי)</span>
+                                </label>
                             </div>
                         </div>
-
-                        <label className="flex items-center gap-3 mt-4 p-3 bg-black/20 rounded-lg cursor-pointer hover:bg-black/40 transition-colors border border-indigo-500/10">
-                            <div className="relative flex items-center">
-                                <input
-                                    type="checkbox"
-                                    className="w-5 h-5 peer appearance-none border border-indigo-500/50 rounded bg-black checked:bg-indigo-500 checked:border-indigo-500 transition-all"
-                                    checked={isTestMode}
-                                    onChange={e => setIsTestMode(e.target.checked)}
-                                />
-                                <svg className="absolute w-3 h-3 text-white left-1 pointer-events-none opacity-0 peer-checked:opacity-100" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1 5L5 9L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </div>
-                            <span className="text-indigo-200 font-medium">שמור למטרת בדיקת AI בלבד (אל תפרסם מודעה אמיתית ללוח)</span>
-                        </label>
                     </div>
                 )}
 

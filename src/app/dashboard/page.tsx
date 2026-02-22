@@ -57,6 +57,7 @@ const DEMO_SHIPMENTS = [
 ];
 
 import { Suspense } from "react";
+import Image from "next/image";
 
 function DashboardContent() {
     const { user, isLoaded } = useUser();
@@ -268,7 +269,7 @@ function DashboardContent() {
                         <div className="relative shrink-0">
                             <div className="w-16 h-16 rounded-full bg-muted border-2 border-background shadow-md overflow-hidden">
                                 {dbImage || user?.imageUrl ? (
-                                    <img src={dbImage || user?.imageUrl} alt="Profile" className="w-full h-full object-cover" />
+                                    <Image src={dbImage || user?.imageUrl || ""} alt="Profile" className="w-full h-full object-cover" width={400} height={400} />
                                 ) : (
                                     <div className="w-full h-full bg-primary/20 animate-pulse" />
                                 )}

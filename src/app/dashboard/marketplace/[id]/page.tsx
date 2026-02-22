@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, ShoppingBag, ArrowRight, MapPin, Calendar, Truck, ShieldCheck, Share2, Heart, User, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
 
 export default function ListingPage() {
     const params = useParams();
@@ -143,7 +144,7 @@ export default function ListingPage() {
                                         onClick={() => setSelectedImage(img)}
                                         className={`relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === img ? "border-purple-500 ring-2 ring-purple-500/30" : "border-transparent opacity-70 hover:opacity-100"}`}
                                     >
-                                        <img src={img} alt={`thumbnail-${idx}`} className="w-full h-full object-cover" />
+                                        <Image src={img} alt={`thumbnail-${idx}`} className="w-full h-full object-cover"  width={400} height={400}/>
                                     </button>
                                 ))}
                             </div>
@@ -261,7 +262,7 @@ export default function ListingPage() {
                                 <CardContent className="p-6 flex items-center gap-4">
                                     <div className="w-14 h-14 bg-gray-800 rounded-full flex items-center justify-center overflow-hidden border border-gray-700">
                                         {listing.seller.imageUrl ? (
-                                            <img src={listing.seller.imageUrl} alt={listing.seller.firstName} className="w-full h-full object-cover" />
+                                            <Image src={listing.seller.imageUrl} alt={listing.seller.firstName} className="w-full h-full object-cover"  width={400} height={400}/>
                                         ) : (
                                             <User className="w-8 h-8 text-gray-500" />
                                         )}

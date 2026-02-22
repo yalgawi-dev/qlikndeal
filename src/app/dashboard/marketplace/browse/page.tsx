@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { getListings } from "@/app/actions/marketplace";
 import { Heart, X, ChevronLeft, RotateCcw, Star, MapPin, Clock, Tag, Layers } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Listing {
     id: string;
@@ -147,7 +148,7 @@ export default function BrowsePage() {
                                             <div key={l.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
                                                 <span className="text-gray-500 text-sm w-5">{i + 1}.</span>
                                                 {imgs[0] && (
-                                                    <img src={imgs[0]} alt="" className="w-12 h-12 rounded-xl object-cover" />
+                                                    <Image src={imgs[0]} alt="" className="w-12 h-12 rounded-xl object-cover"  width={400} height={400}/>
                                                 )}
                                                 <div className="flex-1 min-w-0">
                                                     <p className="font-medium truncate">{l.title}</p>
@@ -363,7 +364,7 @@ export default function BrowsePage() {
                             {currentListing.seller && (
                                 <div className="flex items-center gap-3 pt-1 border-t border-white/5">
                                     {currentListing.seller.imageUrl ? (
-                                        <img src={currentListing.seller.imageUrl} alt="" className="w-8 h-8 rounded-full object-cover border border-white/10" />
+                                        <Image src={currentListing.seller.imageUrl} alt="" className="w-8 h-8 rounded-full object-cover border border-white/10"  width={400} height={400}/>
                                     ) : (
                                         <div className="w-8 h-8 rounded-full bg-purple-500/30 flex items-center justify-center text-sm font-bold text-purple-300">
                                             {(currentListing.seller.firstName?.[0] || "?")}

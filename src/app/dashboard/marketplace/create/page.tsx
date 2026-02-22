@@ -1,83 +1,18 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { ListingForm } from "@/components/marketplace/ListingForm";
 import { Navbar } from "@/components/Navbar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare, Camera } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
-import html2canvas from "html2canvas";
-
-import { Suspense } from "react";
-import Image from "next/image";
 
 function CreateListingContent() {
     const searchParams = useSearchParams();
-    const { user } = useUser();
 
     // Store mode in state so URL cleanup doesn't lose it
     const [mode, setMode] = useState<string | null>(null);
     const [isSmartMode, setIsSmartMode] = useState(false);
     const [initialSmartData, setInitialSmartData] = useState<any>(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [showNoteModal, setShowNoteModal] = useState(false);
-    const [testerNote, setTesterNote] = useState("");
-    const [testerImageBase64, setTesterImageBase64] = useState<string | null>(null);
-    const [isCapturing, setIsCapturing] = useState(false);
-
-    const submitNote = async () => {
-        const logId = localStorage.getItem("currentParserLogId");
-        if (!testerNote.trim() && !testerImageBase64) return;
-
-        const testerName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'אורח' : 'אורח';
-
-        await fetch("/api/parser-log", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id: logId || "unknown",
-                testerNote: testerNote.trim(),
-                testerImage: testerImageBase64,
-                testerName
-            }),
-        });
-        setTesterNote("");
-        setTesterImageBase64(null);
-        setShowNoteModal(false);
-        alert("תודה! ההערה נשמרה ✓");
-    };
-
-    const captureScreenshot = async () => {
-        setIsCapturing(true);
-        try {
-            // Temporarily hide the note modal itself so it's not in the screenshot
-            const modalElement = document.getElementById("note-modal-container");
-            if (modalElement) modalElement.style.display = 'none';
-
-            // Allow a small delay for UI to update
-            await new Promise(resolve => setTimeout(resolve, 50));
-
-            const canvas = await html2canvas(document.body, {
-                useCORS: true,
-                scale: 1,
-                logging: false,
-                ignoreElements: (element) => element.id === "note-modal-container"
-            });
-
-            // Restore modal visibility
-            if (modalElement) modalElement.style.display = 'block';
-
-            // Downscale image somewhat to save bandwidth
-            const base64Image = canvas.toDataURL("image/jpeg", 0.6);
-            setTesterImageBase64(base64Image);
-        } catch (error) {
-            console.error("Screenshot capture failed:", error);
-            alert("שגיאה בצילום המסך, אנא נסה שוב.");
-        } finally {
-            setIsCapturing(false);
-        }
-    };
 
     useEffect(() => {
         // Capture mode ONCE before URL cleanup removes it
@@ -86,20 +21,13 @@ function CreateListingContent() {
             setMode(m);
             setIsSmartMode(m === "smart");
         }
-        console.log("CreateListingPage mounted, mode:", m);
         if (m === "smart") {
             const draft = localStorage.getItem("smartListingDraft");
-            console.log("Found draft in localStorage:", draft ? "Yes" : "No");
-
             if (draft) {
                 try {
                     const parsed = JSON.parse(draft);
-                    console.log("Parsed draft data:", parsed);
-
                     if (parsed && typeof parsed === 'object') {
                         setInitialSmartData(parsed);
-                        // Clear draft after use to prevent stale data on future loads? 
-                        // localStorage.removeItem("smartListingDraft"); 
                     }
                 } catch (e) {
                     console.error("Failed to parse smart draft", e);
@@ -107,14 +35,7 @@ function CreateListingContent() {
             }
         }
         setIsLoaded(true);
-    }, [mode, searchParams]);
-
-    // Force re-render if initialSmartData changes
-    useEffect(() => {
-        if (initialSmartData) {
-            console.log("Setting initialSmartData for form:", initialSmartData);
-        }
-    }, [initialSmartData]);
+    }, [searchParams]);
 
     // Extract shared data (legacy/query param based)
     const title = searchParams.get("title") || "";
@@ -126,9 +47,7 @@ function CreateListingContent() {
     if (imagesParam) {
         try {
             images = JSON.parse(imagesParam);
-        } catch (e) {
-            console.error("Failed to parse images param", e);
-        }
+        } catch (e) { }
     }
 
     // Clean up URL to prevent 431 Request Header Fields Too Large error on Server Actions
@@ -155,121 +74,35 @@ function CreateListingContent() {
     }
 
     return (
-        <>
-            <div className="min-h-screen bg-black text-white pb-20">
-                <Navbar />
-                <div className="container mx-auto px-4 pt-8">
-                    <div className="max-w-2xl mx-auto bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-                        <div className="p-6 border-b border-gray-800 relative flex items-center justify-center">
-                            <h1 className="text-2xl font-bold text-center">
-                                {isSmartMode ? "עריכת מודעה חכמה" : "יצירת מודעה חדשה"}
-                            </h1>
-                            <a
-                                href="/dashboard/marketplace"
-                                className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors text-white"
-                                title="ביטול וחזרה"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                            </a>
-                        </div>
+        <div className="min-h-screen bg-black text-white pb-20">
+            <Navbar />
+            <div className="container mx-auto px-4 pt-8">
+                <div className="max-w-2xl mx-auto bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+                    <div className="p-6 border-b border-gray-800 relative flex items-center justify-center">
+                        <h1 className="text-2xl font-bold text-center">
+                            {isSmartMode ? "עריכת מודעה חכמה" : "יצירת מודעה חדשה"}
+                        </h1>
+                        <a
+                            href="/dashboard/marketplace"
+                            className="absolute left-6 top-1/2 -translate-y-1/2 p-2 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors text-white"
+                            title="ביטול וחזרה"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                        </a>
+                    </div>
 
-                        {/* Tester feedback banner — only shown when testerName is set */}
-                        {isSmartMode && typeof window !== "undefined" && localStorage.getItem("testerName") && (
-                            <div className="mx-6 mt-4 flex items-center justify-between gap-3 bg-amber-500/10 border border-amber-500/30 rounded-xl px-4 py-3">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-amber-400 text-lg">🧪</span>
-                                    <div>
-                                        <p className="text-amber-300 text-sm font-semibold">מצב בדיקה — {localStorage.getItem("testerName")}</p>
-                                        <p className="text-amber-400/70 text-xs">בדוק את השדות שמילא ה-AI ותקן אם צריך</p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => setShowNoteModal(true)}
-                                    className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-sm font-bold transition-all"
-                                >
-                                    <MessageSquare className="w-4 h-4" />
-                                    הוסף הערה
-                                </button>
-                            </div>
-                        )}
-
-                        <div className="p-6">
-                            <ListingForm
-                                key={initialSmartData ? 'smart-loaded' : 'default'}
-                                onComplete={() => window.location.href = "/dashboard/marketplace"}
-                                onCancel={() => window.location.href = "/dashboard/marketplace"}
-                                initialData={initialSmartData || sharedData}
-                                initialMagicText={!initialSmartData ? sharedData.magicText : undefined}
-                            />
-                        </div>
+                    <div className="p-6">
+                        <ListingForm
+                            key={initialSmartData ? 'smart-loaded' : 'default'}
+                            onComplete={() => window.location.href = "/dashboard/marketplace"}
+                            onCancel={() => window.location.href = "/dashboard/marketplace"}
+                            initialData={initialSmartData || sharedData}
+                            initialMagicText={!initialSmartData ? sharedData.magicText : undefined}
+                        />
                     </div>
                 </div>
             </div>
-
-            {/* Note panel — small floating panel, doesn't block the form */}
-            {showNoteModal && (
-                <div
-                    id="note-modal-container"
-                    className="fixed bottom-6 left-6 z-50 w-80 bg-slate-900 border border-amber-500/30 rounded-2xl shadow-2xl shadow-black/60"
-                    dir="rtl"
-                >
-                    {/* Panel header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-                        <span className="text-sm font-bold text-amber-400">💬 הערה לבודק</span>
-                        <button
-                            onClick={() => setShowNoteModal(false)}
-                            className="text-gray-500 hover:text-white transition-colors text-lg leading-none"
-                        >
-                            ×
-                        </button>
-                    </div>
-
-                    {/* Panel body */}
-                    <div className="p-4">
-                        <p className="text-xs text-gray-500 mb-3">מה לא היה מדויק? כתוב בזמן שאתה ממלא את הטופס 👇</p>
-                        <textarea
-                            value={testerNote}
-                            onChange={e => setTesterNote(e.target.value)}
-                            placeholder="לדוגמה: מחיר יצא 0, לא זיהה שהוא כמו חדש, כינוי שגוי..."
-                            rows={4}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-gray-600 outline-none focus:border-amber-500/40 resize-none mb-3"
-                            autoFocus
-                        />
-
-                        <div className="mb-4">
-                            <button
-                                onClick={captureScreenshot}
-                                disabled={isCapturing}
-                                className="w-full mb-3 flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-sm font-medium transition-all"
-                            >
-                                {isCapturing ? "מצלם..." : <><Camera className="w-4 h-4" /> צלם את המסך הנוכחי</>}
-                            </button>
-
-                            {testerImageBase64 && (
-                                <div className="mb-4 relative group">
-                                    <button
-                                        onClick={() => setTesterImageBase64(null)}
-                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                                        title="הסר תמונה"
-                                    >
-                                        ×
-                                    </button>
-                                    <Image src={testerImageBase64} alt="Screenshot preview" className="rounded-lg border border-white/20 w-full object-cover max-h-32"  width={400} height={400}/>
-                                </div>
-                            )}
-
-                            <button
-                                onClick={submitNote}
-                                disabled={!testerNote.trim() && !testerImageBase64}
-                                className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
-                            >
-                                שמור הערה ✓
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
+        </div>
     );
 }
 

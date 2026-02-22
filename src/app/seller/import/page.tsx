@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { parseDealText, ParsedDeal } from "@/lib/parsing/dealParser";
 import { parseLinkAction } from "@/app/actions/parsing"; // Import Server Action
 import { Loader2, Wand2, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function SellerImportPage() {
     const router = useRouter();
@@ -197,7 +198,7 @@ export default function SellerImportPage() {
                                     <label className="text-xs text-gray-500">תמונות שזוהו ({parsedData.images.length})</label>
                                     <div className="flex gap-2 overflow-x-auto pb-2">
                                         {parsedData.images.map((img, idx) => (
-                                            <img key={idx} src={img} className="w-16 h-16 rounded object-cover border border-gray-700" alt="Preview" />
+                                            <Image key={idx} src={img} className="w-16 h-16 rounded object-cover border border-gray-700" alt="Preview"  width={400} height={400}/>
                                         ))}
                                     </div>
                                 </div>

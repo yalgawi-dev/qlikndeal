@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, CheckCircle, XCircle, AlertCircle, RefreshCw, Download, ArrowRight, Trash2 } from "lucide-react";
+import { Sparkles, RefreshCw, Download, ArrowRight, Trash2, ChevronUp, ChevronDown, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface ParserLog {
     id: string;
@@ -168,6 +169,107 @@ export default function AdminParserLogsPage() {
                     </div>
                 </div>
 
+                {/* AI Learning Progress Metric */}
+                {(() => {
+                    const reviewedLogs = logs.filter(l => l.reviewed);
+                    let score = 0;
+                    if (reviewedLogs.length > 0) {
+                        const goodCount = reviewedLogs.filter(l => l.quality === "good").length;
+                        const partialCount = reviewedLogs.filter(l => l.quality === "partial").length;
+                        // Score calculation: Good = 100%, Partial = 50%, Bad = 0%
+                        const totalPoints = (goodCount * 1) + (partialCount * 0.5);
+                        score = Math.round((totalPoints / reviewedLogs.length) * 100);
+                    }
+
+                    const categoryScores = Object.entries(
+                        reviewedLogs.reduce((acc, log) => {
+                            const cat = log.category || 'כללי';
+                            if (!acc[cat]) acc[cat] = { total: 0, points: 0, bad: 0, good: 0 };
+                            acc[cat].total++;
+                            if (log.quality === 'good') { acc[cat].points += 1; acc[cat].good++; }
+                            else if (log.quality === 'partial') acc[cat].points += 0.5;
+                            else if (log.quality === 'bad') acc[cat].bad++;
+                            return acc;
+                        }, {} as Record<string, { total: number, points: number, bad: number, good: number }>)
+                    ).map(([category, stats]) => ({
+                        category,
+                        score: Math.round((stats.points / stats.total) * 100),
+                        total: stats.total,
+                        bad: stats.bad,
+                        good: stats.good
+                    })).sort((a, b) => b.total - a.total);
+
+                    return (
+                        <div className="mb-8 space-y-4">
+                            <div className="p-6 bg-gradient-to-br from-indigo-900/30 to-purple-900/10 border border-indigo-500/20 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+                                <div>
+                                    <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                                        <Sparkles className="text-purple-400 w-5 h-5" /> מדד ביצועי AI
+                                    </h3>
+                                    <p className="text-sm text-gray-400 max-w-md">
+                                        הציון משקלל את כל הבדיקות שעברו בקרה (טוב = 100%, חלקי = 50%, גרוע = 0%).
+                                        כל תיקון ולמידה משפרים את המודל לאורך זמן.
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <div className="text-right">
+                                        <div className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-400">
+                                            {reviewedLogs.length > 0 ? `${score}%` : "n/a"}
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-1">רמת דיוק כללית</div>
+                                    </div>
+                                    <div className="w-32 h-32 relative">
+                                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                            <path
+                                                className="text-gray-800"
+                                                strokeDasharray="100, 100"
+                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                stroke="currentColor" strokeWidth="3" fill="none"
+                                            />
+                                            <path
+                                                className={`${score > 80 ? 'text-emerald-500' : score > 50 ? 'text-amber-500' : 'text-red-500'}`}
+                                                strokeDasharray={`${score}, 100`}
+                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round"
+                                            />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Category Specific Breakdown */}
+                            {categoryScores.length > 0 && (
+                                <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                                    <h4 className="text-sm font-semibold text-gray-300 mb-3 px-2">ציוני דיוק לפי קטגוריות:</h4>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                                        {categoryScores.map(c => (
+                                            <div key={c.category} className="bg-white/5 rounded-xl p-3 flex flex-col justify-between">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className="text-xs font-bold truncate max-w-[80px]" title={c.category}>{c.category}</span>
+                                                    <span className={`text-xs font-bold ${c.score > 80 ? 'text-emerald-400' : c.score > 50 ? 'text-amber-400' : 'text-red-400'}`}>
+                                                        {c.score}%
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-gray-800 rounded-full h-1.5 mb-1">
+                                                    <div
+                                                        className={`h-1.5 rounded-full ${c.score > 80 ? 'bg-emerald-500' : c.score > 50 ? 'bg-amber-500' : 'bg-red-500'}`}
+                                                        style={{ width: `${c.score}%` }}
+                                                    ></div>
+                                                </div>
+                                                <div className="text-[10px] text-gray-500 flex justify-between">
+                                                    <span>{c.total} בדיקות</span>
+                                                    {c.bad > 0 && <span className="text-red-400/80" title="שגיאות">{c.bad}✗</span>}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })()}
+
                 {/* Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-8">
                     {[
@@ -273,7 +375,7 @@ export default function AdminParserLogsPage() {
                                             {log.testerImage && (
                                                 <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                                                     <p className="text-xs text-gray-400 font-semibold mb-2">📸 צילום מסך מצורף</p>
-                                                    <img src={log.testerImage} alt="Screenshot attachment" className="rounded border border-white/20 max-w-full md:max-w-[400px]" />
+                                                    <Image src={log.testerImage} alt="Screenshot attachment" width={400} height={300} className="rounded border border-white/20 object-contain max-w-full md:max-w-[400px]" />
                                                 </div>
                                             )}
 

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, Check, Package, MapPin, DollarSign, Calendar, Upload, Camera, CreditCard, Shield, User, Smartphone, X, Box, CheckCircle, Truck, Scale, Facebook, Twitter, Link as LinkIcon, Share2, MessageCircle, Sparkles, Star, AlertTriangle, Plus, Loader2, Image as ImageIcon } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { createShipment } from "@/app/actions";
+import Image from "next/image";
 
 interface ShipmentFormProps {
     mode: "public-link" | "dashboard";
@@ -475,7 +476,7 @@ export function ShipmentForm({ mode, userMode = "seller", onCancel, dbUser, init
 
                                     {details.images.map((img, i) => (
                                         <div key={i} className="relative flex-shrink-0 w-9 h-9 rounded-lg overflow-hidden border border-border group">
-                                            <img src={img} alt={`Preview ${i}`} className="w-full h-full object-cover" />
+                                            <Image src={img} alt={`Preview ${i}`} className="w-full h-full object-cover"  width={400} height={400}/>
                                             <button
                                                 type="button"
                                                 onClick={() => removeImage(i)}

@@ -5,6 +5,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { CheckCircle, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default async function SyncProfilePage({ searchParams }: { searchParams: { imageUrl?: string } }) {
     const user = await currentUser();
@@ -52,7 +53,7 @@ export default async function SyncProfilePage({ searchParams }: { searchParams: 
                     <h1 className="text-2xl font-bold text-foreground mb-2">הושלם!</h1>
                     <p className="text-muted-foreground mb-6">{message}</p>
                     <div className="w-24 h-24 rounded-full overflow-hidden mx-auto mb-6 border-4 border-green-500/20">
-                        <img src={imageUrl} alt="New Profile" className="w-full h-full object-cover" />
+                        <Image src={imageUrl} alt="New Profile" className="w-full h-full object-cover"  width={400} height={400}/>
                     </div>
                     <Link href="/dashboard">
                         <Button className="w-full font-bold">חזרה לדשבורד</Button>

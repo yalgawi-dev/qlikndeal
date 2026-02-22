@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { BuyerRequestCard } from "./BuyerRequestCard";
+import Image from "next/image";
 
 interface SearchResult {
     id: string;
@@ -261,7 +262,7 @@ export default function SearchInterface() {
                                     try { images = JSON.parse(selectedResult.images || "[]"); } catch (e) { }
                                     return images.length > 0 ? (
                                         <div className="w-full h-full relative group">
-                                            <img src={images[0]} alt="Item" className="w-full h-full object-cover" />
+                                            <Image src={images[0]} alt="Item" className="w-full h-full object-cover"  width={400} height={400}/>
                                             {/* Gradient Overlay */}
                                             <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent opacity-90" />
                                         </div>
@@ -310,7 +311,7 @@ export default function SearchInterface() {
                                 <div className="flex items-center gap-4 bg-gray-900/50 p-4 rounded-2xl border border-gray-800/50">
                                     <div className="w-12 h-12 rounded-full bg-gray-800 overflow-hidden border-2 border-gray-700 flex-shrink-0">
                                         {selectedResult.sellerImage ? (
-                                            <img src={selectedResult.sellerImage} className="w-full h-full object-cover" alt={selectedResult.sellerName} />
+                                            <Image src={selectedResult.sellerImage} className="w-full h-full object-cover" alt={selectedResult.sellerName}  width={400} height={400}/>
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-lg font-bold text-gray-500">
                                                 {selectedResult.sellerName.charAt(0)}
