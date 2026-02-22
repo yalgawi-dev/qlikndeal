@@ -213,7 +213,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
     const dragStartRef = useRef({ x: 0, y: 0, panelX: 0, panelY: 0 });
 
     const handlePointerDownPanel = (e: React.PointerEvent<HTMLDivElement>) => {
-        if ((e.target as HTMLElement).closest('button')) return;
+        if ((e.target as HTMLElement).closest('button, input, textarea, label')) return;
         setIsDraggingPanel(true);
         dragStartRef.current = { x: e.clientX, y: e.clientY, panelX: panelPos.x, panelY: panelPos.y };
         e.currentTarget.setPointerCapture(e.pointerId);
@@ -1661,14 +1661,9 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             </div>
 
                             <div className="space-y-3">
-                                <div>
-                                    <Label className="text-xs text-indigo-200">שם הבודק</Label>
-                                    <Input
-                                        className="h-8 text-sm bg-black/40 border-indigo-500/30 focus:border-indigo-400"
-                                        value={testerName}
-                                        onChange={e => setTesterName(e.target.value)}
-                                        placeholder="מי בודק עכשיו?"
-                                    />
+                                <div className="bg-indigo-900/40 rounded-lg p-2.5 flex items-center justify-between border border-indigo-500/20">
+                                    <span className="text-xs text-indigo-300">בודק:</span>
+                                    <span className="text-sm font-bold text-indigo-100 bg-indigo-500/20 px-2 py-0.5 rounded">{testerName}</span>
                                 </div>
                                 <div>
                                     <Label className="text-xs text-indigo-200">הערות בזמן אמת</Label>
