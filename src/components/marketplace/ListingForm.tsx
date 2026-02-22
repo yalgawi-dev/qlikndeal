@@ -1337,7 +1337,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>גודל מסך (אינץ')</Label>
+                                    <Label>גודל מסך (אינץ&apos;)</Label>
                                     <Input
                                         value={getExtraVal("גודל מסך")}
                                         onChange={e => handleExtraChange("גודל מסך", e.target.value)}
