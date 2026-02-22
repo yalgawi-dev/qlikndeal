@@ -1336,6 +1336,16 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                         className="bg-gray-800 border-gray-700"
                                     />
                                 </div>
+                                <div className="space-y-2">
+                                    <Label>גודל מסך (אינץ')</Label>
+                                    <Input
+                                        value={getExtraVal("גודל מסך")}
+                                        onChange={e => handleExtraChange("גודל מסך", e.target.value)}
+                                        placeholder="13.3 / 15.6 / 27"
+                                        className="bg-gray-800 border-gray-700 font-mono text-left"
+                                        dir="ltr"
+                                    />
+                                </div>
                                 <div className="space-y-2 col-span-2">
                                     <Label>סוג המחשב</Label>
                                     <Select value={getExtraVal("סוג המחשב")} onValueChange={val => handleExtraChange("סוג המחשב", val)}>
