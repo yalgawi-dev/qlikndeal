@@ -253,6 +253,13 @@ export function normalizeSpokenText(text: string): string {
     t = t.replace(/\b(?:אס)\s*(\d{1,2})\b/gi, "S$1");
     t = t.replace(/\b(?:אי\s*10|i10)\b/gi, "i10");
 
+    // Normalize 'איי מאק' → 'iMac'
+    t = t.replace(/\b(?:איי?\s*מאק|אימאק)\b/gi, 'iMac');
+    // Normalize 'מקבוק' → 'MacBook'
+    t = t.replace(/\bמקבוק\b/gi, 'MacBook');
+    // Strip trademark symbols that break regex patterns
+    t = t.replace(/[\u00AE\u2122\u00A9]/g, '');
+
     return t;
 }
 
@@ -864,8 +871,8 @@ function detectCategory(text: string): { category: string; subCategory: string }
 }
 
 function detectCondition(text: string): { condition: string; conditionDetails: string | null } {
-    if (/חדש\s*באריזה|חדש\s*בניילון|sealed|אריזה\s*מקורית/.test(text)) return { condition: "new", conditionDetails: "חדש באריזה מקורית" };
-    if (/\bחדש\b/.test(text) && !/כמו\s*חדש/i.test(text)) return { condition: "new", conditionDetails: "חדש" };
+    if (/חדש\s*באריזה|חדש\s*בניילון|sealed|אריזה\s*מקורית|אריזה\s*סגורהלא\s*ניפתח/.test(text)) return { condition: "new", conditionDetails: "חדש באריזה מקורית" };
+    if (/\bחדש\s*לגמרי|חדש\b/.test(text) && !/כמו\s*חדש/i.test(text)) return { condition: "new", conditionDetails: "חדש" };
     if (/כמו\s*חדש|כחדש|מצב\s*מצוין|10\/10|9\.5\/10|שמורה?\s*כחדשה?/.test(text)) return { condition: "like_new", conditionDetails: "כמו חדש" };
     if (/מצב(?:\s+[\s\S]{0,15})?\s*טוב|טוב\s*מאוד|שמור|8\/10|9\/10/.test(text)) return { condition: "good", conditionDetails: "מצב טוב" };
     if (/משומש|יד\s*(?:שנייה|2|שניה)|סימני\s*שימוש|שריטות|פגמים/.test(text)) return { condition: "used", conditionDetails: "משומש" };
@@ -909,7 +916,9 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
 
         { key: "RAM", regex: /(?:RAM|זיכרון|זכרון)\s*[-:]?\s*(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה)\s*(RAM|זיכרון|זכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
-        // CPU: match explicit keyword then capture the model name (no 'אינטל' here - it causes CUP to be captured instead of i5-xxx)
+        // CPU: Apple chip voiced as 'שבב M3' / 'שבב M4'
+        { key: "מעבד", regex: /(?:שבב|chip)\s*(M[1-4](?:\s+(?:Pro|Max|Ultra))?)/i, format: (m) => ({ value: `Apple ${m[1].trim()}` }) },
+        // CPU: match explicit keyword then capture the model name (no אינטל here - it causes CUP to be captured instead of i5-xxx)
         { key: "מעבד", regex: /(?:מעבד|processor)\s*(?:אינטל|Intel)?\s*(?:CU[PB]|CPU)?\s*[-:]?\s*(i[3579]-[\w]+)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "מעבד", regex: /(?:CU[PB]|CPU)\s*[-:]\s*(i[3579]-[\w]+)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "מעבד", regex: /(?:מעבד|processor)\s*[-:]?\s*([a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+){0,4})/i, format: (m) => ({ value: m[1].trim() }) },
