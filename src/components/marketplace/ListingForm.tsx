@@ -1317,15 +1317,42 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             />
                         </div>
                         {formData.category === "Computers" && (
-                            <div className="space-y-2">
-                                <Label>זיכרון (RAM)</Label>
-                                <Input
-                                    value={getExtraVal("זיכרון RAM")}
-                                    onChange={e => handleExtraChange("זיכרון RAM", e.target.value)}
-                                    placeholder="16GB"
-                                    className="bg-gray-800 border-gray-700"
-                                />
-                            </div>
+                            <>
+                                <div className="space-y-2">
+                                    <Label>זיכרון (RAM)</Label>
+                                    <Input
+                                        value={getExtraVal("זיכרון RAM")}
+                                        onChange={e => handleExtraChange("זיכרון RAM", e.target.value)}
+                                        placeholder="16GB"
+                                        className="bg-gray-800 border-gray-700"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>מעבד (CPU)</Label>
+                                    <Input
+                                        value={getExtraVal("מעבד (CPU)")}
+                                        onChange={e => handleExtraChange("מעבד (CPU)", e.target.value)}
+                                        placeholder="למשל: Intel i7 / Apple M2"
+                                        className="bg-gray-800 border-gray-700"
+                                    />
+                                </div>
+                                <div className="space-y-2 col-span-2">
+                                    <Label>סוג המחשב</Label>
+                                    <Select value={getExtraVal("סוג המחשב")} onValueChange={val => handleExtraChange("סוג המחשב", val)}>
+                                        <SelectTrigger className="bg-gray-800 border-gray-700 text-right" dir="rtl">
+                                            <SelectValue placeholder="בחר סוג מחשב" />
+                                        </SelectTrigger>
+                                        <SelectContent dir="rtl">
+                                            <SelectItem value="מחשב נייד (Laptop)">מחשב נייד (Laptop)</SelectItem>
+                                            <SelectItem value="מחשב נייח (Desktop)">מחשב נייח (Desktop)</SelectItem>
+                                            <SelectItem value="מחשב גיימינג">מחשב גיימינג</SelectItem>
+                                            <SelectItem value="מחשב All-in-One">מחשב All-in-One</SelectItem>
+                                            <SelectItem value="מיני מחשב (Mini PC)">מיני מחשב (Mini PC)</SelectItem>
+                                            <SelectItem value="תחנת עבודה (Workstation)">תחנת עבודה (Workstation)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </>
                         )}
                         {formData.category === "Phones" && (
                             <div className="space-y-2">
