@@ -478,6 +478,13 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
         smartTitle = smartTitle.charAt(0).toUpperCase() + smartTitle.slice(1);
     }
 
+    if (foundMake && !attributes.some(a => a.key === "יצרן")) {
+        attributes.unshift({ key: "יצרן", value: foundMake });
+    }
+    if (foundModel && !attributes.some(a => a.key === "דגם")) {
+        attributes.unshift({ key: "דגם", value: foundModel });
+    }
+
     return {
         title: smartTitle,
         price,
