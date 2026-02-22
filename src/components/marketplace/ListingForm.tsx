@@ -165,7 +165,6 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
     const [highlightInput, setHighlightInput] = useState("");
     const [showPhoneUpdate, setShowPhoneUpdate] = useState(false);
 
-    // Client-Side Rescue: If phone is missing but exists in description, try to find it
     useEffect(() => {
         if (!formData.contactPhone && formData.description) {
             console.log("Attempting client-side phone rescue...");
@@ -175,7 +174,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 setFormData(prev => ({ ...prev, contactPhone: analysis.contactInfo || "" }));
             }
         }
-    }, [formData.description]);
+    }, [formData.description, formData.contactPhone]);
 
     // New State for "Other" and Conflict Detection
     const [customMake, setCustomMake] = useState("");
@@ -351,7 +350,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
         setMode('magic_text');
         // slight delay to let state update, then trigger parse
         await new Promise(r => setTimeout(r, 50));
-        handleMagicParse(cleanTranscript);
+        handleMagicParse();
     };
 
     // --- Dynamic Fields Logic ---
@@ -1006,7 +1005,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>קילומטראז'</Label>
+                            <Label>קילומטראז&apos;</Label>
                             <Input
                                 value={formData.kilometrage ? Number(formData.kilometrage.toString().replace(/,/g, "")).toLocaleString() : ""}
                                 onChange={e => {

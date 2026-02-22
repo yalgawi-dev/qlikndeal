@@ -1,0 +1,26 @@
+[33m9beed08[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m ux: note input becomes small floating panel (bottom-left), doesn't block form
+[33mb9cc1f0[m feat: archive batch system - logs move to archive instead of delete
+[33me7637fa[m feat: add clear-all button (auto-exports CSV first) + ai-training-archive folder
+[33m63dfe7b[m feat: add delete button to admin logs + DELETE API endpoint
+[33m0a45f1d[m feat: add back button to admin page + fix testerNote PATCH
+[33ma64d8f4[m fix: PATCH /api/parser-log now saves testerNote correctly
+[33m1a1ad36[m fix: AI parser - price at start of line, test date 2-digit year (8/2608/2026)
+[33m1f9a2a5[m fix: add walla email to admin whitelist
+[33me09e3c8[m feat: add admin shortcut button to marketplace page header
+[33mac21360[m fix: extraData key/value inputs swapped params in updateField call
+[33mdac874d[m fix: move tester note to prominent banner inside form, remove floating button
+[33me1b427c[m fix: persist mode in state so note button survives URL cleanup
+[33m85a7755[m fix: JSX syntax error in create page - wrap in fragment
+[33meab553d[m feat: admin link in navbar, note button on create form page
+[33mac5fee7[m feat: AI parser logging system - ParserLog model, admin dashboard, tester notes
+[33mca7c76b[m fix: remove prisma db push from build (not needed for Vercel)
+[33mafa929e[m chore: add prisma db push to build for Vercel deploy
+[33me18475a[m feat: marketplace browse cards, AI parser improvements, phone/electronics/marketplace data
+[33m8c5162a[m fix: optimize buyer identification flow and prevent dashboard redirect
+[33m0322352[m fix: switch prisma provider to postgresql for vercel deployment
+[33meb75d6d[m feat: enhance guest flow,fix what sapp link, add public negotioation
+[33me395c8a[m Fix Vercel build: Add postinstall and force-dynamic
+[33m1b5087f[m Fix duplicate className attribute
+[33m3a1d806[m Fix unused DialogFooter import
+[33m13e2452[m Fix missing useEffect import
+[33m736980a[m initial commit

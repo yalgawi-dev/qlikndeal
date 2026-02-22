@@ -36,7 +36,7 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
     const negotiations = flexibleData.negotiations || {};
 
     const shipmentStatus = shipment.status;
-    const isSellerApproved = shipmentStatus === "SELLER_APPROVED" || flexibleData.sellerApprovedAt;
+    const isSellerApproved = shipmentStatus === ("AGREED" as any) || flexibleData.sellerApprovedAt;
 
     // Check viewer identity
     const viewerIsSeller = user && seller.clerkId === user.id;
@@ -190,7 +190,7 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
 
     if (dealType === 'closed') {
         currentStep = 'payment'; // Skip negotiation
-    } else if (negotiationStatus === 'agreed' || shipment.status === 'AGREED' || shipment.status === 'SELLER_APPROVED') {
+    } else if (negotiationStatus === 'agreed' || shipment.status === ('AGREED' as any) || shipment.status === ('SELLER_APPROVED' as any)) {
         currentStep = 'payment';
     }
 

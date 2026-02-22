@@ -23,6 +23,7 @@ interface SearchResult {
     packageSize?: string;
     sellerImage?: string;
     isFlexible?: boolean;
+    type?: 'internal' | 'external';
 }
 
 interface BuyerRequest {

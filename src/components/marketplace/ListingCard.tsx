@@ -87,7 +87,7 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                             <Edit className="w-4 h-4" />
                         </Button>
                         <Button
-                            variant="destructive"
+                            variant="ghost"
                             size="icon"
                             className="h-8 w-8 bg-black/60 backdrop-blur-md border border-white/10 text-red-400 hover:bg-red-600 hover:text-white rounded-full"
                             onClick={(e) => {

@@ -56,7 +56,9 @@ const DEMO_SHIPMENTS = [
     }
 ];
 
-export default function DashboardPage() {
+import { Suspense } from "react";
+
+function DashboardContent() {
     const { user, isLoaded } = useUser();
     const router = useRouter();
     const searchParams = useSearchParams(); // Added searchParams
@@ -318,78 +320,114 @@ export default function DashboardPage() {
                 {/* MAIN DASHBOARD CONTENT */}
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
 
-                    {/* Left Column: Smart Inbox */}
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold px-2">המרכז שלך</h2>
-                            <Button onClick={() => setShowForm(true)} className="rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-transform" size="sm">
-                                <Plus className="h-4 w-4 ml-2" />
-                                {userMode === 'seller' ? 'יצירת לינק' : 'בקשת משלוח'}
-                            </Button>
-                            <Button onClick={() => router.push('/dashboard/marketplace')} variant="outline" className="rounded-full mr-2 hover:bg-primary/10 transition-colors" size="sm">
-                                <Store className="h-4 w-4 ml-2" />
-                                מרקטפלייס
-                            </Button>
+                    {/* Left Column: Main Area */}
+                    <div className="space-y-8">
+
+                        {/* 🌟 NEW: Quick Action Cards 🌟 */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            {/* Primary Action: Marketplace */}
+                            <button
+                                onClick={() => router.push('/dashboard/marketplace')}
+                                className="relative overflow-hidden bg-gradient-to-br from-indigo-500/20 to-purple-500/10 hover:from-indigo-500/30 hover:to-purple-500/20 border border-indigo-500/30 rounded-3xl p-5 text-right transition-all group shadow-[0_0_20px_rgba(99,102,241,0.1)] hover:shadow-[0_0_30px_rgba(99,102,241,0.2)]"
+                            >
+                                <div className="absolute top-0 left-0 w-24 h-24 bg-indigo-500/20 rounded-br-full -ml-4 -mt-4 transition-transform group-hover:scale-110" />
+                                <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <Store className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-1">המרקטפלייס</h3>
+                                <p className="text-xs text-indigo-200/70">קנה ומכור פריטים במהירות ובקלות</p>
+                            </button>
+
+                            {/* Secondary Action: My Listings */}
+                            <button
+                                onClick={() => router.push('/dashboard/marketplace/my-listings')}
+                                className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl p-5 text-right transition-all group"
+                            >
+                                <div className="w-12 h-12 rounded-2xl bg-white/5 text-gray-300 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <Package className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-1">המודעות שלי</h3>
+                                <p className="text-xs text-gray-500">ניהול המוצרים שהעלית למכירה</p>
+                            </button>
+
+                            {/* Tertiary Action: Direct Link */}
+                            <button
+                                onClick={() => setShowForm(true)}
+                                className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl p-5 text-right transition-all group"
+                            >
+                                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <Plus className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-1">יצירת עסקה</h3>
+                                <p className="text-xs text-gray-500">שלח לינק ישיר לתשלום ומשלוח</p>
+                            </button>
                         </div>
 
-                        {/* Tabs */}
-                        {/* Tabs */}
-                        <div className="flex border-b border-border/60 gap-6 px-2 overflow-x-auto pb-4">
-                            <button onClick={() => setActiveTab("inbox")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'inbox' ? 'border-primary text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                בקשות שנכנסו
-                                {inboxCount > 0 && <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.8)] border border-red-400">{inboxCount}</span>}
-                            </button>
-                            <button onClick={() => setActiveTab("sent")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'sent' ? 'border-primary text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                בקשות שנשלחו
-                                {sentItems.length > 0 && <span className="bg-primary/20 text-primary text-[10px] px-2 py-0.5 rounded-full">{sentItems.length}</span>}
-                            </button>
-                            <button onClick={() => setActiveTab("active")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'active' ? 'border-blue-400 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                פעילים
-                                {activeItems.length > 0 && <span className="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-full border border-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.5)]">{activeItems.length}</span>}
-                            </button>
-                            <button onClick={() => setActiveTab("history")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'history' ? 'border-purple-500 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                היסטוריה
-                            </button>
-                            <button onClick={() => setActiveTab("recycle")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'recycle' ? 'border-orange-500 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                סל מחזור
-                            </button>
-                        </div>
+                        {/* Recent Activity / Inbox Section */}
+                        <div className="space-y-6 bg-card border border-white/5 rounded-3xl p-6 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-bold">מעקב עסקאות</h2>
+                            </div>
 
-                        {/* Cards List */}
-                        <div className="space-y-4 min-h-[300px]">
-                            {loading ? (
-                                [1, 2].map(i => <div key={i} className="h-32 bg-white rounded-2xl animate-pulse" />)
-                            ) : (
-                                <>
-                                    {activeTab === "inbox" && (
-                                        inboxItems.length > 0 ? inboxItems.map(shipment => (
-                                            <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="inbox" onDelete={handleDelete} onView={() => setSelectedShipment(shipment)} />
-                                        )) : renderEmptyState("inbox")
-                                    )}
-                                    {activeTab === "sent" && (
-                                        sentItems.length > 0 ? sentItems.map(shipment => (
-                                            <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="sent" onDelete={handleDelete} onView={() => setSelectedShipment(shipment)} />
-                                        )) : renderEmptyState("sent")
-                                    )}
-                                    {activeTab === "active" && (
-                                        activeItems.length > 0 ? activeItems.map(shipment => (
-                                            <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="active" onView={() => setSelectedShipment(shipment)} />
-                                        )) : renderEmptyState("active")
-                                    )}
-                                    {activeTab === "history" && (
-                                        historyItems.length > 0 ? historyItems.map(shipment => (
-                                            <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="history" onView={() => setSelectedShipment(shipment)} />
-                                        )) : renderEmptyState("history")
-                                    )}
-                                    {activeTab === "recycle" && (
-                                        recycledItems.length > 0 ? recycledItems.map(shipment => (
-                                            <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="recycle" onView={() => setSelectedShipment(shipment)} />
-                                        )) : renderEmptyState("recycle")
-                                    )}
-                                </>
-                            )}
+                            {/* Tabs */}
+                            {/* Tabs */}
+                            <div className="flex border-b border-border/60 gap-6 px-2 overflow-x-auto pb-4">
+                                <button onClick={() => setActiveTab("inbox")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'inbox' ? 'border-primary text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                                    בקשות שנכנסו
+                                    {inboxCount > 0 && <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.8)] border border-red-400">{inboxCount}</span>}
+                                </button>
+                                <button onClick={() => setActiveTab("sent")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'sent' ? 'border-primary text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                                    בקשות שנשלחו
+                                    {sentItems.length > 0 && <span className="bg-primary/20 text-primary text-[10px] px-2 py-0.5 rounded-full">{sentItems.length}</span>}
+                                </button>
+                                <button onClick={() => setActiveTab("active")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'active' ? 'border-blue-400 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                                    פעילים
+                                    {activeItems.length > 0 && <span className="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-full border border-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.5)]">{activeItems.length}</span>}
+                                </button>
+                                <button onClick={() => setActiveTab("history")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'history' ? 'border-purple-500 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                                    היסטוריה
+                                </button>
+                                <button onClick={() => setActiveTab("recycle")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'recycle' ? 'border-orange-500 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+                                    סל מחזור
+                                </button>
+                            </div>
+
+                            {/* Cards List */}
+                            <div className="space-y-4 min-h-[300px]">
+                                {loading ? (
+                                    [1, 2].map(i => <div key={i} className="h-32 bg-white rounded-2xl animate-pulse" />)
+                                ) : (
+                                    <>
+                                        {activeTab === "inbox" && (
+                                            inboxItems.length > 0 ? inboxItems.map(shipment => (
+                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="inbox" onDelete={handleDelete} onView={() => setSelectedShipment(shipment)} />
+                                            )) : renderEmptyState("inbox")
+                                        )}
+                                        {activeTab === "sent" && (
+                                            sentItems.length > 0 ? sentItems.map(shipment => (
+                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="sent" onDelete={handleDelete} onView={() => setSelectedShipment(shipment)} />
+                                            )) : renderEmptyState("sent")
+                                        )}
+                                        {activeTab === "active" && (
+                                            activeItems.length > 0 ? activeItems.map(shipment => (
+                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="active" onView={() => setSelectedShipment(shipment)} />
+                                            )) : renderEmptyState("active")
+                                        )}
+                                        {activeTab === "history" && (
+                                            historyItems.length > 0 ? historyItems.map(shipment => (
+                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="history" onView={() => setSelectedShipment(shipment)} />
+                                            )) : renderEmptyState("history")
+                                        )}
+                                        {activeTab === "recycle" && (
+                                            recycledItems.length > 0 ? recycledItems.map(shipment => (
+                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="recycle" onView={() => setSelectedShipment(shipment)} />
+                                            )) : renderEmptyState("recycle")
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </div> {/* <--- Added missing closing div for Left Column */}
 
                     {/* Right Column: Sidebar */}
                     <div className="space-y-6">
@@ -520,5 +558,13 @@ function ActionCard({ shipment, userMode, type, onDelete, onView }: { shipment: 
                 )}
             </div>
         </div>
+    );
+}
+
+export default function DashboardPage() {
+    return (
+        <Suspense fallback={<div>Loading Dashboard...</div>}>
+            <DashboardContent />
+        </Suspense>
     );
 }

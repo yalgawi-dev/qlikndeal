@@ -42,7 +42,7 @@ export default function ListingPage() {
         };
 
         fetchListing();
-    }, [params.id]);
+    }, [params.id, router]);
 
     const handleBuyNow = async () => {
         if (!listing) return;

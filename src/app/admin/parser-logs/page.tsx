@@ -34,6 +34,7 @@ export default function AdminParserLogsPage() {
         setLoading(false);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { fetchLogs(); }, [showArchived]);
 
     const markQuality = async (id: string, quality: string) => {

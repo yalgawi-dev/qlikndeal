@@ -13,10 +13,10 @@ interface Listing {
     price: number;
     condition: string;
     images: string;
-    category?: string;
-    extraData?: string;
-    seller?: { firstName?: string; lastName?: string; imageUrl?: string; city?: string };
-    createdAt: string;
+    category?: string | null;
+    extraData?: string | null;
+    seller?: { firstName?: string | null; lastName?: string | null; imageUrl?: string | null; city?: string | null; roles?: any[] } | null;
+    createdAt: string | Date;
 }
 
 type SwipeDecision = "like" | "skip";
@@ -66,7 +66,7 @@ export default function BrowsePage() {
         return map[c] || { label: c, color: "bg-gray-500/20 text-gray-300 border-gray-500/40" };
     }
 
-    function timeAgo(dateStr: string) {
+    function timeAgo(dateStr: string | Date) {
         const diff = Date.now() - new Date(dateStr).getTime();
         const hours = Math.floor(diff / 3600000);
         if (hours < 1) return "לפני פחות משעה";

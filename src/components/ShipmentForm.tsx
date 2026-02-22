@@ -14,6 +14,7 @@ interface ShipmentFormProps {
         value?: string;
         condition?: string;
         description?: string;
+        images?: string[];
     };
 }
 

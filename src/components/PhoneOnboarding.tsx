@@ -44,7 +44,7 @@ export function PhoneOnboarding({ isOpen, onComplete }: PhoneOnboardingProps) {
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={() => { }}>
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onComplete("")}>
             <DialogContent className="max-w-sm rounded-[2rem] border border-primary/20 bg-background/95 backdrop-blur-xl shadow-2xl shadow-primary/10">
                 <DialogHeader className="text-center space-y-4 pt-4">
                     <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center animate-pulse">
@@ -58,7 +58,7 @@ export function PhoneOnboarding({ isOpen, onComplete }: PhoneOnboardingProps) {
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-6 py-4">
+                <div className="space-y-4 py-4">
                     <div className="space-y-2">
                         <div className="relative">
                             <Input
@@ -67,9 +67,9 @@ export function PhoneOnboarding({ isOpen, onComplete }: PhoneOnboardingProps) {
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 className="text-center text-lg h-12 rounded-xl border-primary/20 focus:border-primary/50 bg-muted/30 transition-all font-mono tracking-widest"
-                                dir="gtr" // Force LTR for numbers but keep context? Trying 'gtr' or just rely on CSS
+                                dir="ltr"
                             />
-                            {phone.length > 9 && (
+                            {phone.length > 8 && (
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-green-500">
                                     <CheckCircle className="w-5 h-5" />
                                 </div>
@@ -78,18 +78,27 @@ export function PhoneOnboarding({ isOpen, onComplete }: PhoneOnboardingProps) {
                         {error && <p className="text-red-500 text-xs text-center font-bold px-2">{error}</p>}
                     </div>
 
-                    <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60">
+                    <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60 mb-2">
                         <Lock className="w-3 h-3" />
                         <span>המידע שלך מוצפן ומאובטח</span>
                     </div>
 
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={loading || phone.length < 9}
-                        className="w-full h-12 text-lg rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-gradient-to-r from-primary to-blue-600 hover:scale-[1.02]"
-                    >
-                        {loading ? "שומר..." : "המשך לאפליקציה 🚀"}
-                    </Button>
+                    <div className="flex flex-col gap-2">
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={loading || phone.length < 9}
+                            className="w-full h-12 text-lg rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all bg-gradient-to-r from-primary to-blue-600 hover:scale-[1.02]"
+                        >
+                            {loading ? "שומר..." : "שמור והמשך 🚀"}
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            onClick={() => onComplete("")}
+                            className="w-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                        >
+                            דלג בינתיים
+                        </Button>
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

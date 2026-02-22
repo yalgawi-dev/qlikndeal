@@ -7,7 +7,9 @@ import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
 
-export default function CreateListingPage() {
+import { Suspense } from "react";
+
+function CreateListingContent() {
     const searchParams = useSearchParams();
 
     // Store mode in state so URL cleanup doesn't lose it
@@ -59,7 +61,7 @@ export default function CreateListingPage() {
             }
         }
         setIsLoaded(true);
-    }, [mode]);
+    }, [mode, searchParams]);
 
     // Force re-render if initialSmartData changes
     useEffect(() => {
@@ -197,5 +199,13 @@ export default function CreateListingPage() {
                 </div>
             )}
         </>
+    );
+}
+
+export default function CreateListingPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black text-white flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div></div>}>
+            <CreateListingContent />
+        </Suspense>
     );
 }

@@ -1,7 +1,7 @@
 
-export async function getFacebookListing(url: string) {
-    if (!process.env.FB_APP_ID || !process.env.FB_APP_SECRET) {
-        return { success: false, error: "Missing Facebook Keys" };
+export async function getFacebookListing(url: string, userToken?: string) {
+    if (!userToken && (!process.env.FB_APP_ID || !process.env.FB_APP_SECRET)) {
+        return { success: false, error: "Missing Facebook Keys and User Token" };
     }
 
     try {
@@ -20,7 +20,7 @@ export async function getFacebookListing(url: string) {
         // 2. Obtain Access Token (App Token)
         // Note: Marketplace APIs often require a User Token, but some public data might be accessible with an App Token.
         // We typically construct an app token as "APP_ID|APP_SECRET"
-        const accessToken = `${process.env.FB_APP_ID}|${process.env.FB_APP_SECRET}`;
+        const accessToken = userToken || `${process.env.FB_APP_ID}|${process.env.FB_APP_SECRET}`;
 
         // 3. Call Graph API
         // Endpoint: https://graph.facebook.com/v19.0/{listing-id}
