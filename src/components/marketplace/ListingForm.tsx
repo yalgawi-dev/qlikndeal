@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import React from "react";
+import { createPortal } from "react-dom";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -197,6 +198,38 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
     const [testerName, setTesterName] = useState(user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : "אורח");
     const [testerNote, setTesterNote] = useState("");
     const [isTestMode, setIsTestMode] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    const submitTesterNote = async () => {
+        const logId = localStorage.getItem("currentParserLogId");
+        if (!logId) {
+            alert("לא נמצא תיעוד AI למודעה זו בסשן הנוכחי. נסה לבצע קריאת AI מחדש.");
+            return;
+        }
+        if (!testerNote.trim()) {
+            alert("אנא כתוב הערה לפני השמירה.");
+            return;
+        }
+        try {
+            await fetch("/api/parser-log", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: logId,
+                    testerNote: testerNote.trim(),
+                    testerName
+                }),
+            });
+            alert("ההערה נשמרה בהצלחה באדמין ✓");
+        } catch (error) {
+            console.error(error);
+            alert("שגיאה בשמירת הערה.");
+        }
+    };
 
     useEffect(() => {
         if (user && (!testerName || testerName === "אורח")) {
@@ -1630,9 +1663,9 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 </div>
 
                 {/* Tester AI floating panel */}
-                {originalAI && (
+                {originalAI && isMounted && createPortal(
                     <div
-                        className="fixed bottom-6 left-6 z-[100] flex flex-col gap-2 items-start pointer-events-none"
+                        className="fixed top-1/4 right-6 z-[99999] flex flex-col gap-2 items-start pointer-events-none"
                         dir="rtl"
                         style={{ transform: `translate(${panelPos.x}px, ${panelPos.y}px)` }}
                     >
@@ -1640,59 +1673,74 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             <button
                                 type="button"
                                 onClick={(e) => { e.preventDefault(); document.getElementById('ai-tester-panel')?.classList.toggle('hidden'); }}
-                                className="pointer-events-auto bg-indigo-600/90 hover:bg-indigo-500 text-white rounded-full px-4 py-3 shadow-lg shadow-indigo-500/30 flex items-center gap-2 border border-indigo-400/50 transition-all hover:scale-105 backdrop-blur-md cursor-pointer"
+                                className="pointer-events-auto bg-amber-500 hover:bg-amber-400 text-black rounded-full px-4 py-3 shadow-xl shadow-amber-500/30 flex items-center gap-2 border border-amber-400/50 transition-all hover:scale-105 backdrop-blur-md cursor-pointer"
                                 title="הוסף הערת בדיקה"
                             >
-                                <Sparkles className="w-5 h-5" />
-                                <span className="font-bold text-sm">בדיקת יכולות AI</span>
+                                <Sparkles className="w-5 h-5 text-black" />
+                                <span className="font-bold text-sm">הוסף הערת בדיקה (AI)</span>
                             </button>
                         )}
 
-                        <div id="ai-tester-panel" className={`pointer-events-auto bg-indigo-950/95 border border-indigo-500/50 rounded-2xl p-4 w-80 shadow-2xl backdrop-blur-xl transition-all ${isTestMode || testerNote ? 'block' : 'hidden'} animate-in slide-in-from-bottom-5`}>
+                        <div id="ai-tester-panel" className={`pointer-events-auto bg-slate-900 border-2 border-amber-500/80 rounded-2xl p-4 w-80 shadow-[0_0_30px_rgba(245,158,11,0.3)] backdrop-blur-xl transition-all ${isTestMode || testerNote ? 'block' : 'hidden'} animate-in slide-in-from-bottom-5`}>
                             <div
-                                className={`flex justify-between items-center mb-3 border-b border-indigo-500/20 pb-2 ${isDraggingPanel ? 'cursor-grabbing' : 'cursor-grab'}`}
+                                className={`flex justify-between items-center mb-4 border-b border-amber-500/30 pb-3 ${isDraggingPanel ? 'cursor-grabbing' : 'cursor-grab'} focus:outline-none select-none`}
                                 onPointerDown={handlePointerDownPanel}
                                 onPointerMove={handlePointerMovePanel}
                                 onPointerUp={handlePointerUpPanel}
                                 onPointerCancel={handlePointerUpPanel}
                             >
-                                <h3 className="text-sm font-bold text-indigo-300 flex items-center gap-2"><Sparkles className="w-4 h-4" /> הגדרות בדיקת AI</h3>
-                                <button type="button" onClick={() => document.getElementById('ai-tester-panel')?.classList.add('hidden')} className="text-indigo-400 hover:text-white leading-none text-xl p-1">×</button>
+                                <h3 className="text-sm font-bold text-amber-500 flex items-center gap-2"><Sparkles className="w-4 h-4" /> הערות בודק למערכת AI</h3>
+                                <button type="button" onClick={() => document.getElementById('ai-tester-panel')?.classList.add('hidden')} className="text-gray-400 hover:text-white leading-none text-2xl p-1">×</button>
                             </div>
 
-                            <div className="space-y-3">
-                                <div className="bg-indigo-900/40 rounded-lg p-2.5 flex items-center justify-between border border-indigo-500/20">
-                                    <span className="text-xs text-indigo-300">בודק:</span>
-                                    <span className="text-sm font-bold text-indigo-100 bg-indigo-500/20 px-2 py-0.5 rounded">{testerName}</span>
+                            <div className="space-y-4">
+                                <div className="bg-amber-500/10 rounded-lg p-2.5 flex items-center justify-between border border-amber-500/20">
+                                    <span className="text-xs text-amber-200">בודק:</span>
+                                    <span className="text-sm font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">{testerName}</span>
                                 </div>
                                 <div>
-                                    <Label className="text-xs text-indigo-200">הערות בזמן אמת</Label>
+                                    <Label className="text-xs text-amber-200 mb-1 block">הערות על זיהוי שגוי / חסר 👇</Label>
                                     <Textarea
-                                        rows={3}
-                                        className="text-sm bg-black/40 border-indigo-500/30 resize-none focus:border-indigo-400"
+                                        rows={4}
+                                        className="text-sm bg-black/60 border-amber-500/30 resize-none focus:border-amber-500 text-white placeholder-gray-500"
                                         value={testerNote}
                                         onChange={e => setTesterNote(e.target.value)}
-                                        placeholder="למשל: לא זיהה יד 2, זיהה מחיר שגוי..."
+                                        placeholder="לדוגמה: מחיר יצא 0, לא זיהה יד 2, דגם שגוי..."
                                     />
                                 </div>
-                                <label className="flex items-center gap-3 mt-4 p-2 bg-black/30 rounded-lg cursor-pointer hover:bg-black/50 transition-colors border border-indigo-500/20">
-                                    <div className="relative flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            className="w-4 h-4 peer appearance-none border border-indigo-500/50 rounded bg-black checked:bg-indigo-500 transition-all"
-                                            checked={isTestMode}
-                                            onChange={e => setIsTestMode(e.target.checked)}
-                                        />
-                                        <svg className="absolute w-2.5 h-2.5 text-white left-0.5 pointer-events-none opacity-0 peer-checked:opacity-100" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M1 5L5 9L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    </div>
-                                    <span className="text-indigo-200 text-xs font-medium">בדיקה בלבד (אל תפרסם אמיתי)</span>
-                                </label>
+
+                                <button
+                                    type="button"
+                                    onClick={submitTesterNote}
+                                    disabled={!testerNote.trim()}
+                                    className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/20"
+                                >
+                                    שלח הערה לשרד ✓
+                                </button>
+
+                                <div className="border-t border-amber-500/20 mt-4 pt-4">
+                                    <label className="flex items-center gap-3 p-2 bg-black/40 hover:bg-black/60 rounded-lg cursor-pointer transition-colors border border-amber-500/10">
+                                        <div className="relative flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                className="w-4 h-4 peer appearance-none border border-amber-500/50 rounded bg-black checked:bg-amber-500 transition-all"
+                                                checked={isTestMode}
+                                                onChange={e => setIsTestMode(e.target.checked)}
+                                            />
+                                            <svg className="absolute w-2.5 h-2.5 text-black left-0.5 top-[3px] pointer-events-none opacity-0 peer-checked:opacity-100" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M1 5L5 9L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-amber-200 text-xs font-bold">שמור למטרת טסטים (AI)</span>
+                                            <span className="text-gray-400 text-[10px]">מודעה זו לא תתפרסם בלוח האמיתי</span>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                )}
+                    , document.body)}
 
                 <Button type="submit" disabled={loading} className={`w-full h-14 text-lg font-bold rounded-xl shadow-lg transition-all ${isTestMode ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/30" : "bg-green-600 hover:bg-green-700 shadow-green-500/30"}`}>
                     {loading ? <Loader2 className="animate-spin" /> : isTestMode ? "שמור בדיקת AI" : isEditing ? "עדכן מודעה" : "פרסם מודעה"}

@@ -95,7 +95,7 @@ export default function AdminParserLogsPage() {
 
     const exportCSV = () => {
         const rows = [
-            ["ID", "Date", "Tester", "Category", "Input Mode", "Quality", "Has Corrections", "Tester Note", "Original Text"],
+            ["ID", "Date", "Tester", "Category", "Input Mode", "Quality", "Has Corrections", "Tester Note", "Original Text", "AI Parsed", "User Final", "Corrections Detail"],
             ...logs.map(l => [
                 l.id,
                 new Date(l.createdAt).toLocaleDateString("he-IL"),
@@ -103,9 +103,12 @@ export default function AdminParserLogsPage() {
                 l.category || "",
                 l.inputMode || "",
                 l.quality || "",
-                l.corrections ? "כן" : "לא",
-                l.testerNote || "",
+                l.corrections && l.corrections !== "{}" ? "כן" : "לא",
+                `"${(l.testerNote || "").replace(/"/g, '""')}"`,
                 `"${l.originalText.replace(/"/g, '""')}"`,
+                `"${(l.aiParsed || "").replace(/"/g, '""')}"`,
+                `"${(l.userFinal || "").replace(/"/g, '""')}"`,
+                `"${(l.corrections || "").replace(/"/g, '""')}"`,
             ])
         ];
         const csv = rows.map(r => r.join(",")).join("\n");
