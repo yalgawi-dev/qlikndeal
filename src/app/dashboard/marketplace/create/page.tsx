@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import { ListingForm } from "@/components/marketplace/ListingForm";
 import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Camera } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
+import html2canvas from "html2canvas";
 
 import { Suspense } from "react";
 
@@ -22,6 +23,7 @@ function CreateListingContent() {
     const [showNoteModal, setShowNoteModal] = useState(false);
     const [testerNote, setTesterNote] = useState("");
     const [testerImageBase64, setTesterImageBase64] = useState<string | null>(null);
+    const [isCapturing, setIsCapturing] = useState(false);
 
     const submitNote = async () => {
         const logId = localStorage.getItem("currentParserLogId");
@@ -45,15 +47,35 @@ function CreateListingContent() {
         alert("תודה! ההערה נשמרה ✓");
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const captureScreenshot = async () => {
+        setIsCapturing(true);
+        try {
+            // Temporarily hide the note modal itself so it's not in the screenshot
+            const modalElement = document.getElementById("note-modal-container");
+            if (modalElement) modalElement.style.display = 'none';
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setTesterImageBase64(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+            // Allow a small delay for UI to update
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            const canvas = await html2canvas(document.body, {
+                useCORS: true,
+                scale: 1,
+                logging: false,
+                ignoreElements: (element) => element.id === "note-modal-container"
+            });
+
+            // Restore modal visibility
+            if (modalElement) modalElement.style.display = 'block';
+
+            // Downscale image somewhat to save bandwidth
+            const base64Image = canvas.toDataURL("image/jpeg", 0.6);
+            setTesterImageBase64(base64Image);
+        } catch (error) {
+            console.error("Screenshot capture failed:", error);
+            alert("שגיאה בצילום המסך, אנא נסה שוב.");
+        } finally {
+            setIsCapturing(false);
+        }
     };
 
     useEffect(() => {
@@ -186,6 +208,7 @@ function CreateListingContent() {
             {/* Note panel — small floating panel, doesn't block the form */}
             {showNoteModal && (
                 <div
+                    id="note-modal-container"
                     className="fixed bottom-6 left-6 z-50 w-80 bg-slate-900 border border-amber-500/30 rounded-2xl shadow-2xl shadow-black/60"
                     dir="rtl"
                 >
@@ -213,29 +236,35 @@ function CreateListingContent() {
                         />
 
                         <div className="mb-4">
-                            <label className="block text-xs text-gray-400 mb-2">📸 צרף צילום מסך (אופציונלי):</label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="block w-full text-xs text-slate-400
-                                  file:mr-4 file:py-2 file:px-4
-                                  file:rounded-full file:border-0
-                                  file:text-xs file:font-semibold
-                                  file:bg-amber-500/10 file:text-amber-400
-                                  hover:file:bg-amber-500/20"
-                            />
+                            <button
+                                onClick={captureScreenshot}
+                                disabled={isCapturing}
+                                className="w-full mb-3 flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-sm font-medium transition-all"
+                            >
+                                {isCapturing ? "מצלם..." : <><Camera className="w-4 h-4" /> צלם את המסך הנוכחי</>}
+                            </button>
+
                             {testerImageBase64 && (
-                                <img src={testerImageBase64} alt="Preview" className="mt-2 max-h-32 rounded border border-white/10 object-contain" />
+                                <div className="mb-4 relative group">
+                                    <button
+                                        onClick={() => setTesterImageBase64(null)}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                        title="הסר תמונה"
+                                    >
+                                        ×
+                                    </button>
+                                    <img src={testerImageBase64} alt="Screenshot preview" className="rounded-lg border border-white/20 w-full object-cover max-h-32" />
+                                </div>
                             )}
+
+                            <button
+                                onClick={submitNote}
+                                disabled={!testerNote.trim() && !testerImageBase64}
+                                className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
+                            >
+                                שמור הערה ✓
+                            </button>
                         </div>
-                        <button
-                            onClick={submitNote}
-                            disabled={!testerNote.trim() && !testerImageBase64}
-                            className="w-full mt-3 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all"
-                        >
-                            שמור הערה ✓
-                        </button>
                     </div>
                 </div>
             )}

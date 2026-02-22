@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SmartListingInput } from "@/components/marketplace/SmartListingInput";
-import { ArrowRight, X, Sparkles, MessageSquare } from "lucide-react";
+import { ArrowRight, X, Sparkles, MessageSquare, Camera } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import html2canvas from "html2canvas";
 
 export default function CreateAiPage() {
     const router = useRouter();
@@ -14,6 +15,7 @@ export default function CreateAiPage() {
     const [pendingLogId, setPendingLogId] = useState<string | null>(null);
     const [testerNote, setTesterNote] = useState("");
     const [testerImageBase64, setTesterImageBase64] = useState<string | null>(null);
+    const [isCapturing, setIsCapturing] = useState(false);
 
     const { user } = useUser();
     const currentUserName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'אורח' : 'אורח';
@@ -87,15 +89,35 @@ export default function CreateAiPage() {
         alert("תודה! ההערה נשמרה ✓");
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const captureScreenshot = async () => {
+        setIsCapturing(true);
+        try {
+            // Temporarily hide the note modal itself so it's not in the screenshot
+            const modalElement = document.getElementById("ai-note-modal-container");
+            if (modalElement) modalElement.style.display = 'none';
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setTesterImageBase64(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+            // Allow a small delay for UI to update
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            const canvas = await html2canvas(document.body, {
+                useCORS: true,
+                scale: 1,
+                logging: false,
+                ignoreElements: (element) => element.id === "ai-note-modal-container"
+            });
+
+            // Restore modal visibility
+            if (modalElement) modalElement.style.display = 'flex'; // it uses flex centering
+
+            // Downscale image somewhat to save bandwidth
+            const base64Image = canvas.toDataURL("image/jpeg", 0.6);
+            setTesterImageBase64(base64Image);
+        } catch (error) {
+            console.error("Screenshot capture failed:", error);
+            alert("שגיאה בצילום המסך, אנא נסה שוב.");
+        } finally {
+            setIsCapturing(false);
+        }
     };
 
     return (
@@ -150,7 +172,7 @@ export default function CreateAiPage() {
 
             {/* Note modal */}
             {showNoteModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                <div id="ai-note-modal-container" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl" dir="rtl">
                         <h3 className="text-lg font-bold mb-1">💬 הוסף הערה לבודק</h3>
                         <p className="text-sm text-gray-400 mb-4">מה לא היה טוב בפענוח האחרון? תאר בפירוט.</p>
@@ -164,20 +186,25 @@ export default function CreateAiPage() {
                         />
 
                         <div className="mb-4">
-                            <label className="block text-xs text-gray-400 mb-2">📸 צרף צילום מסך (אופציונלי):</label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                className="block w-full text-xs text-slate-400
-                                  file:mr-4 file:py-2 file:px-4
-                                  file:rounded-full file:border-0
-                                  file:text-xs file:font-semibold
-                                  file:bg-amber-500/10 file:text-amber-400
-                                  hover:file:bg-amber-500/20"
-                            />
+                            <button
+                                onClick={captureScreenshot}
+                                disabled={isCapturing}
+                                className="w-full mb-3 flex items-center justify-center gap-2 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 text-sm font-medium transition-all"
+                            >
+                                {isCapturing ? "מצלם..." : <><Camera className="w-4 h-4" /> צלם את המסך הנוכחי</>}
+                            </button>
+
                             {testerImageBase64 && (
-                                <img src={testerImageBase64} alt="Preview" className="mt-2 max-h-32 rounded border border-white/10 object-contain" />
+                                <div className="mb-4 relative group">
+                                    <button
+                                        onClick={() => setTesterImageBase64(null)}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                        title="הסר תמונה"
+                                    >
+                                        ×
+                                    </button>
+                                    <img src={testerImageBase64} alt="Screenshot preview" className="rounded-lg border border-white/20 w-full object-cover max-h-32" />
+                                </div>
                             )}
                         </div>
                         <div className="flex gap-3 mt-4">
