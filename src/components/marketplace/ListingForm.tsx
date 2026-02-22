@@ -1107,6 +1107,25 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+                {formData.category === "Computers" && (
+                    <div className="space-y-2 p-3 bg-gray-900/50 rounded-lg border border-purple-500/20 mb-4 animate-in fade-in slide-in-from-top-2">
+                        <Label className="text-purple-300">תת-קטגוריה (סוג המחשב)</Label>
+                        <Select value={getExtraVal("סוג המחשב") || "מחשב נייד (Laptop)"} onValueChange={val => handleExtraChange("סוג המחשב", val)}>
+                            <SelectTrigger className="bg-gray-800 border-gray-700 text-right" dir="rtl">
+                                <SelectValue placeholder="בחר סוג מחשב (למשל: מחשב נייד, גיימינג...)" />
+                            </SelectTrigger>
+                            <SelectContent dir="rtl">
+                                <SelectItem value="מחשב נייד (Laptop)">מחשב נייד (Laptop)</SelectItem>
+                                <SelectItem value="מחשב נייח (Desktop)">מחשב נייח (Desktop)</SelectItem>
+                                <SelectItem value="מחשב גיימינג">מחשב גיימינג</SelectItem>
+                                <SelectItem value="מחשב All-in-One">מחשב All-in-One</SelectItem>
+                                <SelectItem value="מיני מחשב (Mini PC)">מיני מחשב (Mini PC)</SelectItem>
+                                <SelectItem value="תחנת עבודה (Workstation)">תחנת עבודה (Workstation)</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
+
                 <div className="space-y-2">
                     <Label>כותרת המוצר</Label>
                     <Input
@@ -1345,22 +1364,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                         className="bg-gray-800 border-gray-700"
                                     />
                                 </div>
-                                <div className="space-y-2 col-span-2">
-                                    <Label>סוג המחשב</Label>
-                                    <Select value={getExtraVal("סוג המחשב") || "מחשב נייד (Laptop)"} onValueChange={val => handleExtraChange("סוג המחשב", val)}>
-                                        <SelectTrigger className="bg-gray-800 border-gray-700 text-right" dir="rtl">
-                                            <SelectValue placeholder="בחר סוג מחשב" />
-                                        </SelectTrigger>
-                                        <SelectContent dir="rtl">
-                                            <SelectItem value="מחשב נייד (Laptop)">מחשב נייד (Laptop)</SelectItem>
-                                            <SelectItem value="מחשב נייח (Desktop)">מחשב נייח (Desktop)</SelectItem>
-                                            <SelectItem value="מחשב גיימינג">מחשב גיימינג</SelectItem>
-                                            <SelectItem value="מחשב All-in-One">מחשב All-in-One</SelectItem>
-                                            <SelectItem value="מיני מחשב (Mini PC)">מיני מחשב (Mini PC)</SelectItem>
-                                            <SelectItem value="תחנת עבודה (Workstation)">תחנת עבודה (Workstation)</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+
                                 <div className="space-y-2">
                                     <Label>גודל מסך (אינץ&apos;)</Label>
                                     <Input

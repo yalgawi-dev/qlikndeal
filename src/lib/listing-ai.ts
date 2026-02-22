@@ -418,19 +418,23 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
         const city = location || "";
         smartTitle = `${subCategory || "דירה"} ${rooms ? rooms + " חדרים" : ""} ${city}`.trim();
     } else {
-        if (foundBrand) {
+        if (foundBrand || foundMake) {
+            const displayBrand = foundMake || foundBrand;
             if (category === "מחשבים") {
                 let prefix = "מחשב";
                 if (subCategory === "מחשבים ניידים / לפטופים" || clean.includes("נייד") || clean.includes("לפטופ")) prefix = "מחשב נייד";
                 else if (subCategory === "מחשבים שולחניים (PC)") prefix = "מחשב נייח";
-                smartTitle = `${prefix} ${foundBrand}`;
-                if (foundModel) smartTitle += ` ${foundModel}`;
+                smartTitle = `${prefix} ${displayBrand}`;
+                if (foundModel) {
+                    const shortModel = foundModel.split(' ')[0];
+                    smartTitle += ` ${shortModel}`;
+                }
             } else if (category === "טלפונים") {
-                smartTitle = `${foundBrand}`;
+                smartTitle = `${displayBrand}`;
                 if (foundModel) smartTitle += ` ${foundModel}`;
             } else {
                 let prefix = subCategory || category;
-                smartTitle = `${prefix} ${foundBrand}`;
+                smartTitle = `${prefix} ${displayBrand}`;
                 if (foundModel) smartTitle += ` ${foundModel}`;
 
                 const storageObj = attributes.find(a => a.key === "נפח אחסון");
@@ -905,22 +909,19 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         { key: "מידה", regex: /(XS|S|M|L|XL|XXL|XXXL|\d{2,3})\s*(?:מידה|גודל)/i, format: (m) => ({ value: m[1].toUpperCase() }) }, // Suffix support
         { key: "צבע", regex: /(?:צבע|color)\s*([\u05D0-\u05EA]{2,15}|black|white|red|blue|green)/i, format: (m) => ({ value: m[1] }) },
     ];
+    const seen = new Set<string>();
     for (const p of patterns) {
+        if (seen.has(p.key)) continue; // Keep only the first matching regex per key to avoid duplicates
         const match = text.match(p.regex);
         if (match) {
             const formatted = p.format(match);
             // Validate: hand must be 1-9 (not 0 or empty)
             if (p.key === "יד" && (formatted.value === "0" || formatted.value === "00" || formatted.value === "")) continue;
             results.push({ key: p.key, ...formatted });
+            seen.add(p.key);
         }
     }
-    const seen = new Set<string>();
-    // Sort attributes by importance (optional, but nice)
-    return results.filter((a) => {
-        if (seen.has(a.key)) return false;
-        seen.add(a.key);
-        return true;
-    });
+    return results;
 }
 
 function extractContact(text: string): string | null {
