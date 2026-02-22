@@ -145,7 +145,8 @@ export function normalizeSpokenText(text: string): string {
         t = t.replace(/(\d{2,4})\s*(גיגה(?:\s*(?:בייט|בית))?|טרה(?:\s*(?:בייט|בית))?|GB|TB)(?=\s|$|[^\d])/gi,
             (match, numStr, unit) => {
                 const n = parseInt(numStr);
-                if (KNOWN_STORAGE_SIZES.includes(n)) return match;
+                // Prevent confusing computer RAM (like 12, 24, 48) with phone storage typos
+                if ([12, 24, 32, 48, 64].includes(n) || KNOWN_STORAGE_SIZES.includes(n)) return match;
                 const corrected = correctStorageSize(n, detectedPhone);
                 return corrected !== n ? `${corrected} ${unit.trim()}` : match;
             }
@@ -253,10 +254,10 @@ export function normalizeSpokenText(text: string): string {
     t = t.replace(/\b(?:אס)\s*(\d{1,2})\b/gi, "S$1");
     t = t.replace(/\b(?:אי\s*10|i10)\b/gi, "i10");
 
-    // Normalize 'איי מאק' → 'iMac'
-    t = t.replace(/\b(?:איי?\s*מאק|אימאק)\b/gi, 'iMac');
+    // Normalize 'איי מאק' → 'iMac' (no \b - Hebrew word boundaries don't work in JS)
+    t = t.replace(/(?:איי?\s*מאק|אימאק)/gi, 'iMac');
     // Normalize 'מקבוק' → 'MacBook'
-    t = t.replace(/\bמקבוק\b/gi, 'MacBook');
+    t = t.replace(/מקבוק/gi, 'MacBook');
     // Strip trademark symbols that break regex patterns
     t = t.replace(/[\u00AE\u2122\u00A9]/g, '');
 
@@ -691,7 +692,7 @@ export const CATEGORIES: Record<string, { keywords: string[]; subCategories: Rec
         ],
         subCategories: {
             "מחשבים ניידים / לפטופים": ["לפטופ", "מקבוק", "macbook", "notebook", "laptop", "מחשב נייד", "ThinkPad", "מחשב פרימיום", "מחשב קל", "נייד"],
-            "מחשבים שולחניים (PC)": ["מחשב שולחני", "PC", "שולחני", "מגדל", "מחשב נייח"],
+            "מחשבים שולחניים (PC)": ["מחשב שולחני", "PC", "שולחני", "מגדל", "מחשב נייח", "iMac", "Mac Mini", "Mac Studio", "Mac Pro", "ThinkCentre", "מחשב אול-ין-ואן"],
             "מסכים וציוד היקפי": ["מסך", "מוניטור", "עכבר", "מקלדת", "מצלמת רשת"],
             "חלקים ורכיבים ל-PC": ["כרטיס מסך", "GPU", "RAM", "SSD", "לוח אם", "ספק כוח", "מעבד"],
             "מדפסות וסורקים": ["מדפסת", "סורק", "דיו"],
@@ -871,8 +872,10 @@ function detectCategory(text: string): { category: string; subCategory: string }
 }
 
 function detectCondition(text: string): { condition: string; conditionDetails: string | null } {
-    if (/חדש\s*באריזה|חדש\s*בניילון|sealed|אריזה\s*מקורית|אריזה\s*סגורהלא\s*ניפתח/.test(text)) return { condition: "new", conditionDetails: "חדש באריזה מקורית" };
-    if (/\bחדש\s*לגמרי|חדש\b/.test(text) && !/כמו\s*חדש/i.test(text)) return { condition: "new", conditionDetails: "חדש" };
+    if (/חדש\s*באריזה|חדש\s*בניילון|sealed|אריזה\s*מקורית|אריזה\s*סגורה/.test(text)) return { condition: "new", conditionDetails: "חדש באריזה מקורית" };
+    // 'חדש לגמרי' / 'חדש לחלוטין' = new (\b doesn't work for Hebrew in JS - use explicit check)
+    if (/חדש\s*(?:לגמרי|לחלוטין|לגמרי)/.test(text)) return { condition: "new", conditionDetails: "חדש" };
+    if (/(?:^|[\s,.-])חדש(?:[\s,.-]|$)/.test(text) && !/כמו\s*חדש/i.test(text)) return { condition: "new", conditionDetails: "חדש" };
     if (/כמו\s*חדש|כחדש|מצב\s*מצוין|10\/10|9\.5\/10|שמורה?\s*כחדשה?/.test(text)) return { condition: "like_new", conditionDetails: "כמו חדש" };
     if (/מצב(?:\s+[\s\S]{0,15})?\s*טוב|טוב\s*מאוד|שמור|8\/10|9\/10/.test(text)) return { condition: "good", conditionDetails: "מצב טוב" };
     if (/משומש|יד\s*(?:שנייה|2|שניה)|סימני\s*שימוש|שריטות|פגמים/.test(text)) return { condition: "used", conditionDetails: "משומש" };
@@ -910,12 +913,15 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         // Test expiry from speech: "טסט עד 05 חודש מאי 2026"
         { key: "טסט עד", regex: /(?:טסט|test)\s*(?:עד|until)?[:\s-]*(\d{1,2}[.\/-]\d{2,4})/i, format: (m) => ({ value: m[1] }) },
         { key: "תאריך קנייה", regex: /(?:נקנה|נקניתי|רכשתי|קניתי|purchased?)\s*(?:ב|ב-|\s)([0-9]{1,2}[\/.\-][0-9]{1,2}[\/.\-][0-9]{2,4}|[0-9]{1,2}[\/.][0-9]{2,4})/i, format: (m) => ({ value: m[1] }) },
-        // Fallback for general storage: look behind to ensure we didn't just match RAM, but since RAM is captured first (sorting) it's ok
-        { key: "נפח אחסון", regex: /(?:נפח|אחסון|דיסק|SSD|HDD)\s*[-:]?\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
-        { key: "נפח אחסון", regex: /(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
-
-        { key: "RAM", regex: /(?:RAM|זיכרון|זכרון)\s*[-:]?\s*(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+        // RAM: allow up to 30 arbitrary characters between keyword and number to catch "זיכרון (RAM): משודרג ל-24GB"
+        { key: "RAM", regex: /(?:זיכרון\s*פנימי|זיכרון\s*\(RAM\)|RAM|זיכרון|זכרון)[\s\S]{0,30}?(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה)\s*(RAM|זיכרון|זכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+        // RAM fallback: 'ל-24GB' / 'משודרג ל-24GB' - Hebrew phrasing for 'upgraded to X GB'
+        { key: "RAM", regex: /משודרג[\s\S]{0,20}?(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+        // Storage: require explicit storage keywords or TB (do NOT match 'זיכרון פנימי בנפח' - that's RAM)
+        { key: "נפח אחסון", regex: /(?:אחסון|דיסק|SSD|HDD|כונן)\s*[-:]?\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
+        { key: "נפח אחסון", regex: /(\d{1,4})\s*(TB|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
+        { key: "נפח אחסון", regex: /(?:נפח)\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b(?!.*(?:זיכרון|ראם|RAM))/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
         // CPU: Apple chip voiced as 'שבב M3' / 'שבב M4'
         { key: "מעבד", regex: /(?:שבב|chip)\s*(M[1-4](?:\s+(?:Pro|Max|Ultra))?)/i, format: (m) => ({ value: `Apple ${m[1].trim()}` }) },
         // CPU: match explicit keyword then capture the model name (no אינטל here - it causes CUP to be captured instead of i5-xxx)
@@ -928,11 +934,14 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         { key: "עוצמה", regex: /(\d{1,5})\s*W(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1], unit: "W" }) },
         { key: "סוללה", regex: /(\d{3,6})\s*(mAh|אמפר)/i, format: (m) => ({ value: m[1], unit: "mAh" }) },
         { key: "מצב סוללה", regex: /(\d{2,3})%\s*(?:סוללה|battery)/i, format: (m) => ({ value: m[1], unit: "%" }) },
-        { key: "גודל מסך", regex: /(\d{1,3}(?:\.\d)?)\s*(?:אינץ|אינצ'|אינ'ץ|inch|")/i, format: (m) => ({ value: m[1], unit: "אינץ'" }) },
-        { key: "רזולוציה", regex: /\b(1920|2560|3840|7680)[xX×](1080|1440|2160|4320)\b/, format: (m) => ({ value: `${m[1]}x${m[2]}` }) },
+        // טכנולוגיית מסך: OLED, AMOLED, IPS, LCD etc.
+        { key: "טכנולוגיית מסך", regex: /(?:^|[\s,.-])(OLED|AMOLED|QLED|IPS|LCD|Retina|Mini LED|LTPO)(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1].toUpperCase() }) },
+        // גודל מסך: handle all apostrophe variants (U+0027, U+2019, U+05F3)
+        { key: "גודל מסך", regex: /(\d{1,3}(?:\.\d)?)\s*(?:אינץ[\u0027\u2019\u05F3]?|אינצ[\u0027\u2019\u05F3]|אינ[\u0027\u2019\u05F3]\s*ץ|inch|")/i, format: (m) => ({ value: m[1], unit: "אינץ'" }) },
+        // רזולוציה: standard + non-standard laptop resolutions (4-digit x 4-digit)
+        { key: "רזולוציה", regex: /\b(1920|2560|2880|3200|3840|7680|1366|1280|2160)[xX×](1080|1200|1440|1600|1800|2160|4320|768|800)\b/, format: (m) => ({ value: `${m[1]}x${m[2]}` }) },
         { key: "תדר רענון", regex: /(\d{2,3})\s*(Hz|הרץ)\b/i, format: (m) => ({ value: m[1], unit: "Hz" }) },
         { key: "מצלמה", regex: /(\d{1,3})\s*(MP|מגה\s*פיקסל)\b/i, format: (m) => ({ value: m[1], unit: "MP" }) },
-        { key: "מידות", regex: /(\d{2,4})\s*(?:[xX×\*]|על)\s*(\d{2,4})(?:\s*(?:[xX×\*]|על)\s*(\d{2,4}))?(?:\s*(ס"מ|cm))?/i, format: (m) => ({ value: m[3] ? `${m[1]}x${m[2]}x${m[3]}` : `${m[1]}x${m[2]}`, unit: m[4] || 'ס"מ' }) },
         { key: "גובה", regex: /גובה\s*(\d{2,4})\s*(ס"מ|cm|מטר)/i, format: (m) => ({ value: m[1], unit: m[2] }) },
         { key: "גובה", regex: /(\d{2,4})\s*(?:ס"מ|cm|מטר)\s*גובה/i, format: (m) => ({ value: m[1], unit: "ס\"מ" }) }, // Suffix support
         { key: "משקל", regex: /(?:משקל)\s*(\d{1,4}(?:\.\d)?)\s*(ק"ג|קג|kg|גרם|gr)/i, format: (m) => ({ value: m[1], unit: m[2] }) },
@@ -953,17 +962,17 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         // Fix Hebrew word boundary for transmission
         { key: "תיבת הילוכים", regex: /(?:^|[\s,.-])(אוטומטי|אוטומט|ידני|manual|automatic)(?:$|[\s,.-])/i, format: (m) => ({ value: m[1] }) },
         { key: "סוג דלק", regex: /(?:^|[\s,.-])(בנזין|דיזל|היברידי|הברידית|חשמלי|גז)(?:$|[\s,.-])/i, format: (m) => ({ value: m[1].replace("הברידית", "היברידי") }) },
-        // Allow comma in engine size
-        { key: "נפח מנוע", regex: /(?:מנוע|נפח)\s*(\d{1,4}(?:,\d{3})*(?:\.\d)?)\s*(?:ל'|ליטר|סמ"ק|cc|L)?/i, format: (m) => ({ value: m[1].replace(/,/g, ""), unit: "סמ\"ק" }) },
-        { key: "נפח מנוע", regex: /(\d{1,4}(?:,\d{3})*(?:\.\d)?)\s*(?:ל'|ליטר|סמ"ק|cc|L)\s*(?:מנוע|נפח)/i, format: (m) => ({ value: m[1].replace(/,/g, ""), unit: "סמ\"ק" }) }, // Suffix support
+        // Engine size: require 'מנוע' keyword (not just 'נפח') to avoid false positives in computer listings
+        { key: "נפח מנוע", regex: /מנוע\s*(\d{1,4}(?:,\d{3})*(?:\.\d)?)\s*(?:ל'|ליטר|סמ"ק|cc|L)?/i, format: (m) => ({ value: m[1].replace(/,/g, ""), unit: "סמ\"ק" }) },
+        { key: "נפח מנוע", regex: /(\d{1,4}(?:,\d{3})*(?:\.\d)?)\s*(?:ל'|ליטר|סמ"ק|cc|L)\s*מנוע/i, format: (m) => ({ value: m[1].replace(/,/g, ""), unit: "סמ\"ק" }) },
         { key: "חדרים", regex: /(\d(?:\.\d)?)\s*(?:חדרים|חד')/i, format: (m) => ({ value: m[1], unit: "חדרים" }) },
         { key: "מטראז'", regex: /(\d{2,4})\s*(?:מ"ר|מטר\s*רבוע|מטר)/i, format: (m) => ({ value: m[1], unit: 'מ"ר' }) },
         { key: "קומה", regex: /קומה\s*(\d{1,2})/i, format: (m) => ({ value: m[1] }) },
         { key: "קומה", regex: /(\d{1,2})(?:st|nd|rd|th)?\s*קומה/i, format: (m) => ({ value: m[1] }) }, // Suffix support
-        { key: "מידה", regex: /(?:מידה|גודל|size)\s*(XS|S|M|L|XL|XXL|XXXL|\d{2,3})/i, format: (m) => ({ value: m[1].toUpperCase() }) },
-        { key: "מידה", regex: /(XS|S|M|L|XL|XXL|XXXL|\d{2,3})\s*(?:מידה|גודל)/i, format: (m) => ({ value: m[1].toUpperCase() }) }, // Suffix support
-        { key: "מידות", regex: /(?:מידות|גודל)\s*[-:]?\s*(\d{2,4})\s*(?:[xX×\*]|על)\s*(\d{2,4})(?:\s*(?:[xX×\*]|על)\s*(\d{2,4}))?(?:\s*(ס"מ|cm))?/i, format: (m) => ({ value: m[3] ? `${m[1]}x${m[2]}x${m[3]}` : `${m[1]}x${m[2]}`, unit: m[4] || 'ס"מ' }) },
-        { key: "מידות", regex: /(\d{2,4})\s*(?:[xX×\*]|על)\s*(\d{2,4})(?:\s*(?:[xX×\*]|על)\s*(\d{2,4}))?(?:\s+מידות)?(?:\s*(ס"מ|cm))?/i, format: (m) => ({ value: m[3] ? `${m[1]}x${m[2]}x${m[3]}` : `${m[1]}x${m[2]}`, unit: m[4] || 'ס"מ' }) },
+        { key: "מידה", regex: /(?:מידה|size)\s*(XS|S|M|L|XL|XXL|XXXL|\d{1,3})/i, format: (m) => ({ value: m[1].toUpperCase() }) },
+        { key: "מידה", regex: /(XS|S|M|L|XL|XXL|XXXL)\s*(?:מידה|גודל|size)/i, format: (m) => ({ value: m[1].toUpperCase() }) }, // Only strict string sizes for suffix to prevent false positives
+        // מידות: explicitly requires the word מידות/גודל. Do not match 4-digit numbers (like resolutions 1920x1080)
+        { key: "מידות", regex: /(?:מידות|גודל)\s*[-:]?\s*(?<!\d)(\d{2,3})(?!\d)\s*(?:[xX×\*]|על)\s*(?<!\d)(\d{2,3})(?!\d)(?:\s*(?:[xX×\*]|על)\s*(?<!\d)(\d{2,3})(?!\d))?(?:\s*(ס"מ|cm))?/i, format: (m) => ({ value: m[3] ? `${m[1]}x${m[2]}x${m[3]}` : `${m[1]}x${m[2]}`, unit: m[4] || 'ס"מ' }) },
         { key: "צבע", regex: /(?:צבע|color)\s*([\u05D0-\u05EA]{2,15}|black|white|red|blue|green)/i, format: (m) => ({ value: m[1] }) },
     ];
     const seen = new Set<string>();
