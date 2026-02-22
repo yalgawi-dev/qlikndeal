@@ -11,6 +11,7 @@ interface ParserLog {
     userFinal?: string;
     corrections?: string;
     testerNote?: string;
+    testerImage?: string;
     testerName?: string;
     category?: string;
     inputMode?: string;
@@ -30,7 +31,16 @@ export default function AdminParserLogsPage() {
         setLoading(true);
         const res = await fetch(`/api/parser-log?limit=100${showArchived ? "&archived=true" : ""}`);
         const data = await res.json();
-        if (data.success) setLogs(data.logs);
+        if (data.success) {
+            // Only keep logs that have a tester note, an image, or actual corrections, unless archived
+            const relevantLogs = data.logs.filter((l: any) =>
+                showArchived ||
+                l.testerNote ||
+                l.testerImage ||
+                (l.corrections && l.corrections !== "{}" && l.corrections !== "null")
+            );
+            setLogs(relevantLogs);
+        }
         setLoading(false);
     };
 

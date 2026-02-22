@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { SmartListingInput } from "@/components/marketplace/SmartListingInput";
 import { ArrowRight, X, Sparkles, MessageSquare } from "lucide-react";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
 export default function CreateAiPage() {
     const router = useRouter();
@@ -14,11 +15,8 @@ export default function CreateAiPage() {
     const [testerNote, setTesterNote] = useState("");
     const [testerImageBase64, setTesterImageBase64] = useState<string | null>(null);
 
-    // Read tester name from localStorage (set once, persisted)
-    const getTesterName = () => {
-        if (typeof window === "undefined") return "";
-        return localStorage.getItem("testerName") || "";
-    };
+    const { user } = useUser();
+    const currentUserName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'אורח' : 'אורח';
 
     const handleAnalyze = async (text: string) => {
         setIsAnalyzing(true);
@@ -47,7 +45,7 @@ export default function CreateAiPage() {
                     body: JSON.stringify({
                         originalText: text,
                         aiParsed: JSON.stringify(data),
-                        testerName: getTesterName(),
+                        testerName: currentUserName,
                         category: data.category || null,
                         inputMode: "text",
                         sessionId: Date.now().toString(),
@@ -78,7 +76,8 @@ export default function CreateAiPage() {
                 body: JSON.stringify({
                     id: logId,
                     testerNote: testerNote.trim(),
-                    testerImage: testerImageBase64
+                    testerImage: testerImageBase64,
+                    testerName: currentUserName
                 }),
             });
         }
@@ -128,20 +127,6 @@ export default function CreateAiPage() {
                     <p className="text-xl text-gray-400 max-w-xl mx-auto leading-relaxed">
                         ספר לנו על המוצר במילים שלך, וה-AI שלנו יהפוך אותו למודעה מושלמת תוך שניות.
                     </p>
-                </div>
-
-                {/* Tester name — persisted locally */}
-                <div className="mb-4 flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
-                    <span className="text-gray-400 text-sm whitespace-nowrap">👤 שם הבודק:</span>
-                    <input
-                        type="text"
-                        placeholder="הכנס שמך (נשמר אוטומטית)"
-                        defaultValue={typeof window !== "undefined" ? localStorage.getItem("testerName") || "" : ""}
-                        onChange={e => {
-                            if (typeof window !== "undefined") localStorage.setItem("testerName", e.target.value);
-                        }}
-                        className="bg-transparent text-white text-sm flex-1 outline-none placeholder-gray-600"
-                    />
                 </div>
 
                 <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl p-1 shadow-2xl border border-white/10 ring-1 ring-white/5">

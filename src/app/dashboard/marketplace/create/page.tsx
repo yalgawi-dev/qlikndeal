@@ -6,11 +6,13 @@ import { ListingForm } from "@/components/marketplace/ListingForm";
 import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 import { Suspense } from "react";
 
 function CreateListingContent() {
     const searchParams = useSearchParams();
+    const { user } = useUser();
 
     // Store mode in state so URL cleanup doesn't lose it
     const [mode, setMode] = useState<string | null>(null);
@@ -24,13 +26,17 @@ function CreateListingContent() {
     const submitNote = async () => {
         const logId = localStorage.getItem("currentParserLogId");
         if (!testerNote.trim() && !testerImageBase64) return;
+
+        const testerName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'אורח' : 'אורח';
+
         await fetch("/api/parser-log", {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 id: logId || "unknown",
                 testerNote: testerNote.trim(),
-                testerImage: testerImageBase64
+                testerImage: testerImageBase64,
+                testerName
             }),
         });
         setTesterNote("");

@@ -135,7 +135,8 @@ export function normalizeSpokenText(text: string): string {
     // But handle "N אלף" patterns inline (digit N already done by regex rules)
 
     // 3. Currency spoken forms → symbol equivalents
-    t = t.replace(/(\d[\d,]*)\s*(?:שקל(?:ים)?|שקלים|ש"ח)\b/gi, "$1 ₪");
+    // Support standard quote, single quote x2, and double geresh (U+05F4)
+    t = t.replace(/(\d[\d,]*)\s*(?:שקל(?:ים)?|שקלים|ש["״]ח|ש''ח|ש'ח)\b/gi, "$1 ₪");
 
     // 3b. Smart storage number correction BEFORE unit conversion
     // e.g. "56 גיגה" (voice for "256") → "256 גיגה"
@@ -514,7 +515,8 @@ function extractPrice(text: string, options?: AiOptions): {
 
     const strongPatterns = [
         /(\d{1,3}[,.]?\d{3}|\d{2,7})\s*₪/,
-        /(\d{1,3}[,.]?\d{3}|\d{2,7})\s*ש"ח/,
+        /(\d{1,3}[,.]?\d{3}|\d{2,7})\s*ש["״]ח/,
+        /(\d{1,3}[,.]?\d{3}|\d{2,7})\s*ש''ח/,
         /(\d{1,3}[,.]?\d{3}|\d{2,7})\s*שח(?:\s|$|,|\.)/,
         /(\d{1,3}[,.]?\d{3}|\d{2,7})\s*(?:שקל|שקלים|NIS)(?:\s|$|,|\.)/,
         /₪\s*(\d{1,3}[,.]?\d{3}|\d{2,7})/,
@@ -550,7 +552,7 @@ function extractPrice(text: string, options?: AiOptions): {
     const lines = text.split(/\n/);
     for (const line of lines) {
         const clean = line.trim();
-        const onlyNumber = clean.match(/^(\d{1,3}[,.]?\d{3}|\d{2,7})\s*(?:₪|ש"ח|שח|שקל|שקלים|NIS)?$/);
+        const onlyNumber = clean.match(/^(\d{1,3}[,.]?\d{3}|\d{2,7})\s*(?:₪|ש["״]ח|ש''ח|שח|שקל|שקלים|NIS)?$/);
         if (onlyNumber) {
             const candidate = parsePrice(onlyNumber[1]);
             if (candidate !== originalPrice && candidate > 10 && candidate < 5000000) {
@@ -712,8 +714,13 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         },
         // Test expiry from speech: "טסט עד 05 חודש מאי 2026"
         { key: "טסט עד", regex: /(?:טסט|test)\s*(?:עד|until)?[:\s-]*(\d{1,2}[.\/-]\d{2,4})/i, format: (m) => ({ value: m[1] }) },
+        // Fallback for general storage: look behind to ensure we didn't just match RAM, but since RAM is captured first (sorting) it's ok
+        { key: "נפח אחסון", regex: /(?:נפח|אחסון|דיסק|SSD|HDD)\s*[-:]?\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
         { key: "נפח אחסון", regex: /(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
-        { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה)\s*(RAM|זיכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+
+        { key: "RAM", regex: /(?:RAM|זיכרון|זכרון)\s*[-:]?\s*(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+        { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה)\s*(RAM|זיכרון|זכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+        { key: "מעבד", regex: /(?:מעבד|processor)\s*[-:]?\s*([a-zA-Z0-9\-\s]+)(?:,|$|\n)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "עוצמה", regex: /(\d{1,5})\s*W(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1], unit: "W" }) },
         { key: "סוללה", regex: /(\d{3,6})\s*(mAh|אמפר)/i, format: (m) => ({ value: m[1], unit: "mAh" }) },
         { key: "מצב סוללה", regex: /(\d{2,3})%\s*(?:סוללה|battery)/i, format: (m) => ({ value: m[1], unit: "%" }) },
@@ -721,7 +728,7 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         { key: "רזולוציה", regex: /\b(1920|2560|3840|7680)[xX×](1080|1440|2160|4320)\b/, format: (m) => ({ value: `${m[1]}x${m[2]}` }) },
         { key: "תדר רענון", regex: /(\d{2,3})\s*(Hz|הרץ)\b/i, format: (m) => ({ value: m[1], unit: "Hz" }) },
         { key: "מצלמה", regex: /(\d{1,3})\s*(MP|מגה\s*פיקסל)\b/i, format: (m) => ({ value: m[1], unit: "MP" }) },
-        { key: "מידות", regex: /(\d{2,4})\s*(?:[xX×]|על)\s*(\d{2,4})(?:\s*(?:[xX×]|על)\s*(\d{2,4}))?(?:\s*(ס"מ|cm))?/i, format: (m) => ({ value: m[3] ? `${m[1]}x${m[2]}x${m[3]}` : `${m[1]}x${m[2]}`, unit: m[4] || 'ס"מ' }) },
+        { key: "מידות", regex: /(\d{2,4})\s*(?:[xX×\*]|על)\s*(\d{2,4})(?:\s*(?:[xX×\*]|על)\s*(\d{2,4}))?(?:\s*(ס"מ|cm))?/i, format: (m) => ({ value: m[3] ? `${m[1]}x${m[2]}x${m[3]}` : `${m[1]}x${m[2]}`, unit: m[4] || 'ס"מ' }) },
         { key: "גובה", regex: /גובה\s*(\d{2,4})\s*(ס"מ|cm|מטר)/i, format: (m) => ({ value: m[1], unit: m[2] }) },
         { key: "גובה", regex: /(\d{2,4})\s*(?:ס"מ|cm|מטר)\s*גובה/i, format: (m) => ({ value: m[1], unit: "ס\"מ" }) }, // Suffix support
         { key: "משקל", regex: /(?:משקל)\s*(\d{1,4}(?:\.\d)?)\s*(ק"ג|קג|kg|גרם|gr)/i, format: (m) => ({ value: m[1], unit: m[2] }) },
