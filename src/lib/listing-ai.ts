@@ -349,7 +349,8 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
     // Blocklist for generic words that should NOT be detected as the 'Brand' or 'Make'
     const BRAND_BLOCKLIST = [
         "קילומטר", "קמ", "ק\"מ", "טסט", "ידני", "אוטומט", "דיזל", "בנזין", "היברידי", "חשמלי", "אופנוע", "קטנוע",
-        "למכירה", "למסירה", "דרוש", "מחפש", "חדש", "משומש", "תקין", "null", "undefined"
+        "למכירה", "למסירה", "דרוש", "מחפש", "חדש", "משומש", "תקין", "null", "undefined",
+        "מחשב", "מחשבים", "לפטופ", "laptop", "PC", "שולחני", "נייד", "מסך", "טלוויזיה"
     ];
 
     if (CATEGORIES[category]) {
@@ -387,6 +388,12 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
                             }
                         }
                     }
+                } else if (category === "מחשבים" || category === "טלפונים") {
+                    const afterBrand = clean.substring(clean.indexOf(kw) + kw.length).trim();
+                    const modelMatch = afterBrand.match(/^([a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+){0,3})/);
+                    if (modelMatch && modelMatch[1] && !/^\d+$/.test(modelMatch[1])) {
+                        foundModel = modelMatch[1].trim();
+                    }
                 }
                 break;
             }
@@ -411,9 +418,21 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
         smartTitle = `${subCategory || "דירה"} ${rooms ? rooms + " חדרים" : ""} ${city}`.trim();
     } else {
         if (foundBrand) {
-            smartTitle = `${subCategory || category} ${foundBrand}`;
-            const storage = attributes.find(a => a.key === "נפח אחסון")?.value;
-            if (storage) smartTitle += ` ${storage}`;
+            if (category === "מחשבים" || category === "טלפונים") {
+                smartTitle = `${foundBrand}`;
+            } else {
+                let prefix = subCategory || category;
+                // shorten subcategories for title
+                if (prefix === "מחשבים ניידים / לפטופים") prefix = "לפטופ";
+                smartTitle = `${prefix} ${foundBrand}`;
+            }
+            if (foundModel) smartTitle += ` ${foundModel}`;
+
+            const storageObj = attributes.find(a => a.key === "נפח אחסון");
+            if (storageObj) {
+                // If it's a small number without unit, and TB was inferred or explicit, let's use the unit.
+                smartTitle += ` ${storageObj.value}${storageObj.unit ? storageObj.unit : ''}`;
+            }
         }
     }
 
@@ -611,10 +630,10 @@ export const CATEGORIES: Record<string, { keywords: string[]; subCategories: Rec
     },
     "מחשבים": {
         keywords: [
-            "מחשב", "לפטופ", "מקבוק", "macbook", "notebook", "laptop", "PC", "שולחני", "ASUS", "dell", "lenovo", "HP", "acer", "MSI", "intel", "i5", "i7", "i9", "ryzen", "SSD", "RAM", "מעבד", "כרטיס מסך", "GPU", "גיימינג", "מסך", "מדפסת", "ראוטר"
+            "Apple", "MacBook", "מקבוק", "Lenovo", "ThinkPad", "ASUS", "Dell", "HP", "Acer", "MSI", "מחשב", "לפטופ", "macbook", "notebook", "laptop", "PC", "שולחני", "intel", "i5", "i7", "i9", "ryzen", "SSD", "RAM", "מעבד", "כרטיס מסך", "GPU", "גיימינג", "מסך", "מדפסת", "ראוטר"
         ],
         subCategories: {
-            "מחשבים ניידים / לפטופים": ["לפטופ", "מקבוק", "macbook", "notebook", "laptop", "מחשב נייד"],
+            "מחשבים ניידים / לפטופים": ["לפטופ", "מקבוק", "macbook", "notebook", "laptop", "מחשב נייד", "ThinkPad", "מחשב פרימיום", "מחשב קל", "נייד"],
             "מחשבים שולחניים (PC)": ["מחשב שולחני", "PC", "שולחני", "מגדל", "מחשב נייח"],
             "מסכים וציוד היקפי": ["מסך", "מוניטור", "עכבר", "מקלדת", "מצלמת רשת"],
             "חלקים ורכיבים ל-PC": ["כרטיס מסך", "GPU", "RAM", "SSD", "לוח אם", "ספק כוח", "מעבד"],
@@ -839,7 +858,8 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
 
         { key: "RAM", regex: /(?:RAM|זיכרון|זכרון)\s*[-:]?\s*(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה)\s*(RAM|זיכרון|זכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
-        { key: "מעבד", regex: /(?:מעבד|processor)\s*[-:]?\s*([a-zA-Z0-9\-\s]+)(?:,|$|\n)/i, format: (m) => ({ value: m[1].trim() }) },
+        { key: "מעבד", regex: /(?:מעבד|processor)\s*[-:]?\s*([a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+){0,4})/i, format: (m) => ({ value: m[1].trim() }) },
+        { key: "מערכת הפעלה", regex: /(?:מערכת\s*הפעלה לפני\s*[-:]?\s*)?(Windows\s*\d+|MacOS|Linux|ChromeOS|Ubuntu|iOS|Android|אנדרואיד)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "עוצמה", regex: /(\d{1,5})\s*W(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1], unit: "W" }) },
         { key: "סוללה", regex: /(\d{3,6})\s*(mAh|אמפר)/i, format: (m) => ({ value: m[1], unit: "mAh" }) },
         { key: "מצב סוללה", regex: /(\d{2,3})%\s*(?:סוללה|battery)/i, format: (m) => ({ value: m[1], unit: "%" }) },
@@ -1021,6 +1041,16 @@ function extractHighlights(text: string, options?: AiOptions): string[] {
         /אפשרות\s*מימון(?:\s*מלא)?/i,
         /אפשרות\s*(?:טרייד|החלפה)/i,
         /טרייד\s*אין/i,
+
+        // Computers / Electronics highlights
+        /חזק\s*קל\s*ודק/i,
+        /דק\s*וקל/i,
+        /מתאם\s*ל(?:עבודה|לימודים|תכנות|סטודנטים|גיימינג)/i,
+        /מחשב\s*פרימיום/i,
+        /סוללה\s*חזקה/i,
+        /בקושי\s*בשימוש/i,
+        /מסך\s*איכותי/i,
+
         // Quality car descriptors (voice-friendly)
         /מטופל(?:\s*(?:במוסך|בזמן|היטב))?/i,
         /חסכוני(?:\s*בדלק)?/i,

@@ -1294,7 +1294,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             <Input
                                 value={getExtraVal("יצרן")}
                                 onChange={e => handleExtraChange("יצרן", e.target.value)}
-                                placeholder="למשל: Apple, Samsung"
+                                placeholder={formData.category === "Computers" ? "למשל: Lenovo, HP, Apple" : "למשל: Apple, Samsung"}
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
@@ -1303,16 +1303,16 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             <Input
                                 value={getExtraVal("דגם")}
                                 onChange={e => handleExtraChange("דגם", e.target.value)}
-                                placeholder="iPhone 13 / Galaxy S21"
+                                placeholder={formData.category === "Computers" ? "ThinkPad X1 / MacBook Pro / XPS 15" : "iPhone 13 / Galaxy S21"}
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>נפח אחסון (GB)</Label>
+                            <Label>נפח אחסון</Label>
                             <Input
                                 value={getExtraVal("נפח אחסון")}
                                 onChange={e => handleExtraChange("נפח אחסון", e.target.value)}
-                                placeholder="128 / 256 / 512"
+                                placeholder={formData.category === "Computers" ? "512GB / 1TB / 2TB" : "128 / 256 / 512"}
                                 className="bg-gray-800 border-gray-700"
                             />
                         </div>
@@ -1336,19 +1336,9 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                         className="bg-gray-800 border-gray-700"
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>גודל מסך (אינץ&apos;)</Label>
-                                    <Input
-                                        value={getExtraVal("גודל מסך")}
-                                        onChange={e => handleExtraChange("גודל מסך", e.target.value)}
-                                        placeholder="13.3 / 15.6 / 27"
-                                        className="bg-gray-800 border-gray-700 font-mono text-left"
-                                        dir="ltr"
-                                    />
-                                </div>
                                 <div className="space-y-2 col-span-2">
                                     <Label>סוג המחשב</Label>
-                                    <Select value={getExtraVal("סוג המחשב")} onValueChange={val => handleExtraChange("סוג המחשב", val)}>
+                                    <Select value={getExtraVal("סוג המחשב") || "מחשב נייד (Laptop)"} onValueChange={val => handleExtraChange("סוג המחשב", val)}>
                                         <SelectTrigger className="bg-gray-800 border-gray-700 text-right" dir="rtl">
                                             <SelectValue placeholder="בחר סוג מחשב" />
                                         </SelectTrigger>
@@ -1361,6 +1351,74 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                             <SelectItem value="תחנת עבודה (Workstation)">תחנת עבודה (Workstation)</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>גודל מסך (אינץ&apos;)</Label>
+                                    <Input
+                                        value={getExtraVal("גודל מסך")}
+                                        onChange={e => handleExtraChange("גודל מסך", e.target.value)}
+                                        placeholder="13.3 / 15.6 / 27"
+                                        className="bg-gray-800 border-gray-700 font-mono text-left"
+                                        dir="ltr"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>כרטיס מסך (GPU)</Label>
+                                    <Input
+                                        value={getExtraVal("כרטיס מסך")}
+                                        onChange={e => handleExtraChange("כרטיס מסך", e.target.value)}
+                                        placeholder="למשל: NVIDIA RTX 4070 Ti"
+                                        className="bg-gray-800 border-gray-700"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>מערכת הפעלה</Label>
+                                    <Input
+                                        value={getExtraVal("מערכת הפעלה")}
+                                        onChange={e => handleExtraChange("מערכת הפעלה", e.target.value)}
+                                        placeholder="למשל: Windows 11 / ללא / macOS"
+                                        className="bg-gray-800 border-gray-700"
+                                    />
+                                </div>
+                                {(getExtraVal("סוג המחשב") === "מחשב נייח (Desktop)" || getExtraVal("סוג המחשב") === "מחשב גיימינג" || getExtraVal("סוג המחשב") === "תחנת עבודה (Workstation)") && (
+                                    <>
+                                        <div className="space-y-2">
+                                            <Label>לוח אם</Label>
+                                            <Input
+                                                value={getExtraVal("לוח אם")}
+                                                onChange={e => handleExtraChange("לוח אם", e.target.value)}
+                                                placeholder="דגם אם וצ'יפסט"
+                                                className="bg-gray-800 border-gray-700"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>ספק כוח</Label>
+                                            <Input
+                                                value={getExtraVal("ספק כוח")}
+                                                onChange={e => handleExtraChange("ספק כוח", e.target.value)}
+                                                placeholder="למשל: 750W 80+ Gold"
+                                                className="bg-gray-800 border-gray-700"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>מארז וקירור</Label>
+                                            <Input
+                                                value={getExtraVal("מארז וקירור")}
+                                                onChange={e => handleExtraChange("מארז וקירור", e.target.value)}
+                                                placeholder="סוג מארז / קירור נוזלי"
+                                                className="bg-gray-800 border-gray-700"
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                                <div className="space-y-2 col-span-2">
+                                    <Label className="text-orange-400">החרגות ונזקים (שבר רוזיה, חסר וכו&apos;)</Label>
+                                    <Input
+                                        value={getExtraVal("החרגות")}
+                                        onChange={e => handleExtraChange("החרגות", e.target.value)}
+                                        placeholder="למשל: סוללה חלשה, שריטה במסך (השאר ריק אם תקין)"
+                                        className="bg-gray-800 border-orange-500/30 text-orange-400 placeholder:text-gray-500"
+                                    />
                                 </div>
                             </>
                         )}
@@ -1400,80 +1458,87 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             />
                         </div>
                     </div>
-                )}
+                )
+                }
 
                 {/* Specific Fields for Fashion & Kids */}
-                {["Fashion", "Kids"].includes(formData.category) && (
-                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
-                        <div className="space-y-2">
-                            <Label>מותג</Label>
-                            <Input
-                                value={getExtraVal("מותג")}
-                                onChange={e => handleExtraChange("מותג", e.target.value)}
-                                placeholder="Nike, Zara..."
-                                className="bg-gray-800 border-gray-700"
-                            />
+                {
+                    ["Fashion", "Kids"].includes(formData.category) && (
+                        <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
+                            <div className="space-y-2">
+                                <Label>מותג</Label>
+                                <Input
+                                    value={getExtraVal("מותג")}
+                                    onChange={e => handleExtraChange("מותג", e.target.value)}
+                                    placeholder="Nike, Zara..."
+                                    className="bg-gray-800 border-gray-700"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>מידה</Label>
+                                <Input
+                                    value={getExtraVal("מידה")}
+                                    onChange={e => handleExtraChange("מידה", e.target.value)}
+                                    placeholder="למשל: M, 42, גיל 3-4"
+                                    className="bg-gray-800 border-gray-700"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>מידה</Label>
-                            <Input
-                                value={getExtraVal("מידה")}
-                                onChange={e => handleExtraChange("מידה", e.target.value)}
-                                placeholder="למשל: M, 42, גיל 3-4"
-                                className="bg-gray-800 border-gray-700"
-                            />
-                        </div>
-                    </div>
-                )}
+                    )
+                }
 
                 {/* Specific Fields for Electronics / Audio / Appliances / Sports */}
-                {["Electronics", "Audio", "Appliances", "Sports"].includes(formData.category) && (
-                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
-                        <div className="space-y-2">
-                            <Label>יצרן / מותג</Label>
-                            <Input
-                                value={getExtraVal("יצרן")}
-                                onChange={e => handleExtraChange("יצרן", e.target.value)}
-                                placeholder="יצרן הפריט..."
-                                className="bg-gray-800 border-gray-700"
-                            />
+                {
+                    ["Electronics", "Audio", "Appliances", "Sports"].includes(formData.category) && (
+                        <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
+                            <div className="space-y-2">
+                                <Label>יצרן / מותג</Label>
+                                <Input
+                                    value={getExtraVal("יצרן")}
+                                    onChange={e => handleExtraChange("יצרן", e.target.value)}
+                                    placeholder="יצרן הפריט..."
+                                    className="bg-gray-800 border-gray-700"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>שנת ייצור / קניה</Label>
+                                <Input
+                                    value={formData.year}
+                                    onChange={e => handleChange("year", e.target.value.replace(/\D/g, ""))}
+                                    placeholder="202X"
+                                    maxLength={4}
+                                    className="bg-gray-800 border-gray-700"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>שנת ייצור / קניה</Label>
-                            <Input
-                                value={formData.year}
-                                onChange={e => handleChange("year", e.target.value.replace(/\D/g, ""))}
-                                placeholder="202X"
-                                maxLength={4}
-                                className="bg-gray-800 border-gray-700"
-                            />
-                        </div>
-                    </div>
-                )}
+                    )
+                }
 
                 {/* Conflict Warning */}
-                {showConflictWarning && detectedMake && (
-                    <div className="bg-orange-900/20 border border-orange-500/50 p-3 rounded-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-                        <div className="bg-orange-500/10 p-2 rounded-full">
-                            <Sparkles className="w-5 h-5 text-orange-500" />
+                {
+                    showConflictWarning && detectedMake && (
+                        <div className="bg-orange-900/20 border border-orange-500/50 p-3 rounded-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+                            <div className="bg-orange-500/10 p-2 rounded-full">
+                                <Sparkles className="w-5 h-5 text-orange-500" />
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-orange-400 text-sm">שים לב!</h4>
+                                <p className="text-xs text-gray-300">
+                                    זיהינו בטקסט שמדובר ברכב מסוג <span className="font-bold text-white">{detectedMake}</span>, אך בחרת <span className="font-bold text-white">{formData.make}</span>. האם אתה בטוח?
+                                </p>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowConflictWarning(false)}
+                                className="text-gray-400 hover:text-white"
+                            >
+                                <X className="w-4 h-4" />
+                            </Button>
                         </div>
-                        <div>
-                            <h4 className="font-bold text-orange-400 text-sm">שים לב!</h4>
-                            <p className="text-xs text-gray-300">
-                                זיהינו בטקסט שמדובר ברכב מסוג <span className="font-bold text-white">{detectedMake}</span>, אך בחרת <span className="font-bold text-white">{formData.make}</span>. האם אתה בטוח?
-                            </p>
-                        </div>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowConflictWarning(false)}
-                            className="text-gray-400 hover:text-white"
-                        >
-                            <X className="w-4 h-4" />
-                        </Button>
-                    </div>
-                )}
+                    )
+                }
 
                 {/* Highlights Section */}
                 <div className="space-y-2">
@@ -1552,26 +1617,28 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 </div>
 
                 {/* Suggestions / Missing Fields */}
-                {missingFields.filter(f => !["סוג דלק", "מיקום", "שנת ייצור"].includes(f)).length > 0 && (
-                    <div className="bg-yellow-900/10 border border-yellow-500/30 p-3 rounded-lg">
-                        <div className="text-yellow-500 text-xs font-bold mb-2 flex items-center gap-2">
-                            <Sparkles className="w-3 h-3" />
-                            המלצת המערכת: כדאי להוסיף את הפרטים הבאים
+                {
+                    missingFields.filter(f => !["סוג דלק", "מיקום", "שנת ייצור"].includes(f)).length > 0 && (
+                        <div className="bg-yellow-900/10 border border-yellow-500/30 p-3 rounded-lg">
+                            <div className="text-yellow-500 text-xs font-bold mb-2 flex items-center gap-2">
+                                <Sparkles className="w-3 h-3" />
+                                המלצת המערכת: כדאי להוסיף את הפרטים הבאים
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {missingFields.filter(f => !["סוג דלק", "מיקום", "שנת ייצור"].includes(f)).map((field) => (
+                                    <button
+                                        key={field}
+                                        type="button"
+                                        onClick={() => addSuggestion(field)}
+                                        className="bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-xs border border-yellow-500/30 transition-colors"
+                                    >
+                                        + {field}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                            {missingFields.filter(f => !["סוג דלק", "מיקום", "שנת ייצור"].includes(f)).map((field) => (
-                                <button
-                                    key={field}
-                                    type="button"
-                                    onClick={() => addSuggestion(field)}
-                                    className="bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-xs border border-yellow-500/30 transition-colors"
-                                >
-                                    + {field}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                    )
+                }
 
                 {/* Dynamic Fields Section */}
                 <div className="space-y-2 bg-gray-900/50 p-3 rounded-xl border border-gray-800">
@@ -1705,64 +1772,66 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 </div>
 
                 {/* Tester AI floating panel */}
-                {originalAI && isMounted && createPortal(
-                    <div
-                        className="fixed top-1/4 right-6 z-[99999] flex flex-col gap-2 items-start pointer-events-none"
-                        dir="rtl"
-                        style={{ transform: `translate(${panelPos.x}px, ${panelPos.y}px)` }}
-                    >
-                        {!isTestMode && !testerNote && (
-                            <button
-                                type="button"
-                                onClick={(e) => { e.preventDefault(); document.getElementById('ai-tester-panel')?.classList.toggle('hidden'); }}
-                                className="pointer-events-auto bg-amber-500 hover:bg-amber-400 text-black rounded-full px-4 py-3 shadow-xl shadow-amber-500/30 flex items-center gap-2 border border-amber-400/50 transition-all hover:scale-105 backdrop-blur-md cursor-pointer"
-                                title="הוסף הערת בדיקה"
-                            >
-                                <Sparkles className="w-5 h-5 text-black" />
-                                <span className="font-bold text-sm">הוסף הערת בדיקה (AI)</span>
-                            </button>
-                        )}
-
-                        <div id="ai-tester-panel" className={`pointer-events-auto bg-slate-900 border-2 border-amber-500/80 rounded-2xl p-4 w-80 shadow-[0_0_30px_rgba(245,158,11,0.3)] backdrop-blur-xl transition-all ${isTestMode || testerNote ? 'block' : 'hidden'} animate-in slide-in-from-bottom-5`}>
-                            <div
-                                className={`flex justify-between items-center mb-4 border-b border-amber-500/30 pb-3 ${isDraggingPanel ? 'cursor-grabbing' : 'cursor-grab'} focus:outline-none select-none`}
-                                onPointerDown={handlePointerDownPanel}
-                                onPointerMove={handlePointerMovePanel}
-                                onPointerUp={handlePointerUpPanel}
-                                onPointerCancel={handlePointerUpPanel}
-                            >
-                                <h3 className="text-sm font-bold text-amber-500 flex items-center gap-2"><Sparkles className="w-4 h-4" /> הערות בודק למערכת AI</h3>
-                                <button type="button" onClick={() => document.getElementById('ai-tester-panel')?.classList.add('hidden')} className="text-gray-400 hover:text-white leading-none text-2xl p-1">×</button>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="bg-amber-500/10 rounded-lg p-2.5 flex items-center justify-between border border-amber-500/20">
-                                    <span className="text-xs text-amber-200">בודק:</span>
-                                    <span className="text-sm font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">{testerName}</span>
-                                </div>
-                                <div>
-                                    <Label className="text-xs text-amber-200 mb-1 block">הערות על זיהוי שגוי / חסר 👇</Label>
-                                    <Textarea
-                                        rows={4}
-                                        className="text-sm bg-black/60 border-amber-500/30 resize-none focus:border-amber-500 text-white placeholder-gray-500"
-                                        value={testerNote}
-                                        onChange={e => setTesterNote(e.target.value)}
-                                        placeholder="לדוגמה: מחיר יצא 0, לא זיהה יד 2, דגם שגוי..."
-                                    />
-                                </div>
-
+                {
+                    originalAI && isMounted && createPortal(
+                        <div
+                            className="fixed top-1/4 right-6 z-[99999] flex flex-col gap-2 items-start pointer-events-none"
+                            dir="rtl"
+                            style={{ transform: `translate(${panelPos.x}px, ${panelPos.y}px)` }}
+                        >
+                            {!isTestMode && !testerNote && (
                                 <button
                                     type="button"
-                                    onClick={submitTesterNote}
-                                    disabled={!testerNote.trim()}
-                                    className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/20"
+                                    onClick={(e) => { e.preventDefault(); document.getElementById('ai-tester-panel')?.classList.toggle('hidden'); }}
+                                    className="pointer-events-auto bg-amber-500 hover:bg-amber-400 text-black rounded-full px-4 py-3 shadow-xl shadow-amber-500/30 flex items-center gap-2 border border-amber-400/50 transition-all hover:scale-105 backdrop-blur-md cursor-pointer"
+                                    title="הוסף הערת בדיקה"
                                 >
-                                    שלח הערה למערכת ✓
+                                    <Sparkles className="w-5 h-5 text-black" />
+                                    <span className="font-bold text-sm">הוסף הערת בדיקה (AI)</span>
                                 </button>
+                            )}
+
+                            <div id="ai-tester-panel" className={`pointer-events-auto bg-slate-900 border-2 border-amber-500/80 rounded-2xl p-4 w-80 shadow-[0_0_30px_rgba(245,158,11,0.3)] backdrop-blur-xl transition-all ${isTestMode || testerNote ? 'block' : 'hidden'} animate-in slide-in-from-bottom-5`}>
+                                <div
+                                    className={`flex justify-between items-center mb-4 border-b border-amber-500/30 pb-3 ${isDraggingPanel ? 'cursor-grabbing' : 'cursor-grab'} focus:outline-none select-none`}
+                                    onPointerDown={handlePointerDownPanel}
+                                    onPointerMove={handlePointerMovePanel}
+                                    onPointerUp={handlePointerUpPanel}
+                                    onPointerCancel={handlePointerUpPanel}
+                                >
+                                    <h3 className="text-sm font-bold text-amber-500 flex items-center gap-2"><Sparkles className="w-4 h-4" /> הערות בודק למערכת AI</h3>
+                                    <button type="button" onClick={() => document.getElementById('ai-tester-panel')?.classList.add('hidden')} className="text-gray-400 hover:text-white leading-none text-2xl p-1">×</button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="bg-amber-500/10 rounded-lg p-2.5 flex items-center justify-between border border-amber-500/20">
+                                        <span className="text-xs text-amber-200">בודק:</span>
+                                        <span className="text-sm font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">{testerName}</span>
+                                    </div>
+                                    <div>
+                                        <Label className="text-xs text-amber-200 mb-1 block">הערות על זיהוי שגוי / חסר 👇</Label>
+                                        <Textarea
+                                            rows={4}
+                                            className="text-sm bg-black/60 border-amber-500/30 resize-none focus:border-amber-500 text-white placeholder-gray-500"
+                                            value={testerNote}
+                                            onChange={e => setTesterNote(e.target.value)}
+                                            placeholder="לדוגמה: מחיר יצא 0, לא זיהה יד 2, דגם שגוי..."
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={submitTesterNote}
+                                        disabled={!testerNote.trim()}
+                                        className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-bold text-sm transition-all shadow-lg shadow-amber-500/20"
+                                    >
+                                        שלח הערה למערכת ✓
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    , document.body)}
+                        , document.body)
+                }
 
                 <div className="border-t border-amber-500/20 pt-4 mb-4">
                     <label className="flex items-center gap-3 p-3 bg-slate-900/50 hover:bg-slate-900/80 rounded-xl cursor-pointer transition-colors border border-amber-500/20">
@@ -1787,7 +1856,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 <Button type="submit" disabled={loading} className={`w-full h-14 text-lg font-bold rounded-xl shadow-lg transition-all ${isTestMode ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/30" : "bg-green-600 hover:bg-green-700 shadow-green-500/30"}`}>
                     {loading ? <Loader2 className="animate-spin" /> : isTestMode ? "שמור בדיקת AI" : isEditing ? "עדכן מודעה" : "פרסם מודעה"}
                 </Button>
-            </form>
-        </div>
+            </form >
+        </div >
     );
 }
