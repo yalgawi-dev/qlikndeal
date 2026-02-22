@@ -199,6 +199,39 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
     const [isTestMode, setIsTestMode] = useState(false);
 
     useEffect(() => {
+        if (user && (!testerName || testerName === "אורח")) {
+            const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+            if (fullName) {
+                setTesterName(fullName);
+            }
+        }
+    }, [user, testerName]);
+
+    // Drag logic for AI tester panel
+    const [panelPos, setPanelPos] = useState({ x: 0, y: 0 });
+    const [isDraggingPanel, setIsDraggingPanel] = useState(false);
+    const dragStartRef = useRef({ x: 0, y: 0, panelX: 0, panelY: 0 });
+
+    const handlePointerDownPanel = (e: React.PointerEvent<HTMLDivElement>) => {
+        if ((e.target as HTMLElement).closest('button')) return;
+        setIsDraggingPanel(true);
+        dragStartRef.current = { x: e.clientX, y: e.clientY, panelX: panelPos.x, panelY: panelPos.y };
+        e.currentTarget.setPointerCapture(e.pointerId);
+    };
+
+    const handlePointerMovePanel = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!isDraggingPanel) return;
+        const dx = e.clientX - dragStartRef.current.x;
+        const dy = e.clientY - dragStartRef.current.y;
+        setPanelPos({ x: dragStartRef.current.panelX + dx, y: dragStartRef.current.panelY + dy });
+    };
+
+    const handlePointerUpPanel = (e: React.PointerEvent<HTMLDivElement>) => {
+        setIsDraggingPanel(false);
+        e.currentTarget.releasePointerCapture(e.pointerId);
+    };
+
+    useEffect(() => {
         const storedAI = localStorage.getItem("smartListingAiResult");
         if (storedAI) {
             try { setOriginalAI(JSON.parse(storedAI)); } catch (e) { }
@@ -1598,12 +1631,16 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
                 {/* Tester AI floating panel */}
                 {originalAI && (
-                    <div className="fixed bottom-6 left-6 z-[100] flex flex-col gap-2 items-start pointer-events-none" dir="rtl">
+                    <div
+                        className="fixed bottom-6 left-6 z-[100] flex flex-col gap-2 items-start pointer-events-none"
+                        dir="rtl"
+                        style={{ transform: `translate(${panelPos.x}px, ${panelPos.y}px)` }}
+                    >
                         {!isTestMode && !testerNote && (
                             <button
                                 type="button"
                                 onClick={(e) => { e.preventDefault(); document.getElementById('ai-tester-panel')?.classList.toggle('hidden'); }}
-                                className="pointer-events-auto bg-indigo-600/90 hover:bg-indigo-500 text-white rounded-full px-4 py-3 shadow-lg shadow-indigo-500/30 flex items-center gap-2 border border-indigo-400/50 transition-all hover:scale-105 backdrop-blur-md"
+                                className="pointer-events-auto bg-indigo-600/90 hover:bg-indigo-500 text-white rounded-full px-4 py-3 shadow-lg shadow-indigo-500/30 flex items-center gap-2 border border-indigo-400/50 transition-all hover:scale-105 backdrop-blur-md cursor-pointer"
                                 title="הוסף הערת בדיקה"
                             >
                                 <Sparkles className="w-5 h-5" />
@@ -1612,7 +1649,13 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         )}
 
                         <div id="ai-tester-panel" className={`pointer-events-auto bg-indigo-950/95 border border-indigo-500/50 rounded-2xl p-4 w-80 shadow-2xl backdrop-blur-xl transition-all ${isTestMode || testerNote ? 'block' : 'hidden'} animate-in slide-in-from-bottom-5`}>
-                            <div className="flex justify-between items-center mb-3 border-b border-indigo-500/20 pb-2">
+                            <div
+                                className={`flex justify-between items-center mb-3 border-b border-indigo-500/20 pb-2 ${isDraggingPanel ? 'cursor-grabbing' : 'cursor-grab'}`}
+                                onPointerDown={handlePointerDownPanel}
+                                onPointerMove={handlePointerMovePanel}
+                                onPointerUp={handlePointerUpPanel}
+                                onPointerCancel={handlePointerUpPanel}
+                            >
                                 <h3 className="text-sm font-bold text-indigo-300 flex items-center gap-2"><Sparkles className="w-4 h-4" /> הגדרות בדיקת AI</h3>
                                 <button type="button" onClick={() => document.getElementById('ai-tester-panel')?.classList.add('hidden')} className="text-indigo-400 hover:text-white leading-none text-xl p-1">×</button>
                             </div>
