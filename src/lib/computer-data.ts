@@ -12,6 +12,15 @@ export type ComputerSubModel = {
     storage?: string[];
     os?: string[];
     type?: string; // laptop | desktop | gaming | workstation | all-in-one | mini
+    skus?: {
+        id: string; // SKU or MTM (e.g. '82LX00BTIV')
+        screenSize?: string[];
+        cpu?: string[];
+        gpu?: string[];
+        ram?: string[];
+        storage?: string[];
+        os?: string[];
+    }[];
 };
 
 export type ComputerModelFamily = {
@@ -25,10 +34,10 @@ export type ComputerBrand = {
 };
 
 // ---- Global spec options ----
-export const RAM_OPTIONS = ["4GB", "8GB", "12GB", "16GB", "24GB", "32GB", "48GB", "64GB", "96GB", "128GB"];
-export const STORAGE_OPTIONS = ["128GB SSD", "256GB SSD", "512GB SSD", "1TB SSD", "2TB SSD", "4TB SSD", "500GB HDD", "1TB HDD", "2TB HDD", "4TB HDD", "1TB SSD + 1TB HDD", "2TB SSD + 2TB HDD"];
-export const SCREEN_SIZE_OPTIONS = ["11\"", "12\"", "13\"", "13.3\"", "13.6\"", "14\"", "14.5\"", "15\"", "15.6\"", "16\"", "17\"", "17.3\"", "24\"", "27\"", "32\""];
-export const OS_OPTIONS = ["Windows 11 Home", "Windows 11 Pro", "Windows 10 Home", "Windows 10 Pro", "macOS Sequoia", "macOS Sonoma", "macOS Ventura", "Linux", "ChromeOS", "ללא מערכת הפעלה"];
+export const RAM_OPTIONS = ["4GB", "8GB", "12GB", "16GB", "24GB", "32GB", "48GB", "64GB", "96GB", "128GB", "לא ידוע"];
+export const STORAGE_OPTIONS = ["128GB SSD", "256GB SSD", "512GB SSD", "1TB SSD", "2TB SSD", "4TB SSD", "500GB HDD", "1TB HDD", "2TB HDD", "4TB HDD", "1TB SSD + 1TB HDD", "2TB SSD + 2TB HDD", "לא ידוע"];
+export const SCREEN_SIZE_OPTIONS = ["11\"", "12\"", "13\"", "13.3\"", "13.6\"", "14\"", "14.5\"", "15\"", "15.6\"", "16\"", "17\"", "17.3\"", "24\"", "27\"", "32\"", "לא ידוע"];
+export const OS_OPTIONS = ["Windows 11 Home", "Windows 11 Pro", "Windows 10 Home", "Windows 10 Pro", "macOS Sequoia", "macOS Sonoma", "macOS Ventura", "Linux", "ChromeOS", "ללא מערכת הפעלה", "לא ידוע"];
 export const CONDITION_OPTIONS = ["חדש", "כמו חדש", "משומש - מצב מצויין", "משומש - מצב טוב", "משומש - מצב בינוני", "לחלקים / לא עובד"];
 
 export const CPU_OPTIONS: Record<string, string[]> = {
@@ -41,7 +50,7 @@ export const CPU_OPTIONS: Record<string, string[]> = {
         "Intel Core i5-14500HX", "Intel Core i5-13500H", "Intel Core i5-12500H",
         "Intel Core i5-1345U", "Intel Core i5-1335U", "Intel Core i5-1240P",
         "Intel Core i3-1315U", "Intel Core i3-1305U",
-        "Intel Pentium", "Intel Celeron",
+        "Intel Pentium", "Intel Celeron", "לא ידוע"
     ],
     AMD: [
         "AMD Ryzen 9 7945HX", "AMD Ryzen 9 7940HS", "AMD Ryzen 9 6900HX",
@@ -49,13 +58,13 @@ export const CPU_OPTIONS: Record<string, string[]> = {
         "AMD Ryzen 7 7730U", "AMD Ryzen 7 5825U", "AMD Ryzen 7 5700U",
         "AMD Ryzen 5 7530U", "AMD Ryzen 5 5625U", "AMD Ryzen 5 5500U",
         "AMD Ryzen 5 7600X", "AMD Ryzen 7 7700X", "AMD Ryzen 9 7950X",
-        "AMD Ryzen AI 9 HX 370", "AMD Ryzen AI 7 350",
+        "AMD Ryzen AI 9 HX 370", "AMD Ryzen AI 7 350", "לא ידוע"
     ],
     Apple: [
         "Apple M4 Pro", "Apple M4 Max", "Apple M4",
         "Apple M3 Pro", "Apple M3 Max", "Apple M3",
         "Apple M2 Pro", "Apple M2 Max", "Apple M2",
-        "Apple M1 Pro", "Apple M1 Max", "Apple M1",
+        "Apple M1 Pro", "Apple M1 Max", "Apple M1", "לא ידוע"
     ],
 };
 
@@ -81,6 +90,7 @@ export const GPU_OPTIONS = [
     "Apple GPU 10-core", "Apple GPU 16-core", "Apple GPU 30-core", "Apple GPU 38-core", "Apple GPU 40-core",
     // Integrated
     "כרטיס מסך משולב (אינטגרלי)",
+    "לא ידוע"
 ];
 
 // ---- Brand → Series → Sub-Models ----
@@ -137,7 +147,22 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                 { name: "IdeaPad Slim 5i Gen 9", screenSize: ["14\"", "16\""], ram: ["8GB", "16GB"] },
                 { name: "IdeaPad Slim 3i Gen 8", screenSize: ["14\"", "15.6\""], ram: ["8GB", "16GB"] },
                 { name: "IdeaPad Flex 5i Gen 8", screenSize: ["14\"", "16\""] },
-                { name: "IdeaPad 5 Pro Gen 7", screenSize: ["14\"", "16\""] },
+                {
+                    name: "IdeaPad 5 Pro Gen 7",
+                    screenSize: ["14\"", "16\""],
+                    // Adding specific SKUs
+                    skus: [
+                        {
+                            id: "82LX00BTIV",
+                            screenSize: ["16\""],
+                            cpu: ["AMD Ryzen 5 5600H"],
+                            ram: ["16GB"],
+                            storage: ["512GB SSD"],
+                            gpu: ["NVIDIA GeForce GTX 1650"],
+                            os: ["Windows 11 Home"]
+                        }
+                    ]
+                },
                 { name: "IdeaPad 3 Gen 7", screenSize: ["14\"", "15.6\""] },
             ]
         },

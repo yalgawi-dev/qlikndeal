@@ -273,17 +273,33 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
     // Flat list of all available submodels for the fast global search
     const allModelsFlat = useMemo(() => {
-        const list: { brand: string; family: ComputerModelFamily; sub: ComputerSubModel; searchText: string }[] = [];
+        const list: { brand: string; family: ComputerModelFamily; sub: ComputerSubModel; sku?: any; searchText: string; displayName: string }[] = [];
         for (const brand of Object.keys(COMPUTER_DATABASE)) {
             const families = COMPUTER_DATABASE[brand];
             for (const fam of families) {
                 for (const sub of fam.subModels) {
+                    // add the base submodel
                     list.push({
                         brand,
                         family: fam,
                         sub,
-                        searchText: `${brand} ${fam.name} ${sub.name}`.toLowerCase()
+                        searchText: `${brand} ${fam.name} ${sub.name}`.toLowerCase(),
+                        displayName: sub.name
                     });
+
+                    // add specific SKUs
+                    if (sub.skus) {
+                        for (const sku of sub.skus) {
+                            list.push({
+                                brand,
+                                family: fam,
+                                sub,
+                                sku,
+                                searchText: `${brand} ${fam.name} ${sub.name} ${sku.id}`.toLowerCase(),
+                                displayName: `${sub.name} (מק"ט: ${sku.id})`
+                            });
+                        }
+                    }
                 }
             }
         }
@@ -317,30 +333,37 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     }, [spec.brand, spec.family, spec.subModel]);
 
     // "Smart Pick" Logic
-    const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSubModel) => {
+    const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSubModel, sku?: any) => {
         const newSpec = { ...spec, brand, family: familyName, subModel: sub.name };
         const newUncertain: string[] = [];
 
+        // Choose source data: specific SKU if provided, else general submodel
+        const sourceData = sku || sub;
+
         // Autofill logic
-        if (sub.screenSize && sub.screenSize.length > 0) {
-            newSpec.screen = sub.screenSize[0];
-            if (sub.screenSize.length > 1) newUncertain.push('screen');
+        if (sourceData.screenSize && sourceData.screenSize.length > 0) {
+            newSpec.screen = sourceData.screenSize[0];
+            if (sourceData.screenSize.length > 1) newUncertain.push('screen');
         }
-        if (sub.cpu && sub.cpu.length > 0) {
-            newSpec.cpu = sub.cpu[0];
-            if (sub.cpu.length > 1) newUncertain.push('cpu');
+        if (sourceData.cpu && sourceData.cpu.length > 0) {
+            newSpec.cpu = sourceData.cpu[0];
+            if (sourceData.cpu.length > 1) newUncertain.push('cpu');
         }
-        if (sub.gpu && sub.gpu.length > 0) {
-            newSpec.gpu = sub.gpu[0];
-            if (sub.gpu.length > 1) newUncertain.push('gpu');
+        if (sourceData.gpu && sourceData.gpu.length > 0) {
+            newSpec.gpu = sourceData.gpu[0];
+            if (sourceData.gpu.length > 1) newUncertain.push('gpu');
         }
-        if (sub.ram && sub.ram.length > 0) {
-            newSpec.ram = sub.ram[0];
-            if (sub.ram.length > 1) newUncertain.push('ram');
+        if (sourceData.ram && sourceData.ram.length > 0) {
+            newSpec.ram = sourceData.ram[0];
+            if (sourceData.ram.length > 1) newUncertain.push('ram');
         }
-        if (sub.storage && sub.storage.length > 0) {
-            newSpec.storage = sub.storage[0];
-            if (sub.storage.length > 1) newUncertain.push('storage');
+        if (sourceData.storage && sourceData.storage.length > 0) {
+            newSpec.storage = sourceData.storage[0];
+            if (sourceData.storage.length > 1) newUncertain.push('storage');
+        }
+        if (sourceData.os && sourceData.os.length > 0) {
+            newSpec.os = sourceData.os[0];
+            if (sourceData.os.length > 1) newUncertain.push('os');
         }
 
         setSpec(newSpec);
@@ -458,11 +481,11 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             {filteredGlobalModels.length > 0 ? (
                                 filteredGlobalModels.map(m => (
                                     <button
-                                        key={`${m.brand}-${m.family.name}-${m.sub.name}`}
-                                        onClick={() => applySmartModelPick(m.brand, m.family.name, m.sub)}
+                                        key={`${m.brand}-${m.family.name}-${m.sub.name}-${m.sku?.id || 'base'}`}
+                                        onClick={() => applySmartModelPick(m.brand, m.family.name, m.sub, m.sku)}
                                         className="w-full text-right p-3 hover:bg-indigo-900/40 border-b border-gray-800 last:border-0 transition-colors"
                                     >
-                                        <div className="font-bold text-white text-base" dir="ltr">{m.sub.name}</div>
+                                        <div className="font-bold text-white text-base" dir="ltr">{m.displayName}</div>
                                         <div className="text-indigo-300/70 text-xs mt-0.5">{m.brand} • {m.family.name}</div>
                                     </button>
                                 ))
@@ -484,27 +507,26 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 options={Object.keys(COMPUTER_DATABASE)}
                                 value={spec.brand}
                                 onChange={v => {
-                                    setSpec(s => ({ ...s, brand: v, family: "", subModel: "" }));
+                                    setSpec(s => ({ ...s, brand: v }));
                                 }}
                             />
                             <SpecSelector
                                 label="סדרה (Family)"
-                                options={modelFamilies.map(f => f.name)}
+                                options={spec.brand ? modelFamilies.map(f => f.name) : Array.from(new Set(allModelsFlat.map(m => m.family.name)))}
                                 value={spec.family}
-                                disabled={!spec.brand}
                                 onChange={v => {
-                                    setSpec(s => ({ ...s, family: v, subModel: "" }));
+                                    const mappedBrand = spec.brand ? spec.brand : allModelsFlat.find(m => m.family.name === v)?.brand || "";
+                                    setSpec(s => ({ ...s, brand: mappedBrand, family: v }));
                                 }}
                             />
                             <SpecSelector
-                                label="דגם ספציפי"
-                                options={[...subModelsList.map(s => s.name), "אחר / לא ברשימה"]}
+                                label="תת דגם / מק״ט"
+                                options={[...(spec.family ? subModelsList.map(s => s.name) : Array.from(new Set(allModelsFlat.map(m => m.sub.name)))), "אחר / לא ברשימה"]}
                                 value={spec.subModel}
-                                disabled={!spec.family}
                                 onChange={v => {
                                     if (v !== "אחר / לא ברשימה") {
-                                        const sub = subModelsList.find(s => s.name === v);
-                                        if (sub) applySmartModelPick(spec.brand, spec.family, sub);
+                                        const found = allModelsFlat.find(m => m.sub.name === v || m.displayName === v);
+                                        if (found) applySmartModelPick(found.brand, found.family.name, found.sub, found.sku);
                                     } else {
                                         setSpec(s => ({ ...s, subModel: v }));
                                     }
@@ -525,9 +547,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                     {/* ==== SECTION: SPECS ==== */}
                     <div className="space-y-4 relative">
                         <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">מפרט טכני</h3>
-                        {/* Overlay to block if no brand/model selected */}
-                        {!spec.brand && <div className="absolute inset-x-0 bottom-0 top-10 bg-gray-900/80 backdrop-blur-[1px] z-10 rounded-xl flex items-center justify-center">
-                            <div className="text-gray-400 bg-gray-900 border border-gray-700 px-4 py-2 rounded-full text-sm">נא לבחור יצרן או לחפש דגם תחילה</div>
+                        {!spec.brand && !spec.family && !spec.subModel && <div className="absolute inset-x-0 bottom-0 top-10 bg-gray-900/80 backdrop-blur-[1px] z-10 rounded-xl flex items-center justify-center">
+                            <div className="text-gray-400 bg-gray-900 border border-gray-700 px-4 py-2 rounded-full text-sm">אנא בחר דגם או התחל זיהוי מהיר למעלה</div>
                         </div>}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
