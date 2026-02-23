@@ -340,31 +340,36 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         // Choose source data: specific SKU if provided, else general submodel
         const sourceData = sku || sub;
 
-        // Autofill logic
+        // Autofill logic - exact match or 'לא ידוע' for uncertain
         if (sourceData.screenSize && sourceData.screenSize.length > 0) {
-            newSpec.screen = sourceData.screenSize[0];
+            newSpec.screen = sourceData.screenSize.length === 1 ? sourceData.screenSize[0] : "לא ידוע";
             if (sourceData.screenSize.length > 1) newUncertain.push('screen');
-        }
+        } else { newSpec.screen = "לא ידוע"; }
+
         if (sourceData.cpu && sourceData.cpu.length > 0) {
-            newSpec.cpu = sourceData.cpu[0];
+            newSpec.cpu = sourceData.cpu.length === 1 ? sourceData.cpu[0] : "לא ידוע";
             if (sourceData.cpu.length > 1) newUncertain.push('cpu');
-        }
+        } else { newSpec.cpu = "לא ידוע"; }
+
         if (sourceData.gpu && sourceData.gpu.length > 0) {
-            newSpec.gpu = sourceData.gpu[0];
+            newSpec.gpu = sourceData.gpu.length === 1 ? sourceData.gpu[0] : "לא ידוע";
             if (sourceData.gpu.length > 1) newUncertain.push('gpu');
-        }
+        } else { newSpec.gpu = "לא ידוע"; }
+
         if (sourceData.ram && sourceData.ram.length > 0) {
-            newSpec.ram = sourceData.ram[0];
+            newSpec.ram = sourceData.ram.length === 1 ? sourceData.ram[0] : "לא ידוע";
             if (sourceData.ram.length > 1) newUncertain.push('ram');
-        }
+        } else { newSpec.ram = "לא ידוע"; }
+
         if (sourceData.storage && sourceData.storage.length > 0) {
-            newSpec.storage = sourceData.storage[0];
+            newSpec.storage = sourceData.storage.length === 1 ? sourceData.storage[0] : "לא ידוע";
             if (sourceData.storage.length > 1) newUncertain.push('storage');
-        }
+        } else { newSpec.storage = "לא ידוע"; }
+
         if (sourceData.os && sourceData.os.length > 0) {
-            newSpec.os = sourceData.os[0];
+            newSpec.os = sourceData.os.length === 1 ? sourceData.os[0] : "לא ידוע";
             if (sourceData.os.length > 1) newUncertain.push('os');
-        }
+        } else { newSpec.os = "לא ידוע"; }
 
         setSpec(newSpec);
         setUncertainFields(newUncertain);
@@ -521,7 +526,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             />
                             <SpecSelector
                                 label="תת דגם / מק״ט"
-                                options={[...(spec.family ? subModelsList.map(s => s.name) : Array.from(new Set(allModelsFlat.map(m => m.sub.name)))), "אחר / לא ברשימה"]}
+                                options={[...(spec.family ? allModelsFlat.filter(m => m.family.name === spec.family).map(m => m.displayName) : Array.from(new Set(allModelsFlat.map(m => m.displayName)))), "אחר / לא ברשימה"]}
                                 value={spec.subModel}
                                 onChange={v => {
                                     if (v !== "אחר / לא ברשימה") {
