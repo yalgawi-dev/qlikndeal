@@ -16,7 +16,6 @@ export default function MarketplacePage() {
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showManualForm, setShowManualForm] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const { user } = useUser();
     const isAdmin = ["yalgawi@gmail.com", "darohadd@walla.com"].includes(
@@ -112,34 +111,20 @@ export default function MarketplacePage() {
                                     </Link>
 
                                     {/* Option 2: Manual */}
-                                    <div
+                                    <Link
+                                        href="/dashboard/marketplace/create"
                                         className="group flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-700 bg-gray-800/50 hover:bg-gray-800 hover:border-gray-600 transition-all cursor-pointer"
-                                        onClick={() => setShowManualForm(true)}
+                                        onClick={() => setShowCreateModal(false)}
                                     >
                                         <div className="h-16 w-16 bg-gray-700/50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                             <Plus className="w-8 h-8 text-gray-400" />
                                         </div>
-                                        <h3 className="text-xl font-bold mb-2">יצירה ידנית רגילה</h3>
+                                        <h3 className="text-xl font-bold mb-2">יצירה ידנית מתקדמת</h3>
                                         <p className="text-sm text-gray-400 text-center">
-                                            מילוי עצמאי של הטופס המלא, למי שמעדיף שליטה מלאה בכל פרט ופרט.
+                                            מילוי יעיל כולל מנועי חיפוש לקטגוריות מתקדמות (כמו מחשבים) או מוצרים כלליים.
                                         </p>
-                                    </div>
+                                    </Link>
                                 </div>
-                            </DialogContent>
-                        </Dialog>
-
-                        <Dialog open={showManualForm} onOpenChange={setShowManualForm}>
-                            <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-lg overflow-y-auto max-h-[90vh]">
-                                <DialogHeader>
-                                    <DialogTitle className="text-2xl font-bold text-center mb-4">יצירת מודעה חדשה</DialogTitle>
-                                </DialogHeader>
-                                <ListingForm
-                                    onCancel={() => setShowManualForm(false)}
-                                    onComplete={() => {
-                                        setShowManualForm(false);
-                                        setShowCreateModal(false);
-                                        fetchListings();
-                                    }} />
                             </DialogContent>
                         </Dialog>
                     </div>
