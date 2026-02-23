@@ -2,6 +2,8 @@ import prismadb from "@/lib/prismadb";
 import UserRoleSelector from "./UserRoleSelector";
 import Image from "next/image";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminUsersPage() {
     // Note: Admin check should ideally go here
     const users = await prismadb.user.findMany({

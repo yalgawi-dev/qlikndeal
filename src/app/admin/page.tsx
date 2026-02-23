@@ -2,6 +2,8 @@ import prismadb from "@/lib/prismadb";
 import { Users, ShoppingBag, Truck, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboardPage() {
     // Note: Add auth check for Admin here when ready.
 

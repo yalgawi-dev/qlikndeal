@@ -3,6 +3,8 @@ import ListingDeleteButton from "./ListingDeleteButton";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminListingsPage() {
     // Note: Admin check should ideally go here
     const listings = await prismadb.marketplaceListing.findMany({

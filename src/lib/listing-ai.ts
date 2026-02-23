@@ -142,15 +142,17 @@ export function normalizeSpokenText(text: string): string {
     // e.g. "56 גיגה" (voice for "256") → "256 גיגה"
     {
         const detectedPhone = findPhoneModel(t);
-        t = t.replace(/(\d{2,4})\s*(גיגה(?:\s*(?:בייט|בית))?|טרה(?:\s*(?:בייט|בית))?|GB|TB)(?=\s|$|[^\d])/gi,
-            (match, numStr, unit) => {
-                const n = parseInt(numStr);
-                // Prevent confusing computer RAM (like 12, 24, 48) with phone storage typos
-                if ([12, 24, 32, 48, 64].includes(n) || KNOWN_STORAGE_SIZES.includes(n)) return match;
-                const corrected = correctStorageSize(n, detectedPhone);
-                return corrected !== n ? `${corrected} ${unit.trim()}` : match;
-            }
-        );
+        if (detectedPhone) {
+            t = t.replace(/(\d{2,4})\s*(גיגה(?:\s*(?:בייט|בית))?|טרה(?:\s*(?:בייט|בית))?|GB|TB)(?=\s|$|[^\d])/gi,
+                (match, numStr, unit) => {
+                    const n = parseInt(numStr);
+                    // Prevent confusing computer RAM (like 12, 24, 48) with phone storage typos
+                    if ([12, 24, 32, 48, 64].includes(n) || KNOWN_STORAGE_SIZES.includes(n)) return match;
+                    const corrected = correctStorageSize(n, detectedPhone);
+                    return corrected !== n ? `${corrected} ${unit.trim()}` : match;
+                }
+            );
+        }
     }
 
     // 4. Storage units spoken → standard (runs AFTER number correction above)
@@ -277,7 +279,8 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
     // Clean text: remove emojis, extra spaces, multiple newlines
     let clean = text
         .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, " ")
-        .replace(/\s+/g, " ")
+        .replace(/[ \t\f\v\xA0]+/g, " ")
+        .replace(/\n\s*/g, "\n")
         .trim();
 
     // Normalize spoken/voice text to written equivalents
@@ -313,7 +316,7 @@ export function analyzeListingText(text: string, options?: AiOptions): ListingAn
     // Extended recommendations based on User feedback
     const requiredByCategory: Record<string, string[]> = {
         "טלפונים": ["נפח אחסון", "מצב סוללה", "שנת ייצור"],
-        "מחשבים": ["RAM", "נפח אחסון", "מעבד", "שנת ייצור"],
+        "מחשבים": ["RAM", "נפח אחסון", "מעבד"],
         "אלקטרוניקה": ["גודל מסך", "שנת ייצור"],
         "רכב": ["שנת ייצור", "קילומטראז'", "סוג דלק", "יד", "טסט עד"],
         "ריהוט": ["מידות", "צבע", "חומר"],
@@ -574,8 +577,8 @@ function extractPrice(text: string, options?: AiOptions): {
     };
 
     const originalPatterns = [
-        /(?:עלה|עלתה|עלות|נקנה|נקנתה|שילמתי|במקור|מחיר\s*מקורי|מחירון|בחנות|קניתי\s*ב)[^\d]{0,5}(\d{1,3}[,.]?\d{3}|\d{2,7})/i,
-        /(\d{1,3}[,.]?\d{3}|\d{2,7})\s*(?:₪|ש"ח|שח|שקל|שקלים|NIS)?\s*(?:במקור|בחנות|מחיר\s*קטלוגי)/i,
+        /(?:^|[\s,.-])(?:עלה|עלתה|עלות|נקנה|נקנתה|שילמתי|במקור|מחיר\s*מקורי|מחירון|בחנות|קניתי\s*ב)[^\d]{0,8}(\d{1,3}[,.]?\d{3}|\d{3,7})/i,
+        /(\d{1,3}[,.]?\d{3}|\d{3,7})\s*(?:₪|ש"ח|שח|שקל|שקלים|NIS)?\s*(?:במקור|בחנות|מחיר\s*קטלוגי)/i,
     ];
     for (const pattern of originalPatterns) {
         const match = text.match(pattern);
@@ -609,9 +612,12 @@ function extractPrice(text: string, options?: AiOptions): {
 
     const mediumPatterns = [
         /(?:מחיר|מוכר|נמכר|דורש|מבקש|רק|בלבד|תמורת|עכשיו|סופי)[^\d]{0,10}(\d{1,3}[,.]?\d{3}|\d{2,7})/i,
+        /(\d{1,3}[,.]?\d{3}|\d{2,7})[^\d]{0,8}(?:מחיר|מוכר|נמכר|דורש|סופי)/i,
         /(?:ב-|ב–|ב )\s*(\d{1,3}[,.]?\d{3}|\d{2,7})(?:\s|$|,|\.)/,
         // Price at start of line followed by selling verb: "13,500 לבוא לקחת"
         /(?:^|\n)\s*(\d{1,3}[,.]?\d{3}|\d{4,7})\s+(?:לבוא|לקחת|למסירה|ניתן|בלבד|נא\s*ל|ל[א-ת])/im,
+        // מחיר \n 5500 \n (like item 3 but split)
+        /(?:מחיר|סופי)[\s\r\n:=-]+(\d{1,3}[,.]?\d{3}|\d{3,7})/,
     ];
     for (const pattern of mediumPatterns) {
         const match = text.match(pattern);
@@ -856,16 +862,23 @@ function detectCategory(text: string): { category: string; subCategory: string }
         if (score > bestScore) {
             bestScore = score;
             bestCategory = cat;
-            bestSubCategory = "";
+
+            // Subcategory length-weighted score to prefer more specific matches
+            let bestSubScore = 0;
+            let currentBestSub = "";
             for (const [sub, subKws] of Object.entries(data.subCategories)) {
+                let subScore = 0;
                 for (const kw of subKws) {
                     if (new RegExp(kw, "i").test(text)) {
-                        bestSubCategory = sub;
-                        break;
+                        subScore += kw.length; // E.g. "כרטיס מסך" (10) beats "מסך" (3)
                     }
                 }
-                if (bestSubCategory) break;
+                if (subScore > bestSubScore) {
+                    bestSubScore = subScore;
+                    currentBestSub = sub;
+                }
             }
+            bestSubCategory = currentBestSub;
         }
     }
     return { category: bestCategory, subCategory: bestSubCategory };
@@ -884,7 +897,7 @@ function detectCondition(text: string): { condition: string; conditionDetails: s
     return { condition: "used", conditionDetails: "משומש" };
 }
 
-function extractAttributes(text: string): { key: string; value: string; unit?: string }[] {
+export function extractAttributes(text: string): { key: string; value: string; unit?: string }[] {
     const results: { key: string; value: string; unit?: string }[] = [];
     const patterns: { key: string; regex: RegExp; format: (m: RegExpMatchArray) => { value: string; unit?: string } }[] = [
         // Hand: supports numbers and Hebrew ordinals (ראשונה=1, שנייה=2 ... שישית=6, שביעית=7)
@@ -913,23 +926,28 @@ function extractAttributes(text: string): { key: string; value: string; unit?: s
         // Test expiry from speech: "טסט עד 05 חודש מאי 2026"
         { key: "טסט עד", regex: /(?:טסט|test)\s*(?:עד|until)?[:\s-]*(\d{1,2}[.\/-]\d{2,4})/i, format: (m) => ({ value: m[1] }) },
         { key: "תאריך קנייה", regex: /(?:נקנה|נקניתי|רכשתי|קניתי|purchased?)\s*(?:ב|ב-|\s)([0-9]{1,2}[\/.\-][0-9]{1,2}[\/.\-][0-9]{2,4}|[0-9]{1,2}[\/.][0-9]{2,4})/i, format: (m) => ({ value: m[1] }) },
-        // RAM: allow up to 30 arbitrary characters between keyword and number to catch "זיכרון (RAM): משודרג ל-24GB"
-        { key: "RAM", regex: /(?:זיכרון\s*פנימי|זיכרון\s*\(RAM\)|RAM|זיכרון|זכרון)[\s\S]{0,30}?(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
-        { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה)\s*(RAM|זיכרון|זכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+        // RAM: use inline "." not "[\s\S]" to prevent matching RAM from the next line
+        { key: "RAM", regex: /(?:זיכרון\s*פנימי|זיכרון\s*\(RAM\)|RAM|זיכרון|זכרון).{0,30}?(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+        { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה).{0,40}?(RAM|זיכרון|זכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         // RAM fallback: 'ל-24GB' / 'משודרג ל-24GB' - Hebrew phrasing for 'upgraded to X GB'
-        { key: "RAM", regex: /משודרג[\s\S]{0,20}?(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
+        { key: "RAM", regex: /משודרג.{0,20}?(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         // Storage: require explicit storage keywords or TB (do NOT match 'זיכרון פנימי בנפח' - that's RAM)
         { key: "נפח אחסון", regex: /(?:אחסון|דיסק|SSD|HDD|כונן)\s*[-:]?\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
         { key: "נפח אחסון", regex: /(\d{1,4})\s*(TB|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
         { key: "נפח אחסון", regex: /(?:נפח)\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b(?!.*(?:זיכרון|ראם|RAM))/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
         // CPU: Apple chip voiced as 'שבב M3' / 'שבב M4'
         { key: "מעבד", regex: /(?:שבב|chip)\s*(M[1-4](?:\s+(?:Pro|Max|Ultra))?)/i, format: (m) => ({ value: `Apple ${m[1].trim()}` }) },
-        // CPU: match explicit keyword then capture the model name (no אינטל here - it causes CUP to be captured instead of i5-xxx)
-        { key: "מעבד", regex: /(?:מעבד|processor)\s*(?:אינטל|Intel)?\s*(?:CU[PB]|CPU)?\s*[-:]?\s*(i[3579]-[\w]+)/i, format: (m) => ({ value: m[1].trim() }) },
-        { key: "מעבד", regex: /(?:CU[PB]|CPU)\s*[-:]\s*(i[3579]-[\w]+)/i, format: (m) => ({ value: m[1].trim() }) },
-        { key: "מעבד", regex: /(?:מעבד|processor)\s*[-:]?\s*([a-zA-Z0-9\-]+(?:\s+[a-zA-Z0-9\-]+){0,4})/i, format: (m) => ({ value: m[1].trim() }) },
-        { key: "מעבד", regex: /(?:^|[\s,.-])(Intel(?:\s+Core)?(?:\s+Ultra)?\s+[i\d][\w\-]*|AMD\s+Ryzen\s+\d[\w\-]*|Apple\s+M[1-4](?:\s+(?:Pro|Max|Ultra))?)(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1].trim() }) },
+        // CPU: Specific matches first
+        { key: "מעבד", regex: /(?:^|[\s,.-])(Intel(?:[ \t]+Core)?(?:[ \t]+Ultra)?[ \t]+[i\d][\w\-]*|AMD[ \t]+Ryzen[ \t]+\d[\w\-]*|Apple[ \t]+M[1-4](?:[ \t]+(?:Pro|Max|Ultra))?)(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "מעבד", regex: /(?:^|[\s(,.-])(i[3579]-\d{4,5}[A-Z]{0,2})(?:[\s),.-]|$)/i, format: (m) => ({ value: m[1].trim() }) },
+        // CPU: Support Keyword AFTER value for CPU, e.g. "Core i5-9600k 3.7Ghz מעבד"
+        { key: "מעבד", regex: /(i[3579]-[\w]+)[ \t]+(?:[0-9]+(?:\.[0-9]+)?[ \t]*Ghz[ \t]*)?(?:מעבד|processor)/i, format: (m) => ({ value: m[1].trim() }) },
+        { key: "מעבד", regex: /(?:Intel(?:[ \t]+Core)?(?:[ \t]+Ultra)?[ \t]+[i\d][\w\-]*|AMD[ \t]+Ryzen[ \t]+\d[\w\-]*)[ \t]+(?:[0-9]+(?:\.[0-9]+)?[ \t]*Ghz[ \t]*)?(?:מעבד|processor)/i, format: (m) => ({ value: m[1].trim() }) },
+        // CPU: Generic Keyword BEFORE value
+        { key: "מעבד", regex: /(?:מעבד|processor)[ \t]*(?:אינטל|Intel)?[ \t]*(?:CU[PB]|CPU)?[ \t]*[-:]?[ \t]*(i[3579]-[\w]+)/i, format: (m) => ({ value: m[1].trim() }) },
+        { key: "מעבד", regex: /(?:CU[PB]|CPU)[ \t]*[-:][ \t]*(i[3579]-[\w]+)/i, format: (m) => ({ value: m[1].trim() }) },
+        { key: "מעבד", regex: /(?:מעבד|processor)[ \t]*[-:]?[ \t]*([a-zA-Z0-9\-]+(?:[ \t]+[a-zA-Z0-9\-]+){0,4})(?![^\n]{0,20}?(?:Cooler|Fan|קירור))/i, format: (m) => ({ value: m[1].trim() }) },
+        { key: "מעבד", regex: /(?:CU[PB]|CPU)[ \t]*[-:]?[ \t]*([a-zA-Z0-9\-]+(?:[ \t]+[a-zA-Z0-9\-]+){0,4})(?![^\n]{0,20}?(?:Cooler|Fan|קירור))/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "מערכת הפעלה", regex: /(?:מערכת\s*הפעלה לפני\s*[-:]?\s*)?(Windows\s*\d+|MacOS|Linux|ChromeOS|Ubuntu|iOS|Android|אנדרואיד)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "עוצמה", regex: /(\d{1,5})\s*W(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1], unit: "W" }) },
         { key: "סוללה", regex: /(\d{3,6})\s*(mAh|אמפר)/i, format: (m) => ({ value: m[1], unit: "mAh" }) },
