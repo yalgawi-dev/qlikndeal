@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createListing, updateListing, parseLinkMetadata, updateUserPhone, getAiKnowledge } from "@/app/actions/marketplace";
+import { createListing, updateListing, getMyListings, parseLinkMetadata, updateUserPhone, getAiKnowledge } from "@/app/actions/marketplace";
 import { analyzeListingText } from "@/lib/listing-ai";
 import { CAR_MODELS } from "@/lib/car-data";
 import { HardwareSearchEngine } from "./HardwareSearchEngine";
@@ -795,6 +795,17 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
             imagesLen: formData.images?.length,
             extraData: extraDataObject
         });
+
+        if (!isEditing) {
+            const existingRes = await getMyListings();
+            if (existingRes.success && existingRes.listings) {
+                const isDuplicate = existingRes.listings.some((l: any) => l.title === formData.title.trim());
+                if (isDuplicate) {
+                    const confirmedDup = confirm("המוצר כבר פורסם! האם אתה בטוח שאתה רוצה לפרסם את אותו מוצר שוב?");
+                    if (!confirmedDup) return;
+                }
+            }
+        }
 
         setLoading(true);
         try {
