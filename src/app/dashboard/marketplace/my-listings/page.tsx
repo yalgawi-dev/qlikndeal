@@ -5,6 +5,8 @@ import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { ListingForm } from "@/components/marketplace/ListingForm";
+import { ComputerListingForm } from "@/components/marketplace/ComputerListingForm";
+import { MobileListingForm } from "@/components/marketplace/MobileListingForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { getMyListings, updateListing, deleteListing } from "@/app/actions/marketplace";
 import { Loader2, Plus, ArrowRight } from "lucide-react";
@@ -124,16 +126,40 @@ export default function MyListingsPage() {
                             <DialogTitle>עריכת מודעה</DialogTitle>
                         </DialogHeader>
                         {editingListing && (
-                            <ListingForm
-                                initialData={editingListing}
-                                onComplete={() => {
-                                    setEditingListing(null);
-                                    fetchMyListings();
-                                }}
-                                onCancel={() => setEditingListing(null)}
-                                isEditing={true}
-                                listingId={editingListing.id}
-                            />
+                            editingListing.category === "Computers" ? (
+                                <ComputerListingForm
+                                    initialData={editingListing}
+                                    onComplete={() => {
+                                        setEditingListing(null);
+                                        fetchMyListings();
+                                    }}
+                                    onCancel={() => setEditingListing(null)}
+                                    isEditing={true}
+                                    listingId={editingListing.id}
+                                />
+                            ) : editingListing.category === "Mobile" ? (
+                                <MobileListingForm
+                                    initialData={editingListing}
+                                    onComplete={() => {
+                                        setEditingListing(null);
+                                        fetchMyListings();
+                                    }}
+                                    onCancel={() => setEditingListing(null)}
+                                    isEditing={true}
+                                    listingId={editingListing.id}
+                                />
+                            ) : (
+                                <ListingForm
+                                    initialData={editingListing}
+                                    onComplete={() => {
+                                        setEditingListing(null);
+                                        fetchMyListings();
+                                    }}
+                                    onCancel={() => setEditingListing(null)}
+                                    isEditing={true}
+                                    listingId={editingListing.id}
+                                />
+                            )
                         )}
                     </DialogContent>
                 </Dialog>

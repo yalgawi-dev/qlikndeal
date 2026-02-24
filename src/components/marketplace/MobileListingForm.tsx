@@ -141,6 +141,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!spec.brand || !spec.model) { alert("יש לחפש ולסנכרן מפרט ממנוע החיפוש תחילה או להזין דגם ידנית"); return; }
+        if (!details.contactPhone?.trim()) { alert("נא להזין מספר טלפון ליצירת קשר"); return; }
 
         setLoading(true);
         try {
@@ -249,8 +250,8 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
 
                         <div className="grid grid-cols-2 gap-4 mt-4">
                             <div className="space-y-2">
-                                <Label className="text-gray-300">טלפון ליצירת קשר</Label>
-                                <Input value={details.contactPhone} onChange={e => setDetails(d => ({ ...d, contactPhone: e.target.value }))} dir="ltr" className="bg-gray-800 border-gray-700" />
+                                <Label className="text-gray-300 font-bold">טלפון ליצירת קשר <span className="text-red-500">*</span></Label>
+                                <Input value={details.contactPhone} onChange={e => setDetails(d => ({ ...d, contactPhone: e.target.value }))} dir="ltr" className="bg-gray-800 border-gray-700" placeholder="05X-XXXXXXX" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-gray-300 font-bold">מחיר מבוקש (₪) <span className="text-red-500">*</span></Label>
