@@ -99,45 +99,62 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
 
         // --- Local Data Fallback Function ---
         const getLocalSuggestions = (queryStr: string) => {
-            const q = queryStr.toLowerCase();
-            let localMatches: string[] = [];
+            const q = queryStr.toLowerCase().trim();
+            const terms = q.split(/\s+/); // Split by space for multi-word fuzzy matching
+
+            // Helper to check if all terms exist in text
+            const matchesAllTerms = (text: string) => {
+                const textLower = text.toLowerCase();
+                return terms.every(term => textLower.includes(term));
+            };
+
+            const scoredMatches: { text: string; score: number }[] = [];
 
             if (category === "Phones") {
-                localMatches = ALL_PHONES
-                    .filter(p =>
-                        p.model.toLowerCase().includes(q) ||
-                        p.brand.toLowerCase().includes(q) ||
-                        p.hebrewAliases?.some(a => a.toLowerCase().includes(q))
-                    )
-                    .map(p => p.model)
-                    .slice(0, 5);
+                ALL_PHONES.forEach(p => {
+                    let score = 0;
+                    if (matchesAllTerms(p.model)) score += 10;
+                    if (p.hebrewAliases?.some(a => matchesAllTerms(a))) score += 8;
+                    if (matchesAllTerms(`${p.brand} ${p.model}`)) score += 5;
+
+                    if (score > 0) {
+                        scoredMatches.push({ text: p.model, score });
+                    }
+                });
             } else {
                 for (const brand in COMPUTER_DATABASE) {
                     for (const family of COMPUTER_DATABASE[brand]) {
                         for (const sub of family.subModels) {
-                            let added = false;
-                            if (sub.name.toLowerCase().includes(q) || brand.toLowerCase().includes(q)) {
-                                localMatches.push(sub.name);
-                                added = true;
+                            let score = 0;
+                            const fullName = `${brand} ${sub.name}`;
+
+                            if (matchesAllTerms(sub.name)) score += 10;
+                            else if (matchesAllTerms(fullName)) score += 8;
+                            else if (matchesAllTerms(brand) && matchesAllTerms(family.name)) score += 5;
+
+                            if (score > 0) {
+                                scoredMatches.push({ text: sub.name, score });
                             }
+
                             if (sub.skus) {
                                 for (const sku of sub.skus) {
-                                    if (sku.id && sku.id.toLowerCase().includes(q)) {
-                                        if (!added) {
-                                            localMatches.push(sub.name); // Prefer showing the submodel name as suggestion
-                                        }
-                                        // Also add the SKU as a suggestion
-                                        localMatches.push(sku.id);
+                                    if (sku.id && matchesAllTerms(sku.id)) {
+                                        // High score for SKU matches
+                                        scoredMatches.push({ text: sku.id, score: 12 });
+                                        // Also add the model name with a slightly lower score 
+                                        scoredMatches.push({ text: sub.name, score: score + 2 });
                                     }
                                 }
                             }
                         }
                     }
                 }
-                // Unique and slice
-                localMatches = Array.from(new Set(localMatches)).slice(0, 5);
             }
-            return localMatches;
+
+            // Sort by score (descending), get unique texts, and take top 5
+            scoredMatches.sort((a, b) => b.score - a.score);
+            const uniqueTexts = Array.from(new Set(scoredMatches.map(m => m.text)));
+            return uniqueTexts.slice(0, 5);
         };
 
         try {
@@ -240,48 +257,94 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
     };
 
     const handleLocalFallbackFill = (q: string) => {
-        const queryStr = q.toLowerCase();
+        const queryStr = q.toLowerCase().trim();
+        const terms = queryStr.split(/\s+/);
+
+        const matchesAllTerms = (text: string) => {
+            if (!text) return false;
+            const textLower = text.toLowerCase();
+            return terms.every(term => textLower.includes(term));
+        };
 
         if (category === "Phones") {
-            const phone = ALL_PHONES.find(p => p.model.toLowerCase().includes(queryStr) || p.hebrewAliases?.some(a => a.toLowerCase().includes(queryStr)));
-            if (phone) {
+            // Find best matching phone
+            let bestPhone = null;
+            let bestScore = 0;
+
+            for (const p of ALL_PHONES) {
+                let score = 0;
+                if (matchesAllTerms(p.model)) score += 10;
+                if (p.hebrewAliases?.some(a => matchesAllTerms(a))) score += 8;
+                if (matchesAllTerms(`${p.brand} ${p.model}`)) score += 5;
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestPhone = p;
+                }
+            }
+
+            if (bestPhone) {
                 onSelect({
-                    "יצרן": phone.brand,
-                    "דגם": phone.model,
-                    "שנת השקה": phone.releaseYear?.toString() || "",
-                    "נפח אחסון": phone.storages.map(s => s + "GB").join(" / "),
-                    "מסך": phone.screen ? phone.screen + " אינץ'" : ""
+                    "יצרן": bestPhone.brand,
+                    "דגם": bestPhone.model,
+                    "שנת השקה": bestPhone.releaseYear?.toString() || "",
+                    "נפח אחסון": bestPhone.storages.map(s => s + "GB").join(" / "),
+                    "מסך": bestPhone.screen ? bestPhone.screen + " אינץ'" : ""
                 });
                 return;
             }
         } else {
+            let bestMatchData: any = null;
+            let bestScore = 0;
+
             for (const brand in COMPUTER_DATABASE) {
                 for (const family of COMPUTER_DATABASE[brand]) {
                     for (const sub of family.subModels) {
-                        // Check if the query matches the submodel name OR any of its SKUs
-                        const matchName = sub.name.toLowerCase().includes(queryStr);
-                        const matchSku = sub.skus?.some(sku => sku.id && sku.id.toLowerCase().includes(queryStr));
+                        const fullName = `${brand} ${sub.name}`;
 
-                        if (matchName || matchSku) {
-                            // If we matched a specific SKU, we can use its specific data if available
-                            const explicitSku = matchSku ? sub.skus?.find(sku => sku.id && sku.id.toLowerCase().includes(queryStr)) : null;
+                        let matchScore = 0;
+                        if (matchesAllTerms(sub.name)) matchScore += 10;
+                        else if (matchesAllTerms(fullName)) matchScore += 8;
 
-                            onSelect({
-                                "יצרן": brand,
-                                "דגם": sub.name,
-                                "מספר דגם": explicitSku?.id || "",
-                                "סוג מחשב": family.type,
-                                "RAM": explicitSku?.ram?.join(" / ") || sub.ram?.join(" / ") || "",
-                                "נפח אחסון": explicitSku?.storage?.join(" / ") || sub.storage?.join(" / ") || "",
-                                "גודל מסך": explicitSku?.screenSize?.join(" / ") || sub.screenSize?.join(" / ") || "",
-                                "מעבד": explicitSku?.cpu?.length ? explicitSku.cpu[0] : (sub.cpu?.length ? sub.cpu[0] : ""),
-                                "כרטיס מסך": explicitSku?.gpu?.length ? explicitSku.gpu[0] : (sub.gpu?.length ? sub.gpu[0] : ""),
-                                "מערכת הפעלה": explicitSku?.os?.length ? explicitSku.os[0] : (sub.os?.length ? sub.os[0] : "")
-                            });
-                            return;
+                        // Check SKUs for precise match
+                        let matchedSku = null;
+                        if (sub.skus) {
+                            for (const sku of sub.skus) {
+                                if (sku.id && matchesAllTerms(sku.id)) {
+                                    matchScore += 15; // SKU match is best
+                                    matchedSku = sku;
+                                }
+                            }
+                        }
+
+                        if (matchScore > bestScore) {
+                            bestScore = matchScore;
+                            bestMatchData = {
+                                brand,
+                                familyType: family.type,
+                                sub,
+                                matchedSku
+                            };
                         }
                     }
                 }
+            }
+
+            if (bestMatchData) {
+                const { brand, familyType, sub, matchedSku } = bestMatchData;
+                onSelect({
+                    "יצרן": brand,
+                    "דגם": sub.name,
+                    "מספר דגם": matchedSku?.id || "",
+                    "סוג מחשב": familyType,
+                    "RAM": matchedSku?.ram?.join(" / ") || sub.ram?.join(" / ") || "",
+                    "נפח אחסון": matchedSku?.storage?.join(" / ") || sub.storage?.join(" / ") || "",
+                    "גודל מסך": matchedSku?.screenSize?.join(" / ") || sub.screenSize?.join(" / ") || "",
+                    "מעבד": matchedSku?.cpu?.length ? matchedSku.cpu[0] : (sub.cpu?.length ? sub.cpu[0] : ""),
+                    "כרטיס מסך": matchedSku?.gpu?.length ? matchedSku.gpu[0] : (sub.gpu?.length ? sub.gpu[0] : ""),
+                    "מערכת הפעלה": matchedSku?.os?.length ? matchedSku.os[0] : (sub.os?.length ? sub.os[0] : "")
+                });
+                return;
             }
         }
         setError("לא נמצא במאגר המקומי ו-API קרס/חסר. פתח ידנית.");
