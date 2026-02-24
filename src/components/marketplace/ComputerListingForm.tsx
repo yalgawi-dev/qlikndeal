@@ -351,36 +351,44 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         // Choose source data: specific SKU if provided, else general submodel
         const sourceData = sku || sub;
 
-        // Autofill logic - exact match or 'לא ידוע' for uncertain
-        if (sourceData.screenSize && sourceData.screenSize.length > 0) {
+        // ── Spec fields (may have multiple options → mark uncertain) ──
+        if (sourceData.screenSize?.length > 0) {
             newSpec.screen = sourceData.screenSize.length === 1 ? sourceData.screenSize[0] : "לא ידוע";
             if (sourceData.screenSize.length > 1) newUncertain.push('screen');
         } else { newSpec.screen = "לא ידוע"; }
 
-        if (sourceData.cpu && sourceData.cpu.length > 0) {
+        if (sourceData.cpu?.length > 0) {
             newSpec.cpu = sourceData.cpu.length === 1 ? sourceData.cpu[0] : "לא ידוע";
             if (sourceData.cpu.length > 1) newUncertain.push('cpu');
         } else { newSpec.cpu = "לא ידוע"; }
 
-        if (sourceData.gpu && sourceData.gpu.length > 0) {
+        if (sourceData.gpu?.length > 0) {
             newSpec.gpu = sourceData.gpu.length === 1 ? sourceData.gpu[0] : "לא ידוע";
             if (sourceData.gpu.length > 1) newUncertain.push('gpu');
         } else { newSpec.gpu = "לא ידוע"; }
 
-        if (sourceData.ram && sourceData.ram.length > 0) {
+        if (sourceData.ram?.length > 0) {
             newSpec.ram = sourceData.ram.length === 1 ? sourceData.ram[0] : "לא ידוע";
             if (sourceData.ram.length > 1) newUncertain.push('ram');
         } else { newSpec.ram = "לא ידוע"; }
 
-        if (sourceData.storage && sourceData.storage.length > 0) {
+        if (sourceData.storage?.length > 0) {
             newSpec.storage = sourceData.storage.length === 1 ? sourceData.storage[0] : "לא ידוע";
             if (sourceData.storage.length > 1) newUncertain.push('storage');
         } else { newSpec.storage = "לא ידוע"; }
 
-        if (sourceData.os && sourceData.os.length > 0) {
+        if (sourceData.os?.length > 0) {
             newSpec.os = sourceData.os.length === 1 ? sourceData.os[0] : "לא ידוע";
             if (sourceData.os.length > 1) newUncertain.push('os');
         } else { newSpec.os = "לא ידוע"; }
+
+        // ── Rich fields – single values, always fill from sub (not sku) ──
+        if (sub.battery) newSpec.battery = sub.battery;
+        if (sub.ports) newSpec.ports = sub.ports;
+        if (sub.weight) newSpec.weight = sub.weight;
+        if (sub.release_year) newSpec.release_year = sub.release_year;
+        // SKU: prefer the specific SKU id if user picked a SKU row
+        if (sku?.id) newSpec.sku = sku.id;
 
         setSpec(newSpec);
         setUncertainFields(newUncertain);
@@ -679,14 +687,51 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             </div>
                         </div>
 
-                        {/* Ports */}
-                        <div className="space-y-1">
-                            <Label className="text-gray-400 text-xs">🔌 חיבורים (ports)</Label>
+                        {/* Ports - chip multi-select */}
+                        <div className="space-y-2">
+                            <Label className="text-gray-400 text-xs">🔌 חיבורים (ports) – בחר או הקלד</Label>
+                            {/* Auto-filled text from DB shown as hint */}
+                            {spec.ports && spec.ports.includes(",") && (
+                                <p className="text-xs text-blue-400/70 bg-blue-500/5 border border-blue-500/20 rounded px-2 py-1">
+                                    📌 לפי יצרן: {spec.ports}
+                                </p>
+                            )}
+                            <div className="flex flex-wrap gap-2">
+                                {[
+                                    "USB-A 3.2", "USB-A 2.0", "USB-C 3.2",
+                                    "Thunderbolt 4", "Thunderbolt 3",
+                                    "HDMI 2.1", "HDMI 2.0", "HDMI 1.4",
+                                    "DisplayPort", "Mini DisplayPort",
+                                    "SD Card", "Ethernet (RJ-45)", "Audio 3.5mm", "VGA"
+                                ].map(port => {
+                                    const active = spec.ports?.includes(port);
+                                    return (
+                                        <button
+                                            key={port} type="button"
+                                            onClick={() => {
+                                                setSpec(s => {
+                                                    const current = (s.ports || "").split(",").map(p => p.trim()).filter(Boolean);
+                                                    const next = current.includes(port)
+                                                        ? current.filter(p => p !== port)
+                                                        : [...current, port];
+                                                    return { ...s, ports: next.join(", ") };
+                                                });
+                                            }}
+                                            className={`px-2.5 py-1 rounded-full text-xs border font-medium transition-all ${active
+                                                    ? "bg-blue-500/20 border-blue-500 text-blue-300"
+                                                    : "bg-gray-800/50 border-gray-700 text-gray-500 hover:border-gray-500"
+                                                }`}
+                                        >
+                                            {active ? "✓ " : ""}{port}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                             <Input
                                 value={spec.ports}
                                 onChange={e => setSpec(s => ({ ...s, ports: e.target.value }))}
-                                placeholder="USB-C, USB-A ×3, HDMI, SD Card..."
-                                className="bg-gray-800 border-gray-700 text-sm"
+                                placeholder="או הקלד חיבורים בחופשי: USB-C, USB-A ×3, HDMI..."
+                                className="bg-gray-800/40 border-gray-700 text-sm mt-1"
                                 dir="ltr"
                             />
                         </div>
@@ -816,10 +861,10 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 { label: "תיאור", val: details.description, required: false },
                             ].map(({ label, val, required }) => (
                                 <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
-                                        ? "bg-gray-800/60"
-                                        : required
-                                            ? "bg-red-900/20 border border-red-800/40"
-                                            : "bg-gray-800/30 border border-gray-700/40"
+                                    ? "bg-gray-800/60"
+                                    : required
+                                        ? "bg-red-900/20 border border-red-800/40"
+                                        : "bg-gray-800/30 border border-gray-700/40"
                                     }`}>
                                     <span className={val ? "text-green-400" : required ? "text-red-400" : "text-gray-500"} style={{ flexShrink: 0 }}>
                                         {val ? "✓" : required ? "✗" : "–"}
