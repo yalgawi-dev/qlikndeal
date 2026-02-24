@@ -506,6 +506,11 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24">
 
+                {/* ──── SMART SEARCH (identification) ──── */}
+                <div className="mb-6">
+                    <ComputerSearchUI onApplySpecs={handleApplySearchEngineSpecs} />
+                </div>
+
                 <form id="manual-specs-section" onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
 
                     {/* ==== SECTION: IDENTIFICATION ==== */}
@@ -780,16 +785,6 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                     </div>
 
                 </form>
-
-                {/* ──── COMPUTER SEARCH UI (identification aid, below the form) ──── */}
-                <div className="mt-8 mb-4">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="flex-1 border-t border-gray-800" />
-                        <span className="text-xs text-gray-500 font-medium px-3">🔍 לא מצאת את הדגם שלך? השתמש בזיהוי המתקדם</span>
-                        <div className="flex-1 border-t border-gray-800" />
-                    </div>
-                    <ComputerSearchUI onApplySpecs={handleApplySearchEngineSpecs} />
-                </div>
 
             </div>
         </div>
