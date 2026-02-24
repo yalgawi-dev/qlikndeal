@@ -261,7 +261,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         title: initialData?.title || "",
         price: initialData?.price ? initialData.price.toString() : "",
         description: initialData?.description || "",
-        contactPhone: initialData?.contactPhone || initialData?.extraData?.["טלפון ליצירת קשר"] || "",
+        contactPhone: initialData?.contactPhone || initialData?.extraData?.["טלפון ליצירת קשר"] || user?.primaryPhoneNumber?.phoneNumber || "",
         images: initialData?.images || [],
     });
 
@@ -439,6 +439,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!spec.brand || !spec.subModel) { alert("נא לבחור יצרן ודגם"); return; }
+        if (!details.contactPhone?.trim()) { alert("נא להזין מספר טלפון ליצירת קשר"); return; }
         if (uncertainFields.length > 0) {
             const confirmed = confirm("חלק מהמפרט שסופק אוטומטית (מסומן בצהוב) עדיין לא אושר על ידך. האם אתה בטוח שאתה רוצה לפרסם?");
             if (!confirmed) return;
@@ -793,8 +794,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
                         <div className="grid grid-cols-2 gap-4 mt-2">
                             <div className="space-y-2">
-                                <Label className="text-gray-300">טלפון ליצירת קשר</Label>
-                                <Input value={details.contactPhone} onChange={e => setDetails(d => ({ ...d, contactPhone: e.target.value }))} dir="ltr" className="bg-gray-800 border-gray-700" />
+                                <Label className="text-gray-300 font-bold">טלפון ליצירת קשר <span className="text-red-500">*</span></Label>
+                                <Input value={details.contactPhone} onChange={e => setDetails(d => ({ ...d, contactPhone: e.target.value }))} dir="ltr" className="bg-gray-800 border-gray-700" placeholder="05X-XXXXXXX" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-gray-300 font-bold">מחיר מבוקש (₪) <span className="text-red-500">*</span></Label>
@@ -891,6 +892,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 { label: "מצב", val: spec.condition, required: true },
                                 { label: "נזקים / החרגות", val: spec.extras || "ללא נזקים", required: false },
                                 { label: "מחיר", val: details.price ? `₪${Number(details.price).toLocaleString()}` : "", required: true },
+                                { label: "טלפון איש קשר", val: details.contactPhone, required: true },
                                 { label: "תיאור", val: details.description, required: false },
                                 { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false, warning: true },
                                 { label: "🎬 סרטון", val: videoUrl || "", required: false, warning: true },
