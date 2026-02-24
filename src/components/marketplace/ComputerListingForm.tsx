@@ -261,7 +261,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         title: initialData?.title || "",
         price: initialData?.price ? initialData.price.toString() : "",
         description: initialData?.description || "",
-        contactPhone: initialData?.contactPhone || initialData?.extraData?.["טלפון ליצירת קשר"] || user?.primaryPhoneNumber?.phoneNumber || "",
+        contactPhone: initialData?.contactPhone || initialData?.extraData?.["טלפון ליצירת קשר"] || "",
         images: initialData?.images || [],
     });
 
