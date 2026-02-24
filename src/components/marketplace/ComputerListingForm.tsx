@@ -514,7 +514,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <SpecSelector
                                 label="יצרן"
-                                options={Object.keys(COMPUTER_DATABASE)}
+                                options={Object.keys(COMPUTER_DATABASE).sort()}
                                 value={spec.brand}
                                 onChange={v => {
                                     setSpec(s => ({ ...s, brand: v }));
@@ -522,7 +522,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             />
                             <SpecSelector
                                 label="סדרה (Family)"
-                                options={spec.brand ? modelFamilies.map(f => f.name) : Array.from(new Set(allModelsFlat.map(m => m.family.name)))}
+                                options={(spec.brand ? modelFamilies.map(f => f.name) : Array.from(new Set(allModelsFlat.map(m => m.family.name)))).sort()}
                                 value={spec.family}
                                 onChange={v => {
                                     const mappedBrand = spec.brand ? spec.brand : allModelsFlat.find(m => m.family.name === v)?.brand || "";
@@ -531,7 +531,13 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             />
                             <SpecSelector
                                 label="תת דגם / מק״ט"
-                                options={[...(spec.family ? allModelsFlat.filter(m => m.family.name === spec.family).map(m => m.displayName) : Array.from(new Set(allModelsFlat.map(m => m.displayName)))), "אחר / לא ברשימה"]}
+                                options={[
+                                    ...(spec.family
+                                        ? allModelsFlat.filter(m => m.family.name === spec.family).map(m => m.displayName)
+                                        : Array.from(new Set(allModelsFlat.map(m => m.displayName)))
+                                    ).sort(),
+                                    "אחר / לא ברשימה"
+                                ]}
                                 value={spec.subModel}
                                 onChange={v => {
                                     if (v !== "אחר / לא ברשימה") {
@@ -764,8 +770,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             type="submit"
                             disabled={loading || !spec.brand || !spec.subModel || !details.price}
                             className={`w-full h-14 text-lg font-bold rounded-xl transition-all shadow-lg ${uncertainFields.length > 0
-                                    ? "bg-yellow-600 hover:bg-yellow-700 text-white"
-                                    : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-purple-500/20"
+                                ? "bg-yellow-600 hover:bg-yellow-700 text-white"
+                                : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-purple-500/20"
                                 }`}
                         >
                             {loading ? <Loader2 className="animate-spin w-6 h-6 ml-2" /> : null}
