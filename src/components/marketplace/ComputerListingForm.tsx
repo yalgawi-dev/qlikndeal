@@ -892,23 +892,28 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 { label: "נזקים / החרגות", val: spec.extras || "ללא נזקים", required: false },
                                 { label: "מחיר", val: details.price ? `₪${Number(details.price).toLocaleString()}` : "", required: true },
                                 { label: "תיאור", val: details.description, required: false },
-                                { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false },
-                                { label: "🎬 סרטון", val: videoUrl || "", required: false },
-                            ].map(({ label, val, required }) => (
-                                <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
-                                    ? "bg-gray-800/60"
-                                    : required
-                                        ? "bg-red-900/20 border border-red-800/40"
-                                        : "bg-gray-800/30 border border-gray-700/40"
-                                    }`}>
-                                    <span className={val ? "text-green-400" : required ? "text-red-400" : "text-gray-500"} style={{ flexShrink: 0 }}>
-                                        {val ? "✓" : required ? "✗" : "–"}
-                                    </span>
-                                    <span className="text-gray-400">{label}:</span>
-                                    <span className={`font-medium truncate ${val ? "text-white" : required ? "text-red-400" : "text-gray-600"
-                                        }`}>{val || (required ? "חסר!" : "לא מולא")}</span>
-                                </div>
-                            ))}
+                                { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false, warning: true },
+                                { label: "🎬 סרטון", val: videoUrl || "", required: false, warning: true },
+                            ].map(({ label, val, required, warning }) => {
+                                const isWarning = !val && warning;
+                                return (
+                                    <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
+                                        ? "bg-gray-800/60"
+                                        : required
+                                            ? "bg-red-900/20 border border-red-800/40"
+                                            : isWarning
+                                                ? "bg-yellow-900/20 border border-yellow-700/40"
+                                                : "bg-gray-800/30 border border-gray-700/40"
+                                        }`}>
+                                        <span className={val ? "text-green-400" : required ? "text-red-400" : isWarning ? "text-yellow-400" : "text-gray-500"} style={{ flexShrink: 0 }}>
+                                            {val ? "✓" : required ? "✗" : isWarning ? "!" : "–"}
+                                        </span>
+                                        <span className="text-gray-400">{label}:</span>
+                                        <span className={`font-medium truncate ${val ? "text-white" : required ? "text-red-400" : isWarning ? "text-yellow-400" : "text-gray-600"
+                                            }`}>{val || (required ? "חסר!" : isWarning ? "מומלץ להוסיף" : "לא מולא")}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                         {uncertainFields.length > 0 && (
                             <div className="flex items-center gap-2 text-yellow-400 text-xs bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
