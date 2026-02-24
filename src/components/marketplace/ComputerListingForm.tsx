@@ -227,6 +227,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [uploadingVideo, setUploadingVideo] = useState(false);
     const [imageUrlInput, setImageUrlInput] = useState("");
     const [videoUrl, setVideoUrl] = useState(initialData?.extraData?.["סרטון"] || "");
 
@@ -419,6 +420,20 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             if (data.success) setDetails(d => ({ ...d, images: [...d.images, data.url] }));
         } catch { }
         finally { setUploading(false); }
+    };
+
+    const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploadingVideo(true);
+        const fd = new FormData();
+        fd.append("file", file);
+        try {
+            const res = await fetch("/api/upload", { method: "POST", body: fd });
+            const data = await res.json();
+            if (data.success) setVideoUrl(data.url);
+        } catch { }
+        finally { setUploadingVideo(false); }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -831,21 +846,23 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             {/* Image upload */}
                             <label className="flex-1 flex flex-col items-center justify-center p-4 border border-dashed border-gray-600 rounded-xl cursor-pointer hover:border-gray-500 hover:bg-gray-800/50 transition-colors">
                                 {uploading ? <Loader2 className="w-6 h-6 animate-spin text-purple-400 mb-2" /> : <ImageIcon className="w-6 h-6 text-gray-400 mb-2" />}
-                                <span className="text-sm font-medium text-gray-300">{uploading ? "מעלה תמונה..." : "העלה תמונה"}</span>
-                                <span className="text-xs text-gray-500 mt-1">תמונות אמיתיות מהמכשיר בלבד</span>
+                                <span className="text-sm font-medium text-gray-300">{uploading ? "מעלה תמונה..." : "🖼️ העלה תמונה"}</span>
+                                <span className="text-xs text-gray-500 mt-1">תמונות מהמכשיר / סלולרי</span>
                                 <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={uploading} />
                             </label>
 
-                            <div className="flex-1 flex flex-col justify-center gap-2">
-                                <Label className="text-gray-400 text-xs">🎬 קישור סרטון (YouTube / Vimeo / direct):</Label>
-                                <Input
-                                    value={videoUrl}
-                                    onChange={e => setVideoUrl(e.target.value)}
-                                    className="bg-gray-800 border-purple-700/40 text-sm"
-                                    dir="ltr"
-                                    placeholder="https://youtube.com/... או URL ישיר לסרטון"
-                                />
-                            </div>
+                            {/* Video upload */}
+                            <label className="flex-1 flex flex-col items-center justify-center p-4 border border-dashed border-purple-700/50 rounded-xl cursor-pointer hover:border-purple-600 hover:bg-purple-900/10 transition-colors">
+                                {uploadingVideo
+                                    ? <Loader2 className="w-6 h-6 animate-spin text-purple-400 mb-2" />
+                                    : <span className="text-2xl mb-2">🎬</span>
+                                }
+                                <span className="text-sm font-medium text-gray-300">
+                                    {uploadingVideo ? "מעלה סרטון..." : videoUrl ? "שנה סרטון" : "🎬 העלה סרטון"}
+                                </span>
+                                <span className="text-xs text-gray-500 mt-1">מכשיר / סלולרי בלבד (MP4, MOV...)</span>
+                                <input type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} disabled={uploadingVideo} />
+                            </label>
                         </div>
                     </div>
 
