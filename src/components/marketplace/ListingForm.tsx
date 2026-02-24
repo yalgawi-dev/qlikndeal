@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createListing, updateListing, parseLinkMetadata, updateUserPhone, getAiKnowledge } from "@/app/actions/marketplace";
 import { analyzeListingText } from "@/lib/listing-ai";
 import { CAR_MODELS } from "@/lib/car-data";
+import { HardwareSearchEngine } from "./HardwareSearchEngine";
 import { Loader2, Plus, Image as ImageIcon, X, Sparkles, Link as LinkIcon, Edit3, Trash2, Mic, MicOff } from "lucide-react";
 import Link from "next/link";
 
@@ -37,6 +38,57 @@ const CATEGORY_MAP: Record<string, string> = {
     "בית וגינה": "HomeDecor",
     "כללי": "General"
 };
+
+const PHONE_FIELDS = [
+    { key: "יצרן", label: "יצרן / מותג" },
+    { key: "דגם", label: "שם הדגם" },
+    { key: "מספר דגם", label: "מספר דגם / SKU" },
+    { key: "סוג מכשיר", label: "סוג מכשיר" },
+    { key: "מעבד", label: "מעבד (SoC)" },
+    { key: "RAM", label: "זיכרון RAM" },
+    { key: "נפח אחסון", label: "אחסון פנימי" },
+    { key: "מסך", label: "מסך ותצוגה" },
+    { key: "מצלמה אחורית", label: "מצלמה אחורית" },
+    { key: "מצלמה קדמית", label: "מצלמה קדמית" },
+    { key: "סוללה", label: "סוללה" },
+    { key: "טעינה", label: "טעינה" },
+    { key: "בריאות סוללה", label: "בריאות סוללה (%)" },
+    { key: "מערכת הפעלה", label: "מערכת הפעלה" },
+    { key: "קישוריות", label: "קישוריות" },
+    { key: "כרטיס SIM", label: "תמיכה ב-SIM / eSIM" },
+    { key: "חיבורים", label: "חיבורים ויציאות" },
+    { key: "ביומטריקה", label: "ביומטריקה / אבטחה" },
+    { key: "חומרים ועמידות", label: "חומרים ועמידות למים" },
+    { key: "מימדים ומשקל", label: "מימדים ומשקל" },
+    { key: "צבעים", label: "צבעים" },
+    { key: "מחיר משוער", label: "מחיר השקה" },
+    { key: "שנת השקה", label: "שנת השקה" },
+    { key: "הערות נוספות", label: "הערות" },
+    { key: "החרגות", label: "החרגות (שריטות/נזקים)" },
+];
+
+const COMPUTER_FIELDS = [
+    { key: "יצרן", label: "יצרן / מותג" },
+    { key: "דגם", label: "שם הדגם" },
+    { key: "מספר דגם", label: "מספר דגם / SKU" },
+    { key: "סוג מחשב", label: "סוג המחשב" },
+    { key: "מעבד", label: "מעבד (CPU)" },
+    { key: "כרטיס מסך", label: "כרטיס מסך (GPU)" },
+    { key: "RAM", label: "זיכרון (RAM)" },
+    { key: "נפח אחסון", label: "כוננים ואחסון" },
+    { key: "גודל מסך", label: "מסך (אינץ' ותצוגה)" },
+    { key: "סוללה", label: "סוללה (לניידים)" },
+    { key: "מערכת הפעלה", label: "מערכת הפעלה" },
+    { key: "חיבורים", label: "חיבורים ויציאות" },
+    { key: "משקל ומימדים", label: "משקל ומימדים" },
+    { key: "לוח אם", label: "לוח אם" },
+    { key: "ספק כוח", label: "ספק כוח" },
+    { key: "מארז וקירור", label: "מארז וקירור" },
+    { key: "מחיר משוער", label: "מחיר השקה פוטנציאלי" },
+    { key: "שנת השקה", label: "שנת השקה" },
+    { key: "הערות נוספות", label: "הערות" },
+    { key: "החרגות", label: "החרגות (שריטות/נזקים)" },
+];
 
 const CONDITION_MAP: Record<string, string> = {
     "new": "New",
@@ -1316,136 +1368,46 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
                 {/* Specific Fields for Phones & Computers */}
                 {["Phones", "Computers"].includes(formData.category) && (
-                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3">
-                        <div className="space-y-2">
-                            <Label>יצרן</Label>
-                            <Input
-                                value={getExtraVal("יצרן")}
-                                onChange={e => handleExtraChange("יצרן", e.target.value)}
-                                placeholder={formData.category === "Computers" ? "למשל: Lenovo, HP, Apple" : "למשל: Apple, Samsung"}
-                                className="bg-gray-800 border-gray-700"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>דגם</Label>
-                            <Input
-                                value={getExtraVal("דגם")}
-                                onChange={e => handleExtraChange("דגם", e.target.value)}
-                                placeholder={formData.category === "Computers" ? "ThinkPad X1 / MacBook Pro / XPS 15" : "iPhone 13 / Galaxy S21"}
-                                className="bg-gray-800 border-gray-700"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>נפח אחסון</Label>
-                            <Input
-                                value={getExtraVal("נפח אחסון")}
-                                onChange={e => handleExtraChange("נפח אחסון", e.target.value)}
-                                placeholder={formData.category === "Computers" ? "512GB / 1TB / 2TB" : "128 / 256 / 512"}
-                                className="bg-gray-800 border-gray-700"
-                            />
-                        </div>
-                        {formData.category === "Computers" && (
-                            <>
-                                <div className="space-y-2">
-                                    <Label>זיכרון (RAM)</Label>
-                                    <Input
-                                        value={getExtraVal("RAM")}
-                                        onChange={e => handleExtraChange("RAM", e.target.value)}
-                                        placeholder="16GB"
-                                        className="bg-gray-800 border-gray-700"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>מעבד (CPU)</Label>
-                                    <Input
-                                        value={getExtraVal("מעבד")}
-                                        onChange={e => handleExtraChange("מעבד", e.target.value)}
-                                        placeholder="למשל: Intel i7 / Apple M2"
-                                        className="bg-gray-800 border-gray-700"
-                                    />
-                                </div>
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-3">
+                        <HardwareSearchEngine
+                            category={formData.category}
+                            onSelect={(hardwareData) => {
+                                // Update all empty matching extraData
+                                let newExtra = [...formData.extraData];
+                                Object.keys(hardwareData).forEach(aiKey => {
+                                    // Hardware API keys map to Hebrew keys here depending on category. 
+                                    // The HardwareSearchEngine will map standard JSON keys to Hebrew display keys internally 
+                                    // so we expect it to return mapped keys like "מעבד", "RAM", etc.
+                                    if (hardwareData[aiKey] && typeof hardwareData[aiKey] === 'string' && aiKey !== "notes") {
+                                        const idx = newExtra.findIndex(e => e.key === aiKey);
+                                        if (idx >= 0) {
+                                            newExtra[idx].value = hardwareData[aiKey];
+                                        } else {
+                                            newExtra.push({ key: aiKey, value: hardwareData[aiKey] });
+                                        }
+                                    }
+                                });
+                                // Make/Model mappings
+                                if (hardwareData["יצרן"]) handleChange("make", hardwareData["יצרן"]);
+                                if (hardwareData["דגם"]) handleChange("model", hardwareData["דגם"]);
+                                setFormData(prev => ({ ...prev, extraData: newExtra }));
+                            }}
+                        />
 
-                                <div className="space-y-2">
-                                    <Label>גודל מסך (אינץ&apos;)</Label>
+                        <div className="grid grid-cols-2 gap-4">
+                            {(formData.category === "Phones" ? PHONE_FIELDS : COMPUTER_FIELDS).map(field => (
+                                <div className="space-y-2" key={field.key}>
+                                    <Label className={field.key === "החרגות" ? "text-orange-400" : ""}>{field.label}</Label>
                                     <Input
-                                        value={getExtraVal("גודל מסך")}
-                                        onChange={e => handleExtraChange("גודל מסך", e.target.value)}
-                                        placeholder="13.3 / 15.6 / 27"
-                                        className="bg-gray-800 border-gray-700 font-mono text-left"
-                                        dir="ltr"
+                                        value={getExtraVal(field.key)}
+                                        onChange={e => handleExtraChange(field.key, e.target.value)}
+                                        placeholder={field.key === "החרגות" ? "השאר ריק אם תקין" : ""}
+                                        dir={/RAM|מעבד|GPU|מספר/.test(field.key) ? 'ltr' : 'rtl'}
+                                        className={`bg-gray-800 border-gray-700 ${field.key === "החרגות" ? "border-orange-500/30 text-orange-400 placeholder:text-gray-500" : ""}`}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>כרטיס מסך (GPU)</Label>
-                                    <Input
-                                        value={getExtraVal("כרטיס מסך")}
-                                        onChange={e => handleExtraChange("כרטיס מסך", e.target.value)}
-                                        placeholder="למשל: NVIDIA RTX 4070 Ti"
-                                        className="bg-gray-800 border-gray-700"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>מערכת הפעלה</Label>
-                                    <Input
-                                        value={getExtraVal("מערכת הפעלה")}
-                                        onChange={e => handleExtraChange("מערכת הפעלה", e.target.value)}
-                                        placeholder="למשל: Windows 11 / ללא / macOS"
-                                        className="bg-gray-800 border-gray-700"
-                                    />
-                                </div>
-                                {(getExtraVal("סוג המחשב") === "מחשב נייח (Desktop)" || getExtraVal("סוג המחשב") === "מחשב גיימינג" || getExtraVal("סוג המחשב") === "תחנת עבודה (Workstation)") && (
-                                    <>
-                                        <div className="space-y-2">
-                                            <Label>לוח אם</Label>
-                                            <Input
-                                                value={getExtraVal("לוח אם")}
-                                                onChange={e => handleExtraChange("לוח אם", e.target.value)}
-                                                placeholder="דגם אם וצ'יפסט"
-                                                className="bg-gray-800 border-gray-700"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>ספק כוח</Label>
-                                            <Input
-                                                value={getExtraVal("ספק כוח")}
-                                                onChange={e => handleExtraChange("ספק כוח", e.target.value)}
-                                                placeholder="למשל: 750W 80+ Gold"
-                                                className="bg-gray-800 border-gray-700"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>מארז וקירור</Label>
-                                            <Input
-                                                value={getExtraVal("מארז וקירור")}
-                                                onChange={e => handleExtraChange("מארז וקירור", e.target.value)}
-                                                placeholder="סוג מארז / קירור נוזלי"
-                                                className="bg-gray-800 border-gray-700"
-                                            />
-                                        </div>
-                                    </>
-                                )}
-                                <div className="space-y-2 col-span-2">
-                                    <Label className="text-orange-400">החרגות ונזקים (שבר רוזיה, חסר וכו&apos;)</Label>
-                                    <Input
-                                        value={getExtraVal("החרגות")}
-                                        onChange={e => handleExtraChange("החרגות", e.target.value)}
-                                        placeholder="למשל: סוללה חלשה, שריטה במסך (השאר ריק אם תקין)"
-                                        className="bg-gray-800 border-orange-500/30 text-orange-400 placeholder:text-gray-500"
-                                    />
-                                </div>
-                            </>
-                        )}
-                        {formData.category === "Phones" && (
-                            <div className="space-y-2">
-                                <Label>בריאות סוללה (%)</Label>
-                                <Input
-                                    value={getExtraVal("סוללה")}
-                                    onChange={e => handleExtraChange("סוללה", e.target.value)}
-                                    placeholder="85%"
-                                    className="bg-gray-800 border-gray-700"
-                                />
-                            </div>
-                        )}
+                            ))}
+                        </div>
                     </div>
                 )}
 

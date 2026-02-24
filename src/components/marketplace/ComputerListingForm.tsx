@@ -22,6 +22,7 @@ import {
     getSpecOptionsForSubModel,
     CONDITION_OPTIONS
 } from "@/lib/computer-data";
+import { ComputerSearchUI } from "@/components/marketplace/ComputerSearchUI";
 
 // ---- Types ----
 interface ComputerSpec {
@@ -438,6 +439,42 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         finally { setLoading(false); }
     };
 
+    const handleApplySearchEngineSpecs = (result: any) => {
+        setSpec(s => ({
+            ...s,
+            brand: result.brand || result.model_name?.split(" ")[0] || "אחר / לא ברשימה",
+            family: "אחר / לא ברשימה",
+            subModel: "אחר / לא ברשימה",
+            extras: result.model_name || "",
+            ram: result.ram || s.ram,
+            storage: result.storage || s.storage,
+            screen: result.display || s.screen,
+            cpu: result.cpu || s.cpu,
+            gpu: result.gpu || s.gpu,
+            os: result.os || s.os,
+        }));
+
+        let extractedPrice = "";
+        if (result.price) {
+            const num = result.price.replace(/[^\d]/g, "");
+            if (num) extractedPrice = num;
+        }
+
+        setDetails(d => ({
+            ...d,
+            title: result.model_name || d.title,
+            price: extractedPrice || d.price,
+            description: d.description + (d.description ? "\n" : "") + (result.notes ? `הערות מפרט: ${result.notes}` : ""),
+        }));
+
+        setUncertainFields([]); // Assuming user verified the engine output
+
+        // Scroll to specs section smoothly after applying
+        setTimeout(() => {
+            document.getElementById("manual-specs-section")?.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+    };
+
     return (
         <div className="flex flex-col h-full bg-black/40 rounded-2xl border border-gray-800" dir="rtl">
             {/* Header Sticky */}
@@ -458,50 +495,12 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24">
 
-                {/* GLOBAL SEARCH HERO */}
-                <div className="bg-gradient-to-br from-indigo-900/20 to-purple-900/20 border border-indigo-500/20 rounded-2xl p-5 mb-8 relative">
-                    <Label className="text-indigo-300 font-bold mb-3 block text-base text-center">הדרך המהירה - להזין רק שם של דגם 🚀</Label>
-                    <div className="relative">
-                        <Search className="absolute right-3 top-3 w-5 h-5 text-indigo-400" />
-                        <Input
-                            value={globalSearch}
-                            onChange={(e) => {
-                                setGlobalSearch(e.target.value);
-                                setShowGlobalResults(true);
-                            }}
-                            onFocus={() => setShowGlobalResults(true)}
-                            placeholder='חפש דגם... למשל "Thinkpad X1" או "Macbook Pro M2"'
-                            className="bg-black/50 border-indigo-500/30 pr-10 pl-4 py-6 text-lg rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.1)] focus:border-indigo-400 focus:shadow-[0_0_15px_rgba(99,102,241,0.3)] transition-all"
-                            dir="ltr"
-                        />
-                        {globalSearch && (
-                            <button onClick={() => { setGlobalSearch(''); setShowGlobalResults(false); }} className="absolute left-3 top-3 text-gray-400 hover:text-white">
-                                <X className="w-5 h-5" />
-                            </button>
-                        )}
-                    </div>
-
-                    {showGlobalResults && globalSearch.length > 1 && (
-                        <div className="absolute top-full left-0 right-0 mt-2 z-50 bg-gray-900 border border-indigo-500/30 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 max-h-72 overflow-y-auto">
-                            {filteredGlobalModels.length > 0 ? (
-                                filteredGlobalModels.map(m => (
-                                    <button
-                                        key={`${m.brand}-${m.family.name}-${m.sub.name}-${m.sku?.id || 'base'}`}
-                                        onClick={() => applySmartModelPick(m.brand, m.family.name, m.sub, m.sku)}
-                                        className="w-full text-right p-3 hover:bg-indigo-900/40 border-b border-gray-800 last:border-0 transition-colors"
-                                    >
-                                        <div className="font-bold text-white text-base" dir="ltr">{m.displayName}</div>
-                                        <div className="text-indigo-300/70 text-xs mt-0.5">{m.brand} • {m.family.name}</div>
-                                    </button>
-                                ))
-                            ) : (
-                                <div className="p-4 text-center text-gray-500">לא נמצא דגם שתואם להתחלה הזו... נסה צורת כתיבה אחרת.</div>
-                            )}
-                        </div>
-                    )}
+                {/* GLOBAL SEARCH HERO REPLACED BY NEW SEARCH ENGINE UI */}
+                <div className="mb-8">
+                    <ComputerSearchUI onApplySpecs={handleApplySearchEngineSpecs} />
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
+                <form id="manual-specs-section" onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
 
                     {/* ==== SECTION: IDENTIFICATION ==== */}
                     <div className="space-y-4">
