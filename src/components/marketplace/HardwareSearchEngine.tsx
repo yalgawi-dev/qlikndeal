@@ -128,7 +128,12 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                             let score = 0;
                             const fullName = `${brand} ${sub.name}`;
 
-                            if (matchesAllTerms(sub.name)) score += 10;
+                            if (matchesAllTerms(sub.name)) {
+                                score += 10;
+                                // Bonus if it matches exactly or starts with the exact query (avoids Nitro 16 winning over Nitro 5)
+                                if (sub.name.toLowerCase() === q || fullName.toLowerCase() === q) score += 20;
+                                else if (sub.name.toLowerCase().startsWith(q) || fullName.toLowerCase().startsWith(q)) score += 5;
+                            }
                             else if (matchesAllTerms(fullName)) score += 8;
                             else if (matchesAllTerms(brand) && matchesAllTerms(family.name)) score += 5;
 
@@ -303,7 +308,11 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                         const fullName = `${brand} ${sub.name}`;
 
                         let matchScore = 0;
-                        if (matchesAllTerms(sub.name)) matchScore += 10;
+                        if (matchesAllTerms(sub.name)) {
+                            matchScore += 10;
+                            if (sub.name.toLowerCase() === queryStr || fullName.toLowerCase() === queryStr) matchScore += 20;
+                            else if (sub.name.toLowerCase().startsWith(queryStr) || fullName.toLowerCase().startsWith(queryStr)) matchScore += 5;
+                        }
                         else if (matchesAllTerms(fullName)) matchScore += 8;
 
                         // Check SKUs for precise match
