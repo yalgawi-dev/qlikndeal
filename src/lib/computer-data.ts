@@ -231,7 +231,7 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "weight": "1.12kg",
                     "release_year": "2023",
                     "notes": "Ultra-lightweight business flagship, MIL-SPEC",
-                    "display": "14\" FHD+ IPS, 1920×1200, 400 nits"
+                    "display": "14\" WUXGA IPS, 1920×1200, 400 nits"
                 },
                 {
                     "name": "Lenovo ThinkPad X1 Carbon Gen 12",
@@ -356,6 +356,100 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "ram": [
                                 "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad T14 Gen 3",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 PRO 6650U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 660M"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "52.5Wh, up to 14h",
+                    "ports": "2× USB-C, 2× USB-A, HDMI, RJ45",
+                    "weight": "1.37kg",
+                    "release_year": "2022",
+                    "notes": "Business workhorse, AMD version",
+                    "display": "14\" WUXGA IPS, 1920×1200, 300 nits",
+                    "skus": [
+                        {
+                            "id": "21AH00BSUS",
+                            "cpu": [
+                                "AMD Ryzen 5 PRO 6650U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 660M"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad T14s Gen 4",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1365U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "57.5Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.27kg",
+                    "release_year": "2023",
+                    "notes": "Slim T-series, soldered RAM",
+                    "display": "14\" WUXGA IPS, 1920×1200, 400 nits",
+                    "skus": [
+                        {
+                            "id": "21F6003WUS",
+                            "cpu": [
+                                "Intel Core i7-1365U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
                             ],
                             "storage": [
                                 "512GB NVMe SSD"
@@ -546,6 +640,241 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Premium 2-in-1, OLED touch, JBL speakers",
                     "display": "14\" 2.8K OLED, 2880×1800, touch, 90Hz"
+                },
+                {
+                    "name": "Lenovo Yoga 7i Gen 7",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1255U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "71Wh, up to 13h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, SD card",
+                    "weight": "1.48kg",
+                    "release_year": "2022",
+                    "notes": "2-in-1 OLED, premium feel",
+                    "display": "14\" 2.8K OLED, 2880×1800, touch, 90Hz",
+                    "skus": [
+                        {
+                            "id": "82BJ009WUS",
+                            "cpu": [
+                                "Intel Core i7-1255U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo Yoga 9i Gen 7",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "75Wh, up to 10h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A",
+                    "weight": "1.43kg",
+                    "release_year": "2022",
+                    "notes": "Premium 2-in-1, Bose speakers",
+                    "display": "14\" 2.8K OLED, 2880×1800, touch, 90Hz",
+                    "skus": [
+                        {
+                            "id": "82MK00BLUS",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo Yoga Slim 7 Pro X",
+                    "screenSize": [
+                        "14.5\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 6800HS"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh, up to 12h",
+                    "ports": "USB-C, 2× USB-A, HDMI, SD card",
+                    "weight": "1.49kg",
+                    "release_year": "2022",
+                    "notes": "Ultra-slim discrete GPU",
+                    "display": "14.5\" 3K IPS, 3072×1920, 120Hz",
+                    "skus": [
+                        {
+                            "id": "82TL000LUS",
+                            "cpu": [
+                                "AMD Ryzen 7 6800HS"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad X1 Yoga Gen 7",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1265U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "57Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI",
+                    "weight": "1.4kg",
+                    "release_year": "2022",
+                    "notes": "2-in-1 business, stylus included",
+                    "display": "14\" WUXGA IPS, 1920×1200, touch, 400 nits",
+                    "skus": [
+                        {
+                            "id": "21CD0029US",
+                            "cpu": [
+                                "Intel Core i7-1265U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad X1 Yoga Gen 8",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1365U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "57Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI",
+                    "weight": "1.4kg",
+                    "release_year": "2023",
+                    "notes": "OLED 2-in-1 business ultrabook",
+                    "display": "14\" 2.8K OLED, 2880×1800, touch, 400 nits",
+                    "skus": [
+                        {
+                            "id": "21HQ001AUS",
+                            "cpu": [
+                                "Intel Core i7-1365U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -718,6 +1047,288 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Entry-level budget laptop, Jasper Lake, basic tasks only",
                     "display": "15.6\" FHD TN, 1920×1080, 220 nits"
+                },
+                {
+                    "name": "Lenovo IdeaPad 3 15ALC6",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 5500U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "45Wh, up to 9h",
+                    "ports": "USB-A 3.2, 2× USB-A 2.0, USB-C 3.2, HDMI, SD card",
+                    "weight": "1.65kg",
+                    "release_year": "2021",
+                    "notes": "Budget AMD laptop",
+                    "display": "15.6\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "82KU00HJUS",
+                            "cpu": [
+                                "AMD Ryzen 5 5500U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo IdeaPad 5 14ALC05",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 5500U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "56Wh, up to 12h",
+                    "ports": "USB-C 3.2, 2× USB-A, HDMI, SD card",
+                    "weight": "1.45kg",
+                    "release_year": "2021",
+                    "notes": "Mid-range ultrabook",
+                    "display": "14\" FHD IPS, 1920×1080, 300 nits",
+                    "skus": [
+                        {
+                            "id": "82LM003AUS",
+                            "cpu": [
+                                "AMD Ryzen 5 5500U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo IdeaPad Gaming 3 15",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 5600H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "45Wh, up to 7h",
+                    "ports": "USB-C, 3× USB-A, HDMI 2.0, RJ45, SD card",
+                    "weight": "2.25kg",
+                    "release_year": "2021",
+                    "notes": "Budget gaming RTX 3060",
+                    "display": "15.6\" FHD IPS, 1920×1080, 120Hz",
+                    "skus": [
+                        {
+                            "id": "82K2000WUS",
+                            "cpu": [
+                                "AMD Ryzen 5 5600H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo IdeaPad Slim 5 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 7730U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 610M"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "75Wh, up to 12h",
+                    "ports": "USB-C, 2× USB-A, HDMI, SD card",
+                    "weight": "1.84kg",
+                    "release_year": "2023",
+                    "notes": "Slim mainstream, big screen",
+                    "display": "16\" WUXGA IPS, 1920×1200, 300 nits",
+                    "skus": [
+                        {
+                            "id": "82XG003LUS",
+                            "cpu": [
+                                "AMD Ryzen 7 7730U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 610M"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo IdeaPad Duet 5 Chromebook",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Qualcomm Snapdragon 7c Gen 2"
+                    ],
+                    "gpu": [
+                        "Adreno 618"
+                    ],
+                    "ram": [
+                        "8GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "128GB eMMC"
+                    ],
+                    "os": [
+                        "ChromeOS"
+                    ],
+                    "battery": "42Wh, up to 15h",
+                    "ports": "2× USB-C",
+                    "weight": "0.7kg (tablet only)",
+                    "release_year": "2021",
+                    "notes": "OLED Chromebook tablet, detachable keyboard",
+                    "display": "13.3\" 2K OLED, 1920×1200, touch",
+                    "skus": [
+                        {
+                            "id": "82QS0003US",
+                            "cpu": [
+                                "Qualcomm Snapdragon 7c Gen 2"
+                            ],
+                            "gpu": [
+                                "Adreno 618"
+                            ],
+                            "ram": [
+                                "8GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "128GB eMMC"
+                            ],
+                            "os": [
+                                "ChromeOS"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo IdeaPad Gaming 3i Gen 7",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12650H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "8GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "45Wh",
+                    "ports": "USB-C, 3× USB-A, HDMI 2.0, RJ45",
+                    "weight": "2.25kg",
+                    "release_year": "2022",
+                    "notes": "Budget gaming, Alder Lake",
+                    "display": "15.6\" FHD IPS, 1920×1080, 120Hz",
+                    "skus": [
+                        {
+                            "id": "82S900HPUS",
+                            "cpu": [
+                                "Intel Core i7-12650H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "8GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -901,6 +1512,335 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Top-tier gaming, excellent display",
                     "display": "16\" QHD+ IPS, 2560×1600, 240Hz"
+                },
+                {
+                    "name": "Lenovo Legion 5 15ACH6H",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 5600H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "60Wh, up to 8h",
+                    "ports": "3× USB-A, USB-C, HDMI 2.1, RJ45",
+                    "weight": "2.4kg",
+                    "release_year": "2021",
+                    "notes": "Best-value gaming Legion",
+                    "display": "15.6\" FHD IPS, 1920×1080, 165Hz",
+                    "skus": [
+                        {
+                            "id": "82JU00JAUS",
+                            "cpu": [
+                                "AMD Ryzen 5 5600H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo Legion 5 Gen 8",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 7745HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh, up to 8h",
+                    "ports": "3× USB-A, USB-C, HDMI 2.1, RJ45",
+                    "weight": "2.4kg",
+                    "release_year": "2023",
+                    "notes": "RTX 4070, Ryzen 7000HX",
+                    "display": "15.6\" FHD IPS, 1920×1080, 165Hz",
+                    "skus": [
+                        {
+                            "id": "82WK00GBUS",
+                            "cpu": [
+                                "AMD Ryzen 7 7745HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4070"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo Legion Slim 5i Gen 8",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-13700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh, up to 9h",
+                    "ports": "Thunderbolt 4, 2× USB-A, USB-C, HDMI, SD card",
+                    "weight": "2.1kg",
+                    "release_year": "2023",
+                    "notes": "Slim gaming form factor",
+                    "display": "16\" WQXGA IPS, 2560×1600, 165Hz",
+                    "skus": [
+                        {
+                            "id": "82Y9000RUS",
+                            "cpu": [
+                                "Intel Core i7-13700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo Legion Pro 7i Gen 8",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13900HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI 2.1, RJ45",
+                    "weight": "2.98kg",
+                    "release_year": "2023",
+                    "notes": "Top gaming Legion, RTX 4090",
+                    "display": "16\" WQXGA IPS, 2560×1600, 240Hz",
+                    "skus": [
+                        {
+                            "id": "82WQ008AUS",
+                            "cpu": [
+                                "Intel Core i9-13900HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo Legion 5 Gen 6",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 5600H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "60Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0, RJ45",
+                    "weight": "2.4kg",
+                    "release_year": "2021",
+                    "notes": "Great value gaming",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "82JH00BSUS",
+                            "cpu": [
+                                "AMD Ryzen 5 5600H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo Legion 5i Gen 7",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3070 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh",
+                    "ports": "3× USB-A, Thunderbolt 4, HDMI 2.1, RJ45",
+                    "weight": "2.4kg",
+                    "release_year": "2022",
+                    "notes": "Alder Lake gaming, QHD 165Hz",
+                    "display": "15.6\" QHD IPS, 2560×1440, 165Hz",
+                    "skus": [
+                        {
+                            "id": "82RK00CGUS",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3070 Ti"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo Legion 5 Gen 7 AMD",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 6800H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3070 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.1, RJ45",
+                    "weight": "2.4kg",
+                    "release_year": "2022",
+                    "notes": "AMD gaming value",
+                    "display": "15.6\" FHD IPS, 1920×1080, 165Hz",
+                    "skus": [
+                        {
+                            "id": "82RE00BXUS",
+                            "cpu": [
+                                "AMD Ryzen 7 6800H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3070 Ti"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -1166,6 +2106,92 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "ISV certified, tool-less, up to 128GB RAM",
                     "display": "None (external)"
+                },
+                {
+                    "name": "Lenovo ThinkStation P5",
+                    "cpu": [
+                        "Intel Xeon W5-2445"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A4000"
+                    ],
+                    "ram": [
+                        "32GB DDR5 ECC"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, 2× DP, RJ45",
+                    "weight": "19.9kg",
+                    "release_year": "2022",
+                    "notes": "Professional Xeon workstation",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "30GA000HUS",
+                            "cpu": [
+                                "Intel Xeon W5-2445"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A4000"
+                            ],
+                            "ram": [
+                                "32GB DDR5 ECC"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkStation P360 Ultra",
+                    "cpu": [
+                        "Intel Core i9-12900K"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A4000 16GB"
+                    ],
+                    "ram": [
+                        "32GB DDR5 ECC"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C/TB4, HDMI, DP, RJ45",
+                    "weight": "2.7kg",
+                    "release_year": "2022",
+                    "notes": "Compact workstation, ISV, 2.7kg",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "30G1003BUS",
+                            "cpu": [
+                                "Intel Core i9-12900K"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A4000 16GB"
+                            ],
+                            "ram": [
+                                "32GB DDR5 ECC"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -1198,7 +2224,7 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "weight": "1.12kg",
                     "release_year": "2023",
                     "notes": "Ultra-lightweight business flagship, MIL-SPEC",
-                    "display": "14\" FHD+ IPS, 1920×1200, 400 nits",
+                    "display": "14\" WUXGA IPS, 1920×1200, 400 nits",
                     "skus": [
                         {
                             "id": "21HM0065US",
@@ -1266,6 +2292,53 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "Lenovo ThinkPad X1 Carbon Gen 10",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1265U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "57Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.12kg",
+                    "release_year": "2022",
+                    "notes": "Ultra-light business, MIL-SPEC",
+                    "display": "14\" WUXGA IPS, 1920×1200, 400 nits",
+                    "skus": [
+                        {
+                            "id": "21CB00B9US",
+                            "cpu": [
+                                "Intel Core i7-1265U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -1316,6 +2389,545 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "os": [
                                 "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad P16s Gen 2",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 PRO 7840U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 780M + NVIDIA T550"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "2× USB-C/TB4, 2× USB-A, HDMI, RJ45, SD card",
+                    "weight": "1.95kg",
+                    "release_year": "2023",
+                    "notes": "Thin mobile workstation, ISV certified",
+                    "display": "16\" WUXGA IPS, 1920×1200, 300 nits",
+                    "skus": [
+                        {
+                            "id": "21HK000LUS",
+                            "cpu": [
+                                "AMD Ryzen 7 PRO 7840U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 780M + NVIDIA T550"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad P16 Gen 2",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13980HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 3500 Ada"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "94Wh",
+                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.95kg",
+                    "release_year": "2023",
+                    "notes": "Up to 128GB RAM, ISV certified",
+                    "display": "16\" UHD+ IPS, 3840×2400, 120Hz",
+                    "skus": [
+                        {
+                            "id": "21FA000RUS",
+                            "cpu": [
+                                "Intel Core i9-13980HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 3500 Ada"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Lenovo ThinkPad",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Lenovo ThinkPad X1 Extreme Gen 5",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12800H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.86kg",
+                    "release_year": "2022",
+                    "notes": "High-performance business, 4K option",
+                    "display": "16\" WQUXGA IPS, 3840×2400, 60Hz",
+                    "skus": [
+                        {
+                            "id": "21DE000MUS",
+                            "cpu": [
+                                "Intel Core i7-12800H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad X13 Gen 4",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1365U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "54.7Wh, up to 14h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.18kg",
+                    "release_year": "2023",
+                    "notes": "Compact business ultrabook",
+                    "display": "13.3\" WUXGA IPS, 1920×1200, 400 nits",
+                    "skus": [
+                        {
+                            "id": "21EX003SUS",
+                            "cpu": [
+                                "Intel Core i7-1365U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad L14 Gen 4",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 7530U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "46Wh, up to 10h",
+                    "ports": "2× USB-C, 2× USB-A, HDMI, RJ45",
+                    "weight": "1.55kg",
+                    "release_year": "2023",
+                    "notes": "Budget business, value ThinkPad",
+                    "display": "14\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "21H50014US",
+                            "cpu": [
+                                "AMD Ryzen 5 7530U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad Z13 Gen 1",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 PRO 6650U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 660M"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "49.5Wh, up to 15h",
+                    "ports": "2× USB-C/TB4, USB-A, HDMI",
+                    "weight": "1.26kg",
+                    "release_year": "2022",
+                    "notes": "AMD ThinkPad, OLED option",
+                    "display": "13.3\" 2.8K OLED, 2880×1800, 60Hz",
+                    "skus": [
+                        {
+                            "id": "21D2003XUS",
+                            "cpu": [
+                                "AMD Ryzen 5 PRO 6650U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 660M"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Lenovo ThinkCentre",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Lenovo ThinkCentre M90q Gen 3",
+                    "cpu": [
+                        "Intel Core i7-12700T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
+                    "weight": "1.37kg",
+                    "release_year": "2022",
+                    "notes": "Tiny PC, vPro option",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "11U50003US",
+                            "cpu": [
+                                "Intel Core i7-12700T"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 770"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Lenovo IdeaCentre",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Lenovo IdeaCentre 3 07ADA05",
+                    "cpu": [
+                        "AMD Ryzen 5 3400G"
+                    ],
+                    "gpu": [
+                        "AMD Radeon RX Vega 11"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, SD card, RJ45",
+                    "weight": "3.9kg",
+                    "release_year": "2021",
+                    "notes": "Budget desktop with integrated GPU",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "90MV0061US",
+                            "cpu": [
+                                "AMD Ryzen 5 3400G"
+                            ],
+                            "gpu": [
+                                "AMD Radeon RX Vega 11"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Lenovo Slim",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Lenovo Slim Pro 9i Gen 8",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13905H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.99kg",
+                    "release_year": "2023",
+                    "notes": "OLED premium creator",
+                    "display": "16\" 3.2K OLED, 3200×2000, 120Hz, touch",
+                    "skus": [
+                        {
+                            "id": "83BQ004KUS",
+                            "cpu": [
+                                "Intel Core i9-13905H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4060"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Lenovo ThinkBook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Lenovo ThinkBook 14 G6+",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 5 125H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "60Wh, up to 12h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.45kg",
+                    "release_year": "2024",
+                    "notes": "SMB mainstream with discrete GPU",
+                    "display": "14\" 2.8K IPS, 2880×1800, 90Hz",
+                    "skus": [
+                        {
+                            "id": "21KJ000KUS",
+                            "cpu": [
+                                "Intel Core Ultra 5 125H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkBook 16p Gen 4",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 7945HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "2× USB-C, 3× USB-A, HDMI, SD card",
+                    "weight": "2.1kg",
+                    "release_year": "$2023",
+                    "notes": "Performance ThinkBook, 165Hz 3.2K",
+                    "display": "16\" 3.2K IPS, 3200×2000, 165Hz",
+                    "skus": [
+                        {
+                            "id": "21J8000MUS",
+                            "cpu": [
+                                "AMD Ryzen 9 7945HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4060"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
                             ]
                         }
                     ]
@@ -1554,7 +3166,7 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "weight": "1.86kg",
                     "release_year": "2022",
                     "notes": "OLED display option, premium build",
-                    "display": "15.6\" OLED 3.5K, 3456×2160, 400 nits, touch, 60Hz"
+                    "display": "15.6\" OLED 3.5K, 3456×2160, 60Hz, touch"
                 },
                 {
                     "name": "Dell XPS 15 9530",
@@ -1655,6 +3267,241 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2024",
                     "notes": "New 16\" flagship, Meteor Lake CPU, AI features",
                     "display": "16.3\" OLED 4K+, 3840×2400, 120Hz, touch"
+                },
+                {
+                    "name": "Dell XPS 13 9320",
+                    "screenSize": [
+                        "13.4\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1360P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "55Wh, up to 12h",
+                    "ports": "2× Thunderbolt 4, 3.5mm jack",
+                    "weight": "1.17kg",
+                    "release_year": "2023",
+                    "notes": "OLED option, Raptor Lake refresh",
+                    "display": "13.4\" OLED 3.5K, 3456×2160, 400 nits, touch",
+                    "skus": [
+                        {
+                            "id": "XPS9320-7931SLV-PUS",
+                            "cpu": [
+                                "Intel Core i7-1360P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell XPS 13 Plus 9320",
+                    "screenSize": [
+                        "13.4\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "55Wh",
+                    "ports": "2× Thunderbolt 4 (only)",
+                    "weight": "1.26kg",
+                    "release_year": "2022",
+                    "notes": "Zero legacy ports, capacitive function row, futuristic design",
+                    "display": "13.4\" FHD+ OLED, 1920×1200, 60Hz",
+                    "skus": [
+                        {
+                            "id": "XPS9320P-7931SLV-PUS",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell XPS 14 9440",
+                    "screenSize": [
+                        "14.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 7 155H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4050"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5x"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "69.5Wh, up to 12h",
+                    "ports": "2× Thunderbolt 4, 2× USB-C 3.2, SD card",
+                    "weight": "1.69kg",
+                    "release_year": "2024",
+                    "notes": "New 14\" XPS with discrete GPU, Meteor Lake",
+                    "display": "14.5\" OLED 3K+, 2880×1800, 120Hz, touch",
+                    "skus": [
+                        {
+                            "id": "XPS9440-7979SLV-PUS",
+                            "cpu": [
+                                "Intel Core Ultra 7 155H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4050"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5x"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell XPS 17 9720",
+                    "screenSize": [
+                        "17\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "97Wh, up to 13h",
+                    "ports": "2× Thunderbolt 4, USB-C 3.2, SD card, 3.5mm jack",
+                    "weight": "2.21kg",
+                    "release_year": "2022",
+                    "notes": "Large premium creator laptop",
+                    "display": "17\" FHD+ IPS, 1920×1200, 500 nits",
+                    "skus": [
+                        {
+                            "id": "XPS9720-7936SLV-PUS",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell XPS 13 9305",
+                    "screenSize": [
+                        "13.4\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1185G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR4x"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 10 Home"
+                    ],
+                    "battery": "51Wh, up to 12h",
+                    "ports": "2× Thunderbolt 4, USB-C 3.2, 3.5mm jack",
+                    "weight": "1.23kg",
+                    "release_year": "2021",
+                    "notes": "Tiger Lake ultrabook",
+                    "display": "13.4\" FHD+ IPS, 1920×1200, 500 nits",
+                    "skus": [
+                        {
+                            "id": "XPS9305-7465SLV-PUS",
+                            "cpu": [
+                                "Intel Core i7-1185G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR4x"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 10 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -1753,6 +3600,194 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Budget mainstream laptop, good value",
                     "display": "15.6\" FHD IPS, 1920×1080, 250 nits"
+                },
+                {
+                    "name": "Dell Inspiron 14 5420",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1235U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "54Wh, up to 10h",
+                    "ports": "USB-A 3.2, USB-C 3.2, HDMI, SD card, 3.5mm jack",
+                    "weight": "1.57kg",
+                    "release_year": "2022",
+                    "notes": "Budget 14\" mainstream",
+                    "display": "14\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "I5420-5816SLV-PUS",
+                            "cpu": [
+                                "Intel Core i5-1235U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Inspiron 16 5620",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1255U"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce MX570"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "54Wh, up to 12h",
+                    "ports": "USB-A 3.2, USB-C 3.2, HDMI, SD card, 3.5mm jack",
+                    "weight": "1.85kg",
+                    "release_year": "2022",
+                    "notes": "16\" mid-range with discrete GPU",
+                    "display": "16\" FHD+ IPS, 1920×1200, 300 nits",
+                    "skus": [
+                        {
+                            "id": "I5620-7628SLV-PUS",
+                            "cpu": [
+                                "Intel Core i7-1255U"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce MX570"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Inspiron 16 Plus 7630",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-13700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, SD card, 3.5mm jack",
+                    "weight": "2.0kg",
+                    "release_year": "2023",
+                    "notes": "Performance mid-range, 120Hz QHD+",
+                    "display": "16\" QHD+ IPS, 2560×1600, 120Hz",
+                    "skus": [
+                        {
+                            "id": "7630-7693SLV-PUS",
+                            "cpu": [
+                                "Intel Core i7-13700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Inspiron 14 2-in-1 5410",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1165G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "12GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "54Wh, up to 10h",
+                    "ports": "USB-C 3.2, USB-A 3.2, HDMI, SD card, 3.5mm jack",
+                    "weight": "1.63kg",
+                    "release_year": "2021",
+                    "notes": "2-in-1 convertible, touchscreen",
+                    "display": "14\" FHD IPS, 1920×1080, touch, 250 nits",
+                    "skus": [
+                        {
+                            "id": "I5410-3658SLV-PUS",
+                            "cpu": [
+                                "Intel Core i7-1165G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "12GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -1849,6 +3884,194 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Business laptop, vPro option, durable",
                     "display": "15.6\" FHD IPS, 1920×1080, 250 nits"
+                },
+                {
+                    "name": "Dell Latitude 7440",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1365U vPro"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "58Wh, up to 16h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, RJ45",
+                    "weight": "1.37kg",
+                    "release_year": "2023",
+                    "notes": "Premium business ultrabook, MIL-SPEC",
+                    "display": "14\" FHD+ IPS, 1920×1200, 400 nits",
+                    "skus": [
+                        {
+                            "id": "LAT7440-7697SLV",
+                            "cpu": [
+                                "Intel Core i7-1365U vPro"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Latitude 9440 2-in-1",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1365U vPro"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "65Wh, up to 18h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI",
+                    "weight": "1.44kg",
+                    "release_year": "2023",
+                    "notes": "Business 2-in-1 flagship, OLED touch",
+                    "display": "14\" QHD+ OLED, 2560×1600, touch, 120Hz",
+                    "skus": [
+                        {
+                            "id": "LAT9440-7697SLV",
+                            "cpu": [
+                                "Intel Core i7-1365U vPro"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Latitude 3540",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1335U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "54Wh, up to 10h",
+                    "ports": "2× USB-A, USB-C, HDMI, RJ45, SD card",
+                    "weight": "1.87kg",
+                    "release_year": "2023",
+                    "notes": "Budget business 15\"",
+                    "display": "15.6\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "LAT3540-5766BLK",
+                            "cpu": [
+                                "Intel Core i5-1335U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Latitude 5350",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 5 135U"
+                    ],
+                    "gpu": [
+                        "Intel Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "54Wh, up to 16h",
+                    "ports": "2× USB-C, 2× USB-A, HDMI, RJ45",
+                    "weight": "1.27kg",
+                    "release_year": "2024",
+                    "notes": "Compact business, Meteor Lake",
+                    "display": "13.3\" FHD IPS, 1920×1080, 300 nits",
+                    "skus": [
+                        {
+                            "id": "LAT5350-3879SLV",
+                            "cpu": [
+                                "Intel Core Ultra 5 135U"
+                            ],
+                            "gpu": [
+                                "Intel Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -2040,6 +4263,331 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Gaming desktop, tool-less design, RGB lighting",
                     "display": "None (external)"
+                },
+                {
+                    "name": "Alienware m15 R7",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3070 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.69kg",
+                    "release_year": "2022",
+                    "notes": "Alienware gaming, Cherry MX mechanical keys optional",
+                    "display": "15.6\" QHD IPS, 2560×1440, 240Hz",
+                    "skus": [
+                        {
+                            "id": "AWm15R7-7636BLK-PUS",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3070 Ti"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Alienware m16 R1",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13900HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, USB-C, HDMI 2.1, RJ45, SD card",
+                    "weight": "3.05kg",
+                    "release_year": "2023",
+                    "notes": "New 16\" Alienware, wide aspect ratio",
+                    "display": "16\" QHD+ IPS, 2560×1600, 165Hz",
+                    "skus": [
+                        {
+                            "id": "AWm16R1-7846BLK-PUS",
+                            "cpu": [
+                                "Intel Core i9-13900HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Alienware m16 R2",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-14900HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "3.19kg",
+                    "release_year": "2024",
+                    "notes": "Cherry Lake-R, 240Hz upgrade",
+                    "display": "16\" QHD+ IPS, 2560×1600, 240Hz",
+                    "skus": [
+                        {
+                            "id": "AWm16R2-9769BLK-PUS",
+                            "cpu": [
+                                "Intel Core i9-14900HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Alienware m18 R2",
+                    "screenSize": [
+                        "18\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-14900HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "97Wh",
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI 2.1, mini DP, RJ45, SD card",
+                    "weight": "4.05kg",
+                    "release_year": "2024",
+                    "notes": "Largest Alienware, Cherry Lake-R",
+                    "display": "18\" QHD+ IPS, 2560×1600, 165Hz",
+                    "skus": [
+                        {
+                            "id": "AWm18R2-9983BLK-PUS",
+                            "cpu": [
+                                "Intel Core i9-14900HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Alienware x14 R2",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-13620H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI 2.1, RJ45",
+                    "weight": "1.84kg",
+                    "release_year": "2023",
+                    "notes": "Slim 14\" gaming, compact Alienware",
+                    "display": "14\" FHD IPS, 1920×1080, 165Hz",
+                    "skus": [
+                        {
+                            "id": "AWx14R2-9343BLK-PUS",
+                            "cpu": [
+                                "Intel Core i7-13620H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Alienware x16 R1",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13980HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45",
+                    "weight": "2.99kg",
+                    "release_year": "2023",
+                    "notes": "480Hz display, slim gaming flagship",
+                    "display": "16\" QHD+ IPS, 2560×1600, 480Hz",
+                    "skus": [
+                        {
+                            "id": "AWx16R1-9376BLK-PUS",
+                            "cpu": [
+                                "Intel Core i9-13980HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Alienware Aurora R16",
+                    "cpu": [
+                        "Intel Core i9-14900KF"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "5× USB-A, 2× USB-C, HDMI 2.1, DP 1.4, RJ45",
+                    "weight": "14.2kg",
+                    "release_year": "2024",
+                    "notes": "Tool-less chassis, liquid cooling option, RGB",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "AWR16-A705BLK-PUS",
+                            "cpu": [
+                                "Intel Core i9-14900KF"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -2120,6 +4668,284 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Mobile workstation, ISV certified",
                     "display": "15.6\" FHD+ OLED, 1920×1200"
+                },
+                {
+                    "name": "Dell Precision 3571",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A2000"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "56Wh",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.85kg",
+                    "release_year": "2022",
+                    "notes": "Entry mobile workstation",
+                    "display": "15.6\" FHD IPS, 1920×1080",
+                    "skus": [
+                        {
+                            "id": "PRS3571-7619SLV",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A2000"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 5570",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A2000"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, 3.5mm jack",
+                    "weight": "1.84kg",
+                    "release_year": "2022",
+                    "notes": "Slim workstation, ISV certified",
+                    "display": "15.6\" FHD+ OLED, 1920×1200",
+                    "skus": [
+                        {
+                            "id": "PRS5570-7619SLV",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A2000"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 5680",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 3500 Ada"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.85kg",
+                    "release_year": "2023",
+                    "notes": "Premium thin workstation, OLED option",
+                    "display": "15.6\" OLED 3.5K, 3456×2160",
+                    "skus": [
+                        {
+                            "id": "PRS5680-7979SLV",
+                            "cpu": [
+                                "Intel Core i9-13900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 3500 Ada"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 7680",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13950HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A5500"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "93Wh",
+                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.77kg",
+                    "release_year": "2023",
+                    "notes": "Up to 128GB RAM, ISV certified",
+                    "display": "16\" FHD+ IPS, 1920×1200",
+                    "skus": [
+                        {
+                            "id": "PRS7680-7979SLV",
+                            "cpu": [
+                                "Intel Core i9-13950HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A5500"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 3480",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1345U vPro"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "51Wh",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, RJ45, SD card",
+                    "weight": "1.45kg",
+                    "release_year": "2023",
+                    "notes": "Entry mobile workstation",
+                    "display": "14\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "PRS3480-5616SLV",
+                            "cpu": [
+                                "Intel Core i5-1345U vPro"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 5820 Tower",
+                    "cpu": [
+                        "Intel Xeon W-2245"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A5000"
+                    ],
+                    "ram": [
+                        "64GB DDR4 ECC"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, 2× DP, RJ45",
+                    "weight": "18kg",
+                    "release_year": "2022",
+                    "notes": "Tower workstation, ECC Xeon",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "PRS5820-7979SLV",
+                            "cpu": [
+                                "Intel Xeon W-2245"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A5000"
+                            ],
+                            "ram": [
+                                "64GB DDR4 ECC"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -2185,6 +5011,49 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Business desktop, vPro option",
                     "display": "None (external)"
+                },
+                {
+                    "name": "Dell OptiPlex 3000 Tower",
+                    "cpu": [
+                        "Intel Core i5-12500T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
+                    "weight": "4.6kg",
+                    "release_year": "2022",
+                    "notes": "Entry business tower",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "XDT3000-5466BLK-PUS",
+                            "cpu": [
+                                "Intel Core i5-12500T"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 770"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -2216,6 +5085,218 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "name": "Dell G15 5520",
                     "screenSize": [
                         "15.6\""
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Dell Vostro",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Dell Vostro 14 3420",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1235U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "54Wh, up to 9h",
+                    "ports": "USB-A 3.2, USB-A 2.0, USB-C 3.2, HDMI, SD card",
+                    "weight": "1.56kg",
+                    "release_year": "2022",
+                    "notes": "SMB entry laptop",
+                    "display": "14\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "VOS3420-3672BLK-PUS",
+                            "cpu": [
+                                "Intel Core i5-1235U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Dell Chromebook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Dell Chromebook 3110 2-in-1",
+                    "screenSize": [
+                        "11.6\""
+                    ],
+                    "cpu": [
+                        "Intel Celeron N4500"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 600"
+                    ],
+                    "ram": [
+                        "4GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "32GB eMMC"
+                    ],
+                    "os": [
+                        "ChromeOS"
+                    ],
+                    "battery": "42Wh, up to 10h",
+                    "ports": "2× USB-C, 2× USB-A, microSD",
+                    "weight": "1.36kg",
+                    "release_year": "2021",
+                    "notes": "Education 2-in-1 Chromebook",
+                    "display": "11.6\" HD IPS, 1366×768, touch",
+                    "skus": [
+                        {
+                            "id": "GCKWH",
+                            "cpu": [
+                                "Intel Celeron N4500"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 600"
+                            ],
+                            "ram": [
+                                "4GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "32GB eMMC"
+                            ],
+                            "os": [
+                                "ChromeOS"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Dell G15",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Dell G15 5515",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 5600H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.1, RJ45",
+                    "weight": "2.39kg",
+                    "release_year": "2021",
+                    "notes": "Budget gaming with solid GPU",
+                    "display": "15.6\" FHD IPS, 1920×1080, 120Hz",
+                    "skus": [
+                        {
+                            "id": "G155515-A687GRY-PUS",
+                            "cpu": [
+                                "AMD Ryzen 5 5600H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Dell G16",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Dell G16 7620",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "3× USB-A, Thunderbolt 4, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.74kg",
+                    "release_year": "2022",
+                    "notes": "16\" gaming with QHD+ display",
+                    "display": "16\" QHD+ IPS, 2560×1600, 165Hz",
+                    "skus": [
+                        {
+                            "id": "G167620-7548BLK-PUS",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
                     ]
                 }
             ]
@@ -2300,6 +5381,147 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "storage": [
                                 "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Spectre x360 13.5",
+                    "screenSize": [
+                        "13.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1255U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "66Wh, up to 17h",
+                    "ports": "2× Thunderbolt 4, USB-A 3.2, 3.5mm jack, microSD",
+                    "weight": "1.36kg",
+                    "release_year": "2022",
+                    "notes": "Convertible 2-in-1, OLED, gemcut design",
+                    "display": "13.5\" OLED 3K2K, 3000×2000, touch, 60Hz",
+                    "skus": [
+                        {
+                            "id": "14-ef0013dx",
+                            "cpu": [
+                                "Intel Core i7-1255U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Spectre x360 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Arc A370M"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "83Wh, up to 17h",
+                    "ports": "2× Thunderbolt 4, USB-A 3.2, HDMI 2.0, SD card",
+                    "weight": "2.13kg",
+                    "release_year": "2022",
+                    "notes": "16\" 2-in-1, Intel Arc discrete GPU",
+                    "display": "16\" OLED 3K+, 3072×1920, touch, 60Hz",
+                    "skus": [
+                        {
+                            "id": "16-f2013dx",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Arc A370M"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Spectre x360 13",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-8565U"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 620"
+                    ],
+                    "ram": [
+                        "16GB LPDDR3"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "60Wh, up to 16h",
+                    "ports": "2× Thunderbolt 3, USB-A, microSD",
+                    "weight": "1.32kg",
+                    "release_year": "2019",
+                    "notes": "Early OLED Spectre, gemcut design",
+                    "display": "13.3\" 4K OLED, 3840×2160, touch",
+                    "skus": [
+                        {
+                            "id": "13-ap0013dx",
+                            "cpu": [
+                                "Intel Core i7-8565U"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 620"
+                            ],
+                            "ram": [
+                                "16GB LPDDR3"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
                             ],
                             "os": [
                                 "Windows 11 Home"
@@ -2398,6 +5620,194 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Creator laptop, 4K display, RTX 3060",
                     "display": "16\" UHD+ IPS, 3840×2400, 120Hz, touch"
+                },
+                {
+                    "name": "HP Envy 13",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1165G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "12GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "51Wh, up to 17h",
+                    "ports": "2× USB-C, USB-A, HDMI, microSD",
+                    "weight": "1.3kg",
+                    "release_year": "2021",
+                    "notes": "Slim premium ultrabook",
+                    "display": "13.3\" FHD IPS, 1920×1080, touch",
+                    "skus": [
+                        {
+                            "id": "13-ba1047wm",
+                            "cpu": [
+                                "Intel Core i7-1165G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "12GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Envy x360 13.3",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 7530U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "66Wh, up to 17h",
+                    "ports": "USB-C 3.2, USB-A 3.2, HDMI 2.0, microSD",
+                    "weight": "1.35kg",
+                    "release_year": "2022",
+                    "notes": "2-in-1 OLED, Ryzen 5",
+                    "display": "13.3\" FHD OLED, 1920×1200, touch, 60Hz",
+                    "skus": [
+                        {
+                            "id": "13-bf0033dx",
+                            "cpu": [
+                                "AMD Ryzen 5 7530U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Envy x360 15.6",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1255U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "51Wh, up to 14h",
+                    "ports": "2× USB-C 3.2, 2× USB-A, HDMI, SD card",
+                    "weight": "1.98kg",
+                    "release_year": "2022",
+                    "notes": "2-in-1 convertible, mainstream",
+                    "display": "15.6\" FHD IPS, 1920×1080, touch",
+                    "skus": [
+                        {
+                            "id": "15-ew0013dx",
+                            "cpu": [
+                                "Intel Core i7-1255U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Envy 17",
+                    "screenSize": [
+                        "17.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-13700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4050"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "55Wh",
+                    "ports": "Thunderbolt 4, USB-A, USB-C, HDMI, SD card",
+                    "weight": "2.8kg",
+                    "release_year": "2023",
+                    "notes": "Large creator laptop",
+                    "display": "17.3\" FHD IPS, 1920×1080, touch",
+                    "skus": [
+                        {
+                            "id": "17-cw0013dx",
+                            "cpu": [
+                                "Intel Core i7-13700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4050"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -2494,7 +5904,148 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "weight": "1.36kg",
                     "release_year": "2023",
                     "notes": "Business flagship, MIL-SPEC, Wolf Security",
-                    "display": "14\" FHD IPS, 1920×1080, 400 nits, sure view"
+                    "display": "14\" FHD IPS, 1920×1080, 400 nits, HP Sure View"
+                },
+                {
+                    "name": "HP EliteBook 835 G10",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 7730U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 610M"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "51Wh, up to 14h",
+                    "ports": "2× USB-C 3.2, 2× USB-A, HDMI, RJ45, microSD",
+                    "weight": "1.25kg",
+                    "release_year": "2023",
+                    "notes": "AMD business laptop, MIL-SPEC",
+                    "display": "13.3\" FHD IPS, 1920×1080, 400 nits",
+                    "skus": [
+                        {
+                            "id": "819Y2UT#ABA",
+                            "cpu": [
+                                "AMD Ryzen 7 7730U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 610M"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP EliteBook 860 G10",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1365U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "76Wh, up to 18h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, RJ45",
+                    "weight": "1.78kg",
+                    "release_year": "2023",
+                    "notes": "16\" business, large battery",
+                    "display": "16\" WUXGA IPS, 1920×1200, 400 nits",
+                    "skus": [
+                        {
+                            "id": "819Y7UT#ABA",
+                            "cpu": [
+                                "Intel Core i7-1365U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP EliteBook 1040 G10",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1365U vPro"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "68Wh, up to 18h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, RJ45",
+                    "weight": "1.24kg",
+                    "release_year": "2023",
+                    "notes": "Premium business ultrabook, OLED 2.8K",
+                    "display": "14\" 2.8K OLED, 2800×1800, touch, 90Hz",
+                    "skus": [
+                        {
+                            "id": "819Y9UT#ABA",
+                            "cpu": [
+                                "Intel Core i7-1365U vPro"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -2625,6 +6176,190 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "AMD gaming laptop, OMEN lighting",
                     "display": "16.1\" QHD IPS, 2560×1440, 165Hz"
+                },
+                {
+                    "name": "HP Omen 15",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-11800H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3070"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "70Wh, up to 8h",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.24kg",
+                    "release_year": "2021",
+                    "notes": "Gaming mainstream, QHD 165Hz",
+                    "display": "15.6\" QHD IPS, 2560×1440, 165Hz",
+                    "skus": [
+                        {
+                            "id": "15-ek1073dx",
+                            "cpu": [
+                                "Intel Core i7-11800H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3070"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Omen 17",
+                    "screenSize": [
+                        "17.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-11900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "83Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.93kg",
+                    "release_year": "2021",
+                    "notes": "17\" gaming powerhouse",
+                    "display": "17.3\" QHD IPS, 2560×1440, 165Hz",
+                    "skus": [
+                        {
+                            "id": "17-ck0060nr",
+                            "cpu": [
+                                "Intel Core i9-11900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Omen Transcend 14",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 7 155H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070"
+                    ],
+                    "ram": [
+                        "32GB LPDDR5x"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "72Wh, up to 10h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, SD card",
+                    "weight": "1.85kg",
+                    "release_year": "2024",
+                    "notes": "Slim gaming with OLED, Meteor Lake",
+                    "display": "14\" 2.8K OLED, 2880×1800, 120Hz",
+                    "skus": [
+                        {
+                            "id": "14-fb0013dx",
+                            "cpu": [
+                                "Intel Core Ultra 7 155H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4070"
+                            ],
+                            "ram": [
+                                "32GB LPDDR5x"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Omen 45L Desktop",
+                    "cpu": [
+                        "Intel Core i9-12900K"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3090 Ti"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "5× USB-A, USB-C, HDMI, DP, RJ45",
+                    "weight": "14.5kg",
+                    "release_year": "2022",
+                    "notes": "Gaming tower, expandable, RGB",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "GT22-0024",
+                            "cpu": [
+                                "Intel Core i9-12900K"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3090 Ti"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -2777,6 +6512,96 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Mid-range mainstream, good value",
                     "display": "15.6\" FHD IPS, 1920×1080, 250 nits"
+                },
+                {
+                    "name": "HP Pavilion Desktop TP01",
+                    "cpu": [
+                        "AMD Ryzen 5 5600G"
+                    ],
+                    "gpu": [
+                        "AMD Radeon Vega 7 (integrated)"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, SD card, RJ45",
+                    "weight": "4.8kg",
+                    "release_year": "2022",
+                    "notes": "Budget desktop tower",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "TP01-3060z",
+                            "cpu": [
+                                "AMD Ryzen 5 5600G"
+                            ],
+                            "gpu": [
+                                "AMD Radeon Vega 7 (integrated)"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Pavilion 14",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1235U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "43Wh, up to 9h",
+                    "ports": "USB-C 3.2, 2× USB-A, HDMI, SD card",
+                    "weight": "1.46kg",
+                    "release_year": "2022",
+                    "notes": "Budget 14\" mainstream",
+                    "display": "14\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "14-dv2013dx",
+                            "cpu": [
+                                "Intel Core i5-1235U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -2833,6 +6658,53 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "ISV certified mobile workstation",
                     "display": "16\" 4K DreamColor IPS, 3840×2400, 120Hz"
+                },
+                {
+                    "name": "HP ZBook Studio G10",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 3000 Ada"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "96Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "2.1kg",
+                    "release_year": "2023",
+                    "notes": "Thin workstation, OLED 4K",
+                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch",
+                    "skus": [
+                        {
+                            "id": "7C6K3UT#ABA",
+                            "cpu": [
+                                "Intel Core i9-13900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 3000 Ada"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -2882,6 +6754,506 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "ECC memory, Xeon CPU, ISV certified",
                     "display": "None (external)"
+                }
+            ]
+        },
+        {
+            "name": "HP Victus",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "HP Victus 15",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 5600H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "70Wh, up to 8h",
+                    "ports": "3× USB-A, USB-C, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.29kg",
+                    "release_year": "2021",
+                    "notes": "Budget gaming, entry level",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "15-fb0047nr",
+                            "cpu": [
+                                "AMD Ryzen 5 5600H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Victus 16",
+                    "screenSize": [
+                        "16.1\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-11400H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050 Ti"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "70Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.48kg",
+                    "release_year": "2021",
+                    "notes": "Budget gaming 16\"",
+                    "display": "16.1\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "16-d0097nr",
+                            "cpu": [
+                                "Intel Core i5-11400H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050 Ti"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HP ENVY",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "HP ENVY Desktop TE02",
+                    "cpu": [
+                        "Intel Core i7-12700"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, SD card, RJ45",
+                    "weight": "8.6kg",
+                    "release_year": "2022",
+                    "notes": "Creator tower, RTX 3060",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "TE02-0030",
+                            "cpu": [
+                                "Intel Core i7-12700"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HP Z8",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "HP Z8 Fury G5 Workstation",
+                    "cpu": [
+                        "Intel Xeon W9-3475X"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 6000 Ada"
+                    ],
+                    "ram": [
+                        "64GB DDR5 ECC"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "8× USB-A, 4× USB-C, Thunderbolt 4, 2× DP, RJ45",
+                    "weight": "24.7kg",
+                    "release_year": "2023",
+                    "notes": "Dual CPU capable, max 2TB RAM, ultimate workstation",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "5F0R3UT#ABA",
+                            "cpu": [
+                                "Intel Xeon W9-3475X"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 6000 Ada"
+                            ],
+                            "ram": [
+                                "64GB DDR5 ECC"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HP ProBook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "HP ProBook 450 G10",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1335U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "45Wh, up to 10h",
+                    "ports": "2× USB-A, USB-C, HDMI, RJ45, SD card",
+                    "weight": "1.74kg",
+                    "release_year": "2023",
+                    "notes": "Budget SMB laptop",
+                    "display": "15.6\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "856J0UT#ABA",
+                            "cpu": [
+                                "Intel Core i5-1335U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP ProBook 440 G9",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1235U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "44Wh, up to 10h",
+                    "ports": "USB-A 3.2, USB-C, HDMI, RJ45, SD card",
+                    "weight": "1.38kg",
+                    "release_year": "$2022",
+                    "notes": "Thin business laptop",
+                    "display": "14\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "6A1X3UT#ABA",
+                            "cpu": [
+                                "Intel Core i5-1235U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HP Chromebook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "HP Chromebook x360 14c",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i3-1115G4"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics"
+                    ],
+                    "ram": [
+                        "8GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "128GB eMMC"
+                    ],
+                    "os": [
+                        "ChromeOS"
+                    ],
+                    "battery": "51.3Wh, up to 11h",
+                    "ports": "2× USB-C, 2× USB-A, microSD",
+                    "weight": "1.7kg",
+                    "release_year": "2021",
+                    "notes": "2-in-1 Chromebook",
+                    "display": "14\" FHD IPS, 1920×1080, touch",
+                    "skus": [
+                        {
+                            "id": "14c-cc0013dx",
+                            "cpu": [
+                                "Intel Core i3-1115G4"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics"
+                            ],
+                            "ram": [
+                                "8GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "128GB eMMC"
+                            ],
+                            "os": [
+                                "ChromeOS"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "HP Chromebook 14 G7",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Celeron N4500"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 600"
+                    ],
+                    "ram": [
+                        "4GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "32GB eMMC"
+                    ],
+                    "os": [
+                        "ChromeOS"
+                    ],
+                    "battery": "47.36Wh, up to 12h",
+                    "ports": "2× USB-C, 2× USB-A, microSD",
+                    "weight": "1.55kg",
+                    "release_year": "2021",
+                    "notes": "Budget education Chromebook",
+                    "display": "14\" HD IPS, 1366×768",
+                    "skus": [
+                        {
+                            "id": "3V2T0UT#ABA",
+                            "cpu": [
+                                "Intel Celeron N4500"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 600"
+                            ],
+                            "ram": [
+                                "4GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "32GB eMMC"
+                            ],
+                            "os": [
+                                "ChromeOS"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HP Dragonfly",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "HP Dragonfly Folio G3",
+                    "screenSize": [
+                        "13.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1265U vPro"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "65.7Wh, up to 18h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.38kg",
+                    "release_year": "2022",
+                    "notes": "Premium business 2-in-1, OLED",
+                    "display": "13.5\" 3K2K OLED, 3000×2000, touch",
+                    "skus": [
+                        {
+                            "id": "6B1N9UT#ABA",
+                            "cpu": [
+                                "Intel Core i7-1265U vPro"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HP Z2",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "HP Z2 Mini G9 Workstation",
+                    "cpu": [
+                        "Intel Core i9-13900K"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A2000 12GB"
+                    ],
+                    "ram": [
+                        "32GB DDR5 ECC"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C/TB4, DP, HDMI, RJ45",
+                    "weight": "2.2kg",
+                    "release_year": "2023",
+                    "notes": "Mini workstation, ISV certified",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "8D7S3UT#ABA",
+                            "cpu": [
+                                "Intel Core i9-13900K"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A2000 12GB"
+                            ],
+                            "ram": [
+                                "32GB DDR5 ECC"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         }
@@ -3341,6 +7713,53 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "OLED creator workstation, Dial knob",
                     "display": "16\" 4K OLED, 3840×2400, 60Hz, touch"
+                },
+                {
+                    "name": "ASUS ProArt Studiobook 16 OLED",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "96Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, HDMI, 3.5mm jack",
+                    "weight": "2.4kg",
+                    "release_year": "2022",
+                    "notes": "OLED creator, ASUS Dial, haptic touchpad",
+                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch",
+                    "skus": [
+                        {
+                            "id": "W7601ZW-XB96",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "64GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -3426,6 +7845,288 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2024",
                     "notes": "Ryzen AI, OLED display, fanless option",
                     "display": "14\" 3K OLED, 2880×1800, 120Hz, touch"
+                },
+                {
+                    "name": "ASUS ZenBook 13 OLED",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 5700U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "67Wh, up to 13h",
+                    "ports": "2× USB-C, USB-A, HDMI, microSD",
+                    "weight": "1.14kg",
+                    "release_year": "2021",
+                    "notes": "OLED panel, ultra-light",
+                    "display": "13.3\" OLED, 1920×1080, 60Hz, 550 nits",
+                    "skus": [
+                        {
+                            "id": "UM325UA-DS71",
+                            "cpu": [
+                                "AMD Ryzen 7 5700U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ZenBook 14 OLED",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "75Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI, microSD",
+                    "weight": "1.39kg",
+                    "release_year": "2022",
+                    "notes": "OLED, ASUS Pen support",
+                    "display": "14\" 2.8K OLED, 2880×1800, 90Hz",
+                    "skus": [
+                        {
+                            "id": "UX3402ZA-DS71",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ZenBook 14X OLED",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1165G7"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce MX450"
+                    ],
+                    "ram": [
+                        "16GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "63Wh, up to 14h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI, microSD",
+                    "weight": "1.4kg",
+                    "release_year": "2022",
+                    "notes": "OLED touch, discrete GPU",
+                    "display": "14\" 2.8K OLED, 2880×1800, 90Hz, touch",
+                    "skus": [
+                        {
+                            "id": "UX5400EG-DB74",
+                            "cpu": [
+                                "Intel Core i7-1165G7"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce MX450"
+                            ],
+                            "ram": [
+                                "16GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ZenBook Pro 14 Duo OLED",
+                    "screenSize": [
+                        "14.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050 Ti"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "76Wh, up to 10h",
+                    "ports": "2× Thunderbolt 4, USB-A, SD card",
+                    "weight": "1.7kg",
+                    "release_year": "2022",
+                    "notes": "Dual screen, ScreenPad Plus, unique design",
+                    "display": "14.5\" 2.8K OLED, 2880×1800, 120Hz + 12.7\" secondary",
+                    "skus": [
+                        {
+                            "id": "UX8402ZE-DB96",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050 Ti"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ZenBook Pro 16X OLED",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "96Wh, up to 10h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, SD card, HDMI 2.0b",
+                    "weight": "2.4kg",
+                    "release_year": "2022",
+                    "notes": "4K OLED, haptic touchpad, ASUS Dial",
+                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch",
+                    "skus": [
+                        {
+                            "id": "UX7602ZM-DB96",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ZenBook Duo 14 UX482",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1135G7"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce MX450"
+                    ],
+                    "ram": [
+                        "8GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "70Wh, up to 11h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI, microSD",
+                    "weight": "1.62kg",
+                    "release_year": "2021",
+                    "notes": "Dual screen, secondary ScreenPad Plus",
+                    "display": "14\" FHD IPS, 1920×1080 + 12.6\" secondary ScreenPad",
+                    "skus": [
+                        {
+                            "id": "UX482EG-KA183T",
+                            "cpu": [
+                                "Intel Core i5-1135G7"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce MX450"
+                            ],
+                            "ram": [
+                                "8GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -3482,6 +8183,100 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Mainstream budget laptop, good everyday performance",
                     "display": "15.6\" FHD IPS, 1920×1080, 250 nits"
+                },
+                {
+                    "name": "ASUS VivoBook 15 OLED",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 5600H"
+                    ],
+                    "gpu": [
+                        "AMD Radeon Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "50Wh, up to 10h",
+                    "ports": "USB-C 3.2, 2× USB-A, HDMI, SD card",
+                    "weight": "1.8kg",
+                    "release_year": "2022",
+                    "notes": "OLED budget laptop",
+                    "display": "15.6\" OLED, 1920×1080, 60Hz, 600 nits",
+                    "skus": [
+                        {
+                            "id": "M1503QA-L1129W",
+                            "cpu": [
+                                "AMD Ryzen 5 5600H"
+                            ],
+                            "gpu": [
+                                "AMD Radeon Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS VivoBook 14 OLED K3405",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-13700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "70Wh, up to 14h",
+                    "ports": "USB-C 3.2, 2× USB-A, HDMI, SD card",
+                    "weight": "1.5kg",
+                    "release_year": "2023",
+                    "notes": "OLED mid-range, 120Hz",
+                    "display": "14\" 2.8K OLED, 2880×1800, 120Hz",
+                    "skus": [
+                        {
+                            "id": "K3405VC-EB74",
+                            "cpu": [
+                                "Intel Core i7-13700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -3631,6 +8426,100 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "ASUS ROG Zephyrus G14 2023",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 7940HS"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4080"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh, up to 10h",
+                    "ports": "2× USB-C, 2× USB-A, HDMI 2.0b, SD card",
+                    "weight": "1.72kg",
+                    "release_year": "2023",
+                    "notes": "AniMe Matrix LED panel, MiniLED display",
+                    "display": "14\" QHD+ IPS, 2560×1600, 165Hz",
+                    "skus": [
+                        {
+                            "id": "GA402XV-HYI9065W",
+                            "cpu": [
+                                "AMD Ryzen 9 7940HS"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4080"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ROG Zephyrus M16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-11900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI 2.0b, SD card",
+                    "weight": "1.9kg",
+                    "release_year": "2021",
+                    "notes": "Slim 16\" gaming, narrow bezels",
+                    "display": "16\" WQXGA IPS, 2560×1600, 165Hz",
+                    "skus": [
+                        {
+                            "id": "GU603HM-K8016T",
+                            "cpu": [
+                                "Intel Core i9-11900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -3684,6 +8573,194 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "ASUS ROG Strix G15 G513",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 5900HX"
+                    ],
+                    "gpu": [
+                        "AMD Radeon RX 6800M"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0b, RJ45",
+                    "weight": "2.3kg",
+                    "release_year": "2021",
+                    "notes": "AMD advantage, strong AMD GPU",
+                    "display": "15.6\" QHD IPS, 2560×1440, 165Hz",
+                    "skus": [
+                        {
+                            "id": "G513QY-HF006W",
+                            "cpu": [
+                                "AMD Ryzen 9 5900HX"
+                            ],
+                            "gpu": [
+                                "AMD Radeon RX 6800M"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ROG Strix G16 2024",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-14900HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4080"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.5kg",
+                    "release_year": "2024",
+                    "notes": "240Hz gaming, top-tier performance",
+                    "display": "16\" QHD+ IPS, 2560×1600, 240Hz",
+                    "skus": [
+                        {
+                            "id": "G614JZR-DS96",
+                            "cpu": [
+                                "Intel Core i9-14900HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4080"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ROG Strix G15 G513RW",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 6900HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3070 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0b, RJ45",
+                    "weight": "2.3kg",
+                    "release_year": "2022",
+                    "notes": "240Hz QHD gaming",
+                    "display": "15.6\" WQHD IPS, 2560×1440, 240Hz",
+                    "skus": [
+                        {
+                            "id": "G513RW-HF130W",
+                            "cpu": [
+                                "AMD Ryzen 9 6900HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3070 Ti"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ROG Strix G17 G713",
+                    "screenSize": [
+                        "17.3\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 5980HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080"
+                    ],
+                    "ram": [
+                        "32GB DDR4"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0b, RJ45",
+                    "weight": "2.6kg",
+                    "release_year": "2021",
+                    "notes": "17\" AMD gaming powerhouse",
+                    "display": "17.3\" QHD IPS, 2560×1440, 165Hz",
+                    "skus": [
+                        {
+                            "id": "G713QS-HG028",
+                            "cpu": [
+                                "AMD Ryzen 9 5980HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080"
+                            ],
+                            "ram": [
+                                "32GB DDR4"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -3730,6 +8807,549 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "os": [
                                 "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ASUS ROG",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "ASUS ROG Flow X13",
+                    "screenSize": [
+                        "13.4\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 6900HS"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "75Wh, up to 10h",
+                    "ports": "USB-C/TB4, USB-A, HDMI 2.0b, microSD",
+                    "weight": "1.35kg",
+                    "release_year": "2022",
+                    "notes": "2-in-1 gaming, eGPU compatible",
+                    "display": "13.4\" QHD+ IPS, 2560×1600, 120Hz, touch",
+                    "skus": [
+                        {
+                            "id": "GV301RC-DS94",
+                            "cpu": [
+                                "AMD Ryzen 9 6900HS"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050 Ti"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ROG Flow X16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 7940HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4050"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "USB-C/TB4, 2× USB-A, SD card, HDMI 2.0b",
+                    "weight": "2.1kg",
+                    "release_year": "2023",
+                    "notes": "16\" 2-in-1 gaming, tent/tablet mode",
+                    "display": "16\" QHD+ IPS, 2560×1600, 165Hz, touch",
+                    "skus": [
+                        {
+                            "id": "GV601VU-BS94",
+                            "cpu": [
+                                "AMD Ryzen 9 7940HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4050"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ROG Ally",
+                    "screenSize": [
+                        "7\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen Z1 Extreme"
+                    ],
+                    "gpu": [
+                        "AMD RDNA 3 graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "40Wh, up to 2h gaming",
+                    "ports": "USB-C/Thunderbolt 4, microSD",
+                    "weight": "0.608kg",
+                    "release_year": "2023",
+                    "notes": "Handheld gaming PC, XG Mobile eGPU compatible",
+                    "display": "7\" FHD IPS, 1920×1080, 120Hz, touch",
+                    "skus": [
+                        {
+                            "id": "RC71L-NH001W",
+                            "cpu": [
+                                "AMD Ryzen Z1 Extreme"
+                            ],
+                            "gpu": [
+                                "AMD RDNA 3 graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ROG Ally X",
+                    "screenSize": [
+                        "7\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen Z1 Extreme"
+                    ],
+                    "gpu": [
+                        "AMD RDNA 3 graphics"
+                    ],
+                    "ram": [
+                        "24GB LPDDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh, up to 3h gaming",
+                    "ports": "USB-C/Thunderbolt 4, microSD",
+                    "weight": "0.678kg",
+                    "release_year": "2024",
+                    "notes": "24GB RAM, larger battery, ROG Ally upgrade",
+                    "display": "7\" FHD IPS, 1920×1080, 120Hz, touch",
+                    "skus": [
+                        {
+                            "id": "RC72LA-NH001W",
+                            "cpu": [
+                                "AMD Ryzen Z1 Extreme"
+                            ],
+                            "gpu": [
+                                "AMD RDNA 3 graphics"
+                            ],
+                            "ram": [
+                                "24GB LPDDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ASUS TUF",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "ASUS TUF Gaming A15 FA507",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 7940HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh, up to 9h",
+                    "ports": "3× USB-A, USB-C, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.2kg",
+                    "release_year": "2023",
+                    "notes": "MIL-SPEC, RTX 4060 gaming",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "FA507XV-LP020W",
+                            "cpu": [
+                                "AMD Ryzen 9 7940HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS TUF Gaming F15",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-12500H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh, up to 8h",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0b, RJ45",
+                    "weight": "2.2kg",
+                    "release_year": "2022",
+                    "notes": "Budget gaming, MIL-SPEC",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "FX507ZC4-HN218W",
+                            "cpu": [
+                                "Intel Core i5-12500H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS TUF Gaming A16 Advantage",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 7735HS"
+                    ],
+                    "gpu": [
+                        "AMD Radeon RX 7600S"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0b, RJ45",
+                    "weight": "2.3kg",
+                    "release_year": "2023",
+                    "notes": "AMD Advantage, good gaming value",
+                    "display": "16\" WUXGA IPS, 1920×1200, 165Hz",
+                    "skus": [
+                        {
+                            "id": "FA617NS-DS74",
+                            "cpu": [
+                                "AMD Ryzen 7 7735HS"
+                            ],
+                            "gpu": [
+                                "AMD Radeon RX 7600S"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS TUF Gaming F17",
+                    "screenSize": [
+                        "17.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-11400H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 2050"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0b, RJ45",
+                    "weight": "2.6kg",
+                    "release_year": "2021",
+                    "notes": "17\" budget gaming",
+                    "display": "17.3\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "FX706HF-ES53",
+                            "cpu": [
+                                "Intel Core i5-11400H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 2050"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ASUS ExpertBook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "ASUS ExpertBook B9 B9403",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 7 165U"
+                    ],
+                    "gpu": [
+                        "Intel Graphics"
+                    ],
+                    "ram": [
+                        "32GB LPDDR5X"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "75Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI, SD card",
+                    "weight": "0.88kg",
+                    "release_year": "2024",
+                    "notes": "Ultralight business, 880g only",
+                    "display": "14\" 2.8K OLED, 2880×1800, 120Hz",
+                    "skus": [
+                        {
+                            "id": "B9403CVY-KM0088X",
+                            "cpu": [
+                                "Intel Core Ultra 7 165U"
+                            ],
+                            "gpu": [
+                                "Intel Graphics"
+                            ],
+                            "ram": [
+                                "32GB LPDDR5X"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ASUS NUC",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "ASUS NUC 14 Pro",
+                    "cpu": [
+                        "Intel Core Ultra 7 155H"
+                    ],
+                    "gpu": [
+                        "Intel Arc Graphics"
+                    ],
+                    "ram": [
+                        "None (user-installed, up to 96GB DDR5)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (barebones)"
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45, SD card",
+                    "weight": "0.73kg",
+                    "release_year": "2024",
+                    "notes": "ASUS takes over NUC brand, Meteor Lake",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "RNUC14RVSU700000I",
+                            "cpu": [
+                                "Intel Core Ultra 7 155H"
+                            ],
+                            "gpu": [
+                                "Intel Arc Graphics"
+                            ],
+                            "ram": [
+                                "None (user-installed, up to 96GB DDR5)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (barebones)"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ASUS Chromebook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "ASUS Chromebook Flip CX5",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i3-1110G4"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics"
+                    ],
+                    "ram": [
+                        "8GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "128GB NVMe SSD"
+                    ],
+                    "os": [
+                        "ChromeOS"
+                    ],
+                    "battery": "57Wh, up to 10h",
+                    "ports": "2× Thunderbolt 4, USB-A, microSD",
+                    "weight": "1.92kg",
+                    "release_year": "2021",
+                    "notes": "15\" 2-in-1 Chromebook",
+                    "display": "15.6\" FHD IPS, 1920×1080, touch",
+                    "skus": [
+                        {
+                            "id": "CX5500FEA-E60080",
+                            "cpu": [
+                                "Intel Core i3-1110G4"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics"
+                            ],
+                            "ram": [
+                                "8GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "128GB NVMe SSD"
+                            ],
+                            "os": [
+                                "ChromeOS"
                             ]
                         }
                     ]
@@ -4109,6 +9729,241 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2024",
                     "notes": "Wi-Fi 6E, supports dual external displays",
                     "display": "15.3\" Liquid Retina, 2880×1864, 500 nits"
+                },
+                {
+                    "name": "Apple MacBook Air 13 M1 8GB/512GB",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Apple M1, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 8-core GPU"
+                    ],
+                    "ram": [
+                        "8GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Big Sur"
+                    ],
+                    "battery": "49.9Wh, up to 18h",
+                    "ports": "2× Thunderbolt 3/USB4, 3.5mm jack",
+                    "weight": "1.29kg",
+                    "release_year": "2020",
+                    "notes": "Upgraded storage, 8-core GPU",
+                    "display": "13.3\" Retina IPS, 2560×1600, 400 nits",
+                    "skus": [
+                        {
+                            "id": "MGNA3LL/A",
+                            "cpu": [
+                                "Apple M1, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 8-core GPU"
+                            ],
+                            "ram": [
+                                "8GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Big Sur"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Air 13 M2 16GB",
+                    "screenSize": [
+                        "13.6\""
+                    ],
+                    "cpu": [
+                        "Apple M2, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 10-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "battery": "52.6Wh, up to 18h",
+                    "ports": "2× Thunderbolt 3, MagSafe 3, 3.5mm jack",
+                    "weight": "1.24kg",
+                    "release_year": "2022",
+                    "notes": "16GB RAM config, 10-core GPU",
+                    "display": "13.6\" Liquid Retina, 2560×1664, 500 nits",
+                    "skus": [
+                        {
+                            "id": "MQKP3LL/A",
+                            "cpu": [
+                                "Apple M2, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 10-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Air 13 M3 16GB",
+                    "screenSize": [
+                        "13.6\""
+                    ],
+                    "cpu": [
+                        "Apple M3, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M3 10-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sonoma"
+                    ],
+                    "battery": "52.6Wh, up to 18h",
+                    "ports": "2× Thunderbolt 3, MagSafe 3, 3.5mm jack",
+                    "weight": "1.24kg",
+                    "release_year": "2024",
+                    "notes": "16GB M3, dual external displays",
+                    "display": "13.6\" Liquid Retina, 2560×1664, 500 nits",
+                    "skus": [
+                        {
+                            "id": "MXD33LL/A",
+                            "cpu": [
+                                "Apple M3, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M3 10-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sonoma"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Air 15 M2 16GB",
+                    "screenSize": [
+                        "15.3\""
+                    ],
+                    "cpu": [
+                        "Apple M2, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 10-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "battery": "66.5Wh, up to 18h",
+                    "ports": "2× Thunderbolt 3, MagSafe 3, 3.5mm jack",
+                    "weight": "1.51kg",
+                    "release_year": "2023",
+                    "notes": "16GB config for power users",
+                    "display": "15.3\" Liquid Retina, 2880×1864, 500 nits",
+                    "skus": [
+                        {
+                            "id": "MQKR3LL/A",
+                            "cpu": [
+                                "Apple M2, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 10-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Air 15 M3 16GB",
+                    "screenSize": [
+                        "15.3\""
+                    ],
+                    "cpu": [
+                        "Apple M3, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M3 10-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sonoma"
+                    ],
+                    "battery": "66.5Wh, up to 18h",
+                    "ports": "2× Thunderbolt 3, MagSafe 3, 3.5mm jack",
+                    "weight": "1.51kg",
+                    "release_year": "2024",
+                    "notes": "16GB M3 15-inch",
+                    "display": "15.3\" Liquid Retina, 2880×1864, 500 nits",
+                    "skus": [
+                        {
+                            "id": "MXD23LL/A",
+                            "cpu": [
+                                "Apple M3, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M3 10-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sonoma"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -4359,7 +10214,7 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "weight": "1.55kg",
                     "release_year": "2023",
                     "notes": "Mini-LED XDR display, first M3 MacBook Pro",
-                    "display": "14.2\" Liquid Retina XDR, 3024×1964, 1000 nits, ProMotion 120Hz"
+                    "display": "14.2\" Liquid Retina XDR, 3024×1964, ProMotion 120Hz, 1000 nits"
                 },
                 {
                     "name": "Apple MacBook Pro 14 M3 Pro",
@@ -4560,6 +10415,570 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Up to 128GB RAM, ultimate pro performance",
                     "display": "16.2\" Liquid Retina XDR, 3456×2234, ProMotion 120Hz"
+                },
+                {
+                    "name": "Apple MacBook Pro 13 M2",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Apple M2, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 10-core GPU"
+                    ],
+                    "ram": [
+                        "8GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "battery": "58.2Wh, up to 20h",
+                    "ports": "2× Thunderbolt 4, 3.5mm jack",
+                    "weight": "1.4kg",
+                    "release_year": "2022",
+                    "notes": "Last Touch Bar model, M2 chip",
+                    "display": "13.3\" Retina IPS, 2560×1600, 500 nits, Touch Bar",
+                    "skus": [
+                        {
+                            "id": "MNEP3LL/A",
+                            "cpu": [
+                                "Apple M2, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 10-core GPU"
+                            ],
+                            "ram": [
+                                "8GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 14 M4",
+                    "screenSize": [
+                        "14.2\""
+                    ],
+                    "cpu": [
+                        "Apple M4, 10-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M4 10-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sequoia"
+                    ],
+                    "battery": "72Wh, up to 24h",
+                    "ports": "3× Thunderbolt 4, HDMI 2.1, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "1.55kg",
+                    "release_year": "2024",
+                    "notes": "M4 debut, starts at 16GB, Neural Engine upgrade",
+                    "display": "14.2\" Liquid Retina XDR, 3024×1964, ProMotion 120Hz, 1000 nits",
+                    "skus": [
+                        {
+                            "id": "MX2D3LL/A",
+                            "cpu": [
+                                "Apple M4, 10-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M4 10-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sequoia"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 14 M4 Pro",
+                    "screenSize": [
+                        "14.2\""
+                    ],
+                    "cpu": [
+                        "Apple M4 Pro, 14-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M4 Pro 20-core GPU"
+                    ],
+                    "ram": [
+                        "24GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sequoia"
+                    ],
+                    "battery": "72Wh, up to 24h",
+                    "ports": "3× Thunderbolt 5, HDMI 2.1, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "1.62kg",
+                    "release_year": "2024",
+                    "notes": "Thunderbolt 5, up to 96GB RAM",
+                    "display": "14.2\" Liquid Retina XDR, 3024×1964, ProMotion 120Hz",
+                    "skus": [
+                        {
+                            "id": "MX2Y3LL/A",
+                            "cpu": [
+                                "Apple M4 Pro, 14-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M4 Pro 20-core GPU"
+                            ],
+                            "ram": [
+                                "24GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sequoia"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 14 M4 Max",
+                    "screenSize": [
+                        "14.2\""
+                    ],
+                    "cpu": [
+                        "Apple M4 Max, 16-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M4 Max 40-core GPU"
+                    ],
+                    "ram": [
+                        "48GB Unified Memory"
+                    ],
+                    "storage": [
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "macOS Sequoia"
+                    ],
+                    "battery": "72Wh, up to 24h",
+                    "ports": "3× Thunderbolt 5, HDMI 2.1, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "1.62kg",
+                    "release_year": "2024",
+                    "notes": "Up to 128GB RAM, Thunderbolt 5",
+                    "display": "14.2\" Liquid Retina XDR, 3024×1964, ProMotion 120Hz",
+                    "skus": [
+                        {
+                            "id": "MX323LL/A",
+                            "cpu": [
+                                "Apple M4 Max, 16-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M4 Max 40-core GPU"
+                            ],
+                            "ram": [
+                                "48GB Unified Memory"
+                            ],
+                            "storage": [
+                                "1TB SSD"
+                            ],
+                            "os": [
+                                "macOS Sequoia"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 16 M4 Pro",
+                    "screenSize": [
+                        "16.2\""
+                    ],
+                    "cpu": [
+                        "Apple M4 Pro, 14-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M4 Pro 20-core GPU"
+                    ],
+                    "ram": [
+                        "24GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sequoia"
+                    ],
+                    "battery": "88Wh, up to 24h",
+                    "ports": "3× Thunderbolt 5, HDMI 2.1, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "2.14kg",
+                    "release_year": "2024",
+                    "notes": "Thunderbolt 5, M4 Pro upgrade",
+                    "display": "16.2\" Liquid Retina XDR, 3456×2234, ProMotion 120Hz",
+                    "skus": [
+                        {
+                            "id": "MX2U3LL/A",
+                            "cpu": [
+                                "Apple M4 Pro, 14-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M4 Pro 20-core GPU"
+                            ],
+                            "ram": [
+                                "24GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sequoia"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 16 M4 Max",
+                    "screenSize": [
+                        "16.2\""
+                    ],
+                    "cpu": [
+                        "Apple M4 Max, 16-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M4 Max 40-core GPU"
+                    ],
+                    "ram": [
+                        "48GB Unified Memory"
+                    ],
+                    "storage": [
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "macOS Sequoia"
+                    ],
+                    "battery": "88Wh, up to 24h",
+                    "ports": "3× Thunderbolt 5, HDMI 2.1, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "2.15kg",
+                    "release_year": "2024",
+                    "notes": "Up to 128GB RAM, TB5",
+                    "display": "16.2\" Liquid Retina XDR, 3456×2234, ProMotion 120Hz",
+                    "skus": [
+                        {
+                            "id": "MX353LL/A",
+                            "cpu": [
+                                "Apple M4 Max, 16-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M4 Max 40-core GPU"
+                            ],
+                            "ram": [
+                                "48GB Unified Memory"
+                            ],
+                            "storage": [
+                                "1TB SSD"
+                            ],
+                            "os": [
+                                "macOS Sequoia"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 13 M1",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Apple M1, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 8-core GPU"
+                    ],
+                    "ram": [
+                        "8GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Big Sur"
+                    ],
+                    "battery": "58.2Wh, up to 20h",
+                    "ports": "2× Thunderbolt 4, 3.5mm jack",
+                    "weight": "1.4kg",
+                    "release_year": "2020",
+                    "notes": "M1 Pro with Touch Bar",
+                    "display": "13.3\" Retina IPS, 2560×1600, 500 nits, Touch Bar",
+                    "skus": [
+                        {
+                            "id": "MYD82LL/A",
+                            "cpu": [
+                                "Apple M1, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 8-core GPU"
+                            ],
+                            "ram": [
+                                "8GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Big Sur"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 14 M1 Pro",
+                    "screenSize": [
+                        "14.2\""
+                    ],
+                    "cpu": [
+                        "Apple M1 Pro, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 Pro 14-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Monterey"
+                    ],
+                    "battery": "69.6Wh, up to 17h",
+                    "ports": "3× Thunderbolt 4, HDMI, SD card, MagSafe 3",
+                    "weight": "1.6kg",
+                    "release_year": "2021",
+                    "notes": "First 14\" Pro, new design, MagSafe return",
+                    "display": "14.2\" Liquid Retina XDR, 3024×1964, 120Hz, ProMotion",
+                    "skus": [
+                        {
+                            "id": "MKGP3LL/A",
+                            "cpu": [
+                                "Apple M1 Pro, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 Pro 14-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Monterey"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 16 M1 Pro",
+                    "screenSize": [
+                        "16.2\""
+                    ],
+                    "cpu": [
+                        "Apple M1 Pro, 10-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 Pro 16-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Monterey"
+                    ],
+                    "battery": "99.6Wh, up to 21h",
+                    "ports": "3× Thunderbolt 4, HDMI, SD card, MagSafe 3",
+                    "weight": "2.15kg",
+                    "release_year": "2021",
+                    "notes": "Notch design, ports return",
+                    "display": "16.2\" Liquid Retina XDR, 3456×2234, 120Hz ProMotion",
+                    "skus": [
+                        {
+                            "id": "MK183LL/A",
+                            "cpu": [
+                                "Apple M1 Pro, 10-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 Pro 16-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Monterey"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 16 M1 Max",
+                    "screenSize": [
+                        "16.2\""
+                    ],
+                    "cpu": [
+                        "Apple M1 Max, 10-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 Max 32-core GPU"
+                    ],
+                    "ram": [
+                        "32GB Unified Memory"
+                    ],
+                    "storage": [
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "macOS Monterey"
+                    ],
+                    "battery": "99.6Wh, up to 21h",
+                    "ports": "3× Thunderbolt 4, HDMI, SD card, MagSafe 3",
+                    "weight": "2.15kg",
+                    "release_year": "2021",
+                    "notes": "M1 Max debut, incredible GPU",
+                    "display": "16.2\" Liquid Retina XDR, 3456×2234, 120Hz ProMotion",
+                    "skus": [
+                        {
+                            "id": "MK1H3LL/A",
+                            "cpu": [
+                                "Apple M1 Max, 10-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 Max 32-core GPU"
+                            ],
+                            "ram": [
+                                "32GB Unified Memory"
+                            ],
+                            "storage": [
+                                "1TB SSD"
+                            ],
+                            "os": [
+                                "macOS Monterey"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 14 M2 Pro",
+                    "screenSize": [
+                        "14.2\""
+                    ],
+                    "cpu": [
+                        "Apple M2 Pro, 10-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 Pro 16-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "battery": "69.6Wh, up to 18h",
+                    "ports": "3× Thunderbolt 4, HDMI 2.1, SD card, MagSafe 3",
+                    "weight": "1.63kg",
+                    "release_year": "2023",
+                    "notes": "M2 Pro upgrade to 14\"",
+                    "display": "14.2\" Liquid Retina XDR, 3024×1964, 120Hz ProMotion",
+                    "skus": [
+                        {
+                            "id": "MPHJ3LL/A",
+                            "cpu": [
+                                "Apple M2 Pro, 10-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 Pro 16-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple MacBook Pro 16 M2 Pro",
+                    "screenSize": [
+                        "16.2\""
+                    ],
+                    "cpu": [
+                        "Apple M2 Pro, 12-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 Pro 19-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "battery": "100Wh, up to 22h",
+                    "ports": "3× Thunderbolt 4, HDMI 2.1, SD card, MagSafe 3",
+                    "weight": "2.15kg",
+                    "release_year": "2023",
+                    "notes": "M2 Pro 16-inch",
+                    "display": "16.2\" Liquid Retina XDR, 3456×2234, 120Hz ProMotion",
+                    "skus": [
+                        {
+                            "id": "MNWC3LL/A",
+                            "cpu": [
+                                "Apple M2 Pro, 12-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 Pro 19-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -4705,6 +11124,135 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Supports up to 3 external displays",
                     "display": "None (external)"
+                },
+                {
+                    "name": "Apple Mac Mini M4",
+                    "cpu": [
+                        "Apple M4, 10-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M4 10-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sequoia"
+                    ],
+                    "ports": "3× Thunderbolt 4, 2× USB-A, HDMI 2.1, Ethernet, 3.5mm jack",
+                    "weight": "0.67kg",
+                    "release_year": "2024",
+                    "notes": "Smallest Mac Mini ever, redesigned, M4",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MQXN3LL/A",
+                            "cpu": [
+                                "Apple M4, 10-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M4 10-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sequoia"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple Mac Mini M4 Pro",
+                    "cpu": [
+                        "Apple M4 Pro, 14-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M4 Pro 20-core GPU"
+                    ],
+                    "ram": [
+                        "24GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sequoia"
+                    ],
+                    "ports": "3× Thunderbolt 5, 2× USB-A, HDMI 2.1, Ethernet, 3.5mm jack",
+                    "weight": "0.67kg",
+                    "release_year": "2024",
+                    "notes": "M4 Pro, Thunderbolt 5, tiny form factor",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MQXP3LL/A",
+                            "cpu": [
+                                "Apple M4 Pro, 14-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M4 Pro 20-core GPU"
+                            ],
+                            "ram": [
+                                "24GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sequoia"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple Mac Mini M1",
+                    "cpu": [
+                        "Apple M1, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 8-core GPU"
+                    ],
+                    "ram": [
+                        "8GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Big Sur"
+                    ],
+                    "ports": "2× Thunderbolt 3, 2× USB-A, HDMI 2.0, Ethernet, 3.5mm jack",
+                    "weight": "1.19kg",
+                    "release_year": "2020",
+                    "notes": "First Apple Silicon Mac Mini",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MGNR3LL/A",
+                            "cpu": [
+                                "Apple M1, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 8-core GPU"
+                            ],
+                            "ram": [
+                                "8GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Big Sur"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -4818,6 +11366,92 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Compact pro desktop, supports 5 external displays",
                     "display": "None (external)"
+                },
+                {
+                    "name": "Apple Mac Studio M2 Ultra",
+                    "cpu": [
+                        "Apple M2 Ultra, 24-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 Ultra 60-core GPU"
+                    ],
+                    "ram": [
+                        "64GB Unified Memory"
+                    ],
+                    "storage": [
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "ports": "2× Thunderbolt 4 (front), 4× Thunderbolt 4 (rear), 2× USB-A, HDMI, SD card, Ethernet",
+                    "weight": "2.69kg",
+                    "release_year": "2023",
+                    "notes": "Up to 192GB RAM, ultimate compact pro",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MQHX3LL/A",
+                            "cpu": [
+                                "Apple M2 Ultra, 24-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 Ultra 60-core GPU"
+                            ],
+                            "ram": [
+                                "64GB Unified Memory"
+                            ],
+                            "storage": [
+                                "1TB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple Mac Studio M1 Max",
+                    "cpu": [
+                        "Apple M1 Max, 10-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 Max 24-core GPU"
+                    ],
+                    "ram": [
+                        "32GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Monterey"
+                    ],
+                    "ports": "2× Thunderbolt 4 (front), 4× Thunderbolt 4 (rear), 2× USB-A, HDMI, SD card",
+                    "weight": "2.69kg",
+                    "release_year": "2022",
+                    "notes": "First Mac Studio, new compact pro",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MJMV3LL/A",
+                            "cpu": [
+                                "Apple M1 Max, 10-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 Max 24-core GPU"
+                            ],
+                            "ram": [
+                                "32GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Monterey"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -4914,6 +11548,98 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "7mm thin, available in 7 colors",
                     "display": "24\" 4.5K Retina, 4480×2520, 500 nits, True Tone"
+                },
+                {
+                    "name": "Apple iMac 24 M3 16GB",
+                    "screenSize": [
+                        "24\""
+                    ],
+                    "cpu": [
+                        "Apple M3, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M3 10-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sonoma"
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-C, 2× USB-A, MagSafe",
+                    "weight": "4.48kg",
+                    "release_year": "2023",
+                    "notes": "16GB config, Magic accessories included",
+                    "display": "24\" 4.5K Retina, 4480×2520, 500 nits",
+                    "skus": [
+                        {
+                            "id": "MQRV3LL/A",
+                            "cpu": [
+                                "Apple M3, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M3 10-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sonoma"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple iMac 24 M1",
+                    "screenSize": [
+                        "24\""
+                    ],
+                    "cpu": [
+                        "Apple M1, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 8-core GPU"
+                    ],
+                    "ram": [
+                        "8GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Big Sur"
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-C, MagSafe",
+                    "weight": "4.48kg",
+                    "release_year": "2021",
+                    "notes": "7mm thin, 7 colors, first Apple Silicon iMac",
+                    "display": "24\" 4.5K Retina, 4480×2520, 500 nits, True Tone",
+                    "skus": [
+                        {
+                            "id": "MGPK3LL/A",
+                            "cpu": [
+                                "Apple M1, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 8-core GPU"
+                            ],
+                            "ram": [
+                                "8GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Big Sur"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -5131,6 +11857,100 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Top gaming performance, RGB keyboard",
                     "display": "17\" QHD+ IPS, 2560×1600, 240Hz"
+                },
+                {
+                    "name": "MSI Raider GE76",
+                    "screenSize": [
+                        "17.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080 Ti"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, mini DP, RJ45, SD card",
+                    "weight": "2.9kg",
+                    "release_year": "2022",
+                    "notes": "17\" gaming, 4K display",
+                    "display": "17.3\" UHD IPS, 3840×2160, 120Hz",
+                    "skus": [
+                        {
+                            "id": "12UHS-256",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080 Ti"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "MSI GE75 Raider",
+                    "screenSize": [
+                        "17.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-10750H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 2070 Super"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "65Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0, RJ45, SD card",
+                    "weight": "2.95kg",
+                    "release_year": "2020",
+                    "notes": "240Hz gaming display",
+                    "display": "17.3\" FHD IPS, 1920×1080, 240Hz",
+                    "skus": [
+                        {
+                            "id": "10SF-029",
+                            "cpu": [
+                                "Intel Core i7-10750H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 2070 Super"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -5330,6 +12150,677 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Creator laptop, touch display, stylus support",
                     "display": "16\" QHD+ IPS, 2560×1600, 165Hz, touch"
+                },
+                {
+                    "name": "MSI Creator M16 B12V",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12650H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "2× USB-C, 3× USB-A, HDMI 2.0, SD card",
+                    "weight": "2.15kg",
+                    "release_year": "2023",
+                    "notes": "Creator mid-range, QHD gaming-grade screen",
+                    "display": "16\" QHD IPS, 2560×1600, 165Hz",
+                    "skus": [
+                        {
+                            "id": "B12VE-046",
+                            "cpu": [
+                                "Intel Core i7-12650H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI Stealth",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI Stealth 15M",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-11375H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "52.4Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.0, RJ45",
+                    "weight": "1.8kg",
+                    "release_year": "2021",
+                    "notes": "Ultra-slim gaming, 16.5mm thin",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "A11UEK-052",
+                            "cpu": [
+                                "Intel Core i7-11375H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "MSI Stealth 16 Studio",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1",
+                    "weight": "2.15kg",
+                    "release_year": "2023",
+                    "notes": "Creator/gaming hybrid, slim design",
+                    "display": "16\" QHD+ IPS, 2560×1600, 240Hz",
+                    "skus": [
+                        {
+                            "id": "A13VF-225",
+                            "cpu": [
+                                "Intel Core i9-13900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4060"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI GS66",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI GS66 Stealth",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-11900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080"
+                    ],
+                    "ram": [
+                        "32GB DDR4"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.0, RJ45, SD card",
+                    "weight": "2.1kg",
+                    "release_year": "2021",
+                    "notes": "Slim premium gaming",
+                    "display": "15.6\" QHD IPS, 2560×1440, 165Hz",
+                    "skus": [
+                        {
+                            "id": "11UH-021",
+                            "cpu": [
+                                "Intel Core i9-11900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080"
+                            ],
+                            "ram": [
+                                "32GB DDR4"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI Prestige",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI Prestige 14 Evo",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1280P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "72Wh, up to 18h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI 2.0",
+                    "weight": "1.29kg",
+                    "release_year": "$2022",
+                    "notes": "Premium business ultrabook",
+                    "display": "14\" FHD+ IPS, 1920×1200, 300 nits",
+                    "skus": [
+                        {
+                            "id": "A12M-021",
+                            "cpu": [
+                                "Intel Core i7-1280P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "MSI Prestige 16 AI Evo",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 7 155H"
+                    ],
+                    "gpu": [
+                        "Intel Arc Graphics"
+                    ],
+                    "ram": [
+                        "32GB LPDDR5X"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI 2.0",
+                    "weight": "1.69kg",
+                    "release_year": "2024",
+                    "notes": "Copilot+ business ultrabook",
+                    "display": "16\" 3.2K IPS, 3200×2000, 120Hz",
+                    "skus": [
+                        {
+                            "id": "B1MG-013",
+                            "cpu": [
+                                "Intel Core Ultra 7 155H"
+                            ],
+                            "gpu": [
+                                "Intel Arc Graphics"
+                            ],
+                            "ram": [
+                                "32GB LPDDR5X"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI Crosshair",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI Crosshair 16 HX",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13950HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.6kg",
+                    "release_year": "2023",
+                    "notes": "240Hz gaming, Raptor Lake HX",
+                    "display": "16\" QHD+ IPS, 2560×1600, 240Hz",
+                    "skus": [
+                        {
+                            "id": "B13VGK-1001",
+                            "cpu": [
+                                "Intel Core i9-13950HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4070"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI Katana",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI Katana 15",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-13620H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "53.5Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0, RJ45, SD card",
+                    "weight": "2.25kg",
+                    "release_year": "2023",
+                    "notes": "Budget gaming, good performance",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "B13VEK-1093",
+                            "cpu": [
+                                "Intel Core i7-13620H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI Sword",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI Sword 16 HX",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-14700HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0, RJ45, SD card",
+                    "weight": "2.5kg",
+                    "release_year": "2024",
+                    "notes": "Mid-range gaming, Raptor Lake Refresh",
+                    "display": "16\" QHD+ IPS, 2560×1600, 165Hz",
+                    "skus": [
+                        {
+                            "id": "B14VGKG-1007",
+                            "cpu": [
+                                "Intel Core i7-14700HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4070"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI Summit",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI Summit E16 Flip",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1280P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "32GB DDR4"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI 2.0",
+                    "weight": "1.94kg",
+                    "release_year": "2022",
+                    "notes": "4K business 2-in-1, premium build",
+                    "display": "16\" 4K IPS, 3840×2400, touch, 60Hz",
+                    "skus": [
+                        {
+                            "id": "A12MT-272",
+                            "cpu": [
+                                "Intel Core i7-1280P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "32GB DDR4"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI Modern",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI Modern 14 B11M",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1165G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "52Wh, up to 10h",
+                    "ports": "USB-C, 2× USB-A, HDMI, microSD",
+                    "weight": "1.4kg",
+                    "release_year": "2021",
+                    "notes": "Budget business ultrabook",
+                    "display": "14\" FHD IPS, 1920×1080, 60Hz",
+                    "skus": [
+                        {
+                            "id": "B11MOU-1022",
+                            "cpu": [
+                                "Intel Core i7-1165G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI Vector",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI Vector GP66",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080 Ti"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.3kg",
+                    "release_year": "2022",
+                    "notes": "240Hz QHD gaming",
+                    "display": "15.6\" QHD IPS, 2560×1440, 240Hz",
+                    "skus": [
+                        {
+                            "id": "12UGSO-803",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080 Ti"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "MSI Cyborg",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "MSI Cyborg 15",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12650H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4050"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "53.5Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.0, RJ45",
+                    "weight": "1.98kg",
+                    "release_year": "2023",
+                    "notes": "Budget gaming, see-through design",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "A12VE-030",
+                            "cpu": [
+                                "Intel Core i7-12650H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4050"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         }
@@ -5431,6 +12922,241 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2021",
                     "notes": "Lightweight budget ultrabook",
                     "display": "14\" FHD IPS, 1920×1080, 300 nits"
+                },
+                {
+                    "name": "Acer Swift 3 SF314-59",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1165G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "56Wh, up to 11.5h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.19kg",
+                    "release_year": "2021",
+                    "notes": "Lightweight ultrabook, Thunderbolt 4",
+                    "display": "14\" FHD IPS, 1920×1080, 300 nits",
+                    "skus": [
+                        {
+                            "id": "NX.A0EAA.006",
+                            "cpu": [
+                                "Intel Core i7-1165G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Swift 3 SF316-51",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-11370H"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "56Wh, up to 10h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.7kg",
+                    "release_year": "2021",
+                    "notes": "16\" budget ultrabook",
+                    "display": "16\" FHD IPS, 1920×1080, 300 nits",
+                    "skus": [
+                        {
+                            "id": "NX.ABKAA.002",
+                            "cpu": [
+                                "Intel Core i7-11370H"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Swift 5 SF514-56T",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "72Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI, microSD",
+                    "weight": "1.35kg",
+                    "release_year": "2022",
+                    "notes": "Touch 2K display, slim",
+                    "display": "14\" 2K IPS, 2560×1600, touch",
+                    "skus": [
+                        {
+                            "id": "NX.K0HAA.002",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Swift Edge 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 6800U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 680M"
+                    ],
+                    "ram": [
+                        "32GB LPDDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "54Wh, up to 9h",
+                    "ports": "2× USB-C, 2× USB-A, HDMI, microSD",
+                    "weight": "1.17kg",
+                    "release_year": "2022",
+                    "notes": "16\" 4K OLED, ultra-light 1.17kg",
+                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch",
+                    "skus": [
+                        {
+                            "id": "SFE16-43-R25B",
+                            "cpu": [
+                                "AMD Ryzen 7 6800U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 680M"
+                            ],
+                            "ram": [
+                                "32GB LPDDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Swift X SFX16-52G",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "72Wh, up to 10h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.8kg",
+                    "release_year": "2022",
+                    "notes": "Creator ultrabook with discrete GPU",
+                    "display": "16\" QHD+ IPS, 2560×1600, 120Hz",
+                    "skus": [
+                        {
+                            "id": "NX.K0GAA.002",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050 Ti"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -5605,6 +13331,147 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Budget gaming, excellent value",
                     "display": "15.6\" FHD IPS, 1920×1080, 144Hz"
+                },
+                {
+                    "name": "Acer Nitro 5 AN515-58",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-12500H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "57.5Wh, up to 8h",
+                    "ports": "USB-C 3.2, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.2kg",
+                    "release_year": "2022",
+                    "notes": "Budget entry gaming",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "NH.QFHAA.001",
+                            "cpu": [
+                                "Intel Core i5-12500H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Nitro 16 AN16-51",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-13500H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "8GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "76Wh",
+                    "ports": "USB-C, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.4kg",
+                    "release_year": "$2023",
+                    "notes": "16\" Nitro, budget gaming",
+                    "display": "16\" WUXGA IPS, 1920×1200, 144Hz",
+                    "skus": [
+                        {
+                            "id": "NH.QKBAA.002",
+                            "cpu": [
+                                "Intel Core i5-13500H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050"
+                            ],
+                            "ram": [
+                                "8GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Nitro 5 AN515-57",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-11400H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "57.5Wh",
+                    "ports": "USB-C 3.2, 3× USB-A, HDMI 2.1, RJ45",
+                    "weight": "2.2kg",
+                    "release_year": "2021",
+                    "notes": "Budget gaming RTX 3060",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "NH.QESAA.002",
+                            "cpu": [
+                                "Intel Core i5-11400H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -5710,6 +13577,500 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "os": [
                                 "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Predator Helios 300 SH315-21",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 5800H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3070"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "58.75Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.1kg",
+                    "release_year": "2021",
+                    "notes": "AMD Helios variant",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "NH.QBPAA.001",
+                            "cpu": [
+                                "AMD Ryzen 7 5800H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3070"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Predator Helios 300 PH315-55",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "55Wh, up to 7h",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.2kg",
+                    "release_year": "2022",
+                    "notes": "Great value RTX 3060 gaming",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "NH.QBPAA.006",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Predator Helios Neo 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-13700HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "76Wh, up to 8h",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.6kg",
+                    "release_year": "$2023",
+                    "notes": "New Neo series, value gaming",
+                    "display": "16\" WQXGA IPS, 2560×1600, 165Hz",
+                    "skus": [
+                        {
+                            "id": "PHN16-71-74YK",
+                            "cpu": [
+                                "Intel Core i7-13700HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4070"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Predator Helios 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13900HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4080"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, SD card",
+                    "weight": "2.6kg",
+                    "release_year": "2023",
+                    "notes": "High-end gaming, 3.2K screen",
+                    "display": "16\" 3.2K IPS, 3200×2000, 165Hz",
+                    "skus": [
+                        {
+                            "id": "PH16-71-99YM",
+                            "cpu": [
+                                "Intel Core i9-13900HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4080"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Acer Predator",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Acer Predator Triton 500 SE",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080 Ti"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, SD card",
+                    "weight": "2.2kg",
+                    "release_year": "2022",
+                    "notes": "Slim premium gaming",
+                    "display": "16\" WQXGA IPS, 2560×1600, 240Hz",
+                    "skus": [
+                        {
+                            "id": "PT516-52s-79W3",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080 Ti"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Acer Chromebook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Acer Chromebook Spin 714",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1235U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "ChromeOS"
+                    ],
+                    "battery": "65.6Wh, up to 10h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI, microSD",
+                    "weight": "1.45kg",
+                    "release_year": "2022",
+                    "notes": "Business Chromebook 2-in-1, military-grade",
+                    "display": "14\" 2K IPS, 2256×1504, touch",
+                    "skus": [
+                        {
+                            "id": "CP714-1WN-55YE",
+                            "cpu": [
+                                "Intel Core i5-1235U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "ChromeOS"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Acer Aspire",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Acer Aspire 5 A515-56",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1135G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "48Wh, up to 9h",
+                    "ports": "USB-A 3.2, 2× USB-A 2.0, USB-C 3.2, HDMI, SD card",
+                    "weight": "1.9kg",
+                    "release_year": "2021",
+                    "notes": "Best value mainstream Acer",
+                    "display": "15.6\" FHD IPS, 1920×1080, 300 nits",
+                    "skus": [
+                        {
+                            "id": "NX.A1GAA.007",
+                            "cpu": [
+                                "Intel Core i5-1135G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Aspire 3 A315-58",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i3-1115G3"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics"
+                    ],
+                    "ram": [
+                        "4GB DDR4"
+                    ],
+                    "storage": [
+                        "128GB eMMC"
+                    ],
+                    "os": [
+                        "Windows 11 Home in S mode"
+                    ],
+                    "battery": "41.4Wh, up to 7h",
+                    "ports": "USB-A 3.2, USB-A 2.0, USB-C, HDMI, SD card",
+                    "weight": "1.9kg",
+                    "release_year": "2021",
+                    "notes": "Entry budget laptop",
+                    "display": "15.6\" HD TN, 1366×768, 220 nits",
+                    "skus": [
+                        {
+                            "id": "NX.ADDEF.01G",
+                            "cpu": [
+                                "Intel Core i3-1115G3"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics"
+                            ],
+                            "ram": [
+                                "4GB DDR4"
+                            ],
+                            "storage": [
+                                "128GB eMMC"
+                            ],
+                            "os": [
+                                "Windows 11 Home in S mode"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Acer Aspire Vero 14",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1335U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "65Wh, up to 10h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.4kg",
+                    "release_year": "2023",
+                    "notes": "Eco-friendly materials, recycled content",
+                    "display": "14\" WUXGA IPS, 1920×1200, 300 nits",
+                    "skus": [
+                        {
+                            "id": "AV14-52P-5985",
+                            "cpu": [
+                                "Intel Core i5-1335U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Acer TravelMate",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Acer TravelMate P6",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1165G7 vPro"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "72Wh, up to 20h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, RJ45",
+                    "weight": "0.99kg",
+                    "release_year": "2021",
+                    "notes": "Ultra-light business, under 1kg",
+                    "display": "14\" FHD IPS, 1920×1080, 300 nits",
+                    "skus": [
+                        {
+                            "id": "TMP614-52-75VH",
+                            "cpu": [
+                                "Intel Core i7-1165G7 vPro"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
                             ]
                         }
                     ]
@@ -5832,6 +14193,100 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Detachable 2-in-1, LTE option, ARM version available",
                     "display": "13\" PixelSense, 2880×1920, 120Hz, touch"
+                },
+                {
+                    "name": "Microsoft Surface Pro 10 Business",
+                    "screenSize": [
+                        "13\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 5 135U"
+                    ],
+                    "gpu": [
+                        "Intel Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "50Wh, up to 19h",
+                    "ports": "2× USB-C 3.2, Surface Connect",
+                    "weight": "895g",
+                    "release_year": "2024",
+                    "notes": "Copilot+ AI, business edition",
+                    "display": "13\" PixelSense, 2880×1920, 120Hz, touch",
+                    "skus": [
+                        {
+                            "id": "ZDT-00001",
+                            "cpu": [
+                                "Intel Core Ultra 5 135U"
+                            ],
+                            "gpu": [
+                                "Intel Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Microsoft Surface Pro 8",
+                    "screenSize": [
+                        "13\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1135G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB LPDDR4x"
+                    ],
+                    "storage": [
+                        "128GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "51.5Wh, up to 16h",
+                    "ports": "2× Thunderbolt 4, Surface Connect",
+                    "weight": "891g",
+                    "release_year": "2021",
+                    "notes": "120Hz, Thunderbolt 4, new design",
+                    "display": "13\" PixelSense, 2880×1920, 120Hz, touch",
+                    "skus": [
+                        {
+                            "id": "EEA-00001",
+                            "cpu": [
+                                "Intel Core i5-1135G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB LPDDR4x"
+                            ],
+                            "storage": [
+                                "128GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -5940,7 +14395,7 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "weight": "1.29kg",
                     "release_year": "2022",
                     "notes": "Touch display, premium build, Dolby Vision",
-                    "display": "13.5\" PixelSense, 2256×1504, 201ppi, touch"
+                    "display": "13.5\" PixelSense, 2256×1504, touch, Dolby Vision"
                 },
                 {
                     "name": "Microsoft Surface Laptop 5 15",
@@ -5991,6 +14446,241 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2022",
                     "notes": "Larger screen, alcantara or metal keyboard",
                     "display": "15\" PixelSense, 2496×1664, touch"
+                },
+                {
+                    "name": "Microsoft Surface Laptop 4 13.5 AMD",
+                    "screenSize": [
+                        "13.5\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 4680U Surface Edition"
+                    ],
+                    "gpu": [
+                        "AMD Radeon Graphics"
+                    ],
+                    "ram": [
+                        "8GB LPDDR4x"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "41.2Wh, up to 19h",
+                    "ports": "Thunderbolt 4, USB-A, 3.5mm jack, Surface Connect",
+                    "weight": "1.27kg",
+                    "release_year": "2021",
+                    "notes": "AMD Surface Edition, fanless",
+                    "display": "13.5\" PixelSense, 2256×1504, touch",
+                    "skus": [
+                        {
+                            "id": "5PB-00024",
+                            "cpu": [
+                                "AMD Ryzen 5 4680U Surface Edition"
+                            ],
+                            "gpu": [
+                                "AMD Radeon Graphics"
+                            ],
+                            "ram": [
+                                "8GB LPDDR4x"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Microsoft Surface Laptop 4 15",
+                    "screenSize": [
+                        "15\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1185G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR4x"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "58Wh, up to 17h",
+                    "ports": "Thunderbolt 4, 2× USB-A, 3.5mm jack, Surface Connect",
+                    "weight": "1.54kg",
+                    "release_year": "2021",
+                    "notes": "15\" premium touch",
+                    "display": "15\" PixelSense, 2496×1664, touch",
+                    "skus": [
+                        {
+                            "id": "5IP-00036",
+                            "cpu": [
+                                "Intel Core i7-1185G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR4x"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Microsoft Surface Laptop 6 13.5",
+                    "screenSize": [
+                        "13.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 5 135H"
+                    ],
+                    "gpu": [
+                        "Intel Arc Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "54Wh, up to 23h",
+                    "ports": "2× USB-C, USB-A, 3.5mm jack, Surface Connect",
+                    "weight": "1.35kg",
+                    "release_year": "2024",
+                    "notes": "Meteor Lake, Intel Arc, 23h battery",
+                    "display": "13.5\" PixelSense, 2256×1504, touch",
+                    "skus": [
+                        {
+                            "id": "ZLN-00001",
+                            "cpu": [
+                                "Intel Core Ultra 5 135H"
+                            ],
+                            "gpu": [
+                                "Intel Arc Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Microsoft Surface Laptop Go 3",
+                    "screenSize": [
+                        "12.4\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1235U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB LPDDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "42.2Wh, up to 15h",
+                    "ports": "USB-C, USB-A, 3.5mm jack, Surface Connect",
+                    "weight": "1.13kg",
+                    "release_year": "2023",
+                    "notes": "Compact budget Surface, 12.4\"",
+                    "display": "12.4\" PixelSense, 1536×1024, touch",
+                    "skus": [
+                        {
+                            "id": "XLG-00001",
+                            "cpu": [
+                                "Intel Core i5-1235U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB LPDDR5"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Microsoft Surface Laptop 4 13.5 Intel",
+                    "screenSize": [
+                        "13.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1145G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB LPDDR4x"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "47.4Wh, up to 19h",
+                    "ports": "Thunderbolt 4, USB-A, 3.5mm jack, Surface Connect",
+                    "weight": "1.29kg",
+                    "release_year": "2021",
+                    "notes": "Intel version SL4",
+                    "display": "13.5\" PixelSense, 2256×1504, touch",
+                    "skus": [
+                        {
+                            "id": "5BT-00001",
+                            "cpu": [
+                                "Intel Core i5-1145G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB LPDDR4x"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -6047,6 +14737,152 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Unique pull-forward hinge, Studio mode",
                     "display": "14.4\" PixelSense Flow, 2400×1600, 120Hz, touch"
+                }
+            ]
+        },
+        {
+            "name": "Microsoft Surface",
+            "type": "all-in-one",
+            "subModels": [
+                {
+                    "name": "Microsoft Surface Studio 2+",
+                    "screenSize": [
+                        "28\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-11370H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "32GB DDR4"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× Thunderbolt 4, 3× USB-A, SD card, 3.5mm jack",
+                    "weight": "9.56kg",
+                    "release_year": "2022",
+                    "notes": "28\" studio AiO, Zero Gravity hinge",
+                    "display": "28\" PixelSense, 4500×3000, touch, 120Hz",
+                    "skus": [
+                        {
+                            "id": "SBG-00001",
+                            "cpu": [
+                                "Intel Core i7-11370H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "32GB DDR4"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Microsoft Surface Book 3 13.5",
+                    "screenSize": [
+                        "13.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1035G7"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce GTX 1650"
+                    ],
+                    "ram": [
+                        "16GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "65Wh, up to 17.5h",
+                    "ports": "2× USB-A, USB-C, SD card, Surface Connect",
+                    "weight": "1.64kg",
+                    "release_year": "2020",
+                    "notes": "Detachable design, GPU in base",
+                    "display": "13.5\" PixelSense, 3000×2000, touch",
+                    "skus": [
+                        {
+                            "id": "SLM-00001",
+                            "cpu": [
+                                "Intel Core i5-1035G7"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce GTX 1650"
+                            ],
+                            "ram": [
+                                "16GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Microsoft Surface Go 3",
+                    "screenSize": [
+                        "10.5\""
+                    ],
+                    "cpu": [
+                        "Intel Pentium Gold 6500Y"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 615"
+                    ],
+                    "ram": [
+                        "4GB LPDDR3"
+                    ],
+                    "storage": [
+                        "64GB eMMC"
+                    ],
+                    "os": [
+                        "Windows 11 Home in S mode"
+                    ],
+                    "battery": "27.3Wh, up to 11h",
+                    "ports": "USB-C, Surface Connect, microSD",
+                    "weight": "544g",
+                    "release_year": "2021",
+                    "notes": "Entry budget Surface tablet",
+                    "display": "10.5\" PixelSense, 1920×1280, touch",
+                    "skus": [
+                        {
+                            "id": "8V6-00001",
+                            "cpu": [
+                                "Intel Pentium Gold 6500Y"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 615"
+                            ],
+                            "ram": [
+                                "4GB LPDDR3"
+                            ],
+                            "storage": [
+                                "64GB eMMC"
+                            ],
+                            "os": [
+                                "Windows 11 Home in S mode"
+                            ]
+                        }
+                    ]
                 }
             ]
         }
@@ -6236,6 +15072,382 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "Samsung Galaxy Book2 Pro 13",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "63Wh, up to 21h",
+                    "ports": "Thunderbolt 4, 2× USB-C, USB-A, 3.5mm jack, microSD",
+                    "weight": "0.87kg",
+                    "release_year": "2022",
+                    "notes": "Ultra-light 870g, AMOLED display",
+                    "display": "13.3\" FHD AMOLED, 1920×1080, 60Hz",
+                    "skus": [
+                        {
+                            "id": "NP930XED-KA1US",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Samsung Galaxy Book2 Pro 15",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "68Wh, up to 21h",
+                    "ports": "Thunderbolt 4, 2× USB-C, USB-A, HDMI, 3.5mm jack, microSD",
+                    "weight": "1.11kg",
+                    "release_year": "2022",
+                    "notes": "Thin & light 15\", AMOLED",
+                    "display": "15.6\" FHD AMOLED, 1920×1080, 60Hz",
+                    "skus": [
+                        {
+                            "id": "NP950XED-KA1US",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Samsung Galaxy Book3 Pro 14",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1360P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "63Wh, up to 22h",
+                    "ports": "2× Thunderbolt 4, USB-C, USB-A, HDMI, microSD",
+                    "weight": "1.17kg",
+                    "release_year": "2023",
+                    "notes": "3K AMOLED 120Hz, thin & light",
+                    "display": "14\" 3K Dynamic AMOLED, 2880×1800, 120Hz",
+                    "skus": [
+                        {
+                            "id": "NP940XFG-KA1US",
+                            "cpu": [
+                                "Intel Core i7-1360P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Samsung Galaxy Book3 Pro 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1360P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "76Wh, up to 22h",
+                    "ports": "2× Thunderbolt 4, USB-C, USB-A, HDMI, microSD",
+                    "weight": "1.56kg",
+                    "release_year": "2023",
+                    "notes": "16\" AMOLED, excellent battery",
+                    "display": "16\" 3K Dynamic AMOLED, 2880×1800, 120Hz",
+                    "skus": [
+                        {
+                            "id": "NP960XFG-KA1US",
+                            "cpu": [
+                                "Intel Core i7-1360P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Samsung Galaxy Book4 Edge",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Snapdragon X Elite X1E-80-100"
+                    ],
+                    "gpu": [
+                        "Qualcomm Adreno"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5x"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home (ARM)"
+                    ],
+                    "battery": "61.8Wh, up to 22h",
+                    "ports": "2× USB-C 3.2, USB-A, HDMI microSD",
+                    "weight": "1.17kg",
+                    "release_year": "2024",
+                    "notes": "Copilot+ ARM laptop, Snapdragon X Elite",
+                    "display": "14\" Dynamic AMOLED 2X, 2880×1800, 120Hz",
+                    "skus": [
+                        {
+                            "id": "NP990XGK-KG1US",
+                            "cpu": [
+                                "Snapdragon X Elite X1E-80-100"
+                            ],
+                            "gpu": [
+                                "Qualcomm Adreno"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5x"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home (ARM)"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Samsung Galaxy Book2 Business",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1235U vPro"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "51Wh, up to 21h",
+                    "ports": "Thunderbolt 4, 2× USB-C, USB-A, HDMI, RJ45",
+                    "weight": "1.55kg",
+                    "release_year": "2022",
+                    "notes": "Business laptop, vPro, LTE option",
+                    "display": "14\" FHD IPS, 1920×1080, 400 nits",
+                    "skus": [
+                        {
+                            "id": "NP730QED-KA1US",
+                            "cpu": [
+                                "Intel Core i5-1235U vPro"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Samsung Galaxy Book3 360",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1360P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "63Wh, up to 21h",
+                    "ports": "2× Thunderbolt 4, USB-C, USB-A, microSD",
+                    "weight": "1.16kg",
+                    "release_year": "2023",
+                    "notes": "2-in-1 AMOLED, S Pen included",
+                    "display": "13.3\" FHD AMOLED, 1920×1080, touch, 60Hz",
+                    "skus": [
+                        {
+                            "id": "NP730QFG-KA1US",
+                            "cpu": [
+                                "Intel Core i7-1360P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Samsung Galaxy Book3 360 15.6",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1360P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "68Wh, up to 21h",
+                    "ports": "2× Thunderbolt 4, USB-C, USB-A, HDMI, microSD",
+                    "weight": "1.53kg",
+                    "release_year": "2023",
+                    "notes": "Large 2-in-1 AMOLED",
+                    "display": "15.6\" FHD AMOLED, 1920×1080, touch, 60Hz",
+                    "skus": [
+                        {
+                            "id": "NP960QFG-KA1US",
+                            "cpu": [
+                                "Intel Core i7-1360P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -6342,6 +15554,59 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "AMOLED creator laptop, excellent display",
                     "display": "16\" Dynamic AMOLED 2X, 2880×1800, 120Hz"
+                }
+            ]
+        },
+        {
+            "name": "Samsung Galaxy",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Samsung Galaxy Chromebook 2 360",
+                    "screenSize": [
+                        "12.4\""
+                    ],
+                    "cpu": [
+                        "Intel Celeron N4500"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 600"
+                    ],
+                    "ram": [
+                        "4GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "64GB eMMC"
+                    ],
+                    "os": [
+                        "ChromeOS"
+                    ],
+                    "battery": "45.5Wh, up to 14h",
+                    "ports": "2× USB-C",
+                    "weight": "1.14kg",
+                    "release_year": "2022",
+                    "notes": "QLED Chromebook 2-in-1",
+                    "display": "12.4\" FHD QLED, 1920×1080, touch",
+                    "skus": [
+                        {
+                            "id": "XE520QEA-KB1US",
+                            "cpu": [
+                                "Intel Celeron N4500"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 600"
+                            ],
+                            "ram": [
+                                "4GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "64GB eMMC"
+                            ],
+                            "os": [
+                                "ChromeOS"
+                            ]
+                        }
+                    ]
                 }
             ]
         }
@@ -6609,6 +15874,288 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Compact gaming powerhouse, Ryzen 9",
                     "display": "14\" QHD+ IPS, 2560×1600, 165Hz"
+                },
+                {
+                    "name": "Razer Blade 14 2022",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 6900HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "61.6Wh, up to 8h",
+                    "ports": "Thunderbolt 4, USB-A, USB-C, SD card, HDMI 2.1",
+                    "weight": "1.78kg",
+                    "release_year": "2022",
+                    "notes": "Compact AMD gaming, CNC aluminum",
+                    "display": "14\" QHD IPS, 2560×1440, 144Hz",
+                    "skus": [
+                        {
+                            "id": "RZ09-0427x-2022",
+                            "cpu": [
+                                "AMD Ryzen 9 6900HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080 Ti"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Razer Blade 15 2022",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080 Ti"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh, up to 7h",
+                    "ports": "Thunderbolt 4, 3× USB-A, SD card, HDMI 2.1",
+                    "weight": "2.01kg",
+                    "release_year": "2022",
+                    "notes": "4K gaming display option",
+                    "display": "15.6\" UHD IPS, 3840×2160, 144Hz",
+                    "skus": [
+                        {
+                            "id": "RZ09-0421x",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080 Ti"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Razer Blade 16 2023",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13950HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "95.2Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, SD card, HDMI 2.1",
+                    "weight": "2.47kg",
+                    "release_year": "2023",
+                    "notes": "Dual mode display (4K 60Hz or FHD 240Hz)",
+                    "display": "16\" Dual-Mode Mini-LED, 3840×2400/1920×1200 (240Hz)",
+                    "skus": [
+                        {
+                            "id": "RZ09-0483x-2023",
+                            "cpu": [
+                                "Intel Core i9-13950HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Razer Blade 18 2024",
+                    "screenSize": [
+                        "18\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-14900HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 4× USB-A, SD card, HDMI 2.1",
+                    "weight": "3.2kg",
+                    "release_year": "2024",
+                    "notes": "Raptor Lake-R, 99.9Wh battery",
+                    "display": "18\" QHD+ IPS, 2560×1600, 300Hz",
+                    "skus": [
+                        {
+                            "id": "RZ09-0508x",
+                            "cpu": [
+                                "Intel Core i9-14900HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Razer Blade Stealth 13",
+                    "screenSize": [
+                        "13.4\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1165G7"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce MX450"
+                    ],
+                    "ram": [
+                        "16GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "53.1Wh, up to 11h",
+                    "ports": "Thunderbolt 4, USB-C, USB-A, 3.5mm jack",
+                    "weight": "1.42kg",
+                    "release_year": "2021",
+                    "notes": "Slim gaming ultrabook, touch display",
+                    "display": "13.4\" QHD+ IPS, 2560×1504, touch, 60Hz",
+                    "skus": [
+                        {
+                            "id": "RZ09-0310x",
+                            "cpu": [
+                                "Intel Core i7-1165G7"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce MX450"
+                            ],
+                            "ram": [
+                                "16GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Razer Blade 15 Advanced 2022",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080 Ti"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, SD card, HDMI 2.1",
+                    "weight": "2.14kg",
+                    "release_year": "2022",
+                    "notes": "4K gaming option, RTX 3080 Ti",
+                    "display": "15.6\" UHD+ IPS, 3840×2160, 144Hz",
+                    "skus": [
+                        {
+                            "id": "RZ09-0409x",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080 Ti"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         }
@@ -6660,6 +16207,92 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "Intel NUC 12 Pro",
+                    "cpu": [
+                        "Intel Core i5-1240P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "None (user-installed, up to 64GB DDR4)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (barebones)"
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45",
+                    "weight": "0.69kg",
+                    "release_year": "2022",
+                    "notes": "Compact NUC, Alder Lake",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "RNUC12WSKi50002",
+                            "cpu": [
+                                "Intel Core i5-1240P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "None (user-installed, up to 64GB DDR4)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (barebones)"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Intel NUC 11 Pro",
+                    "cpu": [
+                        "Intel Core i5-1135G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "None (user-installed)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (barebones)"
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI 2.0, DP, RJ45",
+                    "weight": "0.67kg",
+                    "release_year": "2021",
+                    "notes": "Tiger Lake NUC barebones",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "BNUC11TNHI50002",
+                            "cpu": [
+                                "Intel Core i5-1135G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "None (user-installed)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (barebones)"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -6706,6 +16339,1180 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "os": [
                                 "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Beelink SER6 Pro",
+                    "cpu": [
+                        "AMD Ryzen 9 6900HX"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 680M"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "500GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI 2.0, USB4, RJ45",
+                    "weight": "0.55kg",
+                    "release_year": "2022",
+                    "notes": "Powerful mini PC, AMD iGPU gaming capable",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "SER6-PRO-R9",
+                            "cpu": [
+                                "AMD Ryzen 9 6900HX"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 680M"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "500GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Beelink GTR7 Pro",
+                    "cpu": [
+                        "AMD Ryzen 9 7940HX"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 780M"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "3× USB-A, USB-C/Thunderbolt 4, 2× HDMI 2.0, RJ45",
+                    "weight": "0.65kg",
+                    "release_year": "2023",
+                    "notes": "Performance mini PC, Ryzen 9 7940HX",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "GTR7-PRO",
+                            "cpu": [
+                                "AMD Ryzen 9 7940HX"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 780M"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Beelink EQ12",
+                    "cpu": [
+                        "Intel N100, 4-core, up to 3.4GHz"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 24EU"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "500GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI 2.0, RJ45",
+                    "weight": "0.35kg",
+                    "release_year": "2023",
+                    "notes": "Budget mini PC, good for office",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "EQ12",
+                            "cpu": [
+                                "Intel N100, 4-core, up to 3.4GHz"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 24EU"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "500GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "LG Gram",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "LG Gram 14",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "72Wh, up to 24h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, microSD",
+                    "weight": "0.99kg",
+                    "release_year": "2022",
+                    "notes": "Under 1kg, MIL-SPEC, 24h battery",
+                    "display": "14\" WUXGA IPS, 1920×1200, 350 nits",
+                    "skus": [
+                        {
+                            "id": "14Z90Q-K.AAB7U1",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "LG Gram 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh, up to 22h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, microSD",
+                    "weight": "1.19kg",
+                    "release_year": "2022",
+                    "notes": "Lightest 16\" ultrabook, MIL-SPEC",
+                    "display": "16\" WQXGA IPS, 2560×1600, 350 nits",
+                    "skus": [
+                        {
+                            "id": "16Z90Q-K.AAB7U1",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "LG Gram 17",
+                    "screenSize": [
+                        "17\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1260P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh, up to 20h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, microSD",
+                    "weight": "1.35kg",
+                    "release_year": "2022",
+                    "notes": "17\" under 1.4kg, impressive",
+                    "display": "17\" WQXGA IPS, 2560×1600, 350 nits",
+                    "skus": [
+                        {
+                            "id": "17Z90Q-K.AAB8U1",
+                            "cpu": [
+                                "Intel Core i7-1260P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "LG Gram Pro 14",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 7 155H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5X"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "72Wh, up to 22h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI, microSD",
+                    "weight": "1.24kg",
+                    "release_year": "2024",
+                    "notes": "OLED ultralight with discrete GPU",
+                    "display": "14\" 2K OLED, 2560×1600, 120Hz",
+                    "skus": [
+                        {
+                            "id": "14Z90SP-K.AA78A1",
+                            "cpu": [
+                                "Intel Core Ultra 7 155H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3050"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5X"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "LG Gram 2-in-1 14T90P",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1165G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "72Wh, up to 24h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, microSD",
+                    "weight": "1.35kg",
+                    "release_year": "2021",
+                    "notes": "Ultra-light 2-in-1",
+                    "display": "14\" WUXGA IPS, 1920×1200, touch",
+                    "skus": [
+                        {
+                            "id": "14T90P-K.AAB8U1",
+                            "cpu": [
+                                "Intel Core i7-1165G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "LG Gram Style 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1360P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "80Wh, up to 15h",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, microSD",
+                    "weight": "1.35kg",
+                    "release_year": "2023",
+                    "notes": "Stylish OLED design, holographic finish",
+                    "display": "16\" 3K OLED, 3200×2000, 60Hz, glossy",
+                    "skus": [
+                        {
+                            "id": "16Z90RS-K.AAB5U1",
+                            "cpu": [
+                                "Intel Core i7-1360P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Google Pixelbook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Google Pixelbook Go",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core m3-8100Y"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 615"
+                    ],
+                    "ram": [
+                        "8GB LPDDR3"
+                    ],
+                    "storage": [
+                        "64GB eMMC"
+                    ],
+                    "os": [
+                        "ChromeOS"
+                    ],
+                    "battery": "47Wh, up to 12h",
+                    "ports": "2× USB-C, 3.5mm jack",
+                    "weight": "1.06kg",
+                    "release_year": "2019",
+                    "notes": "Premium Chromebook, backlit keyboard",
+                    "display": "13.3\" FHD IPS, 1920×1080, touch",
+                    "skus": [
+                        {
+                            "id": "GA00521-US",
+                            "cpu": [
+                                "Intel Core m3-8100Y"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 615"
+                            ],
+                            "ram": [
+                                "8GB LPDDR3"
+                            ],
+                            "storage": [
+                                "64GB eMMC"
+                            ],
+                            "os": [
+                                "ChromeOS"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Framework Laptop",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Framework Laptop 13 Intel",
+                    "screenSize": [
+                        "13.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1360P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "61Wh, up to 12h",
+                    "ports": "Configurable via expansion cards (4 slots)",
+                    "weight": "1.3kg",
+                    "release_year": "2023",
+                    "notes": "Repairable/upgradeable, modular ports",
+                    "display": "13.5\" 2256×1504 IPS",
+                    "skus": [
+                        {
+                            "id": "FRANBG0001",
+                            "cpu": [
+                                "Intel Core i7-1360P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Framework Laptop 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 7840HS"
+                    ],
+                    "gpu": [
+                        "AMD Radeon RX 7700S (modular)"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "85Wh, up to 9h",
+                    "ports": "Configurable via expansion cards (6 slots)",
+                    "weight": "2.1kg",
+                    "release_year": "2024",
+                    "notes": "Modular GPU, fully user-repairable",
+                    "display": "16\" 2560×1600 IPS, 165Hz",
+                    "skus": [
+                        {
+                            "id": "FRANLAP0002",
+                            "cpu": [
+                                "AMD Ryzen 7 7840HS"
+                            ],
+                            "gpu": [
+                                "AMD Radeon RX 7700S (modular)"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Huawei MateBook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Huawei MateBook X Pro 2023",
+                    "screenSize": [
+                        "14.2\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1360P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "70Wh, up to 16h",
+                    "ports": "2× Thunderbolt 4, USB-A, 3.5mm jack",
+                    "weight": "1.26kg",
+                    "release_year": "2023",
+                    "notes": "3.1K OLED, super-narrow bezels",
+                    "display": "14.2\" 3.1K OLED, 3120×2080, 90Hz, touch",
+                    "skus": [
+                        {
+                            "id": "MRGF-X",
+                            "cpu": [
+                                "Intel Core i7-1360P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Huawei MateBook 14s 2023",
+                    "screenSize": [
+                        "14.2\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-13700H"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "75Wh, up to 14h",
+                    "ports": "2× Thunderbolt 4, USB-A, HDMI",
+                    "weight": "1.43kg",
+                    "release_year": "2023",
+                    "notes": "Touch display, Raptor Lake",
+                    "display": "14.2\" 2.5K IPS, 2520×1680, 90Hz, touch",
+                    "skus": [
+                        {
+                            "id": "HKF-X",
+                            "cpu": [
+                                "Intel Core i7-13700H"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Huawei MateBook D 15",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 5 5500U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "56Wh, up to 10h",
+                    "ports": "USB-C, 2× USB-A, HDMI",
+                    "weight": "1.56kg",
+                    "release_year": "$2021",
+                    "notes": "Value ultrabook, AMD Ryzen",
+                    "display": "15.6\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "BohrD-WFH9A",
+                            "cpu": [
+                                "AMD Ryzen 5 5500U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Minisforum UM790",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Minisforum UM790 Pro",
+                    "cpu": [
+                        "AMD Ryzen 9 7940HX"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 780M"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.2, 2× USB-A 2.0, 2× HDMI 2.0, USB4, RJ45",
+                    "weight": "0.6kg",
+                    "release_year": "2023",
+                    "notes": "Compact powerhouse, eGPU compatible via OCuLink",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "UM790PRO",
+                            "cpu": [
+                                "AMD Ryzen 9 7940HX"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 780M"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Minisforum MS-01",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Minisforum MS-01",
+                    "cpu": [
+                        "Intel Core i9-13900H"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-C, 4× USB-A, 2× HDMI, 2.5G + 10G RJ45",
+                    "weight": "0.65kg",
+                    "release_year": "2024",
+                    "notes": "Server-grade networking, OCuLink eGPU",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MS01",
+                            "cpu": [
+                                "Intel Core i9-13900H"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Panasonic Toughbook",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Panasonic Toughbook 55",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1145G7 vPro"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "2× 44Wh, up to 40h",
+                    "ports": "2× USB-A 3.1, 2× USB-A 2.0, HDMI, RJ45, SD card, serial",
+                    "weight": "2.27kg",
+                    "release_year": "2021",
+                    "notes": "MIL-SPEC 810H, IP65, drop resistant, modular",
+                    "display": "14\" FHD IPS, 1920×1080, 1000 nits, glove touch",
+                    "skus": [
+                        {
+                            "id": "CF-55F2505VM",
+                            "cpu": [
+                                "Intel Core i5-1145G7 vPro"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Getac B360",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Getac B360",
+                    "screenSize": [
+                        "13.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-10210U"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 10 Pro"
+                    ],
+                    "battery": "96Wh, hot-swappable",
+                    "ports": "3× USB-A, USB-C, HDMI, RJ45, RS232",
+                    "weight": "2.23kg",
+                    "release_year": "2020",
+                    "notes": "Fully rugged, IP66, MIL-STD-461G",
+                    "display": "13.3\" FHD, 1920×1080, 1000 nits, glove touch",
+                    "skus": [
+                        {
+                            "id": "BB23UDDA5HXE",
+                            "cpu": [
+                                "Intel Core i5-10210U"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 10 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Gigabyte AORUS",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Gigabyte AORUS 17X AXF",
+                    "screenSize": [
+                        "17.3\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13980HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, mini DP, SD card, RJ45",
+                    "weight": "3.1kg",
+                    "release_year": "2023",
+                    "notes": "360Hz gaming display, premium Gigabyte gaming",
+                    "display": "17.3\" FHD IPS, 1920×1080, 360Hz",
+                    "skus": [
+                        {
+                            "id": "AORUS17X-AXF-A5DE654SH",
+                            "cpu": [
+                                "Intel Core i9-13980HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Gigabyte G5",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Gigabyte G5 KF5-53US353SH",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-12500H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "54Wh",
+                    "ports": "3× USB-A, USB-C, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.2kg",
+                    "release_year": "2023",
+                    "notes": "Budget gaming with RTX 4060",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "G5KF5-53US353SH",
+                            "cpu": [
+                                "Intel Core i5-12500H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Minisforum UN100P",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Minisforum UN100P",
+                    "cpu": [
+                        "Intel N100, 4-core, up to 3.4GHz"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 24EU"
+                    ],
+                    "ram": [
+                        "8GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI, RJ45",
+                    "weight": "0.3kg",
+                    "release_year": "2023",
+                    "notes": "Ultra-compact budget mini PC",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "UN100P",
+                            "cpu": [
+                                "Intel N100, 4-core, up to 3.4GHz"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 24EU"
+                            ],
+                            "ram": [
+                                "8GB DDR5"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "GMKtec NucBox",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "GMKtec NucBox K6",
+                    "cpu": [
+                        "AMD Ryzen 9 6900HX"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 680M"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.2, 2× USB-C, 2× HDMI 2.0, RJ45",
+                    "weight": "0.52kg",
+                    "release_year": "2023",
+                    "notes": "Compact AMD Ryzen mini PC",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "K6",
+                            "cpu": [
+                                "AMD Ryzen 9 6900HX"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 680M"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ASRock DeskMeet",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ASRock DeskMeet X600",
+                    "cpu": [
+                        "Supports AMD Ryzen 7000 (user-installed)"
+                    ],
+                    "gpu": [
+                        "Full-size GPU (user-installed)"
+                    ],
+                    "ram": [
+                        "None (user-installed, up to 64GB DDR5)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (barebones)"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
+                    "weight": "3.2kg",
+                    "release_year": "2023",
+                    "notes": "Mini ITX barebones, full GPU support",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "DeskMeet X600",
+                            "cpu": [
+                                "Supports AMD Ryzen 7000 (user-installed)"
+                            ],
+                            "gpu": [
+                                "Full-size GPU (user-installed)"
+                            ],
+                            "ram": [
+                                "None (user-installed, up to 64GB DDR5)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (barebones)"
                             ]
                         }
                     ]
