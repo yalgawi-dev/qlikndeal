@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Search, ChevronDown, Check, Zap, Sparkles, X, ChevronRight } from "lucide-react";
+import { COMPUTER_DATABASE } from "@/lib/computer-data";
 
 export const COMPUTER_SEARCH_FIELDS = [
     { key: "model_name", label: "שם הדגם", icon: "🏷️", locked: true },
@@ -56,10 +57,78 @@ export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) 
                     os: data.os || "ללא מערכת הפעלה"
                 });
             } else {
-                // Mock free local search for now (Simulated from internal database)
-                // Assuming we would use `allModelsFlat` filtering here. 
-                // For demonstration to flow into the form, just throw an error suggesting Premium if no exact local match
-                throw new Error("מנוע החינמי עדיין אינו מחובר לכל המאגר. אנא הפעל חיפוש פרימיום (לחצן ירוק) כדי לחפש מפרט עמוק ברשת.");
+                // Local free search from COMPUTER_DATABASE
+                const q = query.toLowerCase().trim();
+                const terms = q.split(/\s+/);
+                const matchesAllTerms = (text: string) => {
+                    if (!text) return false;
+                    const tl = text.toLowerCase();
+                    return terms.every(t => tl.includes(t));
+                };
+
+                let bestMatchData: any = null;
+                let bestScore = 0;
+
+                for (const brand in COMPUTER_DATABASE) {
+                    for (const family of COMPUTER_DATABASE[brand]) {
+                        for (const sub of family.subModels) {
+                            const fullName = `${brand} ${sub.name}`;
+                            let matchScore = 0;
+
+                            if (matchesAllTerms(sub.name)) {
+                                matchScore += 10;
+                                if (sub.name.toLowerCase() === q || fullName.toLowerCase() === q) matchScore += 20;
+                                else if (sub.name.toLowerCase().startsWith(q) || fullName.toLowerCase().startsWith(q)) matchScore += 5;
+                            } else if (matchesAllTerms(fullName)) {
+                                matchScore += 8;
+                            }
+
+                            let matchedSku: any = null;
+                            if (sub.skus) {
+                                for (const sku of sub.skus) {
+                                    if (sku.id && matchesAllTerms(sku.id)) {
+                                        matchScore += 15;
+                                        matchedSku = sku;
+                                    }
+                                }
+                            }
+
+                            if (matchScore > bestScore) {
+                                bestScore = matchScore;
+                                bestMatchData = { brand, family, sub, matchedSku };
+                            }
+                        }
+                    }
+                }
+
+                if (bestMatchData) {
+                    const { brand, family, sub, matchedSku } = bestMatchData;
+                    // Build a result object in the same shape as the premium API result
+                    const localResult = {
+                        model_name: sub.name,
+                        model_number: matchedSku?.id || "",
+                        type: family.type || "laptop",
+                        cpu: matchedSku?.cpu?.join(", ") || sub.cpu?.join(", ") || "",
+                        gpu: matchedSku?.gpu?.join(", ") || sub.gpu?.join(", ") || "",
+                        ram: matchedSku?.ram?.join(" / ") || sub.ram?.join(" / ") || "ללא ידוע",
+                        storage: matchedSku?.storage?.join(" / ") || sub.storage?.join(" / ") || "ללא ידוע",
+                        display: matchedSku?.screenSize?.join(", ") || sub.screenSize?.join(", ") || "",
+                        os: matchedSku?.os?.join(", ") || sub.os?.join(", ") || "ללא מערכת הפעלה",
+                        battery: "",
+                        ports: "",
+                        weight: "",
+                        price: "",
+                        release_year: ""
+                    };
+                    setResult(localResult);
+                    setEditableFields({
+                        ram: localResult.ram,
+                        storage: localResult.storage,
+                        os: localResult.os
+                    });
+                } else {
+                    throw new Error(`"${query}" לא נמצא במאגר המקומי. נסה להפעיל חיפוש פרימיום ברשת (לחצן ירוק) לחיפוש מפורט.`);
+                }
             }
         } catch (e: any) {
             setError(e.message || "לא הצלחתי למצוא מידע.");
