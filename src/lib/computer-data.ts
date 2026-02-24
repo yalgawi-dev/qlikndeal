@@ -11,9 +11,15 @@ export type ComputerSubModel = {
     ram?: string[];
     storage?: string[];
     os?: string[];
-    type?: string; // laptop | desktop | gaming | workstation | all-in-one | mini
+    type?: string;
+    battery?: string;
+    ports?: string;
+    weight?: string;
+    release_year?: string;
+    notes?: string;
+    display?: string;
     skus?: {
-        id: string; // SKU or MTM (e.g. '82LX00BTIV')
+        id: string;
         screenSize?: string[];
         cpu?: string[];
         gpu?: string[];
@@ -25,14 +31,13 @@ export type ComputerSubModel = {
 
 export type ComputerModelFamily = {
     name: string;
-    type: string; // laptop | desktop | gaming | workstation | all-in-one | mini
+    type: string;
     subModels: ComputerSubModel[];
 };
 
 export type ComputerBrand = {
     models: ComputerModelFamily[];
 };
-
 // ---- Global spec options ----
 export const RAM_OPTIONS = ["4GB", "8GB", "12GB", "16GB", "24GB", "32GB", "48GB", "64GB", "96GB", "128GB", "לא ידוע"];
 export const STORAGE_OPTIONS = ["128GB SSD", "256GB SSD", "512GB SSD", "1TB SSD", "2TB SSD", "4TB SSD", "500GB HDD", "1TB HDD", "2TB HDD", "4TB HDD", "1TB SSD + 1TB HDD", "2TB SSD + 2TB HDD", "לא ידוע"];
@@ -220,7 +225,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "57Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.12kg",
+                    "release_year": "2023",
+                    "notes": "Ultra-lightweight business flagship, MIL-SPEC",
+                    "display": "14\" FHD+ IPS, 1920×1200, 400 nits"
                 },
                 {
                     "name": "Lenovo ThinkPad X1 Carbon Gen 12",
@@ -264,7 +275,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "57Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.12kg",
+                    "release_year": "2024",
+                    "notes": "Meteor Lake CPU, AI features, lightest in class",
+                    "display": "14\" WUXGA IPS, 1920×1200, 400 nits"
                 }
             ]
         },
@@ -301,6 +318,53 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "screenSize": [
                         "14\""
                     ]
+                },
+                {
+                    "name": "Lenovo ThinkPad T14 Gen 4",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 7730U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 610M"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "52.5Wh, up to 14h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, RJ45, 3.5mm jack",
+                    "weight": "1.37kg",
+                    "release_year": "2023",
+                    "notes": "Business workhorse, Ryzen version",
+                    "display": "14\" WUXGA IPS, 1920×1200, 300 nits",
+                    "skus": [
+                        {
+                            "id": "21HD0000US",
+                            "cpu": [
+                                "AMD Ryzen 7 7730U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 610M"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -330,6 +394,53 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "name": "ThinkPad E15 Gen 4",
                     "screenSize": [
                         "15.6\""
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad E14 Gen 5",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1335U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "57Wh, up to 13h",
+                    "ports": "2× USB-C, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.51kg",
+                    "release_year": "2023",
+                    "notes": "Entry business laptop, good keyboard",
+                    "display": "14\" WUXGA IPS, 1920×1200, 300 nits",
+                    "skus": [
+                        {
+                            "id": "21JR001LUS",
+                            "cpu": [
+                                "Intel Core i5-1335U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "8GB DDR5"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
                     ]
                 }
             ]
@@ -428,7 +539,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "75Wh, up to 10h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, 3.5mm jack",
+                    "weight": "1.43kg",
+                    "release_year": "2023",
+                    "notes": "Premium 2-in-1, OLED touch, JBL speakers",
+                    "display": "14\" 2.8K OLED, 2880×1800, touch, 90Hz"
                 }
             ]
         },
@@ -544,7 +661,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "75Wh, up to 12h",
+                    "ports": "USB-C 3.2, 2× USB-A, HDMI, SD card, 3.5mm jack",
+                    "weight": "2.0kg",
+                    "release_year": "2022",
+                    "notes": "Great display-to-price ratio",
+                    "display": "16\" 2.5K IPS, 2560×1600, 165Hz"
                 },
                 {
                     "name": "Lenovo IdeaPad 1 15IJL7",
@@ -588,7 +711,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "38Wh, up to 7h",
+                    "ports": "USB-A 3.2, USB-A 2.0, HDMI 1.4, SD card, 3.5mm jack",
+                    "weight": "1.7kg, 359×236×19.9mm",
+                    "release_year": "2022",
+                    "notes": "Entry-level budget laptop, Jasper Lake, basic tasks only",
+                    "display": "15.6\" FHD TN, 1920×1080, 220 nits"
                 }
             ]
         },
@@ -715,7 +844,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "80Wh, up to 8h",
+                    "ports": "3× USB-A, USB-C/Thunderbolt 4, HDMI 2.1, RJ45",
+                    "weight": "2.4kg",
+                    "release_year": "2022",
+                    "notes": "Gaming powerhouse, excellent cooling",
+                    "display": "16\" QHD IPS, 2560×1600, 165Hz"
                 },
                 {
                     "name": "Lenovo Legion 7i Gen 8",
@@ -759,7 +894,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 4× USB-A, USB-C, HDMI 2.1, RJ45",
+                    "weight": "2.73kg",
+                    "release_year": "2023",
+                    "notes": "Top-tier gaming, excellent display",
+                    "display": "16\" QHD+ IPS, 2560×1600, 240Hz"
                 }
             ]
         },
@@ -857,7 +998,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "52.5Wh, up to 14h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, RJ45, 3.5mm jack",
+                    "weight": "1.37kg",
+                    "release_year": "2023",
+                    "notes": "Business workhorse, Ryzen version",
+                    "display": "14\" WUXGA IPS, 1920×1200, 300 nits"
                 }
             ]
         },
@@ -907,7 +1054,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "57Wh, up to 13h",
+                    "ports": "2× USB-C, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.51kg",
+                    "release_year": "2023",
+                    "notes": "Entry business laptop, good keyboard",
+                    "display": "14\" WUXGA IPS, 1920×1200, 300 nits"
                 }
             ]
         },
@@ -957,7 +1110,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "94Wh",
+                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.95kg",
+                    "release_year": "2022",
+                    "notes": "ISV certified, up to 128GB RAM",
+                    "display": "16\" 4K IPS, 3840×2400, 600 nits"
                 }
             ]
         },
@@ -990,6 +1149,164 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "gpu": [
                                 "NVIDIA RTX 4000 SFF Ada"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
+                    "weight": "10.8kg",
+                    "release_year": "2023",
+                    "notes": "ISV certified, tool-less, up to 128GB RAM",
+                    "display": "None (external)"
+                }
+            ]
+        },
+        {
+            "name": "ThinkPad X1 Carbon",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Lenovo ThinkPad X1 Carbon Gen 11",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1365U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "57Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.12kg",
+                    "release_year": "2023",
+                    "notes": "Ultra-lightweight business flagship, MIL-SPEC",
+                    "display": "14\" FHD+ IPS, 1920×1200, 400 nits",
+                    "skus": [
+                        {
+                            "id": "21HM0065US",
+                            "cpu": [
+                                "Intel Core i7-1365U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad X1 Carbon Gen 12",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 7 165U"
+                    ],
+                    "gpu": [
+                        "Intel Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5x"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "57Wh, up to 15h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.12kg",
+                    "release_year": "2024",
+                    "notes": "Meteor Lake CPU, AI features, lightest in class",
+                    "display": "14\" WUXGA IPS, 1920×1200, 400 nits",
+                    "skus": [
+                        {
+                            "id": "21KC001KUS",
+                            "cpu": [
+                                "Intel Core Ultra 7 165U"
+                            ],
+                            "gpu": [
+                                "Intel Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5x"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ThinkPad P",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "Lenovo ThinkPad P16 Gen 1",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12950HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A5500"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "94Wh",
+                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.95kg",
+                    "release_year": "2022",
+                    "notes": "ISV certified, up to 128GB RAM",
+                    "display": "16\" 4K IPS, 3840×2400, 600 nits",
+                    "skus": [
+                        {
+                            "id": "21D6001KUS",
+                            "cpu": [
+                                "Intel Core i9-12950HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A5500"
                             ],
                             "ram": [
                                 "32GB DDR5"
@@ -1131,7 +1448,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "13.4\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "52Wh, up to 12h",
+                    "ports": "2× Thunderbolt 4, USB-C 3.2, 3.5mm jack",
+                    "weight": "1.2kg, 296×199×14.8mm",
+                    "release_year": "2021",
+                    "notes": "Compact premium ultrabook, InfinityEdge display",
+                    "display": "13.4\" FHD+ IPS, 1920×1200, 500 nits, touch"
                 },
                 {
                     "name": "Dell XPS 13 9315",
@@ -1175,7 +1498,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "13.4\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "55Wh, up to 12h",
+                    "ports": "2× Thunderbolt 4, 3.5mm jack",
+                    "weight": "1.17kg",
+                    "release_year": "2022",
+                    "notes": "Redesigned chassis, thinner bezels",
+                    "display": "13.4\" FHD+ IPS, 1920×1200, 500 nits"
                 },
                 {
                     "name": "Dell XPS 15 9520",
@@ -1219,7 +1548,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "86Wh, up to 13h",
+                    "ports": "2× Thunderbolt 4, USB-C 3.2, SD card, 3.5mm jack",
+                    "weight": "1.86kg",
+                    "release_year": "2022",
+                    "notes": "OLED display option, premium build",
+                    "display": "15.6\" OLED 3.5K, 3456×2160, 400 nits, touch, 60Hz"
                 },
                 {
                     "name": "Dell XPS 15 9530",
@@ -1263,7 +1598,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "86Wh, up to 13h",
+                    "ports": "2× Thunderbolt 4, USB-C 3.2, SD card, 3.5mm jack",
+                    "weight": "1.86kg",
+                    "release_year": "2023",
+                    "notes": "RTX 4060, Raptor Lake CPU",
+                    "display": "15.6\" OLED 3.5K, 3456×2160, 60Hz"
                 },
                 {
                     "name": "Dell XPS 16 9640",
@@ -1307,7 +1648,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16.3\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "99.5Wh, up to 12h",
+                    "ports": "2× Thunderbolt 4, 2× USB-C 3.2, SD card",
+                    "weight": "2.0kg",
+                    "release_year": "2024",
+                    "notes": "New 16\" flagship, Meteor Lake CPU, AI features",
+                    "display": "16.3\" OLED 4K+, 3840×2400, 120Hz, touch"
                 }
             ]
         },
@@ -1399,7 +1746,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "54Wh, up to 8h",
+                    "ports": "USB-A 3.2, USB-A 2.0, USB-C 3.2, HDMI, SD card, 3.5mm jack",
+                    "weight": "1.65kg",
+                    "release_year": "2022",
+                    "notes": "Budget mainstream laptop, good value",
+                    "display": "15.6\" FHD IPS, 1920×1080, 250 nits"
                 }
             ]
         },
@@ -1489,7 +1842,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "54Wh, up to 14h",
+                    "ports": "2× USB-A, USB-C/Thunderbolt 4, HDMI, RJ45, SD card",
+                    "weight": "1.79kg",
+                    "release_year": "2023",
+                    "notes": "Business laptop, vPro option, durable",
+                    "display": "15.6\" FHD IPS, 1920×1080, 250 nits"
                 }
             ]
         },
@@ -1547,7 +1906,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "90Wh, up to 6h",
+                    "ports": "Thunderbolt 4, 3× USB-A, USB-C, HDMI 2.1, RJ45, SD card",
+                    "weight": "3.19kg",
+                    "release_year": "2024",
+                    "notes": "Cherry Lake-R CPU, top gaming performance",
+                    "display": "16\" QHD+ IPS, 2560×1600, 240Hz"
                 },
                 {
                     "name": "Alienware X16 R2",
@@ -1625,7 +1990,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "90Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45",
+                    "weight": "2.99kg",
+                    "release_year": "2023",
+                    "notes": "480Hz display, Cherry Lake CPU",
+                    "display": "16\" QHD+ IPS, 2560×1600, 480Hz"
                 },
                 {
                     "name": "Dell Alienware Aurora R15",
@@ -1663,7 +2034,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "Windows 11 Home"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "5× USB-A, 2× USB-C, HDMI 2.1, DP, RJ45",
+                    "weight": "13.2kg",
+                    "release_year": "2023",
+                    "notes": "Gaming desktop, tool-less design, RGB lighting",
+                    "display": "None (external)"
                 }
             ]
         },
@@ -1737,7 +2113,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "86Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, 3.5mm jack",
+                    "weight": "1.84kg",
+                    "release_year": "2022",
+                    "notes": "Mobile workstation, ISV certified",
+                    "display": "15.6\" FHD+ OLED, 1920×1200"
                 }
             ]
         },
@@ -1797,7 +2179,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "Windows 11 Pro"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
+                    "weight": "5.4kg",
+                    "release_year": "2022",
+                    "notes": "Business desktop, vPro option",
+                    "display": "None (external)"
                 }
             ]
         },
@@ -1871,6 +2258,53 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "name": "Spectre x360 16 16-f2000",
                     "screenSize": [
                         "16\""
+                    ]
+                },
+                {
+                    "name": "HP Spectre x360 14",
+                    "screenSize": [
+                        "13.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-1355U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "66Wh, up to 17h",
+                    "ports": "2× Thunderbolt 4, USB-A 3.2, 3.5mm jack, microSD",
+                    "weight": "1.36kg",
+                    "release_year": "2023",
+                    "notes": "2-in-1 convertible, OLED touchscreen, premium",
+                    "display": "13.5\" OLED 2.8K, 2880×1920, touch, 60Hz",
+                    "skus": [
+                        {
+                            "id": "14-ef2013dx",
+                            "cpu": [
+                                "Intel Core i7-1355U"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
                     ]
                 }
             ]
@@ -1957,7 +2391,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "83Wh, up to 10h",
+                    "ports": "Thunderbolt 4, USB-A 3.0, USB-C, HDMI 2.1, SD card, 3.5mm jack",
+                    "weight": "2.24kg",
+                    "release_year": "2022",
+                    "notes": "Creator laptop, 4K display, RTX 3060",
+                    "display": "16\" UHD+ IPS, 3840×2400, 120Hz, touch"
                 }
             ]
         },
@@ -2048,7 +2488,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "51Wh, up to 14h",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, 3.5mm jack, microSD",
+                    "weight": "1.36kg",
+                    "release_year": "2023",
+                    "notes": "Business flagship, MIL-SPEC, Wolf Security",
+                    "display": "14\" FHD IPS, 1920×1080, 400 nits, sure view"
                 }
             ]
         },
@@ -2172,7 +2618,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16.1\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "83Wh, up to 8h",
+                    "ports": "USB-C/Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.35kg",
+                    "release_year": "2023",
+                    "notes": "AMD gaming laptop, OMEN lighting",
+                    "display": "16.1\" QHD IPS, 2560×1440, 165Hz"
                 }
             ]
         },
@@ -2262,7 +2714,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "13.5\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "66Wh, up to 17h",
+                    "ports": "2× Thunderbolt 4, USB-A 3.2, 3.5mm jack, microSD",
+                    "weight": "1.36kg",
+                    "release_year": "2023",
+                    "notes": "2-in-1 convertible, OLED touchscreen, premium",
+                    "display": "13.5\" OLED 2.8K, 2880×1920, touch, 60Hz"
                 }
             ]
         },
@@ -2312,7 +2770,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "43Wh, up to 8h",
+                    "ports": "USB-C 3.2, 2× USB-A, HDMI, SD card, 3.5mm jack",
+                    "weight": "1.75kg",
+                    "release_year": "2023",
+                    "notes": "Mid-range mainstream, good value",
+                    "display": "15.6\" FHD IPS, 1920×1080, 250 nits"
                 }
             ]
         },
@@ -2362,7 +2826,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "96Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.77kg",
+                    "release_year": "2023",
+                    "notes": "ISV certified mobile workstation",
+                    "display": "16\" 4K DreamColor IPS, 3840×2400, 120Hz"
                 }
             ]
         },
@@ -2406,7 +2876,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "Windows 11 Pro"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, 2× DP, RJ45",
+                    "weight": "14.5kg",
+                    "release_year": "2023",
+                    "notes": "ECC memory, Xeon CPU, ISV certified",
+                    "display": "None (external)"
                 }
             ]
         }
@@ -2634,7 +3109,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "76Wh, up to 10h",
+                    "ports": "2× USB-C, 2× USB-A, HDMI 2.0b, 3.5mm jack",
+                    "weight": "1.65kg",
+                    "release_year": "2022",
+                    "notes": "Compact gaming, AMD advantage edition",
+                    "display": "14\" QHD IPS, 2560×1600, 120Hz"
                 },
                 {
                     "name": "ASUS ROG Zephyrus G16",
@@ -2678,7 +3159,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "90Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, SD card, HDMI 2.1",
+                    "weight": "1.95kg",
+                    "release_year": "2024",
+                    "notes": "OLED gaming, MeteorLake, slim chassis",
+                    "display": "16\" QHD+ OLED, 2560×1600, 240Hz"
                 },
                 {
                     "name": "ASUS ROG Strix SCAR 18",
@@ -2722,7 +3209,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "18\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "90Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, SD card, HDMI 2.1, RJ45",
+                    "weight": "3.1kg",
+                    "release_year": "2023",
+                    "notes": "Desktop-replacement gaming, massive display",
+                    "display": "18\" QHD+ IPS, 2560×1600, 240Hz"
                 }
             ]
         },
@@ -2841,7 +3334,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "96Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, HDMI, 3.5mm jack",
+                    "weight": "2.4kg",
+                    "release_year": "2022",
+                    "notes": "OLED creator workstation, Dial knob",
+                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch"
                 }
             ]
         },
@@ -2920,7 +3419,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "75Wh, up to 15h",
+                    "ports": "2× USB-C (USB4), 2× USB-A, HDMI, SD card",
+                    "weight": "1.2kg",
+                    "release_year": "2024",
+                    "notes": "Ryzen AI, OLED display, fanless option",
+                    "display": "14\" 3K OLED, 2880×1800, 120Hz, touch"
                 }
             ]
         },
@@ -2970,7 +3475,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "42Wh, up to 8h",
+                    "ports": "USB-C 3.2, 2× USB-A, HDMI, 3.5mm jack",
+                    "weight": "1.7kg",
+                    "release_year": "2022",
+                    "notes": "Mainstream budget laptop, good everyday performance",
+                    "display": "15.6\" FHD IPS, 1920×1080, 250 nits"
                 }
             ]
         },
@@ -2995,6 +3506,213 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "os": [
                         "Windows 11 Pro"
                     ],
+                    "skus": [
+                        {
+                            "id": "PN64-BB5013MD",
+                            "cpu": [
+                                "Intel Core i5-12500H"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45, SD card",
+                    "weight": "0.74kg",
+                    "release_year": "2022",
+                    "notes": "Compact NUC-style, powerful H-series CPU",
+                    "display": "None (external)"
+                }
+            ]
+        },
+        {
+            "name": "ROG Zephyrus",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "ASUS ROG Zephyrus G14",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 9 6900HS"
+                    ],
+                    "gpu": [
+                        "AMD Radeon RX 6700S"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "76Wh, up to 10h",
+                    "ports": "2× USB-C, 2× USB-A, HDMI 2.0b, 3.5mm jack",
+                    "weight": "1.65kg",
+                    "release_year": "2022",
+                    "notes": "Compact gaming, AMD advantage edition",
+                    "display": "14\" QHD IPS, 2560×1600, 120Hz",
+                    "skus": [
+                        {
+                            "id": "GA402RK-L4030W",
+                            "cpu": [
+                                "AMD Ryzen 9 6900HS"
+                            ],
+                            "gpu": [
+                                "AMD Radeon RX 6700S"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ASUS ROG Zephyrus G16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 9 185H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, SD card, HDMI 2.1",
+                    "weight": "1.95kg",
+                    "release_year": "2024",
+                    "notes": "OLED gaming, MeteorLake, slim chassis",
+                    "display": "16\" QHD+ OLED, 2560×1600, 240Hz",
+                    "skus": [
+                        {
+                            "id": "GU605MZ-QR046W",
+                            "cpu": [
+                                "Intel Core Ultra 9 185H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ROG Strix",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "ASUS ROG Strix SCAR 18",
+                    "screenSize": [
+                        "18\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13980HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "90Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, SD card, HDMI 2.1, RJ45",
+                    "weight": "3.1kg",
+                    "release_year": "2023",
+                    "notes": "Desktop-replacement gaming, massive display",
+                    "display": "18\" QHD+ IPS, 2560×1600, 240Hz",
+                    "skus": [
+                        {
+                            "id": "G834JY-XS97",
+                            "cpu": [
+                                "Intel Core i9-13980HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4090"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Mini PC PN",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "ASUS Mini PC PN64",
+                    "cpu": [
+                        "Intel Core i5-12500H"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45, SD card",
+                    "weight": "0.74kg",
+                    "release_year": "2022",
+                    "notes": "Compact NUC-style, powerful H-series CPU",
+                    "display": "None (external)",
                     "skus": [
                         {
                             "id": "PN64-BB5013MD",
@@ -3184,7 +3902,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "13.3\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "49.9Wh, up to 18h",
+                    "ports": "2× USB-C/Thunderbolt 3, 3.5mm jack",
+                    "weight": "1.29kg, 304×212×16.1mm",
+                    "release_year": "2020",
+                    "notes": "Fanless design, first Apple Silicon MacBook",
+                    "display": "13.3\" Retina IPS, 2560×1600, 400 nits"
                 },
                 {
                     "name": "Apple MacBook Air 13 M2",
@@ -3228,7 +3952,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "13.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "52.6Wh, up to 18h",
+                    "ports": "2× USB-C/Thunderbolt 3, MagSafe 3, 3.5mm jack",
+                    "weight": "1.24kg, 304×215×11.3mm",
+                    "release_year": "2022",
+                    "notes": "Redesigned chassis, MagSafe returns, notch display",
+                    "display": "13.6\" Liquid Retina, 2560×1664, 500 nits"
                 },
                 {
                     "name": "Apple MacBook Air 13 M3",
@@ -3272,7 +4002,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "13.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "52.6Wh, up to 18h",
+                    "ports": "2× USB-C/Thunderbolt 3, MagSafe 3, 3.5mm jack",
+                    "weight": "1.24kg",
+                    "release_year": "2024",
+                    "notes": "Supports two external displays, Wi-Fi 6E",
+                    "display": "13.6\" Liquid Retina, 2560×1664, 500 nits"
                 },
                 {
                     "name": "Apple MacBook Air 15 M2",
@@ -3316,7 +4052,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.3\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "66.5Wh, up to 18h",
+                    "ports": "2× USB-C/Thunderbolt 3, MagSafe 3, 3.5mm jack",
+                    "weight": "1.51kg",
+                    "release_year": "2023",
+                    "notes": "Largest fanless laptop, first 15\" MacBook Air",
+                    "display": "15.3\" Liquid Retina, 2880×1864, 500 nits"
                 },
                 {
                     "name": "Apple MacBook Air 15 M3",
@@ -3360,7 +4102,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.3\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "66.5Wh, up to 18h",
+                    "ports": "2× USB-C/Thunderbolt 3, MagSafe 3, 3.5mm jack",
+                    "weight": "1.51kg",
+                    "release_year": "2024",
+                    "notes": "Wi-Fi 6E, supports dual external displays",
+                    "display": "15.3\" Liquid Retina, 2880×1864, 500 nits"
                 }
             ]
         },
@@ -3605,7 +4353,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14.2\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "70Wh, up to 22h",
+                    "ports": "3× Thunderbolt 4, HDMI, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "1.55kg",
+                    "release_year": "2023",
+                    "notes": "Mini-LED XDR display, first M3 MacBook Pro",
+                    "display": "14.2\" Liquid Retina XDR, 3024×1964, 1000 nits, ProMotion 120Hz"
                 },
                 {
                     "name": "Apple MacBook Pro 14 M3 Pro",
@@ -3649,7 +4403,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14.2\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "72Wh, up to 18h",
+                    "ports": "3× Thunderbolt 4, HDMI 2.1, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "1.61kg",
+                    "release_year": "2023",
+                    "notes": "ProRes hardware acceleration, up to 64GB RAM",
+                    "display": "14.2\" Liquid Retina XDR, 3024×1964, ProMotion 120Hz"
                 },
                 {
                     "name": "Apple MacBook Pro 14 M3 Max",
@@ -3693,7 +4453,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14.2\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "72Wh, up to 18h",
+                    "ports": "3× Thunderbolt 4, HDMI 2.1, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "1.62kg",
+                    "release_year": "2023",
+                    "notes": "Up to 128GB RAM, 3 external displays",
+                    "display": "14.2\" Liquid Retina XDR, 3024×1964, ProMotion 120Hz"
                 },
                 {
                     "name": "Apple MacBook Pro 16 M3 Pro",
@@ -3737,7 +4503,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16.2\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "88Wh, up to 22h",
+                    "ports": "3× Thunderbolt 4, HDMI 2.1, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "2.14kg",
+                    "release_year": "2023",
+                    "notes": "Best battery life in lineup",
+                    "display": "16.2\" Liquid Retina XDR, 3456×2234, ProMotion 120Hz"
                 },
                 {
                     "name": "Apple MacBook Pro 16 M3 Max",
@@ -3781,7 +4553,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16.2\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "88Wh, up to 22h",
+                    "ports": "3× Thunderbolt 4, HDMI 2.1, SD card, MagSafe 3, 3.5mm jack",
+                    "weight": "2.15kg",
+                    "release_year": "2023",
+                    "notes": "Up to 128GB RAM, ultimate pro performance",
+                    "display": "16.2\" Liquid Retina XDR, 3456×2234, ProMotion 120Hz"
                 }
             ]
         },
@@ -3878,7 +4656,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "macOS Ventura"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI 2.0, Ethernet, 3.5mm jack",
+                    "weight": "1.18kg, 197×197×35.8mm",
+                    "release_year": "2023",
+                    "notes": "Compact desktop, supports up to 2 displays",
+                    "display": "None (external)"
                 },
                 {
                     "name": "Apple Mac Mini M2 Pro",
@@ -3916,7 +4699,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "macOS Ventura"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "3× Thunderbolt 4, 2× USB-A, HDMI 2.0, Ethernet, 3.5mm jack",
+                    "weight": "1.18kg",
+                    "release_year": "2023",
+                    "notes": "Supports up to 3 external displays",
+                    "display": "None (external)"
                 }
             ]
         },
@@ -4024,7 +4812,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "macOS Ventura"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "2× Thunderbolt 4 (front), 4× Thunderbolt 4 (rear), 2× USB-A, HDMI, SD card, Ethernet",
+                    "weight": "2.69kg",
+                    "release_year": "2023",
+                    "notes": "Compact pro desktop, supports 5 external displays",
+                    "display": "None (external)"
                 }
             ]
         },
@@ -4115,7 +4908,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "24\""
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-C, MagSafe, Ethernet (in power brick)",
+                    "weight": "4.48kg",
+                    "release_year": "2023",
+                    "notes": "7mm thin, available in 7 colors",
+                    "display": "24\" 4.5K Retina, 4480×2520, 500 nits, True Tone"
                 }
             ]
         },
@@ -4159,7 +4957,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "macOS Ventura"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "6× Thunderbolt 4, 2× USB-A, 2× HDMI 2.1, 6× PCIe slots",
+                    "weight": "6.8kg",
+                    "release_year": "2023",
+                    "notes": "Mac Pro with new design, PCIe expansion, up to 192GB RAM",
+                    "display": "None (external)"
                 },
                 {
                     "name": "Apple Mac Pro Tower M2 Ultra",
@@ -4197,7 +5000,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "macOS Ventura"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "6× Thunderbolt 4, 2× USB-A, 2× HDMI 2.1, 7× PCIe slots",
+                    "weight": "7.0kg",
+                    "release_year": "2023",
+                    "notes": "Full tower expansion, up to 192GB RAM",
+                    "display": "None (external)"
                 }
             ]
         }
@@ -4316,7 +5124,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "17\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, SD card, RJ45",
+                    "weight": "2.9kg",
+                    "release_year": "2023",
+                    "notes": "Top gaming performance, RGB keyboard",
+                    "display": "17\" QHD+ IPS, 2560×1600, 240Hz"
                 }
             ]
         },
@@ -4453,7 +5267,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "17.3\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "Thunderbolt 4, 5× USB-A, HDMI 2.1, mini DP 1.4, SD card, RJ45",
+                    "weight": "3.5kg",
+                    "release_year": "2023",
+                    "notes": "Ultimate desktop replacement, mechanical keyboard",
+                    "display": "17.3\" UHD IPS, 3840×2160, 144Hz"
                 }
             ]
         },
@@ -4503,7 +5323,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "99.9Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, HDMI 2.1",
+                    "weight": "2.35kg",
+                    "release_year": "2022",
+                    "notes": "Creator laptop, touch display, stylus support",
+                    "display": "16\" QHD+ IPS, 2560×1600, 165Hz, touch"
                 }
             ]
         }
@@ -4598,7 +5424,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "56Wh, up to 11.5h",
+                    "ports": "USB-C 3.2, 2× USB-A, HDMI, SD card",
+                    "weight": "1.45kg",
+                    "release_year": "2021",
+                    "notes": "Lightweight budget ultrabook",
+                    "display": "14\" FHD IPS, 1920×1080, 300 nits"
                 }
             ]
         },
@@ -4690,7 +5522,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "55Wh, up to 7h",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.2kg",
+                    "release_year": "2022",
+                    "notes": "Great price-performance gaming",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz"
                 }
             ]
         },
@@ -4760,7 +5598,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "57.5Wh, up to 8h",
+                    "ports": "USB-C 3.2, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.2kg",
+                    "release_year": "2022",
+                    "notes": "Budget gaming, excellent value",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz"
                 }
             ]
         },
@@ -4815,6 +5659,59 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "name": "Spin 714 (SP714-51M)",
                     "screenSize": [
                         "14\""
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Predator Helios",
+            "type": "laptop",
+            "subModels": [
+                {
+                    "name": "Acer Predator Helios 300",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "55Wh, up to 7h",
+                    "ports": "Thunderbolt 4, 3× USB-A, HDMI 2.1, RJ45, SD card",
+                    "weight": "2.2kg",
+                    "release_year": "2022",
+                    "notes": "Great price-performance gaming",
+                    "display": "15.6\" FHD IPS, 1920×1080, 144Hz",
+                    "skus": [
+                        {
+                            "id": "PH315-55-78ER",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
                     ]
                 }
             ]
@@ -4928,7 +5825,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "13\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "47.36Wh, up to 15.5h",
+                    "ports": "2× Thunderbolt 4, Surface Connect",
+                    "weight": "879g",
+                    "release_year": "2022",
+                    "notes": "Detachable 2-in-1, LTE option, ARM version available",
+                    "display": "13\" PixelSense, 2880×1920, 120Hz, touch"
                 }
             ]
         },
@@ -5031,7 +5934,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "13.5\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "47.4Wh, up to 17h",
+                    "ports": "Thunderbolt 4, USB-A, 3.5mm jack, Surface Connect",
+                    "weight": "1.29kg",
+                    "release_year": "2022",
+                    "notes": "Touch display, premium build, Dolby Vision",
+                    "display": "13.5\" PixelSense, 2256×1504, 201ppi, touch"
                 },
                 {
                     "name": "Microsoft Surface Laptop 5 15",
@@ -5075,7 +5984,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "58Wh, up to 17h",
+                    "ports": "Thunderbolt 4, 2× USB-A, 3.5mm jack, Surface Connect",
+                    "weight": "1.56kg",
+                    "release_year": "2022",
+                    "notes": "Larger screen, alcantara or metal keyboard",
+                    "display": "15\" PixelSense, 2496×1664, touch"
                 }
             ]
         },
@@ -5125,7 +6040,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "14.4\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "58Wh, up to 19h",
+                    "ports": "2× Thunderbolt 4, USB-A, 3.5mm jack, SD card",
+                    "weight": "1.89kg",
+                    "release_year": "2023",
+                    "notes": "Unique pull-forward hinge, Studio mode",
+                    "display": "14.4\" PixelSense Flow, 2400×1600, 120Hz, touch"
                 }
             ]
         }
@@ -5221,6 +6142,100 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                         "13.3\"",
                         "15.6\""
                     ]
+                },
+                {
+                    "name": "Samsung Galaxy Book4 Pro 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core Ultra 7 155H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070"
+                    ],
+                    "ram": [
+                        "16GB LPDDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "76Wh, up to 21h",
+                    "ports": "Thunderbolt 4, 2× USB-C, USB-A, SD card, 3.5mm jack",
+                    "weight": "1.56kg",
+                    "release_year": "2024",
+                    "notes": "AMOLED display, Galaxy AI, ultra-light",
+                    "display": "16\" Dynamic AMOLED 2X, 2880×1800, 120Hz",
+                    "skus": [
+                        {
+                            "id": "NP960XGK-KG1US",
+                            "cpu": [
+                                "Intel Core Ultra 7 155H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4070"
+                            ],
+                            "ram": [
+                                "16GB LPDDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Samsung Galaxy Book3 Ultra",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "76Wh",
+                    "ports": "Thunderbolt 4, USB-C, USB-A, SD card, HDMI",
+                    "weight": "1.79kg",
+                    "release_year": "2023",
+                    "notes": "AMOLED creator laptop, excellent display",
+                    "display": "16\" Dynamic AMOLED 2X, 2880×1800, 120Hz",
+                    "skus": [
+                        {
+                            "id": "NP960XFH-XA1US",
+                            "cpu": [
+                                "Intel Core i9-13900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 4070"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -5270,7 +6285,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "76Wh, up to 21h",
+                    "ports": "Thunderbolt 4, 2× USB-C, USB-A, SD card, 3.5mm jack",
+                    "weight": "1.56kg",
+                    "release_year": "2024",
+                    "notes": "AMOLED display, Galaxy AI, ultra-light",
+                    "display": "16\" Dynamic AMOLED 2X, 2880×1800, 120Hz"
                 },
                 {
                     "name": "Samsung Galaxy Book3 Ultra",
@@ -5314,7 +6335,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "16\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "76Wh",
+                    "ports": "Thunderbolt 4, USB-C, USB-A, SD card, HDMI",
+                    "weight": "1.79kg",
+                    "release_year": "2023",
+                    "notes": "AMOLED creator laptop, excellent display",
+                    "display": "16\" Dynamic AMOLED 2X, 2880×1800, 120Hz"
                 }
             ]
         }
@@ -5369,7 +6396,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "None (bare bones)"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "2× Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45",
+                    "weight": "0.7kg, 117×112×37mm",
+                    "release_year": "2023",
+                    "notes": "Barebones mini PC, user-configurable RAM/storage",
+                    "display": "None (external)"
                 }
             ]
         },
@@ -5413,7 +6445,12 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "Windows 11 Pro"
                             ]
                         }
-                    ]
+                    ],
+                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI, RJ45",
+                    "weight": "0.47kg",
+                    "release_year": "2023",
+                    "notes": "Ultra-budget mini PC, fanless option, great for HTPC",
+                    "display": "None (external)"
                 }
             ]
         }
@@ -5465,7 +6502,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "15.6\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "80Wh, up to 7h",
+                    "ports": "Thunderbolt 4, 3× USB-A, SD card, HDMI 2.1",
+                    "weight": "2.01kg",
+                    "release_year": "2023",
+                    "notes": "Premium slim gaming, CNC aluminum chassis",
+                    "display": "15.6\" QHD IPS, 2560×1440, 240Hz"
                 },
                 {
                     "name": "Razer Blade 18",
@@ -5509,7 +6552,13 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                                 "18\""
                             ]
                         }
-                    ]
+                    ],
+                    "battery": "93.5Wh",
+                    "ports": "Thunderbolt 4, 4× USB-A, SD card, HDMI 2.1",
+                    "weight": "3.2kg",
+                    "release_year": "2023",
+                    "notes": "Largest Razer laptop, desktop-class GPU",
+                    "display": "18\" QHD+ IPS, 2560×1600, 300Hz"
                 },
                 {
                     "name": "Razer Blade 14",
@@ -5551,6 +6600,112 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "screenSize": [
                                 "14\""
+                            ]
+                        }
+                    ],
+                    "battery": "61.6Wh",
+                    "ports": "Thunderbolt 4, USB-A, USB-C, SD card, HDMI 2.1",
+                    "weight": "1.72kg",
+                    "release_year": "2023",
+                    "notes": "Compact gaming powerhouse, Ryzen 9",
+                    "display": "14\" QHD+ IPS, 2560×1600, 165Hz"
+                }
+            ]
+        }
+    ],
+    "Other": [
+        {
+            "name": "Intel NUC",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Intel NUC 13 Pro",
+                    "cpu": [
+                        "Intel Core i5-1340P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "None (user-installed)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (bare bones)"
+                    ],
+                    "ports": "2× Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45",
+                    "weight": "0.7kg, 117×112×37mm",
+                    "release_year": "2023",
+                    "notes": "Barebones mini PC, user-configurable RAM/storage",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "RNUC13ANHI50002",
+                            "cpu": [
+                                "Intel Core i5-1340P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "None (user-installed)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (bare bones)"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Beelink",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Beelink Mini S12 Pro",
+                    "cpu": [
+                        "Intel N100, 4-core, 3.4GHz"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 24EU"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "500GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI, RJ45",
+                    "weight": "0.47kg",
+                    "release_year": "2023",
+                    "notes": "Ultra-budget mini PC, fanless option, great for HTPC",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "BEE-S12PRO",
+                            "cpu": [
+                                "Intel N100, 4-core, 3.4GHz"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 24EU"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "500GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
                             ]
                         }
                     ]

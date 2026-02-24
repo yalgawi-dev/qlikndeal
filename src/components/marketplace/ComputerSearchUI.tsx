@@ -102,14 +102,14 @@ function buildLocalResult(d: { brand: string; family: any; sub: any; matchedSku:
         gpu: matchedSku?.gpu?.join(", ") || sub.gpu?.join(", ") || "",
         ram: matchedSku?.ram?.[0] || sub.ram?.[0] || "ללא ידוע",
         storage: matchedSku?.storage?.[0] || sub.storage?.[0] || "ללא ידוע",
-        display: matchedSku?.screenSize?.[0] || sub.screenSize?.[0] || "",
+        display: sub.display || matchedSku?.screenSize?.[0] || sub.screenSize?.[0] || "",
         os: matchedSku?.os?.[0] || sub.os?.[0] || "ללא מערכת הפעלה",
-        battery: "",
-        ports: "",
-        weight: "",
+        battery: sub.battery || "",
+        ports: sub.ports || "",
+        weight: sub.weight || "",
         price: "",
-        release_year: "",
-        notes: ""
+        release_year: sub.release_year || "",
+        notes: sub.notes || ""
     };
 }
 
