@@ -79,44 +79,14 @@ function buildSpec(d: { brand: string; family: any; sub: any; matchedSku: any })
     };
 }
 
-// ─── Spec field definitions (used in the unified form) ───────────
-const SPEC_FIELDS = [
-    { key: "brand", label: "יצרן", icon: "🏭", kind: "text" },
-    { key: "model_name", label: "שם דגם", icon: "🏷️", kind: "text" },
-    { key: "model_number", label: "מספר דגם / SKU", icon: "#️⃣", kind: "text" },
-    { key: "type", label: "סוג מחשב", icon: "💻", kind: "typeSelect" },
-    { key: "cpu", label: "מעבד (CPU)", icon: "⚡", kind: "text" },
-    { key: "gpu", label: "כרטיס מסך (GPU)", icon: "🎮", kind: "text" },
-    { key: "ram", label: "זיכרון RAM", icon: "🧠", kind: "ramSelect" },
-    { key: "storage", label: "אחסון", icon: "💾", kind: "storageSelect" },
-    { key: "display", label: "מסך", icon: "🖥️", kind: "text" },
-    { key: "os", label: "מערכת הפעלה", icon: "🪟", kind: "osSelect" },
-    { key: "battery", label: "סוללה / בריאות", icon: "🔋", kind: "battery" },
-    { key: "ports", label: "חיבורים", icon: "🔌", kind: "ports" },
-    { key: "weight", label: "משקל", icon: "📐", kind: "text", placeholder: "לדוגמה: 1.8 ק\"ג" },
-    { key: "price", label: "מחיר מבוקש (₪)", icon: "💰", kind: "price", placeholder: "הכנס מחיר בש\"ח" },
-    { key: "release_year", label: "שנת ייצור", icon: "📅", kind: "text", placeholder: "לדוגמה: 2023" },
-    { key: "notes", label: "הערות / תיאור נוסף", icon: "📝", kind: "textarea", placeholder: "תיאור כללי, ליקויים, מה כלול במכירה..." },
-];
-
-const TYPE_OPTIONS = ["laptop", "desktop", "workstation", "all-in-one", "mini pc", "gaming laptop", "tablet"];
-const BATTERY_OPTIONS = ["תקינה", "לא תקינה", "הכנס % ידנית"];
-
 // ─── Main Component ───────────────────────────────────────────────
 export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) => void }) {
     const [query, setQuery] = useState("");
     const [suggestions, setSuggestions] = useState<{ label: string; data: any }[]>([]);
     const [showSug, setShowSug] = useState(false);
-    const [spec, setSpec] = useState<Record<string, string> | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isPremium, setIsPremium] = useState(false);
-    const [confirmed, setConfirmed] = useState(false);
-
-    // Special fields state
-    const [batteryStatus, setBatteryStatus] = useState("תקינה");
-    const [batteryHealth, setBatteryHealth] = useState("");
-    const [selectedPorts, setSelectedPorts] = useState<string[]>([]);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -141,15 +111,8 @@ export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) 
 
     const loadSpec = (data: any) => {
         const s = buildSpec(data);
-        setSpec(s);
-        setConfirmed(false);
-        // Extract ports from DB data if available, pre-select them
-        const portsStr = s.ports_info || "";
-        const preSelected: string[] = [];
-        PORT_OPTIONS.forEach(p => { if (portsStr.toLowerCase().includes(p.toLowerCase().split(" ")[0])) preSelected.push(p); });
-        setSelectedPorts(preSelected);
-        setBatteryStatus("תקינה");
-        setBatteryHealth("");
+        // Map the db fields to standard names correctly and pass raw directly to the parent
+        onApplySpecs({ ...s, battery: s.battery_info, ports: s.ports_info, notes: s.notes });
         setShowSug(false);
     };
 
@@ -173,8 +136,7 @@ export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) 
                 });
                 const data = await res.json();
                 if (data.error) throw new Error(data.error);
-                setSpec(data);
-                setConfirmed(false);
+                onApplySpecs(data);
             } catch (e: any) {
                 setError(e.message);
             } finally { setLoading(false); }
@@ -184,28 +146,6 @@ export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) 
             else setError(`"${q}" לא נמצא במאגר. נסה חיפוש פרימיום (לחצן ירוק) או שנה את ניסוח החיפוש.`);
             setLoading(false);
         }
-    };
-
-    const updateField = (key: string, val: string) => {
-        setSpec(p => p ? { ...p, [key]: val } : p);
-        setConfirmed(false);
-    };
-
-    const togglePort = (port: string) => {
-        setSelectedPorts(prev => prev.includes(port) ? prev.filter(p => p !== port) : [...prev, port]);
-        setConfirmed(false);
-    };
-
-    const handleApply = () => {
-        if (!spec || !confirmed) return;
-        const batteryFinal = batteryStatus === "הכנס % ידנית"
-            ? `${batteryHealth}% בריאות`
-            : batteryStatus;
-        onApplySpecs({
-            ...spec,
-            battery: batteryFinal,
-            ports: selectedPorts.join(", ") || spec.ports_info || "",
-        });
     };
 
     // ── Render ─────────────────────────────────────────────────────
@@ -306,239 +246,6 @@ export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) 
                     </div>
                 )}
 
-                {/* Unified spec form */}
-                {spec && (
-                    <div>
-                        {/* Model badge row */}
-                        <div style={{
-                            padding: "12px 16px", borderRadius: "12px 12px 0 0",
-                            background: "linear-gradient(135deg,#0f172a,#1a2744)",
-                            border: "1px solid #1e3a5f", borderBottom: "none",
-                            display: "flex", alignItems: "center", gap: 12
-                        }}>
-                            <span style={{ fontSize: "1.6rem" }}>💻</span>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 700, fontSize: "1rem", color: "#f1f5f9", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                    {spec.model_name || query}
-                                </div>
-                                <div style={{ display: "flex", gap: 6, marginTop: 4, flexWrap: "wrap" }}>
-                                    {spec.model_number && (
-                                        <span style={{ fontSize: "0.7rem", background: "#6366f115", color: "#a5b4fc", padding: "1px 8px", borderRadius: 20, border: "1px solid #6366f130" }}>
-                                            #{spec.model_number}
-                                        </span>
-                                    )}
-                                    {spec.release_year && (
-                                        <span style={{ fontSize: "0.7rem", background: "#1e3a5f40", color: "#7ea8d8", padding: "1px 8px", borderRadius: 20, border: "1px solid #1e3a5f" }}>
-                                            {spec.release_year}
-                                        </span>
-                                    )}
-                                    <span style={{ fontSize: "0.68rem", color: "#34d399", background: "#34d39912", padding: "1px 8px", borderRadius: 20, border: "1px solid #34d39930" }}>
-                                        ✏️ כל השדות ניתנים לעריכה
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Fields */}
-                        <div style={{ border: "1px solid #1e3a5f", borderTop: "none", borderRadius: "0 0 12px 12px", overflow: "hidden" }}>
-                            {SPEC_FIELDS.map((field, idx) => {
-                                const val = spec[field.key] ?? "";
-                                const bg = idx % 2 === 0 ? "#0a0e18" : "#0d1117";
-
-                                return (
-                                    <div key={field.key} style={{ padding: "10px 14px", background: bg, borderBottom: "1px solid #1e3a5f20" }}>
-                                        <div style={{ fontSize: "0.7rem", color: "#475569", fontWeight: 600, marginBottom: 5, display: "flex", alignItems: "center", gap: 5 }}>
-                                            <span>{field.icon}</span>
-                                            <span style={{ textTransform: "uppercase", letterSpacing: ".04em" }}>{field.label}</span>
-                                            {val && field.kind !== "battery" && field.kind !== "ports" && field.kind !== "price" && (
-                                                <span style={{ marginRight: "auto", fontSize: "0.6rem", color: "#0ea5e9", background: "#0ea5e915", padding: "1px 6px", borderRadius: 20, border: "1px solid #0ea5e930" }}>
-                                                    ממאגר ✓
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* text / default */}
-                                        {(field.kind === "text") && (
-                                            <input
-                                                value={val}
-                                                onChange={e => updateField(field.key, e.target.value)}
-                                                placeholder={(field as any).placeholder || ""}
-                                                style={{
-                                                    width: "100%", padding: "6px 10px", borderRadius: 8,
-                                                    border: `1px solid ${val ? "#1e3a5f" : "#334155"}`,
-                                                    background: val ? "#0a0f1c" : "#111827",
-                                                    color: "#e2e8f0", fontSize: "0.85rem", outline: "none", boxSizing: "border-box"
-                                                }}
-                                            />
-                                        )}
-
-                                        {/* Type select */}
-                                        {field.kind === "typeSelect" && (
-                                            <select value={val} onChange={e => updateField(field.key, e.target.value)}
-                                                style={{ width: "100%", padding: "6px 10px", borderRadius: 8, border: "1px solid #1e3a5f", background: "#0a0f1c", color: "#e2e8f0", fontSize: "0.85rem", outline: "none" }}>
-                                                {TYPE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                                            </select>
-                                        )}
-
-                                        {/* RAM select */}
-                                        {field.kind === "ramSelect" && (
-                                            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                                                <select value={val} onChange={e => updateField(field.key, e.target.value)}
-                                                    style={{ flex: 1, padding: "6px 10px", borderRadius: 8, border: "1px solid #1e3a5f", background: "#0a0f1c", color: "#e2e8f0", fontSize: "0.85rem", outline: "none" }}>
-                                                    {RAM_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                                                </select>
-                                                <input value={val} onChange={e => updateField(field.key, e.target.value)} placeholder="או הקלד ערך..."
-                                                    style={{ width: 110, padding: "6px 8px", borderRadius: 8, border: "1px solid #334155", background: "#111827", color: "#e2e8f0", fontSize: "0.8rem", outline: "none" }} />
-                                            </div>
-                                        )}
-
-                                        {/* Storage select */}
-                                        {field.kind === "storageSelect" && (
-                                            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                                                <select value={val} onChange={e => updateField(field.key, e.target.value)}
-                                                    style={{ flex: 1, padding: "6px 10px", borderRadius: 8, border: "1px solid #1e3a5f", background: "#0a0f1c", color: "#e2e8f0", fontSize: "0.85rem", outline: "none" }}>
-                                                    {STORAGE_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                                                </select>
-                                                <input value={val} onChange={e => updateField(field.key, e.target.value)} placeholder="או הקלד..."
-                                                    style={{ width: 110, padding: "6px 8px", borderRadius: 8, border: "1px solid #334155", background: "#111827", color: "#e2e8f0", fontSize: "0.8rem", outline: "none" }} />
-                                            </div>
-                                        )}
-
-                                        {/* OS select */}
-                                        {field.kind === "osSelect" && (
-                                            <select value={val} onChange={e => updateField(field.key, e.target.value)}
-                                                style={{ width: "100%", padding: "6px 10px", borderRadius: 8, border: "1px solid #1e3a5f", background: "#0a0f1c", color: "#e2e8f0", fontSize: "0.85rem", outline: "none" }}>
-                                                {OS_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                                            </select>
-                                        )}
-
-                                        {/* Battery */}
-                                        {field.kind === "battery" && (
-                                            <div>
-                                                {spec.battery_info && (
-                                                    <div style={{ fontSize: "0.75rem", color: "#7ea8d8", marginBottom: 7, background: "#0ea5e910", padding: "4px 10px", borderRadius: 8, border: "1px solid #0ea5e920" }}>
-                                                        📋 לפי יצרן: {spec.battery_info}
-                                                    </div>
-                                                )}
-                                                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: batteryStatus === "הכנס % ידנית" ? 8 : 0 }}>
-                                                    {BATTERY_OPTIONS.map(opt => (
-                                                        <button key={opt} type="button" onClick={() => setBatteryStatus(opt)}
-                                                            style={{
-                                                                padding: "4px 12px", borderRadius: 20, fontSize: "0.78rem", fontWeight: 600, cursor: "pointer", border: "1px solid",
-                                                                background: batteryStatus === opt ? (opt === "לא תקינה" ? "#7f1d1d" : opt === "תקינה" ? "#14532d" : "#1e3a5f") : "transparent",
-                                                                color: batteryStatus === opt ? (opt === "לא תקינה" ? "#fca5a5" : opt === "תקינה" ? "#86efac" : "#93c5fd") : "#64748b",
-                                                                borderColor: batteryStatus === opt ? (opt === "לא תקינה" ? "#7f1d1d" : opt === "תקינה" ? "#166534" : "#1e3a5f") : "#334155"
-                                                            }}>
-                                                            {opt === "תקינה" ? "✅ תקינה" : opt === "לא תקינה" ? "❌ לא תקינה" : "📊 הכנס %"}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                                {batteryStatus === "הכנס % ידנית" && (
-                                                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
-                                                        <input type="number" min={1} max={100} value={batteryHealth} onChange={e => setBatteryHealth(e.target.value)}
-                                                            placeholder="85"
-                                                            style={{ width: 70, padding: "5px 8px", borderRadius: 8, border: "1px solid #1e3a5f", background: "#0a0f1c", color: "#e2e8f0", fontSize: "0.85rem", outline: "none" }} />
-                                                        <span style={{ fontSize: "0.8rem", color: "#93c5fd" }}>% בריאות סוללה</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-
-                                        {/* Ports */}
-                                        {field.kind === "ports" && (
-                                            <div>
-                                                {spec.ports_info && (
-                                                    <div style={{ fontSize: "0.73rem", color: "#7ea8d8", marginBottom: 7, background: "#0ea5e910", padding: "4px 10px", borderRadius: 8, border: "1px solid #0ea5e920" }}>
-                                                        📋 לפי יצרן: {spec.ports_info}
-                                                    </div>
-                                                )}
-                                                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                                                    {PORT_OPTIONS.map(port => {
-                                                        const active = selectedPorts.includes(port);
-                                                        return (
-                                                            <button key={port} type="button" onClick={() => togglePort(port)}
-                                                                style={{
-                                                                    padding: "3px 9px", borderRadius: 20, fontSize: "0.7rem", cursor: "pointer",
-                                                                    border: `1px solid ${active ? "#0ea5e9" : "#334155"}`,
-                                                                    background: active ? "#0ea5e920" : "transparent",
-                                                                    color: active ? "#38bdf8" : "#64748b", fontWeight: active ? 600 : 400
-                                                                }}>
-                                                                {active ? "✓ " : ""}{port}
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {/* Price */}
-                                        {field.kind === "price" && (
-                                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                                <span style={{ color: "#34d399", fontWeight: 800, fontSize: "1.1rem" }}>₪</span>
-                                                <input type="number" min={0} value={val}
-                                                    onChange={e => updateField(field.key, e.target.value)}
-                                                    placeholder={(field as any).placeholder}
-                                                    style={{ flex: 1, padding: "6px 10px", borderRadius: 8, border: "1px solid #1e3a5f", background: "#0a0f1c", color: "#e2e8f0", fontSize: "0.9rem", outline: "none" }} />
-                                            </div>
-                                        )}
-
-                                        {/* Textarea */}
-                                        {field.kind === "textarea" && (
-                                            <textarea rows={2} value={val}
-                                                onChange={e => updateField(field.key, e.target.value)}
-                                                placeholder={(field as any).placeholder}
-                                                style={{ width: "100%", padding: "6px 10px", borderRadius: 8, border: "1px solid #1e3a5f", background: "#0a0f1c", color: "#e2e8f0", fontSize: "0.85rem", outline: "none", resize: "vertical", boxSizing: "border-box" }} />
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        {/* ── Confirmation section ──────────────────── */}
-                        <div style={{
-                            marginTop: 16, padding: "14px 18px", borderRadius: 12,
-                            border: `1px solid ${confirmed ? "#166534" : "#1e3a5f"}`,
-                            background: confirmed ? "rgba(22,101,52,.12)" : "rgba(14,165,233,.06)",
-                            display: "flex", flexDirection: "column", gap: 12
-                        }}>
-                            <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", userSelect: "none" }}>
-                                <div
-                                    onClick={() => setConfirmed(v => !v)}
-                                    style={{
-                                        width: 22, height: 22, borderRadius: 6, flexShrink: 0,
-                                        border: `2px solid ${confirmed ? "#34d399" : "#334155"}`,
-                                        background: confirmed ? "#16a34a" : "transparent",
-                                        display: "flex", alignItems: "center", justifyContent: "center",
-                                        transition: "all .2s", cursor: "pointer"
-                                    }}>
-                                    {confirmed && <Check style={{ width: 14, height: 14, color: "white" }} />}
-                                </div>
-                                <span style={{ fontSize: "0.88rem", color: confirmed ? "#86efac" : "#94a3b8", fontWeight: confirmed ? 600 : 400 }}>
-                                    ✅ בדקתי את כל הנתונים – הם נכונים ומדויקים
-                                </span>
-                            </label>
-
-                            <button
-                                onClick={handleApply}
-                                disabled={!confirmed}
-                                style={{
-                                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                                    padding: "11px 24px", borderRadius: 12, border: "none",
-                                    background: confirmed
-                                        ? "linear-gradient(135deg,#16a34a,#15803d)"
-                                        : "#1e293b",
-                                    color: confirmed ? "white" : "#475569",
-                                    fontWeight: 700, fontSize: "0.95rem",
-                                    cursor: confirmed ? "pointer" : "not-allowed",
-                                    boxShadow: confirmed ? "0 0 20px rgba(22,163,74,.35)" : "none",
-                                    transition: "all .2s"
-                                }}>
-                                <ChevronRight style={{ width: 16, height: 16 }} />
-                                {confirmed ? "המשך ליצירת המודעה" : "סמן אישור כדי להמשיך"}
-                            </button>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );
