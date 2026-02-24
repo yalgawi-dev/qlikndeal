@@ -634,8 +634,66 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                     <div className="space-y-4">
                         <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">פרטים ומצב המחשב</h3>
 
+                        {/* SKU */}
+                        <div className="space-y-1">
+                            <Label className="text-gray-400 text-xs font-mono">מספר דגם / SKU (מהתווית / קופסה)</Label>
+                            <Input
+                                value={spec.sku}
+                                onChange={e => setSpec(s => ({ ...s, sku: e.target.value }))}
+                                placeholder="לדוגמה: AN515-58-525P"
+                                className="bg-gray-800 border-gray-700 font-mono text-sm"
+                                dir="ltr"
+                            />
+                        </div>
+
+                        {/* Battery + Weight + Year - three in a row */}
+                        <div className="grid grid-cols-3 gap-3">
+                            <div className="space-y-1">
+                                <Label className="text-gray-400 text-xs">🔋 סוללה / בריאות</Label>
+                                <Input
+                                    value={spec.battery}
+                                    onChange={e => setSpec(s => ({ ...s, battery: e.target.value }))}
+                                    placeholder="תקינה / 85%"
+                                    className="bg-gray-800 border-gray-700 text-sm"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-gray-400 text-xs">📐 משקל</Label>
+                                <Input
+                                    value={spec.weight}
+                                    onChange={e => setSpec(s => ({ ...s, weight: e.target.value }))}
+                                    placeholder="לדוגמה: 2.2kg"
+                                    className="bg-gray-800 border-gray-700 text-sm"
+                                    dir="ltr"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-gray-400 text-xs">📅 שנת ייצור</Label>
+                                <Input
+                                    value={spec.release_year}
+                                    onChange={e => setSpec(s => ({ ...s, release_year: e.target.value }))}
+                                    placeholder="2023"
+                                    className="bg-gray-800 border-gray-700 text-sm"
+                                    dir="ltr"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Ports */}
+                        <div className="space-y-1">
+                            <Label className="text-gray-400 text-xs">🔌 חיבורים (ports)</Label>
+                            <Input
+                                value={spec.ports}
+                                onChange={e => setSpec(s => ({ ...s, ports: e.target.value }))}
+                                placeholder="USB-C, USB-A ×3, HDMI, SD Card..."
+                                className="bg-gray-800 border-gray-700 text-sm"
+                                dir="ltr"
+                            />
+                        </div>
+
+                        {/* Extras / damages */}
                         <div className="space-y-2">
-                            <Label className="text-gray-300">החרגות / נזקים פיזיים</Label>
+                            <Label className="text-gray-300">⚠️ החרגות / נזקים פיזיים</Label>
                             <Input
                                 value={spec.extras}
                                 onChange={e => setSpec(s => ({ ...s, extras: e.target.value }))}
@@ -644,6 +702,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             />
                         </div>
 
+                        {/* Condition */}
                         <div className="space-y-2">
                             <Label className="text-gray-300">לסיכום - מה מצבו?</Label>
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
@@ -665,7 +724,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 mt-4">
+                        <div className="grid grid-cols-2 gap-4 mt-2">
                             <div className="space-y-2">
                                 <Label className="text-gray-300">טלפון ליצירת קשר</Label>
                                 <Input value={details.contactPhone} onChange={e => setDetails(d => ({ ...d, contactPhone: e.target.value }))} dir="ltr" className="bg-gray-800 border-gray-700" />
@@ -676,7 +735,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             </div>
                         </div>
 
-                        <div className="space-y-2 mt-4">
+                        <div className="space-y-2 mt-2">
                             <Label className="text-gray-300">טקסט חופשי למודעה (תיאור)</Label>
                             <Textarea
                                 value={details.description}
@@ -736,28 +795,38 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                         </h3>
                         <div className="grid grid-cols-2 gap-2 text-xs">
                             {[
-                                { label: "יצרן", val: spec.brand },
-                                { label: "דגם", val: spec.subModel },
-                                { label: "מספר דגם / SKU", val: spec.sku },
-                                { label: "מעבד", val: spec.cpu },
-                                { label: "כרטיס מסך", val: spec.gpu },
-                                { label: "זיכרון RAM", val: spec.ram },
-                                { label: "אחסון", val: spec.storage },
-                                { label: "מסך", val: spec.screen },
-                                { label: "מערכת הפעלה", val: spec.os },
-                                { label: "סוללה", val: spec.battery },
-                                { label: "חיבורים", val: spec.ports },
-                                { label: "משקל", val: spec.weight },
-                                { label: "שנת ייצור", val: spec.release_year },
-                                { label: "מצב", val: spec.condition },
-                                { label: "נזקים / החרגות", val: spec.extras },
-                                { label: "מחיר", val: details.price ? `₪${Number(details.price).toLocaleString()}` : "" },
-                            ].map(({ label, val }) => (
-                                <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val ? "bg-gray-800/60" : "bg-red-900/20 border border-red-800/40"
+                                // ── שדות חובה / עיקריים ──
+                                { label: "יצרן", val: spec.brand, required: true },
+                                { label: "סדרה", val: spec.family, required: false },
+                                { label: "דגם", val: spec.subModel, required: true },
+                                { label: "מספר דגם / SKU", val: spec.sku, required: false },
+                                { label: "מעבד", val: spec.cpu, required: true },
+                                { label: "כרטיס מסך", val: spec.gpu, required: false },
+                                { label: "זיכרון RAM", val: spec.ram, required: true },
+                                { label: "אחסון", val: spec.storage, required: true },
+                                { label: "גודל מסך", val: spec.screen, required: false },
+                                { label: "מערכת הפעלה", val: spec.os, required: true },
+                                { label: "סוללה / בריאות", val: spec.battery, required: false },
+                                { label: "חיבורים", val: spec.ports, required: false },
+                                { label: "משקל", val: spec.weight, required: false },
+                                { label: "שנת ייצור", val: spec.release_year, required: false },
+                                { label: "מצב", val: spec.condition, required: true },
+                                { label: "נזקים / החרגות", val: spec.extras || "ללא נזקים", required: false },
+                                { label: "מחיר", val: details.price ? `₪${Number(details.price).toLocaleString()}` : "", required: true },
+                                { label: "תיאור", val: details.description, required: false },
+                            ].map(({ label, val, required }) => (
+                                <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
+                                        ? "bg-gray-800/60"
+                                        : required
+                                            ? "bg-red-900/20 border border-red-800/40"
+                                            : "bg-gray-800/30 border border-gray-700/40"
                                     }`}>
-                                    <span className={val ? "text-green-400" : "text-red-400"} style={{ flexShrink: 0 }}>{val ? "✓" : "✗"}</span>
+                                    <span className={val ? "text-green-400" : required ? "text-red-400" : "text-gray-500"} style={{ flexShrink: 0 }}>
+                                        {val ? "✓" : required ? "✗" : "–"}
+                                    </span>
                                     <span className="text-gray-400">{label}:</span>
-                                    <span className={`font-medium truncate ${val ? "text-white" : "text-red-400"}`}>{val || "חסר"}</span>
+                                    <span className={`font-medium truncate ${val ? "text-white" : required ? "text-red-400" : "text-gray-600"
+                                        }`}>{val || (required ? "חסר!" : "לא מולא")}</span>
                                 </div>
                             ))}
                         </div>
