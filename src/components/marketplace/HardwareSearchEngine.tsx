@@ -115,13 +115,19 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                 for (const brand in COMPUTER_DATABASE) {
                     for (const family of COMPUTER_DATABASE[brand]) {
                         for (const sub of family.subModels) {
+                            let added = false;
                             if (sub.name.toLowerCase().includes(q) || brand.toLowerCase().includes(q)) {
                                 localMatches.push(sub.name);
+                                added = true;
                             }
                             if (sub.skus) {
                                 for (const sku of sub.skus) {
-                                    if (sku.id.toLowerCase().includes(q)) {
-                                        localMatches.push(`${sku.id} (${sub.name})`);
+                                    if (sku.id && sku.id.toLowerCase().includes(q)) {
+                                        if (!added) {
+                                            localMatches.push(sub.name); // Prefer showing the submodel name as suggestion
+                                        }
+                                        // Also add the SKU as a suggestion
+                                        localMatches.push(sku.id);
                                     }
                                 }
                             }
@@ -252,16 +258,25 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
             for (const brand in COMPUTER_DATABASE) {
                 for (const family of COMPUTER_DATABASE[brand]) {
                     for (const sub of family.subModels) {
-                        if (sub.name.toLowerCase().includes(queryStr)) {
+                        // Check if the query matches the submodel name OR any of its SKUs
+                        const matchName = sub.name.toLowerCase().includes(queryStr);
+                        const matchSku = sub.skus?.some(sku => sku.id && sku.id.toLowerCase().includes(queryStr));
+
+                        if (matchName || matchSku) {
+                            // If we matched a specific SKU, we can use its specific data if available
+                            const explicitSku = matchSku ? sub.skus?.find(sku => sku.id && sku.id.toLowerCase().includes(queryStr)) : null;
+
                             onSelect({
                                 "יצרן": brand,
                                 "דגם": sub.name,
+                                "מספר דגם": explicitSku?.id || "",
                                 "סוג מחשב": family.type,
-                                "RAM": sub.ram?.join(" / ") || "",
-                                "נפח אחסון": sub.storage?.join(" / ") || "",
-                                "גודל מסך": sub.screenSize?.join(" / ") || "",
-                                "מעבד": sub.cpu?.length ? sub.cpu[0] : "",
-                                "כרטיס מסך": sub.gpu?.length ? sub.gpu[0] : "",
+                                "RAM": explicitSku?.ram?.join(" / ") || sub.ram?.join(" / ") || "",
+                                "נפח אחסון": explicitSku?.storage?.join(" / ") || sub.storage?.join(" / ") || "",
+                                "גודל מסך": explicitSku?.screenSize?.join(" / ") || sub.screenSize?.join(" / ") || "",
+                                "מעבד": explicitSku?.cpu?.length ? explicitSku.cpu[0] : (sub.cpu?.length ? sub.cpu[0] : ""),
+                                "כרטיס מסך": explicitSku?.gpu?.length ? explicitSku.gpu[0] : (sub.gpu?.length ? sub.gpu[0] : ""),
+                                "מערכת הפעלה": explicitSku?.os?.length ? explicitSku.os[0] : (sub.os?.length ? sub.os[0] : "")
                             });
                             return;
                         }
