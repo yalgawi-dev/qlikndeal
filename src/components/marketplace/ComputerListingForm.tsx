@@ -388,8 +388,13 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         if (sub.ports) newSpec.ports = sub.ports;
         if (sub.weight) newSpec.weight = sub.weight;
         if (sub.release_year) newSpec.release_year = sub.release_year;
-        // SKU: prefer the specific SKU id if user picked a SKU row
-        if (sku?.id) newSpec.sku = sku.id;
+        // SKU: prefer the specific SKU id if user picked a SKU row;
+        // otherwise auto-fill if the submodel has exactly one SKU
+        if (sku?.id) {
+            newSpec.sku = sku.id;
+        } else if (sub.skus && sub.skus.length === 1) {
+            newSpec.sku = sub.skus[0].id || "";
+        }
 
         setSpec(newSpec);
         setUncertainFields(newUncertain);
@@ -827,24 +832,12 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             <label className="flex-1 flex flex-col items-center justify-center p-4 border border-dashed border-gray-600 rounded-xl cursor-pointer hover:border-gray-500 hover:bg-gray-800/50 transition-colors">
                                 {uploading ? <Loader2 className="w-6 h-6 animate-spin text-purple-400 mb-2" /> : <ImageIcon className="w-6 h-6 text-gray-400 mb-2" />}
                                 <span className="text-sm font-medium text-gray-300">{uploading ? "מעלה תמונה..." : "העלה תמונה"}</span>
+                                <span className="text-xs text-gray-500 mt-1">תמונות אמיתיות מהמכשיר בלבד</span>
                                 <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={uploading} />
                             </label>
 
                             <div className="flex-1 flex flex-col justify-center gap-2">
-                                <Label className="text-gray-400 text-xs">🖼️ קישור תמונה מרשת:</Label>
-                                <div className="flex">
-                                    <Input
-                                        value={imageUrlInput}
-                                        onChange={e => setImageUrlInput(e.target.value)}
-                                        className="bg-gray-800 border-gray-700 rounded-l-none text-sm"
-                                        dir="ltr" placeholder="https://..."
-                                    />
-                                    <Button type="button" onClick={() => {
-                                        if (imageUrlInput) { setDetails(d => ({ ...d, images: [...d.images, imageUrlInput] })); setImageUrlInput(""); }
-                                    }} className="rounded-r-none border-l-0 bg-gray-700 hover:bg-gray-600">הוסף</Button>
-                                </div>
-
-                                <Label className="text-gray-400 text-xs mt-1">🎬 קישור סרטון (YouTube / Vimeo / direct):</Label>
+                                <Label className="text-gray-400 text-xs">🎬 קישור סרטון (YouTube / Vimeo / direct):</Label>
                                 <Input
                                     value={videoUrl}
                                     onChange={e => setVideoUrl(e.target.value)}
@@ -886,10 +879,10 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 { label: "🎬 סרטון", val: videoUrl || "", required: false },
                             ].map(({ label, val, required }) => (
                                 <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
-                                        ? "bg-gray-800/60"
-                                        : required
-                                            ? "bg-red-900/20 border border-red-800/40"
-                                            : "bg-gray-800/30 border border-gray-700/40"
+                                    ? "bg-gray-800/60"
+                                    : required
+                                        ? "bg-red-900/20 border border-red-800/40"
+                                        : "bg-gray-800/30 border border-gray-700/40"
                                     }`}>
                                     <span className={val ? "text-green-400" : required ? "text-red-400" : "text-gray-500"} style={{ flexShrink: 0 }}>
                                         {val ? "✓" : required ? "✗" : "–"}
