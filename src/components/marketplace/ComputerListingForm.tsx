@@ -228,6 +228,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [imageUrlInput, setImageUrlInput] = useState("");
+    const [videoUrl, setVideoUrl] = useState(initialData?.extraData?.["סרטון"] || "");
 
     // Tracking uncertain auto-filled fields
     const [uncertainFields, setUncertainFields] = useState<string[]>([]);
@@ -442,6 +443,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                 "משקל": spec.weight,
                 "שנת ייצור": spec.release_year,
                 "החרגות / נזקים": spec.extras,
+                "סרטון": videoUrl,
             };
             Object.keys(extraData).forEach(k => { if (!extraData[k]) delete extraData[k]; });
             if (details.contactPhone) extraData["טלפון ליצירת קשר"] = details.contactPhone;
@@ -718,8 +720,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                                 });
                                             }}
                                             className={`px-2.5 py-1 rounded-full text-xs border font-medium transition-all ${active
-                                                    ? "bg-blue-500/20 border-blue-500 text-blue-300"
-                                                    : "bg-gray-800/50 border-gray-700 text-gray-500 hover:border-gray-500"
+                                                ? "bg-blue-500/20 border-blue-500 text-blue-300"
+                                                : "bg-gray-800/50 border-gray-700 text-gray-500 hover:border-gray-500"
                                                 }`}
                                         >
                                             {active ? "✓ " : ""}{port}
@@ -793,9 +795,10 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
                     {/* ==== SECTION: IMAGES ==== */}
                     <div className="space-y-4">
-                        <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">גלריית תמונות</h3>
-                        <p className="text-gray-500 text-xs mt-1 mb-2">בעתיד המערכת תוסיף כאן באופן אוטומטי תמונת מלאי (Stock Image) לדגם במידה ואין ברשותך תמונות מקור.</p>
+                        <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">🖼️ תמונות וסרטון</h3>
+                        <p className="text-gray-500 text-xs">מומלץ להעלות תמונות אמיתיות (לא מספר דגם מרשת) + סרטון קצר שמוריא את המוצר מתפקד.</p>
 
+                        {/* Image previews */}
                         {details.images.length > 0 && (
                             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
                                 {details.images.map((img, i) => (
@@ -809,26 +812,46 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             </div>
                         )}
 
+                        {/* Video preview */}
+                        {videoUrl && (
+                            <div className="relative rounded-xl overflow-hidden bg-gray-800 border border-purple-700/50 mb-3">
+                                <video src={videoUrl} controls className="w-full max-h-48 object-contain" />
+                                <button type="button" onClick={() => setVideoUrl("")} className="absolute top-2 right-2 bg-red-600 rounded-full p-1">
+                                    <X className="w-4 h-4 text-white" />
+                                </button>
+                            </div>
+                        )}
+
                         <div className="flex gap-4">
+                            {/* Image upload */}
                             <label className="flex-1 flex flex-col items-center justify-center p-4 border border-dashed border-gray-600 rounded-xl cursor-pointer hover:border-gray-500 hover:bg-gray-800/50 transition-colors">
                                 {uploading ? <Loader2 className="w-6 h-6 animate-spin text-purple-400 mb-2" /> : <ImageIcon className="w-6 h-6 text-gray-400 mb-2" />}
-                                <span className="text-sm font-medium text-gray-300">{uploading ? "מעלה תמונה..." : "העלה קובץ מהמכשיר"}</span>
+                                <span className="text-sm font-medium text-gray-300">{uploading ? "מעלה תמונה..." : "העלה תמונה"}</span>
                                 <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={uploading} />
                             </label>
 
                             <div className="flex-1 flex flex-col justify-center gap-2">
-                                <Label className="text-gray-400 text-xs">או הזן קישור מרשת:</Label>
+                                <Label className="text-gray-400 text-xs">🖼️ קישור תמונה מרשת:</Label>
                                 <div className="flex">
                                     <Input
                                         value={imageUrlInput}
                                         onChange={e => setImageUrlInput(e.target.value)}
                                         className="bg-gray-800 border-gray-700 rounded-l-none text-sm"
-                                        dir="ltr" placeholder="https://"
+                                        dir="ltr" placeholder="https://..."
                                     />
                                     <Button type="button" onClick={() => {
                                         if (imageUrlInput) { setDetails(d => ({ ...d, images: [...d.images, imageUrlInput] })); setImageUrlInput(""); }
                                     }} className="rounded-r-none border-l-0 bg-gray-700 hover:bg-gray-600">הוסף</Button>
                                 </div>
+
+                                <Label className="text-gray-400 text-xs mt-1">🎬 קישור סרטון (YouTube / Vimeo / direct):</Label>
+                                <Input
+                                    value={videoUrl}
+                                    onChange={e => setVideoUrl(e.target.value)}
+                                    className="bg-gray-800 border-purple-700/40 text-sm"
+                                    dir="ltr"
+                                    placeholder="https://youtube.com/... או URL ישיר לסרטון"
+                                />
                             </div>
                         </div>
                     </div>
@@ -859,12 +882,14 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 { label: "נזקים / החרגות", val: spec.extras || "ללא נזקים", required: false },
                                 { label: "מחיר", val: details.price ? `₪${Number(details.price).toLocaleString()}` : "", required: true },
                                 { label: "תיאור", val: details.description, required: false },
+                                { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false },
+                                { label: "🎬 סרטון", val: videoUrl || "", required: false },
                             ].map(({ label, val, required }) => (
                                 <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
-                                    ? "bg-gray-800/60"
-                                    : required
-                                        ? "bg-red-900/20 border border-red-800/40"
-                                        : "bg-gray-800/30 border border-gray-700/40"
+                                        ? "bg-gray-800/60"
+                                        : required
+                                            ? "bg-red-900/20 border border-red-800/40"
+                                            : "bg-gray-800/30 border border-gray-700/40"
                                     }`}>
                                     <span className={val ? "text-green-400" : required ? "text-red-400" : "text-gray-500"} style={{ flexShrink: 0 }}>
                                         {val ? "✓" : required ? "✗" : "–"}
