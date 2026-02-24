@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Search, ChevronDown, Check, Zap, Sparkles, X, ChevronRight } from "lucide-react";
+import { ALL_PHONES } from "@/lib/phone-data";
 
 export const MOBILE_SEARCH_FIELDS = [
     { key: "model_name", label: "שם הדגם", icon: "🏷️", locked: true },
@@ -57,7 +58,61 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
                     os: data.os || "ללא מערכת הפעלה"
                 });
             } else {
-                throw new Error("מנוע החינמי עדיין אינו מחובר לכל המאגר. אנא הפעל חיפוש פרימיום (לחצן כחול) כדי לחפש מפרט עמוק ברשת.");
+                // Local free search from ALL_PHONES
+                const q = query.toLowerCase().trim();
+                const terms = q.split(/\s+/);
+                const matchesAllTerms = (text: string) => {
+                    if (!text) return false;
+                    return terms.every(t => text.toLowerCase().includes(t));
+                };
+
+                let bestPhone: any = null;
+                let bestScore = 0;
+
+                for (const p of ALL_PHONES) {
+                    let score = 0;
+                    if (matchesAllTerms(p.model)) {
+                        score += 10;
+                        if (p.model.toLowerCase() === q || `${p.brand} ${p.model}`.toLowerCase() === q) score += 20;
+                        else if (p.model.toLowerCase().startsWith(q) || `${p.brand} ${p.model}`.toLowerCase().startsWith(q)) score += 5;
+                    }
+                    if (p.hebrewAliases?.some(a => matchesAllTerms(a))) score += 8;
+                    if (matchesAllTerms(`${p.brand} ${p.model}`)) score += 3;
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestPhone = p;
+                    }
+                }
+
+                if (bestPhone) {
+                    const localResult = {
+                        model_name: bestPhone.model,
+                        model_number: "",
+                        type: "smartphone",
+                        cpu: "",
+                        ram: bestPhone.ram ? String(bestPhone.ram) : "ללא ידוע",
+                        storage: bestPhone.storages?.map((s: number) => s + "GB").join(" / ") || "ללא ידוע",
+                        display: bestPhone.screen ? bestPhone.screen + '"' : "",
+                        rear_camera: "",
+                        front_camera: "",
+                        battery: "",
+                        os: bestPhone.os || "",
+                        ports: "",
+                        weight: "",
+                        price: "",
+                        release_year: bestPhone.releaseYear?.toString() || "",
+                        notes: ""
+                    };
+                    setResult(localResult);
+                    setEditableFields({
+                        ram: localResult.ram,
+                        storage: localResult.storage,
+                        os: localResult.os
+                    });
+                } else {
+                    throw new Error(`"${query}" לא נמצא במאגר המקומי. נסה להפעיל חיפוש פרימיום ברשת (לחצן כחול) לחיפוש מפורט.`);
+                }
             }
         } catch (e: any) {
             setError(e.message || "לא הצלחתי למצוא מידע.");
