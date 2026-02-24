@@ -36,7 +36,12 @@ interface ComputerSpec {
     gpu: string;
     os: string;
     condition: string;
-    extras: string; // free text for damages / extras
+    extras: string;      // free text for damages / extras
+    sku: string;         // model number / SKU from DB
+    battery: string;
+    ports: string;
+    weight: string;
+    release_year: string;
 }
 
 interface FormDetails {
@@ -243,6 +248,11 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         os: initialData?.extraData?.["מערכת הפעלה"] || "",
         condition: initialData?.condition || "Used",
         extras: initialData?.extraData?.החרגות || "",
+        sku: initialData?.extraData?.["מספר דגם / SKU"] || "",
+        battery: initialData?.extraData?.סוללה || "",
+        ports: initialData?.extraData?.חיבורים || "",
+        weight: initialData?.extraData?.משקל || "",
+        release_year: initialData?.extraData?.["שנת ייצור"] || "",
     });
 
     const [details, setDetails] = useState<FormDetails>({
@@ -412,13 +422,18 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                 "יצרן": spec.brand,
                 "סדרה": spec.family,
                 "דגם": spec.subModel,
+                "מספר דגם / SKU": spec.sku,
                 "מעבד": spec.cpu,
                 "RAM": spec.ram,
                 "נפח אחסון": spec.storage,
                 "גודל מסך": spec.screen,
                 "כרטיס מסך": spec.gpu,
                 "מערכת הפעלה": spec.os,
-                "החרגות": spec.extras,
+                "סוללה": spec.battery,
+                "חיבורים": spec.ports,
+                "משקל": spec.weight,
+                "שנת ייצור": spec.release_year,
+                "החרגות / נזקים": spec.extras,
             };
             Object.keys(extraData).forEach(k => { if (!extraData[k]) delete extraData[k]; });
             if (details.contactPhone) extraData["טלפון ליצירת קשר"] = details.contactPhone;
@@ -440,38 +455,34 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     };
 
     const handleApplySearchEngineSpecs = (result: any) => {
+        // The search engine result contains full specs - apply them all to the form
         setSpec(s => ({
             ...s,
-            brand: result.brand || result.model_name?.split(" ")[0] || "אחר / לא ברשימה",
-            family: "אחר / לא ברשימה",
-            subModel: "אחר / לא ברשימה",
-            extras: result.model_name || "",
+            brand: result.brand || result.model_name?.split(" ")[0] || s.brand,
+            subModel: result.model_name || s.subModel,
+            sku: result.model_number || s.sku,          // ← SKU from DB
             ram: result.ram || s.ram,
             storage: result.storage || s.storage,
             screen: result.display || s.screen,
             cpu: result.cpu || s.cpu,
             gpu: result.gpu || s.gpu,
             os: result.os || s.os,
+            battery: result.battery || s.battery,
+            ports: result.ports || s.ports,
+            weight: result.weight || s.weight,
+            release_year: result.release_year || s.release_year,
         }));
-
-        let extractedPrice = "";
-        if (result.price) {
-            const num = result.price.replace(/[^\d]/g, "");
-            if (num) extractedPrice = num;
-        }
 
         setDetails(d => ({
             ...d,
             title: result.model_name || d.title,
-            price: extractedPrice || d.price,
-            description: d.description + (d.description ? "\n" : "") + (result.notes ? `הערות מפרט: ${result.notes}` : ""),
         }));
 
-        setUncertainFields([]); // Assuming user verified the engine output
+        setUncertainFields([]);
 
-        // Scroll to specs section smoothly after applying
+        // Scroll up to top of main form
         setTimeout(() => {
-            document.getElementById("manual-specs-section")?.scrollIntoView({ behavior: 'smooth' });
+            document.getElementById("manual-specs-section")?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 300);
     };
 
@@ -494,11 +505,6 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24">
-
-                {/* GLOBAL SEARCH HERO REPLACED BY NEW SEARCH ENGINE UI */}
-                <div className="mb-8">
-                    <ComputerSearchUI onApplySpecs={handleApplySearchEngineSpecs} />
-                </div>
 
                 <form id="manual-specs-section" onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
 
@@ -712,14 +718,54 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                         </div>
                     </div>
 
+                    {/* ──── RISK / DATA SUMMARY REPORT ──── */}
+                    <div className="rounded-2xl border border-gray-700 bg-gray-900/60 p-5 space-y-4">
+                        <h3 className="text-base font-bold text-gray-200 flex items-center gap-2">
+                            📋 דוח סיכום נתונים – בדוק לפני פרסום
+                        </h3>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                            {[
+                                { label: "יצרן", val: spec.brand },
+                                { label: "דגם", val: spec.subModel },
+                                { label: "מספר דגם / SKU", val: spec.sku },
+                                { label: "מעבד", val: spec.cpu },
+                                { label: "כרטיס מסך", val: spec.gpu },
+                                { label: "זיכרון RAM", val: spec.ram },
+                                { label: "אחסון", val: spec.storage },
+                                { label: "מסך", val: spec.screen },
+                                { label: "מערכת הפעלה", val: spec.os },
+                                { label: "סוללה", val: spec.battery },
+                                { label: "חיבורים", val: spec.ports },
+                                { label: "משקל", val: spec.weight },
+                                { label: "שנת ייצור", val: spec.release_year },
+                                { label: "מצב", val: spec.condition },
+                                { label: "נזקים / החרגות", val: spec.extras },
+                                { label: "מחיר", val: details.price ? `₪${Number(details.price).toLocaleString()}` : "" },
+                            ].map(({ label, val }) => (
+                                <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val ? "bg-gray-800/60" : "bg-red-900/20 border border-red-800/40"
+                                    }`}>
+                                    <span className={val ? "text-green-400" : "text-red-400"} style={{ flexShrink: 0 }}>{val ? "✓" : "✗"}</span>
+                                    <span className="text-gray-400">{label}:</span>
+                                    <span className={`font-medium truncate ${val ? "text-white" : "text-red-400"}`}>{val || "חסר"}</span>
+                                </div>
+                            ))}
+                        </div>
+                        {uncertainFields.length > 0 && (
+                            <div className="flex items-center gap-2 text-yellow-400 text-xs bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+                                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                שדות מסומנים בצהוב לא אושרו – אנא בדוק לפני פרסום
+                            </div>
+                        )}
+                    </div>
+
                     {/* ALWAYS VISIBLE SUBMIT */}
-                    <div className="sticky bottom-4 pt-6 border-t border-gray-800 bg-gray-900/90 backdrop-blur z-10 p-4 -mx-4 md:mx-0 md:p-0 md:bg-transparent rounded-xl">
+                    <div className="sticky bottom-4 pt-4 border-t border-gray-800 bg-gray-900/90 backdrop-blur z-10 p-4 -mx-4 md:mx-0 md:p-0 md:bg-transparent rounded-xl">
                         <Button
                             type="submit"
                             disabled={loading || !spec.brand || !spec.subModel || !details.price}
                             className={`w-full h-14 text-lg font-bold rounded-xl transition-all shadow-lg ${uncertainFields.length > 0
-                                ? "bg-yellow-600 hover:bg-yellow-700 text-white" // highlight that something needs checking
-                                : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-purple-500/20"
+                                    ? "bg-yellow-600 hover:bg-yellow-700 text-white"
+                                    : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-purple-500/20"
                                 }`}
                         >
                             {loading ? <Loader2 className="animate-spin w-6 h-6 ml-2" /> : null}
@@ -728,6 +774,17 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                     </div>
 
                 </form>
+
+                {/* ──── COMPUTER SEARCH UI (identification aid, below the form) ──── */}
+                <div className="mt-8 mb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="flex-1 border-t border-gray-800" />
+                        <span className="text-xs text-gray-500 font-medium px-3">🔍 לא מצאת את הדגם שלך? השתמש בזיהוי המתקדם</span>
+                        <div className="flex-1 border-t border-gray-800" />
+                    </div>
+                    <ComputerSearchUI onApplySpecs={handleApplySearchEngineSpecs} />
+                </div>
+
             </div>
         </div>
     );
