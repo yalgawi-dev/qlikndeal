@@ -665,16 +665,17 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 uncertain={uncertainFields.includes('gpu')}
                                 onConfirm={() => removeUncertain('gpu')}
                             />
-                            <SpecSelector
-                                label="גודל מסך"
-                                options={specOptions.screen}
-                                value={spec.screen}
-                                onChange={v => setSpec(s => ({ ...s, screen: v }))}
-                                icon={<Maximize2 className="w-4 h-4" />}
-                                uncertain={uncertainFields.includes('screen')}
-                                onConfirm={() => removeUncertain('screen')}
-                                disabled={selectedFamilyObj?.type === "desktop" || selectedFamilyObj?.type === "mini"}
-                            />
+                            {(!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
+                                <SpecSelector
+                                    label="גודל מסך"
+                                    options={specOptions.screen}
+                                    value={spec.screen}
+                                    onChange={v => setSpec(s => ({ ...s, screen: v }))}
+                                    icon={<Maximize2 className="w-4 h-4" />}
+                                    uncertain={uncertainFields.includes('screen')}
+                                    onConfirm={() => removeUncertain('screen')}
+                                />
+                            )}
                             <SpecSelector
                                 label="מערכת הפעלה"
                                 options={OS_OPTIONS}
@@ -702,18 +703,20 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                             />
                         </div>
 
-                        {/* Battery + Weight + Year - three in a row */}
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1">
-                                <Label className="text-gray-400 text-xs">🔋 סוללה (mAh / סוג)</Label>
-                                <Input
-                                    value={spec.battery}
-                                    onChange={e => setSpec(s => ({ ...s, battery: e.target.value }))}
-                                    placeholder="לדוגמא: 72Wh, 6500mAh"
-                                    className="bg-gray-800 border-gray-700 text-sm"
-                                    dir="ltr"
-                                />
-                            </div>
+                        {/* Battery + Weight + Year */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            {(!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
+                                <div className="space-y-1">
+                                    <Label className="text-gray-400 text-xs">🔋 סוללה (mAh / סוג)</Label>
+                                    <Input
+                                        value={spec.battery}
+                                        onChange={e => setSpec(s => ({ ...s, battery: e.target.value }))}
+                                        placeholder="לדוגמא: 72Wh, 6500mAh"
+                                        className="bg-gray-800 border-gray-700 text-sm"
+                                        dir="ltr"
+                                    />
+                                </div>
+                            )}
                             <div className="space-y-1">
                                 <Label className="text-gray-400 text-xs">📏 משקל</Label>
                                 <Input
@@ -820,41 +823,43 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                         </div>
 
                         {/* Battery Health - between condition and phone (not related to new-device specs) */}
-                        <div className="space-y-2 border border-gray-700/50 rounded-xl p-3 bg-gray-800/20">
-                            <Label className="text-gray-300 text-sm font-semibold">🔋 תקינות סוללה</Label>
-                            <div className="flex gap-2">
-                                <button type="button"
-                                    onClick={() => setSpec(s => ({ ...s, batteryHealth: "תקינה" }))}
-                                    className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "תקינה" ? "bg-green-600/20 border-green-500 text-green-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
-                                        }`}>
-                                    ✅ תקינה
-                                </button>
-                                <button type="button"
-                                    onClick={() => setSpec(s => ({ ...s, batteryHealth: "לא תקינה" }))}
-                                    className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "לא תקינה" ? "bg-red-600/20 border-red-500 text-red-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
-                                        }`}>
-                                    ❌ לא תקינה
-                                </button>
+                        {(!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
+                            <div className="space-y-2 border border-gray-700/50 rounded-xl p-3 bg-gray-800/20">
+                                <Label className="text-gray-300 text-sm font-semibold">🔋 תקינות סוללה</Label>
+                                <div className="flex gap-2">
+                                    <button type="button"
+                                        onClick={() => setSpec(s => ({ ...s, batteryHealth: "תקינה" }))}
+                                        className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "תקינה" ? "bg-green-600/20 border-green-500 text-green-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
+                                            }`}>
+                                        ✅ תקינה
+                                    </button>
+                                    <button type="button"
+                                        onClick={() => setSpec(s => ({ ...s, batteryHealth: "לא תקינה" }))}
+                                        className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "לא תקינה" ? "bg-red-600/20 border-red-500 text-red-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
+                                            }`}>
+                                        ❌ לא תקינה
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <Label className="text-gray-400 text-xs whitespace-nowrap">בריאות סוללה:</Label>
+                                    <Input
+                                        type="number" min="1" max="100"
+                                        value={spec.batteryPercent}
+                                        onChange={e => setSpec(s => ({ ...s, batteryPercent: e.target.value }))}
+                                        className="bg-gray-800 border-gray-700 w-20 text-center text-sm"
+                                        dir="ltr" placeholder="%"
+                                    />
+                                    <span className="text-gray-500 text-xs">%</span>
+                                    {spec.batteryPercent && (
+                                        <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                                            <div className={`h-full rounded-full transition-all ${Number(spec.batteryPercent) > 80 ? 'bg-green-500' :
+                                                Number(spec.batteryPercent) > 50 ? 'bg-yellow-500' : 'bg-red-500'
+                                                }`} style={{ width: `${Math.min(100, Number(spec.batteryPercent))}%` }} />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2 mt-1">
-                                <Label className="text-gray-400 text-xs whitespace-nowrap">בריאות סוללה:</Label>
-                                <Input
-                                    type="number" min="1" max="100"
-                                    value={spec.batteryPercent}
-                                    onChange={e => setSpec(s => ({ ...s, batteryPercent: e.target.value }))}
-                                    className="bg-gray-800 border-gray-700 w-20 text-center text-sm"
-                                    dir="ltr" placeholder="%"
-                                />
-                                <span className="text-gray-500 text-xs">%</span>
-                                {spec.batteryPercent && (
-                                    <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
-                                        <div className={`h-full rounded-full transition-all ${Number(spec.batteryPercent) > 80 ? 'bg-green-500' :
-                                            Number(spec.batteryPercent) > 50 ? 'bg-yellow-500' : 'bg-red-500'
-                                            }`} style={{ width: `${Math.min(100, Number(spec.batteryPercent))}%` }} />
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        )}
 
                         <div className="grid grid-cols-2 gap-4 mt-2">
                             <div className="space-y-2">
@@ -947,10 +952,10 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 { label: "כרטיס מסך", val: spec.gpu, required: false },
                                 { label: "זיכרון RAM", val: spec.ram, required: true },
                                 { label: "אחסון", val: spec.storage, required: true },
-                                { label: "גודל מסך", val: spec.screen, required: false },
+                                (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) ? { label: "גודל מסך", val: spec.screen, required: false } : null,
                                 { label: "מערכת הפעלה", val: spec.os, required: true },
-                                { label: "תקינות סוללה", val: spec.batteryHealth, required: false },
-                                { label: "בריאות סוללה %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false },
+                                (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) ? { label: "תקינות סוללה", val: spec.batteryHealth, required: false } : null,
+                                (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) ? { label: "בריאות סוללה %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false } : null,
                                 { label: "חיבורים", val: spec.ports, required: false },
                                 { label: "משקל", val: spec.weight, required: false },
                                 { label: "שנת ייצור", val: spec.release_year, required: false },
@@ -961,7 +966,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 { label: "תיאור", val: details.description, required: false },
                                 { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false, warning: true },
                                 { label: "🎬 סרטון", val: videoUrl || "", required: false, warning: true },
-                            ].map(({ label, val, required, warning }) => {
+                            ].flatMap(item => item ? [item] : []).map(({ label, val, required, warning }) => {
                                 const isWarning = !val && warning;
                                 return (
                                     <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
