@@ -351,7 +351,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     const allModelsFlat = useMemo(() => {
         const list: { brand: string; family: ComputerModelFamily; sub: ComputerSubModel; sku?: any; searchText: string; displayName: string }[] = [];
         for (const brand of Object.keys(COMPUTER_DATABASE)) {
-            const families = COMPUTER_DATABASE[brand];
+            const families = COMPUTER_DATABASE[brand].filter(fam => mainCategory === "laptop" ? (!fam.type || fam.type === "laptop") : (fam.type && fam.type !== "laptop"));
             for (const fam of families) {
                 for (const sub of fam.subModels) {
                     // add the base submodel
@@ -380,7 +380,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             }
         }
         return list;
-    }, []);
+    }, [mainCategory]);
 
     const filteredGlobalModels = useMemo(() => {
         if (!globalSearch.trim()) return [];
@@ -391,9 +391,10 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     }, [globalSearch, allModelsFlat]);
 
     // Derived options based on current selections
-    const modelFamilies = useMemo(() => spec.brand ? (COMPUTER_DATABASE[spec.brand] || []) : [], [spec.brand]);
+    const modelFamilies = useMemo(() => spec.brand ? (COMPUTER_DATABASE[spec.brand] || []).filter(fam => mainCategory === "laptop" ? (!fam.type || fam.type === "laptop") : (fam.type && fam.type !== "laptop")) : [], [spec.brand, mainCategory]);
     const selectedFamilyObj = useMemo(() => modelFamilies.find(f => f.name === spec.family), [spec.family, modelFamilies]);
     const subModelsList = useMemo(() => selectedFamilyObj ? selectedFamilyObj.subModels : [], [selectedFamilyObj]);
+    const availableBrands = useMemo(() => Object.keys(COMPUTER_DATABASE).filter(b => COMPUTER_DATABASE[b].some(fam => mainCategory === "laptop" ? (!fam.type || fam.type === "laptop") : (fam.type && fam.type !== "laptop"))).sort(), [mainCategory]);
 
     const specOptions = useMemo(() => {
         if (spec.brand && spec.family && spec.subModel) {
@@ -780,7 +781,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <SpecSelector
                                                 label="יצרן"
-                                                options={Object.keys(COMPUTER_DATABASE).sort()}
+                                                options={availableBrands}
                                                 value={spec.brand}
                                                 onChange={v => {
                                                     setSpec(s => ({ ...s, brand: v }));
