@@ -1,4 +1,4 @@
-// =============================================================
+﻿// =============================================================
 //  COMPUTER DATA - Full Hierarchy for Smart Search Engine
 //  יצרן → דגם/סדרה → תת-דגם → מפרטים אפשריים
 // =============================================================
@@ -96,6 +96,218 @@ export const GPU_OPTIONS = [
     // Integrated
     "כרטיס מסך משולב (אינטגרלי)",
     "לא ידוע"
+];
+
+// ============================================================
+//  CUSTOM BUILD OPTIONS (בנייה עצמית)
+// ============================================================
+
+export const DESKTOP_CPU_OPTIONS = [
+    // Intel Desktop (14th Gen)
+    "Intel Core i9-14900K", "Intel Core i9-14900KF", "Intel Core i9-14900",
+    "Intel Core i7-14700K", "Intel Core i7-14700KF", "Intel Core i7-14700",
+    "Intel Core i5-14600K", "Intel Core i5-14600KF", "Intel Core i5-14500", "Intel Core i5-14400",
+    "Intel Core i3-14100", "Intel Core i3-14100F",
+    // Intel Desktop (13th Gen)
+    "Intel Core i9-13900K", "Intel Core i9-13900KF",
+    "Intel Core i7-13700K", "Intel Core i7-13700KF",
+    "Intel Core i5-13600K", "Intel Core i5-13600KF", "Intel Core i5-13400",
+    // Intel Desktop (12th Gen)
+    "Intel Core i9-12900K", "Intel Core i7-12700K", "Intel Core i5-12600K", "Intel Core i5-12400",
+    // AMD Desktop (Ryzen 7000)
+    "AMD Ryzen 9 7950X", "AMD Ryzen 9 7950X3D", "AMD Ryzen 9 7900X", "AMD Ryzen 9 7900",
+    "AMD Ryzen 7 7800X3D", "AMD Ryzen 7 7700X", "AMD Ryzen 7 7700",
+    "AMD Ryzen 5 7600X", "AMD Ryzen 5 7600",
+    // AMD Desktop (Ryzen 9000)
+    "AMD Ryzen 9 9950X", "AMD Ryzen 9 9900X",
+    "AMD Ryzen 7 9700X", "AMD Ryzen 5 9600X",
+    // AMD Desktop (Ryzen 5000)
+    "AMD Ryzen 9 5950X", "AMD Ryzen 9 5900X",
+    "AMD Ryzen 7 5800X", "AMD Ryzen 7 5800X3D", "AMD Ryzen 7 5700X",
+    "AMD Ryzen 5 5600X", "AMD Ryzen 5 5600",
+    // Workstation / HEDT
+    "AMD Ryzen Threadripper PRO 7995WX", "AMD Ryzen Threadripper PRO 7975WX",
+    "Intel Xeon W5-3435X", "Intel Xeon W3-2435",
+    "אחר", "לא ידוע"
+];
+
+export const MOTHERBOARD_OPTIONS = {
+    chipsets: [
+        // Intel
+        "Z790", "Z690", "B760", "B660", "H770", "H670", "H610",
+        // AMD
+        "X670E", "X670", "B650E", "B650", "A620",
+        "X570", "B550", "A520",
+        // Workstation
+        "W790 (Intel)", "WRX90 (AMD)",
+        "אחר", "לא ידוע"
+    ],
+    sockets: [
+        "LGA 1700 (Intel 12-14th Gen)",
+        "LGA 1851 (Intel Arrow Lake)",
+        "AM5 (AMD Ryzen 7000/9000)",
+        "AM4 (AMD Ryzen 3000/5000)",
+        "sTR5 (Threadripper PRO)",
+        "אחר"
+    ],
+    formFactors: [
+        "ATX", "Micro-ATX (mATX)", "Mini-ITX", "E-ATX"
+    ],
+    brands: [
+        "ASUS", "MSI", "Gigabyte", "ASRock",
+        "NZXT", "EVGA", "Biostar", "אחר"
+    ],
+    features: [
+        "Wi-Fi 7 + Bluetooth 5.4",
+        "Wi-Fi 6E + Bluetooth 5.3",
+        "Wi-Fi 6 + Bluetooth 5.2",
+        "ללא Wi-Fi (חוטי בלבד)",
+    ],
+    ethernet: [
+        "10GbE", "5GbE", "2.5GbE", "1GbE", "לא ידוע"
+    ],
+    m2Slots: ["1", "2", "3", "4", "5+"],
+    pcieGen: ["PCIe 5.0", "PCIe 4.0", "PCIe 3.0"]
+};
+
+export const COOLER_OPTIONS = {
+    types: [
+        "קירור מים AIO 360mm",
+        "קירור מים AIO 280mm",
+        "קירור מים AIO 240mm",
+        "קירור מים AIO 120mm",
+        "קירור מים Custom Loop",
+        "קירור אוויר מסיבי (Tower)",
+        "קירור אוויר בינוני",
+        "קירור אוויר בסיסי (Stock)",
+        "אחר"
+    ],
+    brands: [
+        "Noctua", "be quiet!", "Corsair", "NZXT", "Arctic",
+        "Cooler Master", "DeepCool", "EK", "Lian Li",
+        "AMD Stock (Wraith)", "Intel Stock", "אחר"
+    ],
+    models: [
+        // Air coolers
+        "Noctua NH-D15", "Noctua NH-U12S", "Noctua NH-D15S",
+        "be quiet! Dark Rock Pro 5", "be quiet! Dark Rock 4",
+        "DeepCool AK620", "DeepCool Assassin IV",
+        "Cooler Master Hyper 212",
+        "Thermalright Peerless Assassin 120",
+        // AIO coolers
+        "Corsair iCUE H150i Elite", "Corsair iCUE H100i Elite",
+        "NZXT Kraken X73", "NZXT Kraken X63", "NZXT Kraken Elite 360",
+        "Arctic Liquid Freezer II 360", "Arctic Liquid Freezer II 280",
+        "Lian Li Galahad II Trinity 360",
+        "DeepCool LT720", "DeepCool LS720",
+        "EK-AIO 360 D-RGB",
+        "Cooler Master MasterLiquid ML360R",
+        "AMD Wraith Prism", "AMD Wraith Stealth",
+        "Intel Stock Cooler",
+        "אחר"
+    ]
+};
+
+export const PSU_OPTIONS = {
+    wattages: [
+        "450W", "500W", "550W", "600W", "650W", "700W", "750W",
+        "850W", "1000W", "1200W", "1300W", "1500W", "1600W", "2000W"
+    ],
+    efficiencyRatings: [
+        "80 Plus Titanium",
+        "80 Plus Platinum",
+        "80 Plus Gold",
+        "80 Plus Silver",
+        "80 Plus Bronze",
+        "80 Plus (White)",
+        "ללא דירוג",
+        "לא ידוע"
+    ],
+    modularity: [
+        "Full Modular (כל הכבלים נתקעים)",
+        "Semi Modular (חלק קבועים)",
+        "Non Modular (הכל קבוע)"
+    ],
+    standards: [
+        "ATX 3.1 (12VHPWR / 12V-2x6)",
+        "ATX 3.0 (12VHPWR)",
+        "ATX 2.x (רגיל)",
+        "SFX (מיני)",
+        "SFX-L",
+        "לא ידוע"
+    ],
+    brands: [
+        "Corsair", "Seasonic", "EVGA", "be quiet!",
+        "Cooler Master", "Thermaltake", "NZXT", "MSI",
+        "Lian Li", "FSP", "Super Flower", "XPG", "אחר"
+    ]
+};
+
+export const CASE_OPTIONS = {
+    formFactors: [
+        "Full Tower",
+        "Mid Tower",
+        "Mini Tower / Micro-ATX",
+        "Mini-ITX / SFF",
+        "Open Frame / Test Bench",
+        "HTPC / Slimline"
+    ],
+    airflow: [
+        "Mesh קדמי (זרימת אוויר מצוינת)",
+        "Mesh + זכוכית צדדית",
+        "זכוכית מחוזקת (סגור)",
+        "פתוח לגמרי (Open Air)",
+        "לא ידוע"
+    ],
+    brands: [
+        "Lian Li", "Corsair", "NZXT", "Fractal Design",
+        "Phanteks", "be quiet!", "Cooler Master", "Thermaltake",
+        "HYTE", "Meshify (Fractal)", "InWin", "Montech",
+        "DeepCool", "אחר"
+    ],
+    frontPanelIO: [
+        "USB-C + 2× USB-A 3.2 + Audio",
+        "USB-C + USB-A 3.0 + Audio",
+        "2× USB-A 3.0 + Audio",
+        "USB-C + USB-A + Audio",
+        "בסיסי (USB-A בלבד)",
+        "לא ידוע"
+    ]
+};
+
+export const RAM_TYPE_OPTIONS = [
+    "DDR5-8000 (CL36)", "DDR5-7200 (CL34)", "DDR5-6400 (CL32)", "DDR5-6000 (CL30)",
+    "DDR5-5600 (CL36)", "DDR5-5200 (CL40)", "DDR5-4800 (CL40)",
+    "DDR4-3600 (CL16)", "DDR4-3200 (CL16)", "DDR4-3000 (CL15)",
+    "DDR4-2666 (CL19)", "DDR4-2400",
+    "אחר", "לא ידוע"
+];
+
+export const RAM_CONFIG_OPTIONS = [
+    "2×8GB (16GB Dual Channel)",
+    "2×16GB (32GB Dual Channel)",
+    "2×32GB (64GB Dual Channel)",
+    "4×8GB (32GB Quad Channel)",
+    "4×16GB (64GB Quad Channel)",
+    "4×32GB (128GB Quad Channel)",
+    "1×8GB (8GB Single)",
+    "1×16GB (16GB Single)",
+    "1×32GB (32GB Single)",
+    "אחר"
+];
+
+export const STORAGE_TYPE_OPTIONS = [
+    // NVMe Gen 5
+    "NVMe M.2 Gen5 500GB", "NVMe M.2 Gen5 1TB", "NVMe M.2 Gen5 2TB", "NVMe M.2 Gen5 4TB",
+    // NVMe Gen 4
+    "NVMe M.2 Gen4 500GB", "NVMe M.2 Gen4 1TB", "NVMe M.2 Gen4 2TB", "NVMe M.2 Gen4 4TB",
+    // NVMe Gen 3
+    "NVMe M.2 Gen3 256GB", "NVMe M.2 Gen3 500GB", "NVMe M.2 Gen3 1TB",
+    // SATA SSD
+    "SATA SSD 2.5\" 256GB", "SATA SSD 2.5\" 500GB", "SATA SSD 2.5\" 1TB", "SATA SSD 2.5\" 2TB",
+    // HDD
+    "HDD 3.5\" 1TB (7200RPM)", "HDD 3.5\" 2TB (7200RPM)", "HDD 3.5\" 4TB", "HDD 3.5\" 8TB",
+    "אין", "אחר"
 ];
 
 // ---- Brand → Series → Sub-Models ----
@@ -17519,8 +17731,759 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                 }
             ]
         }
+    ],
+};
+
+// ============================================================
+//  DESKTOP COMPUTERS (מחשבים נייחים) – merged into main DB
+// ============================================================
+const DESKTOP_FAMILIES: Record<string, ComputerModelFamily[]> = {
+    "Lenovo": [
+        {
+            "name": "ThinkCentre M Series",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ThinkCentre M90q Gen 5 Tiny",
+                    "cpu": ["Intel Core i9-14900T", "Intel Core i7-14700T", "Intel Core i5-14500T"],
+                    "gpu": ["Intel UHD Graphics 770"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "4× USB-A 3.2, 2× USB-C (Thunderbolt 4), DisplayPort, HDMI, RJ-45, 3.5mm",
+                    "weight": "1.25kg",
+                    "release_year": "2024",
+                    "notes": "Ultra-compact 1L form factor business desktop",
+                    "skus": [{ "id": "12E2001DUS", "cpu": ["Intel Core i7-14700T"], "gpu": ["Intel UHD Graphics 770"], "ram": ["16GB DDR5"], "storage": ["512GB SSD"], "os": ["Windows 11 Pro"] }]
+                },
+                {
+                    "name": "ThinkCentre M70q Gen 5 Tiny",
+                    "cpu": ["Intel Core i7-14700T", "Intel Core i5-14500T", "Intel Core i3-14100T"],
+                    "gpu": ["Intel UHD Graphics 770"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "4× USB-A 3.2, 1× USB-C, DisplayPort, HDMI, RJ-45",
+                    "weight": "1.25kg",
+                    "release_year": "2024",
+                    "notes": "Mainstream business Tiny desktop"
+                },
+                {
+                    "name": "ThinkCentre M90s Gen 5 SFF",
+                    "cpu": ["Intel Core i9-14900", "Intel Core i7-14700", "Intel Core i5-14500"],
+                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce GTX 1650 LP"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "2TB SSD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "6× USB-A 3.2, 2× USB-C, DisplayPort, HDMI, VGA, RJ-45, Serial",
+                    "weight": "6.3kg",
+                    "release_year": "2024",
+                    "notes": "Small Form Factor business workstation"
+                },
+                {
+                    "name": "ThinkCentre M720q Tiny",
+                    "cpu": ["Intel Core i7-9700T", "Intel Core i5-9600T", "Intel Core i3-9100T"],
+                    "gpu": ["Intel UHD Graphics 630"],
+                    "ram": ["8GB DDR4", "16GB DDR4", "32GB DDR4"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB HDD"],
+                    "os": ["Windows 10 Pro", "Windows 11 Pro"],
+                    "ports": "5× USB-A, 1× USB-C, 2× DisplayPort, RJ-45",
+                    "weight": "1.32kg",
+                    "release_year": "2019",
+                    "notes": "Popular refurbished Tiny PC"
+                },
+                {
+                    "name": "ThinkCentre M920q Tiny",
+                    "cpu": ["Intel Core i7-8700T", "Intel Core i5-8500T"],
+                    "gpu": ["Intel UHD Graphics 630"],
+                    "ram": ["8GB DDR4", "16GB DDR4", "32GB DDR4"],
+                    "storage": ["256GB SSD", "512GB SSD"],
+                    "os": ["Windows 10 Pro"],
+                    "ports": "6× USB-A, 2× DisplayPort, RJ-45",
+                    "weight": "1.3kg",
+                    "release_year": "2018",
+                    "notes": "Widely available refurbished"
+                }
+            ]
+        },
+        {
+            "name": "IdeaCentre",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "IdeaCentre 5i Gen 8 Tower",
+                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14400"],
+                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce RTX 3060"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DisplayPort, RJ-45, SD Card, 3.5mm",
+                    "weight": "7.9kg",
+                    "release_year": "2024",
+                    "notes": "Consumer tower, good all-rounder"
+                },
+                {
+                    "name": "IdeaCentre Mini (1L)",
+                    "cpu": ["Intel Core i7-13700H", "Intel Core i5-13500H"],
+                    "gpu": ["Intel Iris Xe Graphics"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "3× USB-A, 1× USB-C, HDMI 2.1, DisplayPort, RJ-45",
+                    "weight": "0.74kg",
+                    "release_year": "2023",
+                    "notes": "Ultra compact consumer mini PC"
+                },
+                {
+                    "name": "IdeaCentre AIO 27 Gen 9",
+                    "cpu": ["Intel Core Ultra 7 155H", "Intel Core Ultra 5 125H"],
+                    "gpu": ["Intel Arc Graphics"],
+                    "ram": ["16GB DDR5", "32GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "screenSize": ["27\""],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, RJ-45",
+                    "weight": "8.5kg",
+                    "release_year": "2024",
+                    "notes": "All-in-One 27\", 2.5K touch display"
+                }
+            ]
+        },
+        {
+            "name": "Legion Tower",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Legion Tower 7i Gen 9",
+                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
+                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super", "NVIDIA GeForce RTX 4070 Ti Super"],
+                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["1TB SSD", "2TB SSD", "1TB SSD + 2TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "6× USB-A, 4× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45 2.5GbE, Wi-Fi 7",
+                    "weight": "23kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming tower, liquid cooling optional"
+                },
+                {
+                    "name": "Legion Tower 5i Gen 9",
+                    "cpu": ["Intel Core i7-14700KF", "Intel Core i5-14600KF"],
+                    "gpu": ["NVIDIA GeForce RTX 4070 Ti Super", "NVIDIA GeForce RTX 4070 Super", "NVIDIA GeForce RTX 4060 Ti"],
+                    "ram": ["16GB DDR5", "32GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD", "1TB SSD + 1TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "6× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45",
+                    "weight": "18kg",
+                    "release_year": "2024",
+                    "notes": "Mid-range gaming tower"
+                },
+                {
+                    "name": "Legion Tower 5 Gen 8 (AMD)",
+                    "cpu": ["AMD Ryzen 7 7700X", "AMD Ryzen 5 7600X"],
+                    "gpu": ["NVIDIA GeForce RTX 4070", "NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
+                    "ram": ["16GB DDR5", "32GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "4× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45",
+                    "weight": "16kg",
+                    "release_year": "2023",
+                    "notes": "AMD gaming tower"
+                }
+            ]
+        }
+    ],
+
+    "Dell": [
+        {
+            "name": "OptiPlex",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "OptiPlex 7020 Tower",
+                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14500", "Intel Core i3-14100"],
+                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce RTX 4060 LP"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "6× USB-A, 2× USB-C, DisplayPort 1.4, HDMI, VGA, RJ-45, Serial, 3.5mm",
+                    "weight": "7.5kg",
+                    "release_year": "2024",
+                    "notes": "Business tower, tool-free chassis"
+                },
+                {
+                    "name": "OptiPlex 7020 SFF",
+                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14500"],
+                    "gpu": ["Intel UHD Graphics 770"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "6× USB-A, 1× USB-C, DisplayPort, HDMI, RJ-45, Serial",
+                    "weight": "5.1kg",
+                    "release_year": "2024",
+                    "notes": "Compact business SFF"
+                },
+                {
+                    "name": "OptiPlex 7020 Micro",
+                    "cpu": ["Intel Core i7-14700T", "Intel Core i5-14500T"],
+                    "gpu": ["Intel UHD Graphics 770"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "4× USB-A, 1× USB-C, DisplayPort, HDMI, RJ-45",
+                    "weight": "1.2kg",
+                    "release_year": "2024",
+                    "notes": "Ultra-compact 1L business PC"
+                },
+                {
+                    "name": "OptiPlex 5000 Tower",
+                    "cpu": ["Intel Core i7-12700", "Intel Core i5-12500"],
+                    "gpu": ["Intel UHD Graphics 770"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Pro", "Windows 10 Pro"],
+                    "ports": "6× USB-A, 1× USB-C, DisplayPort, HDMI, VGA, RJ-45",
+                    "weight": "7.3kg",
+                    "release_year": "2022",
+                    "notes": "Popular mid-range business desktop"
+                },
+                {
+                    "name": "OptiPlex 3090 SFF",
+                    "cpu": ["Intel Core i5-10505", "Intel Core i3-10105"],
+                    "gpu": ["Intel UHD Graphics 630"],
+                    "ram": ["8GB DDR4", "16GB DDR4"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB HDD"],
+                    "os": ["Windows 10 Pro", "Windows 11 Pro"],
+                    "ports": "6× USB-A, DisplayPort, HDMI, VGA, RJ-45, Serial",
+                    "weight": "5.0kg",
+                    "release_year": "2021",
+                    "notes": "Entry-level business, widely refurbished"
+                }
+            ]
+        },
+        {
+            "name": "XPS Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "XPS Desktop 8960",
+                    "cpu": ["Intel Core i9-14900K", "Intel Core i7-14700K", "Intel Core i5-14600K"],
+                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4070 Ti", "NVIDIA GeForce RTX 4060 Ti", "Intel UHD Graphics 770"],
+                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD", "2TB SSD", "1TB SSD + 2TB HDD"],
+                    "os": ["Windows 11 Home", "Windows 11 Pro"],
+                    "ports": "6× USB-A 3.2, 2× USB-C (Thunderbolt 4), SD Card, HDMI, 3.5mm, RJ-45",
+                    "weight": "12.7kg",
+                    "release_year": "2024",
+                    "notes": "Premium consumer tower, sleek design"
+                },
+                {
+                    "name": "XPS Desktop 8950",
+                    "cpu": ["Intel Core i9-12900K", "Intel Core i7-12700K", "Intel Core i5-12600K"],
+                    "gpu": ["NVIDIA GeForce RTX 3090", "NVIDIA GeForce RTX 3070", "NVIDIA GeForce RTX 3060 Ti"],
+                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD", "1TB SSD + 1TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "6× USB-A, 2× USB-C, HDMI, SD Card, RJ-45",
+                    "weight": "12.3kg",
+                    "release_year": "2022",
+                    "notes": "Previous gen premium tower"
+                }
+            ]
+        },
+        {
+            "name": "Inspiron Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Inspiron 3030 Tower",
+                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14400", "Intel Core i3-14100"],
+                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce RTX 3050"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DisplayPort, RJ-45, SD Card, 3.5mm",
+                    "weight": "7.6kg",
+                    "release_year": "2024",
+                    "notes": "Budget-friendly consumer tower"
+                },
+                {
+                    "name": "Inspiron 24 AIO 5420",
+                    "cpu": ["Intel Core i7-13700H", "Intel Core i5-13500H"],
+                    "gpu": ["NVIDIA GeForce MX550", "Intel Iris Xe Graphics"],
+                    "ram": ["8GB DDR4", "16GB DDR4"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "screenSize": ["24\""],
+                    "ports": "2× USB-A, 2× USB-C, HDMI-out, RJ-45, SD Card",
+                    "weight": "7.0kg",
+                    "release_year": "2023",
+                    "notes": "All-in-One 24\", FHD touch"
+                }
+            ]
+        },
+        {
+            "name": "Alienware Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Alienware Aurora R16",
+                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
+                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super", "NVIDIA GeForce RTX 4070 Ti Super", "NVIDIA GeForce RTX 4070 Super"],
+                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["1TB SSD", "2TB SSD", "4TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "6× USB-A, 3× USB-C (Thunderbolt 4), 2.5GbE RJ-45, 3.5mm, front USB-C",
+                    "weight": "16.8kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming desktop, liquid-cooled, Legend 3.0 design"
+                },
+                {
+                    "name": "Alienware Aurora R15 (AMD)",
+                    "cpu": ["AMD Ryzen 9 7950X", "AMD Ryzen 7 7700X"],
+                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080", "NVIDIA GeForce RTX 4070 Ti"],
+                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["1TB SSD", "2TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "6× USB-A, 3× USB-C, 2.5GbE RJ-45",
+                    "weight": "16kg",
+                    "release_year": "2023",
+                    "notes": "AMD gaming beast, liquid-cooled CPU"
+                }
+            ]
+        },
+        {
+            "name": "Precision Tower",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Precision 3680 Tower",
+                    "cpu": ["Intel Core i9-14900K", "Intel Core i7-14700K", "Intel Core i5-14600K"],
+                    "gpu": ["NVIDIA RTX A2000", "NVIDIA RTX 4000 Ada", "Intel UHD Graphics 770"],
+                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5", "128GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD", "2TB SSD", "1TB SSD + 2TB HDD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "8× USB-A, 2× USB-C (Thunderbolt 4), 2× DisplayPort, HDMI, RJ-45, Serial",
+                    "weight": "10.6kg",
+                    "release_year": "2024",
+                    "notes": "Entry workstation, ISV certified"
+                }
+            ]
+        }
+    ],
+
+    "HP": [
+        {
+            "name": "ProDesk / Pro Tower",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "HP Pro Tower 400 G9",
+                    "cpu": ["Intel Core i7-13700", "Intel Core i5-13500", "Intel Core i3-13100"],
+                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce RTX 3060 LP"],
+                    "ram": ["8GB DDR4", "16GB DDR4", "32GB DDR4", "64GB DDR4"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "1TB HDD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "6× USB-A, 2× USB-C, DisplayPort 1.4, HDMI, VGA, RJ-45, Serial, 3.5mm",
+                    "weight": "7.2kg",
+                    "release_year": "2023",
+                    "notes": "Mainstream business tower"
+                },
+                {
+                    "name": "HP EliteDesk 800 G9 Tower",
+                    "cpu": ["Intel Core i9-13900", "Intel Core i7-13700", "Intel Core i5-13500"],
+                    "gpu": ["Intel UHD Graphics 770", "NVIDIA RTX A2000"],
+                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD", "2TB SSD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "8× USB-A, 2× USB-C (Thunderbolt 4), 2× DisplayPort, HDMI, RJ-45",
+                    "weight": "8.5kg",
+                    "release_year": "2023",
+                    "notes": "Premium business desktop, enterprise"
+                },
+                {
+                    "name": "HP EliteDesk 800 G6 Mini",
+                    "cpu": ["Intel Core i7-10700T", "Intel Core i5-10500T"],
+                    "gpu": ["Intel UHD Graphics 630"],
+                    "ram": ["8GB DDR4", "16GB DDR4", "32GB DDR4"],
+                    "storage": ["256GB SSD", "512GB SSD"],
+                    "os": ["Windows 10 Pro"],
+                    "ports": "6× USB-A, 1× USB-C, 2× DisplayPort, RJ-45",
+                    "weight": "1.25kg",
+                    "release_year": "2020",
+                    "notes": "Popular refurbished mini desktop"
+                }
+            ]
+        },
+        {
+            "name": "OMEN Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "OMEN 45L GT22-2000",
+                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
+                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super", "NVIDIA GeForce RTX 4070 Ti Super"],
+                    "ram": ["32GB DDR5", "64GB DDR5"],
+                    "storage": ["1TB SSD", "2TB SSD", "2TB SSD + 2TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "6× USB-A, 2× USB-C (Thunderbolt 4), 2.5GbE RJ-45, Wi-Fi 7, 3.5mm",
+                    "weight": "22kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming tower, 45L CryoChamber cooling, RGB"
+                },
+                {
+                    "name": "OMEN 25L GT15-1000",
+                    "cpu": ["Intel Core i7-14700F", "Intel Core i5-14400F"],
+                    "gpu": ["NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
+                    "ram": ["16GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "4× USB-A, 1× USB-C, RJ-45, 3.5mm",
+                    "weight": "12kg",
+                    "release_year": "2024",
+                    "notes": "Entry gaming tower, 25L compact"
+                }
+            ]
+        },
+        {
+            "name": "Pavilion Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "HP Pavilion Desktop TP01",
+                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14400", "AMD Ryzen 7 7700", "AMD Ryzen 5 7600"],
+                    "gpu": ["Intel UHD Graphics 770", "AMD Radeon RX 6400", "NVIDIA GeForce GTX 1650"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "4× USB-A, 1× USB-C, HDMI, VGA, RJ-45, SD Card, 3.5mm",
+                    "weight": "6.0kg",
+                    "release_year": "2024",
+                    "notes": "Budget consumer desktop"
+                }
+            ]
+        }
+    ],
+
+    "ASUS": [
+        {
+            "name": "ROG Strix Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ROG Strix G35CZ",
+                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
+                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080", "NVIDIA GeForce RTX 4070 Ti"],
+                    "ram": ["32GB DDR5", "64GB DDR5"],
+                    "storage": ["1TB SSD", "2TB SSD", "1TB SSD + 2TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "6× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), 2.5GbE, Wi-Fi 7, 3.5mm",
+                    "weight": "19kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming tower, overclock-ready"
+                },
+                {
+                    "name": "ROG Strix G16CH",
+                    "cpu": ["Intel Core i7-14700F", "Intel Core i5-14400F"],
+                    "gpu": ["NVIDIA GeForce RTX 4070 Super", "NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
+                    "ram": ["16GB DDR5", "32GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "4× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45, Wi-Fi 6E",
+                    "weight": "12kg",
+                    "release_year": "2024",
+                    "notes": "Mid-range gaming tower"
+                }
+            ]
+        },
+        {
+            "name": "ExpertCenter Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ExpertCenter D900MD Tower",
+                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14500", "Intel Core i3-14100"],
+                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce GT 1030"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "1TB HDD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "6× USB-A, 2× USB-C, HDMI, DisplayPort, VGA, RJ-45, Serial, 3.5mm",
+                    "weight": "8.0kg",
+                    "release_year": "2024",
+                    "notes": "Business tower, military-grade reliability"
+                }
+            ]
+        },
+        {
+            "name": "ASUS NUC",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ASUS NUC 14 Pro+",
+                    "cpu": ["Intel Core Ultra 9 185H", "Intel Core Ultra 7 155H"],
+                    "gpu": ["Intel Arc Graphics"],
+                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD", "2TB SSD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "3× USB-A, 2× Thunderbolt 4, HDMI 2.1, DisplayPort, 2.5GbE RJ-45",
+                    "weight": "0.83kg",
+                    "release_year": "2024",
+                    "notes": "Ultra-compact NUC, ex-Intel NUC line"
+                },
+                {
+                    "name": "ASUS ROG NUC",
+                    "cpu": ["Intel Core Ultra 9 185H"],
+                    "gpu": ["NVIDIA GeForce RTX 4070 Laptop"],
+                    "ram": ["32GB DDR5", "64GB DDR5"],
+                    "storage": ["1TB SSD", "2TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "6× USB-A, 2× Thunderbolt 4, HDMI 2.1, 2× DisplayPort, 2.5GbE RJ-45",
+                    "weight": "2.6kg",
+                    "release_year": "2024",
+                    "notes": "Gaming NUC, RTX 4070 in mini form factor"
+                }
+            ]
+        }
+    ],
+
+    "MSI": [
+        {
+            "name": "MAG / MEG Gaming Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "MSI MEG Trident X2 14th",
+                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
+                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super"],
+                    "ram": ["32GB DDR5", "64GB DDR5"],
+                    "storage": ["2TB SSD", "2TB SSD + 2TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "6× USB-A, 3× USB-C (Thunderbolt 4), HDMI, 3× DP (GPU), 2.5GbE, Wi-Fi 7",
+                    "weight": "14kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming, compact console-like design"
+                },
+                {
+                    "name": "MSI MAG Infinite S3 14th",
+                    "cpu": ["Intel Core i7-14700F", "Intel Core i5-14400F"],
+                    "gpu": ["NVIDIA GeForce RTX 4070 Super", "NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
+                    "ram": ["16GB DDR5", "32GB DDR5"],
+                    "storage": ["1TB SSD", "1TB SSD + 1TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "4× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45",
+                    "weight": "10.5kg",
+                    "release_year": "2024",
+                    "notes": "Mid-range gaming tower, popular"
+                }
+            ]
+        },
+        {
+            "name": "PRO Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "MSI PRO DP180 14th",
+                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14500", "Intel Core i3-14100"],
+                    "gpu": ["Intel UHD Graphics 770"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "6× USB-A, 1× USB-C, HDMI, DisplayPort, VGA, RJ-45, COM port",
+                    "weight": "7.5kg",
+                    "release_year": "2024",
+                    "notes": "Business tower, value"
+                }
+            ]
+        }
+    ],
+
+    "Acer": [
+        {
+            "name": "Predator Orion",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Predator Orion 7000 (2024)",
+                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
+                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super", "NVIDIA GeForce RTX 4070 Ti Super"],
+                    "ram": ["32GB DDR5", "64GB DDR5"],
+                    "storage": ["1TB SSD", "2TB SSD", "2TB SSD + 2TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "8× USB-A, 2× USB-C (Thunderbolt 4), 2.5GbE, Wi-Fi 7, Front USB-C",
+                    "weight": "20kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming tower, FrostBlade 2.0 cooling"
+                },
+                {
+                    "name": "Predator Orion 3000 (2024)",
+                    "cpu": ["Intel Core i7-14700F", "Intel Core i5-14400F"],
+                    "gpu": ["NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
+                    "ram": ["16GB DDR5"],
+                    "storage": ["512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "4× USB-A, 1× USB-C, RJ-45",
+                    "weight": "10kg",
+                    "release_year": "2024",
+                    "notes": "Entry gaming tower"
+                }
+            ]
+        },
+        {
+            "name": "Aspire Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Aspire TC-1780",
+                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14400", "Intel Core i3-14100"],
+                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce GTX 1650"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
+                    "os": ["Windows 11 Home"],
+                    "ports": "4× USB-A, 1× USB-C, HDMI, VGA, RJ-45, SD Card",
+                    "weight": "6.2kg",
+                    "release_year": "2024",
+                    "notes": "Home/Office budget tower"
+                },
+                {
+                    "name": "Aspire C27 AIO",
+                    "cpu": ["Intel Core i7-1355U", "Intel Core i5-1335U"],
+                    "gpu": ["Intel Iris Xe Graphics"],
+                    "ram": ["8GB DDR4", "16GB DDR4"],
+                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
+                    "os": ["Windows 11 Home"],
+                    "screenSize": ["27\""],
+                    "ports": "2× USB-A, 1× USB-C, HDMI-out, RJ-45",
+                    "weight": "5.6kg",
+                    "release_year": "2023",
+                    "notes": "All-in-One 27\" FHD, slim bezel"
+                }
+            ]
+        },
+        {
+            "name": "Veriton Business Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Veriton N4710GT Mini",
+                    "cpu": ["Intel Core i7-13700T", "Intel Core i5-13500T"],
+                    "gpu": ["Intel UHD Graphics 770"],
+                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
+                    "storage": ["256GB SSD", "512GB SSD"],
+                    "os": ["Windows 11 Pro"],
+                    "ports": "4× USB-A, 1× USB-C, HDMI, DisplayPort, RJ-45",
+                    "weight": "1.2kg",
+                    "release_year": "2023",
+                    "notes": "Ultra-compact business mini PC"
+                }
+            ]
+        }
     ]
 };
+
+// Merge desktop families into main database
+for (const [brand, families] of Object.entries(DESKTOP_FAMILIES)) {
+    if (COMPUTER_DATABASE[brand]) {
+        COMPUTER_DATABASE[brand].push(...families);
+    } else {
+        COMPUTER_DATABASE[brand] = families;
+    }
+}
+
+
+// ============================================================
+//  MONITOR OPTIONS (מסכים)
+// ============================================================
+
+export const MONITOR_OPTIONS = {
+    sizes: [
+        "21.5\"", "23.8\"", "24\"", "27\"", "28\"", "31.5\"", "32\"", "34\" (Ultrawide)",
+        "38\" (Ultrawide)", "40\"", "42\"", "43\"", "49\" (Super Ultrawide)", "אחר"
+    ],
+    panelTypes: [
+        "IPS", "VA", "TN", "OLED", "QD-OLED", "Mini-LED", "Nano IPS", "Fast IPS", "אחר"
+    ],
+    resolutions: [
+        "1920×1080 (Full HD)",
+        "2560×1080 (Ultrawide FHD)",
+        "2560×1440 (QHD / 2K)",
+        "3440×1440 (Ultrawide QHD)",
+        "3840×1600 (Ultrawide WQHD+)",
+        "3840×2160 (4K UHD)",
+        "5120×1440 (Dual QHD)",
+        "5120×2160 (5K)",
+        "7680×4320 (8K)",
+        "אחר", "לא ידוע"
+    ],
+    refreshRates: [
+        "60Hz", "75Hz", "100Hz", "120Hz", "144Hz", "165Hz",
+        "180Hz", "200Hz", "240Hz", "280Hz", "360Hz", "500Hz", "אחר"
+    ],
+    responseTime: [
+        "0.03ms (OLED)", "0.5ms", "1ms", "2ms", "4ms", "5ms", "8ms", "לא ידוע"
+    ],
+    features: [
+        "G-Sync Ultimate", "G-Sync Compatible", "FreeSync Premium Pro",
+        "FreeSync Premium", "FreeSync", "HDR10", "HDR400", "HDR600",
+        "HDR1000", "HDR1400", "Dolby Vision", "USB-C / Power Delivery",
+        "KVM Switch", "Built-in Speakers", "Pivot / Height Adjustable",
+        "Curved (1000R)", "Curved (1500R)", "Curved (1800R)", "Flat",
+        "VESA Mount", "Blue Light Filter", "Flicker Free"
+    ],
+    brands: [
+        "Samsung", "LG", "Dell", "ASUS", "Acer", "BenQ", "MSI",
+        "Gigabyte", "ViewSonic", "AOC", "Philips", "HP", "Lenovo",
+        "Alienware", "CORSAIR", "Eve (Spectrum)", "Nixeus", "Sceptre", "אחר"
+    ],
+    connections: [
+        "HDMI 2.1", "HDMI 2.0", "DisplayPort 1.4", "DisplayPort 2.1",
+        "USB-C (DisplayPort Alt)", "USB-C (90W PD)", "USB-C (65W PD)",
+        "DVI-D", "VGA", "USB Hub (USB-A)", "Thunderbolt 4", "3.5mm Audio Out"
+    ]
+};
+
+// ============================================================
+//  CUSTOM BUILD FIELD STRUCTURE (שדות בנייה עצמית)
+// ============================================================
+
+export const CUSTOM_BUILD_CATEGORIES = {
+    cpu: { label: "מעבד (CPU)", options: DESKTOP_CPU_OPTIONS },
+    gpu: { label: "כרטיס מסך (GPU)", options: GPU_OPTIONS },
+    motherboard_chipset: { label: "ערכת שבבים (Chipset)", options: MOTHERBOARD_OPTIONS.chipsets },
+    motherboard_socket: { label: "שקע מעבד (Socket)", options: MOTHERBOARD_OPTIONS.sockets },
+    motherboard_form: { label: "פורמט לוח אם", options: MOTHERBOARD_OPTIONS.formFactors },
+    motherboard_brand: { label: "יצרן לוח אם", options: MOTHERBOARD_OPTIONS.brands },
+    motherboard_features: { label: "חיבור אלחוטי (Wi-Fi/BT)", options: MOTHERBOARD_OPTIONS.features },
+    motherboard_ethernet: { label: "חיבור רשת (Ethernet)", options: MOTHERBOARD_OPTIONS.ethernet },
+    motherboard_m2: { label: "חריצי M.2", options: MOTHERBOARD_OPTIONS.m2Slots },
+    motherboard_pcie: { label: "דור PCIe ראשי", options: MOTHERBOARD_OPTIONS.pcieGen },
+    ram_type: { label: "סוג זיכרון (RAM)", options: RAM_TYPE_OPTIONS },
+    ram_config: { label: "תצורת זיכרון", options: RAM_CONFIG_OPTIONS },
+    storage_primary: { label: "כונן ראשי", options: STORAGE_TYPE_OPTIONS },
+    storage_secondary: { label: "כונן משני", options: [...STORAGE_TYPE_OPTIONS, "אין"] },
+    psu_wattage: { label: "הספק ספק כח (W)", options: PSU_OPTIONS.wattages },
+    psu_efficiency: { label: "דירוג יעילות", options: PSU_OPTIONS.efficiencyRatings },
+    psu_modularity: { label: "סוג מודולריות", options: PSU_OPTIONS.modularity },
+    psu_standard: { label: "תקן ספק כח", options: PSU_OPTIONS.standards },
+    psu_brand: { label: "יצרן ספק כח", options: PSU_OPTIONS.brands },
+    cooler_type: { label: "סוג קירור", options: COOLER_OPTIONS.types },
+    cooler_model: { label: "דגם מקרר", options: COOLER_OPTIONS.models },
+    case_form: { label: "פורמט מארז", options: CASE_OPTIONS.formFactors },
+    case_airflow: { label: "זרימת אוויר (פאנל קדמי)", options: CASE_OPTIONS.airflow },
+    case_io: { label: "חיבורים קדמיים", options: CASE_OPTIONS.frontPanelIO },
+    case_brand: { label: "יצרן מארז", options: CASE_OPTIONS.brands },
+    os: { label: "מערכת הפעלה", options: OS_OPTIONS },
+    monitor_size: { label: "גודל מסך", options: MONITOR_OPTIONS.sizes },
+    monitor_panel: { label: "סוג פאנל", options: MONITOR_OPTIONS.panelTypes },
+    monitor_resolution: { label: "רזולוציית מסך", options: MONITOR_OPTIONS.resolutions },
+    monitor_refresh: { label: "קצב רענון", options: MONITOR_OPTIONS.refreshRates },
+    monitor_brand: { label: "יצרן מסך", options: MONITOR_OPTIONS.brands },
+};
+
+// Sub-categories for desktop computers
+export const DESKTOP_SUB_CATEGORIES = [
+    { value: "brand_desktop", label: "🖥️ מחשב נייח מותג", description: "מחשב מוכן מיצרן (Dell, HP, Lenovo...)" },
+    { value: "all_in_one", label: "🖥️ All-in-One", description: "מחשב משולב עם מסך" },
+    { value: "custom_build", label: "🔧 בנייה עצמית", description: "מחשב שהורכב מרכיבים בודדים" },
+];
 
 // Legacy export for backward compatibility
 export const COMPUTER_MODELS: Record<string, string[]> = Object.fromEntries(

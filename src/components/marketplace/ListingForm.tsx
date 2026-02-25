@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createListing, updateListing, getMyListings, parseLinkMetadata, updateUserPhone, getAiKnowledge, getMyPhone } from "@/app/actions/marketplace";
 import { analyzeListingText } from "@/lib/listing-ai";
 import { CAR_MODELS } from "@/lib/car-data";
+import { CUSTOM_BUILD_CATEGORIES, DESKTOP_SUB_CATEGORIES, MONITOR_OPTIONS } from "@/lib/computer-data";
 import { HardwareSearchEngine } from "./HardwareSearchEngine";
 import { Loader2, Plus, Image as ImageIcon, X, Sparkles, Link as LinkIcon, Edit3, Trash2, Mic, MicOff } from "lucide-react";
 import Link from "next/link";
@@ -88,6 +89,45 @@ const COMPUTER_FIELDS = [
     { key: "שנת השקה", label: "שנת השקה" },
     { key: "הערות נוספות", label: "הערות" },
     { key: "החרגות", label: "החרגות (שריטות/נזקים)" },
+];
+
+// Fields for custom build desktop
+const CUSTOM_BUILD_FIELDS = [
+    { key: "מעבד", label: "מעבד (CPU)", dataKey: "cpu" as const },
+    { key: "כרטיס מסך", label: "כרטיס מסך (GPU)", dataKey: "gpu" as const },
+    { key: "לוח אם - ערכת שבבים", label: "ערכת שבבים (Chipset)", dataKey: "motherboard_chipset" as const },
+    { key: "לוח אם - שקע", label: "שקע מעבד (Socket)", dataKey: "motherboard_socket" as const },
+    { key: "לוח אם - פורמט", label: "פורמט לוח אם", dataKey: "motherboard_form" as const },
+    { key: "לוח אם - חיבור אלחוטי", label: "חיבור אלחוטי (Wi-Fi/BT)", dataKey: "motherboard_features" as const },
+    { key: "לוח אם - כרטיס רשת", label: "חיבור רשת (Ethernet)", dataKey: "motherboard_ethernet" as const },
+    { key: "לוח אם - חריצי M.2", label: "חריצי M.2", dataKey: "motherboard_m2" as const },
+    { key: "לוח אם - דור PCIe", label: "דור PCIe ראשי", dataKey: "motherboard_pcie" as const },
+    { key: "לוח אם - יצרן", label: "יצרן לוח אם", dataKey: "motherboard_brand" as const },
+    { key: "RAM - סוג", label: "סוג זיכרון (RAM)", dataKey: "ram_type" as const },
+    { key: "RAM - תצורה", label: "תצורת זיכרון", dataKey: "ram_config" as const },
+    { key: "כונן ראשי", label: "כונן ראשי", dataKey: "storage_primary" as const },
+    { key: "כונן משני", label: "כונן משני", dataKey: "storage_secondary" as const },
+    { key: "ספק כח - הספק", label: "הספק ספק כח (W)", dataKey: "psu_wattage" as const },
+    { key: "ספק כח - תקן", label: "תקן ספק כח", dataKey: "psu_standard" as const },
+    { key: "ספק כח - יעילות", label: "דירוג יעילות", dataKey: "psu_efficiency" as const },
+    { key: "ספק כח - סוג", label: "סוג מודולריות", dataKey: "psu_modularity" as const },
+    { key: "ספק כח - יצרן", label: "יצרן ספק כח", dataKey: "psu_brand" as const },
+    { key: "קירור - סוג", label: "סוג קירור", dataKey: "cooler_type" as const },
+    { key: "קירור - דגם", label: "דגם מקרר", dataKey: "cooler_model" as const },
+    { key: "מארז - פורמט", label: "פורמט מארז", dataKey: "case_form" as const },
+    { key: "מארז - זרימת אוויר", label: "זרימת אוויר", dataKey: "case_airflow" as const },
+    { key: "מארז - חיבורים", label: "חיבורים קדמיים", dataKey: "case_io" as const },
+    { key: "מארז - יצרן", label: "יצרן מארז", dataKey: "case_brand" as const },
+    { key: "מערכת הפעלה", label: "מערכת הפעלה", dataKey: "os" as const },
+];
+
+// Fields for monitor (shown for custom build and as standalone)
+const MONITOR_FIELDS = [
+    { key: "מסך - גודל", label: "גודל מסך", dataKey: "monitor_size" as const },
+    { key: "מסך - פאנל", label: "סוג פאנל", dataKey: "monitor_panel" as const },
+    { key: "מסך - רזולוציה", label: "רזולוציה", dataKey: "monitor_resolution" as const },
+    { key: "מסך - רענון", label: "קצב רענון", dataKey: "monitor_refresh" as const },
+    { key: "מסך - יצרן", label: "יצרן מסך", dataKey: "monitor_brand" as const },
 ];
 
 const CONDITION_MAP: Record<string, string> = {
@@ -1181,21 +1221,34 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {formData.category === "Computers" && (
-                    <div className="space-y-2 p-3 bg-gray-900/50 rounded-lg border border-purple-500/20 mb-4 animate-in fade-in slide-in-from-top-2">
+                    <div className="space-y-3 p-3 bg-gray-900/50 rounded-lg border border-purple-500/20 mb-4 animate-in fade-in slide-in-from-top-2">
                         <Label className="text-purple-300">תת-קטגוריה (סוג המחשב)</Label>
                         <Select value={getExtraVal("סוג המחשב") || "מחשב נייד (Laptop)"} onValueChange={val => handleExtraChange("סוג המחשב", val)}>
                             <SelectTrigger className="bg-gray-800 border-gray-700 text-right" dir="rtl">
                                 <SelectValue placeholder="בחר סוג מחשב (למשל: מחשב נייד, גיימינג...)" />
                             </SelectTrigger>
                             <SelectContent dir="rtl">
-                                <SelectItem value="מחשב נייד (Laptop)">מחשב נייד (Laptop)</SelectItem>
-                                <SelectItem value="מחשב נייח (Desktop)">מחשב נייח (Desktop)</SelectItem>
-                                <SelectItem value="מחשב גיימינג">מחשב גיימינג</SelectItem>
-                                <SelectItem value="מחשב All-in-One">מחשב All-in-One</SelectItem>
-                                <SelectItem value="מיני מחשב (Mini PC)">מיני מחשב (Mini PC)</SelectItem>
-                                <SelectItem value="תחנת עבודה (Workstation)">תחנת עבודה (Workstation)</SelectItem>
+                                <SelectItem value="מחשב נייד (Laptop)">💻 מחשב נייד (Laptop)</SelectItem>
+                                <SelectItem value="מחשב נייח (Desktop)">🖥️ מחשב נייח מותג (Desktop)</SelectItem>
+                                <SelectItem value="מחשב All-in-One">🖥️ מחשב All-in-One</SelectItem>
+                                <SelectItem value="בנייה עצמית (Custom Build)">🔧 בנייה עצמית (Custom Build)</SelectItem>
+                                <SelectItem value="מחשב גיימינג">🎮 מחשב גיימינג</SelectItem>
+                                <SelectItem value="מיני מחשב (Mini PC)">📦 מיני מחשב (Mini PC)</SelectItem>
+                                <SelectItem value="תחנת עבודה (Workstation)">⚙️ תחנת עבודה (Workstation)</SelectItem>
                             </SelectContent>
                         </Select>
+
+                        {/* Custom Build sub-category description */}
+                        {getExtraVal("סוג המחשב") === "בנייה עצמית (Custom Build)" && (
+                            <p className="text-xs text-amber-400/80 bg-amber-500/10 border border-amber-500/20 rounded px-3 py-2">
+                                🔧 מחשב שהורכב מרכיבים בודדים – מלא פרטי רכיבים למטה
+                            </p>
+                        )}
+                        {getExtraVal("סוג המחשב") === "מחשב All-in-One" && (
+                            <p className="text-xs text-blue-400/80 bg-blue-500/10 border border-blue-500/20 rounded px-3 py-2">
+                                🖥️ מחשב משולב עם מסך מובנה – כולל פרטי מסך
+                            </p>
+                        )}
                     </div>
                 )}
 
@@ -1390,44 +1443,146 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {/* Specific Fields for Phones & Computers */}
                 {["Phones", "Computers"].includes(formData.category) && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-3">
-                        <HardwareSearchEngine
-                            category={formData.category}
-                            onSelect={(hardwareData) => {
-                                // Update all empty matching extraData
-                                let newExtra = [...formData.extraData];
-                                Object.keys(hardwareData).forEach(aiKey => {
-                                    // Hardware API keys map to Hebrew keys here depending on category. 
-                                    // The HardwareSearchEngine will map standard JSON keys to Hebrew display keys internally 
-                                    // so we expect it to return mapped keys like "מעבד", "RAM", etc.
-                                    if (hardwareData[aiKey] && typeof hardwareData[aiKey] === 'string' && aiKey !== "notes") {
-                                        const idx = newExtra.findIndex(e => e.key === aiKey);
-                                        if (idx >= 0) {
-                                            newExtra[idx].value = hardwareData[aiKey];
-                                        } else {
-                                            newExtra.push({ key: aiKey, value: hardwareData[aiKey] });
+                        {/* Hardware Search - hide for custom build since user picks components individually */}
+                        {getExtraVal("סוג המחשב") !== "בנייה עצמית (Custom Build)" && (
+                            <HardwareSearchEngine
+                                category={formData.category}
+                                onSelect={(hardwareData) => {
+                                    let newExtra = [...formData.extraData];
+                                    Object.keys(hardwareData).forEach(aiKey => {
+                                        if (hardwareData[aiKey] && typeof hardwareData[aiKey] === 'string' && aiKey !== "notes") {
+                                            const idx = newExtra.findIndex(e => e.key === aiKey);
+                                            if (idx >= 0) {
+                                                newExtra[idx].value = hardwareData[aiKey];
+                                            } else {
+                                                newExtra.push({ key: aiKey, value: hardwareData[aiKey] });
+                                            }
                                         }
-                                    }
-                                });
-                                // Make/Model mappings
-                                if (hardwareData["יצרן"]) handleChange("make", hardwareData["יצרן"]);
-                                if (hardwareData["דגם"]) handleChange("model", hardwareData["דגם"]);
-                                setFormData(prev => ({ ...prev, extraData: newExtra }));
-                            }}
-                        />
+                                    });
+                                    if (hardwareData["יצרן"]) handleChange("make", hardwareData["יצרן"]);
+                                    if (hardwareData["דגם"]) handleChange("model", hardwareData["דגם"]);
+                                    setFormData(prev => ({ ...prev, extraData: newExtra }));
+                                }}
+                            />
+                        )}
 
                         <div className="grid grid-cols-2 gap-4">
-                            {(formData.category === "Phones" ? PHONE_FIELDS : COMPUTER_FIELDS).map(field => (
-                                <div className="space-y-2" key={field.key}>
-                                    <Label className={field.key === "החרגות" ? "text-orange-400" : ""}>{field.label}</Label>
-                                    <Input
-                                        value={getExtraVal(field.key)}
-                                        onChange={e => handleExtraChange(field.key, e.target.value)}
-                                        placeholder={field.key === "החרגות" ? "השאר ריק אם תקין" : ""}
-                                        dir={/RAM|מעבד|GPU|מספר/.test(field.key) ? 'ltr' : 'rtl'}
-                                        className={`bg-gray-800 border-gray-700 ${field.key === "החרגות" ? "border-orange-500/30 text-orange-400 placeholder:text-gray-500" : ""}`}
-                                    />
-                                </div>
-                            ))}
+                            {/* For Custom Build: show component selectors with dropdowns */}
+                            {formData.category === "Computers" && getExtraVal("סוג המחשב") === "בנייה עצמית (Custom Build)" ? (
+                                <>
+                                    {/* Custom Build Component Fields with dropdown selectors */}
+                                    {CUSTOM_BUILD_FIELDS.map(field => {
+                                        const options = CUSTOM_BUILD_CATEGORIES[field.dataKey]?.options || [];
+                                        return (
+                                            <div className="space-y-2" key={field.key}>
+                                                <Label className="text-amber-300 text-sm">{field.label}</Label>
+                                                <Select
+                                                    value={getExtraVal(field.key)}
+                                                    onValueChange={val => handleExtraChange(field.key, val)}
+                                                >
+                                                    <SelectTrigger className="bg-gray-800 border-gray-700 text-right text-sm" dir="auto">
+                                                        <SelectValue placeholder={`בחר ${field.label}`} />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="max-h-[250px]" dir="auto">
+                                                        {(options as string[]).map((opt: string) => (
+                                                            <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        );
+                                    })}
+
+                                    {/* Monitor section header */}
+                                    <div className="col-span-2 mt-2">
+                                        <h4 className="text-sm font-bold text-blue-300 border-b border-blue-500/20 pb-1 flex items-center gap-2">
+                                            🖥️ מסך מחשב (כלול בחבילה)
+                                        </h4>
+                                    </div>
+
+                                    {/* Monitor fields */}
+                                    {MONITOR_FIELDS.map(field => {
+                                        const options = CUSTOM_BUILD_CATEGORIES[field.dataKey]?.options || [];
+                                        return (
+                                            <div className="space-y-2" key={field.key}>
+                                                <Label className="text-blue-300 text-sm">{field.label}</Label>
+                                                <Select
+                                                    value={getExtraVal(field.key)}
+                                                    onValueChange={val => handleExtraChange(field.key, val)}
+                                                >
+                                                    <SelectTrigger className="bg-gray-800 border-gray-700 text-right text-sm" dir="auto">
+                                                        <SelectValue placeholder={`בחר ${field.label}`} />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="max-h-[250px]" dir="auto">
+                                                        {(options as string[]).map((opt: string) => (
+                                                            <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        );
+                                    })}
+
+                                    {/* Extras */}
+                                    <div className="col-span-2 space-y-2">
+                                        <Label className="text-orange-400">החרגות (שריטות/נזקים)</Label>
+                                        <Input
+                                            value={getExtraVal("החרגות")}
+                                            onChange={e => handleExtraChange("החרגות", e.target.value)}
+                                            placeholder="השאר ריק אם תקין"
+                                            className="bg-gray-800 border-orange-500/30 text-orange-400 placeholder:text-gray-500"
+                                        />
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {/* Standard fields for brand computers / phones */}
+                                    {(formData.category === "Phones" ? PHONE_FIELDS : COMPUTER_FIELDS).map(field => (
+                                        <div className="space-y-2" key={field.key}>
+                                            <Label className={field.key === "החרגות" ? "text-orange-400" : ""}>{field.label}</Label>
+                                            <Input
+                                                value={getExtraVal(field.key)}
+                                                onChange={e => handleExtraChange(field.key, e.target.value)}
+                                                placeholder={field.key === "החרגות" ? "השאר ריק אם תקין" : ""}
+                                                dir={/RAM|מעבד|GPU|מספר/.test(field.key) ? 'ltr' : 'rtl'}
+                                                className={`bg-gray-800 border-gray-700 ${field.key === "החרגות" ? "border-orange-500/30 text-orange-400 placeholder:text-gray-500" : ""}`}
+                                            />
+                                        </div>
+                                    ))}
+
+                                    {/* Monitor fields for All-in-One (monitor is built-in but has specs) */}
+                                    {formData.category === "Computers" && getExtraVal("סוג המחשב") === "מחשב All-in-One" && (
+                                        <>
+                                            <div className="col-span-2 mt-2">
+                                                <h4 className="text-sm font-bold text-blue-300 border-b border-blue-500/20 pb-1 flex items-center gap-2">
+                                                    🖥️ מפרט מסך מובנה
+                                                </h4>
+                                            </div>
+                                            {MONITOR_FIELDS.map(field => {
+                                                const options = CUSTOM_BUILD_CATEGORIES[field.dataKey]?.options || [];
+                                                return (
+                                                    <div className="space-y-2" key={field.key}>
+                                                        <Label className="text-blue-300 text-sm">{field.label}</Label>
+                                                        <Select
+                                                            value={getExtraVal(field.key)}
+                                                            onValueChange={val => handleExtraChange(field.key, val)}
+                                                        >
+                                                            <SelectTrigger className="bg-gray-800 border-gray-700 text-right text-sm" dir="auto">
+                                                                <SelectValue placeholder={`בחר ${field.label}`} />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="max-h-[250px]" dir="auto">
+                                                                {(options as string[]).map((opt: string) => (
+                                                                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                );
+                                            })}
+                                        </>
+                                    )}
+                                </>
+                            )}
                         </div>
                     </div>
                 )}
