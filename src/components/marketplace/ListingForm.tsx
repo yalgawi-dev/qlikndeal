@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createListing, updateListing, getMyListings, parseLinkMetadata, updateUserPhone, getAiKnowledge } from "@/app/actions/marketplace";
+import { createListing, updateListing, getMyListings, parseLinkMetadata, updateUserPhone, getAiKnowledge, getMyPhone } from "@/app/actions/marketplace";
 import { analyzeListingText } from "@/lib/listing-ai";
 import { CAR_MODELS } from "@/lib/car-data";
 import { HardwareSearchEngine } from "./HardwareSearchEngine";
@@ -214,7 +214,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
         kilometrage: initialData?.kilometrage || "",
         images: initialData?.images || [] as string[],
         videos: initialData?.videos || [] as string[],
-        contactPhone: initialData?.contactPhone || "",
+        contactPhone: initialData?.contactPhone || initialData?.extraData?.["טלפון ליצירת קשר"] || "",
         extraData: processed.extraData,
         highlights: processed.highlights
     });
@@ -225,6 +225,14 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
     const [missingFields, setMissingFields] = useState<string[]>(initialData?.missingFields || []);
     const [highlightInput, setHighlightInput] = useState("");
     const [showPhoneUpdate, setShowPhoneUpdate] = useState(false);
+
+    // Auto-fill phone from DB (Onboarding) or Clerk profile
+    useEffect(() => {
+        if (formData.contactPhone) return; // already filled
+        getMyPhone().then(res => {
+            if (res.phone) setFormData(prev => ({ ...prev, contactPhone: res.phone }));
+        });
+    }, []);
 
     useEffect(() => {
         if (!formData.contactPhone && formData.description) {
@@ -786,6 +794,8 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
         if (formData.year) extraDataObject["שנת ייצור"] = formData.year;
         if (formData.hand) extraDataObject["יד"] = formData.hand;
         if (formData.kilometrage) extraDataObject["קילומטראז'"] = formData.kilometrage;
+
+        if (!formData.contactPhone?.trim()) { alert("נא להזין מספר טלפון ליצירת קשר"); return; }
 
         console.log("Submitting form data:", {
             title: formData.title,
@@ -1555,11 +1565,12 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 </div>
 
                 <div className="space-y-2">
-                    <Label>מספר טלפון ליצירת קשר</Label>
+                    <Label className="text-gray-300 font-bold">מספר טלפון ליצירת קשר <span className="text-red-500">*</span></Label>
                     <Input
                         value={formData.contactPhone}
                         onChange={e => handleChange("contactPhone", e.target.value)}
                         placeholder="05X-XXXXXXX"
+                        dir="ltr"
                         className="bg-gray-800 border-gray-700"
                     />
                     <p className="text-xs text-gray-400">יוצג לקונים במודעה</p>

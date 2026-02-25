@@ -11,7 +11,7 @@ import { MessageSquare, Camera, Monitor, Car, Smartphone, Package } from "lucide
 import html2canvas from "html2canvas";
 import Image from "next/image";
 
-type CategoryMode = "select" | "computer" | "mobile" | "general";
+type CategoryMode = "select" | "computer" | "laptop" | "desktop" | "mobile" | "general";
 
 const CATEGORY_CARDS = [
     {
@@ -97,6 +97,10 @@ function CreateListingContent() {
         // If category=computer in URL, jump directly to computer mode
         if (cat === "computer") {
             setCategoryMode("computer");
+        } else if (cat === "laptop") {
+            setCategoryMode("laptop");
+        } else if (cat === "desktop") {
+            setCategoryMode("desktop");
         } else if (cat === "general" || m === "smart") {
             setCategoryMode("general");
         }
@@ -110,7 +114,7 @@ function CreateListingContent() {
                         setInitialSmartData(parsed);
                         // If AI detected Computers, auto set category
                         if (parsed.category === "Computers") {
-                            setCategoryMode("computer");
+                            setCategoryMode("laptop"); // default to laptop for AI
                         } else {
                             setCategoryMode("general");
                         }
@@ -220,29 +224,39 @@ function CreateListingContent() {
                         {/* Category cards */}
                         <div className="space-y-4">
                             {/* Computer card - featured */}
-                            <button
-                                onClick={() => setCategoryMode("computer")}
-                                className={`w-full text-right bg-gradient-to-r ${CATEGORY_CARDS[0].color} ${CATEGORY_CARDS[0].hoverColor} border rounded-2xl p-6 transition-all duration-200 hover:scale-[1.01] group`}
-                            >
-                                <div className="flex items-center justify-between">
+                            <div className={`w-full bg-gradient-to-r ${CATEGORY_CARDS[0].color} ${CATEGORY_CARDS[0].hoverColor} border rounded-2xl p-6 transition-all duration-200`}>
+                                <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
                                             <span className="text-xl">✨</span>
                                         </div>
                                         <span className="text-xs bg-purple-500/30 text-purple-300 px-2.5 py-1 rounded-full font-medium">מנוע חיפוש חכם</span>
                                     </div>
-                                    <div>
-                                        <div className="text-4xl mb-1">💻</div>
-                                    </div>
+                                    <div className="text-4xl">💻</div>
                                 </div>
-                                <div className="mt-4">
+                                <div className="mb-4">
                                     <div className="text-xl font-bold text-white">מחשב</div>
-                                    <div className="text-gray-400 text-sm mt-1">Laptop / Desktop / Gaming / All-in-One</div>
-                                    <div className="text-xs text-purple-400 mt-3 flex items-center gap-1">
-                                        <span>בחר יצרן ← דגם ← מפרט ← פרסם</span>
-                                    </div>
+                                    <div className="text-gray-400 text-sm mt-1">בחר סוג מחשב:</div>
                                 </div>
-                            </button>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        onClick={() => setCategoryMode("laptop")}
+                                        className="flex flex-col items-center gap-2 py-3 px-4 rounded-xl bg-purple-600/20 border border-purple-500/40 hover:bg-purple-600/30 hover:border-purple-400/60 transition-all group"
+                                    >
+                                        <span className="text-2xl group-hover:scale-110 transition-transform">💻</span>
+                                        <span className="text-sm font-bold text-white">מחשב נייד</span>
+                                        <span className="text-xs text-purple-300">Laptop / Gaming</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setCategoryMode("desktop")}
+                                        className="flex flex-col items-center gap-2 py-3 px-4 rounded-xl bg-blue-600/20 border border-blue-500/40 hover:bg-blue-600/30 hover:border-blue-400/60 transition-all group"
+                                    >
+                                        <span className="text-2xl group-hover:scale-110 transition-transform">🖥️</span>
+                                        <span className="text-sm font-bold text-white">מחשב נייח</span>
+                                        <span className="text-xs text-blue-300">Desktop / All-in-One</span>
+                                    </button>
+                                </div>
+                            </div>
 
                             {/* Mobile card - featured */}
                             <button
@@ -295,9 +309,10 @@ function CreateListingContent() {
     }
 
     // ==========================================
-    // COMPUTER FORM
+    // COMPUTER FORM (Laptop)
     // ==========================================
-    if (categoryMode === "computer") {
+    if (categoryMode === "laptop" || categoryMode === "desktop" || categoryMode === "computer") {
+        const isDesktop = categoryMode === "desktop";
         return (
             <div className="min-h-screen bg-black text-white pb-20" dir="rtl">
                 <Navbar />
@@ -310,8 +325,8 @@ function CreateListingContent() {
                             >
                                 ← שנה קטגוריה
                             </button>
-                            <h1 className="text-xl font-bold text-center text-white">
-                                פרסם מחשב
+                            <h1 className="text-xl font-bold text-center text-white flex items-center justify-center gap-2">
+                                {isDesktop ? "🖥️" : "💻"} פרסם מחשב {isDesktop ? "נייח" : "נייד"}
                             </h1>
                             <a
                                 href="/dashboard/marketplace"
@@ -324,7 +339,7 @@ function CreateListingContent() {
 
                         <div className="p-5">
                             <ComputerListingForm
-                                onComplete={() => window.location.href = "/dashboard/marketplace"}
+                                onComplete={() => window.location.href = "/dashboard/marketplace/my-listings"}
                                 onCancel={() => setCategoryMode("select")}
                                 initialData={initialSmartData}
                             />
@@ -367,7 +382,7 @@ function CreateListingContent() {
 
                         <div className="p-5">
                             <MobileListingForm
-                                onComplete={() => window.location.href = "/dashboard/marketplace"}
+                                onComplete={() => window.location.href = "/dashboard/marketplace/my-listings"}
                                 onCancel={() => setCategoryMode("select")}
                                 initialData={initialSmartData}
                             />
@@ -410,7 +425,7 @@ function CreateListingContent() {
                         <div className="p-6">
                             <ListingForm
                                 key={initialSmartData ? 'smart-loaded' : 'default'}
-                                onComplete={() => window.location.href = "/dashboard/marketplace"}
+                                onComplete={() => window.location.href = "/dashboard/marketplace/my-listings"}
                                 onCancel={() => window.location.href = "/dashboard/marketplace"}
                                 initialData={initialSmartData || sharedData}
                                 initialMagicText={!initialSmartData ? sharedData.magicText : undefined}

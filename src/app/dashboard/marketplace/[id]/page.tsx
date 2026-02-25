@@ -144,7 +144,7 @@ export default function ListingPage() {
                                         onClick={() => setSelectedImage(img)}
                                         className={`relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === img ? "border-purple-500 ring-2 ring-purple-500/30" : "border-transparent opacity-70 hover:opacity-100"}`}
                                     >
-                                        <Image src={img} alt={`thumbnail-${idx}`} className="w-full h-full object-cover"  width={400} height={400}/>
+                                        <Image src={img} alt={`thumbnail-${idx}`} className="w-full h-full object-cover" width={400} height={400} />
                                     </button>
                                 ))}
                             </div>
@@ -238,12 +238,40 @@ export default function ListingPage() {
 
                                     {/* Specs List */}
                                     <div className="divide-y divide-gray-800">
-                                        {features.map(([key, value]: any, i) => (
-                                            <div key={i} className="flex justify-between p-4 hover:bg-gray-800/30 transition-colors">
-                                                <span className="text-gray-400">{key}</span>
-                                                <span className="font-medium text-white max-w-[60%] text-left">{value}</span>
-                                            </div>
-                                        ))}
+                                        {features.map(([key, value]: any, i) => {
+                                            if (key === "תקינות סוללה") {
+                                                const isOk = value === "תקינה";
+                                                return (
+                                                    <div key={i} className="flex justify-between items-center p-4 hover:bg-gray-800/30 transition-colors">
+                                                        <span className="text-gray-400">🔋 {key}</span>
+                                                        <span className={`font-bold px-3 py-1 rounded-full text-sm ${isOk ? "bg-green-900/50 text-green-300 border border-green-700" : "bg-red-900/50 text-red-300 border border-red-700"}`}>
+                                                            {isOk ? "✅ תקינה" : "❌ לא תקינה"}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            }
+                                            if (key === "אחוזי סוללה") {
+                                                const pct = parseInt(value);
+                                                const color = pct > 80 ? "bg-green-500" : pct > 50 ? "bg-yellow-500" : "bg-red-500";
+                                                return (
+                                                    <div key={i} className="p-4 hover:bg-gray-800/30 transition-colors">
+                                                        <div className="flex justify-between mb-2">
+                                                            <span className="text-gray-400">🔋 בריאות סוללה</span>
+                                                            <span className="font-bold text-white">{value}</span>
+                                                        </div>
+                                                        <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                                                            <div className={`h-full rounded-full ${color}`} style={{ width: `${Math.min(100, isNaN(pct) ? 0 : pct)}%` }} />
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+                                            return (
+                                                <div key={i} className="flex justify-between p-4 hover:bg-gray-800/30 transition-colors">
+                                                    <span className="text-gray-400">{key}</span>
+                                                    <span className="font-medium text-white max-w-[60%] text-left">{value}</span>
+                                                </div>
+                                            );
+                                        })}
                                         {/* Show phone if available */}
                                         {extraData["טלפון ליצירת קשר"] && (
                                             <div className="flex justify-between p-4 bg-gray-800/30">
@@ -262,7 +290,7 @@ export default function ListingPage() {
                                 <CardContent className="p-6 flex items-center gap-4">
                                     <div className="w-14 h-14 bg-gray-800 rounded-full flex items-center justify-center overflow-hidden border border-gray-700">
                                         {listing.seller.imageUrl ? (
-                                            <Image src={listing.seller.imageUrl} alt={listing.seller.firstName} className="w-full h-full object-cover"  width={400} height={400}/>
+                                            <Image src={listing.seller.imageUrl} alt={listing.seller.firstName} className="w-full h-full object-cover" width={400} height={400} />
                                         ) : (
                                             <User className="w-8 h-8 text-gray-500" />
                                         )}

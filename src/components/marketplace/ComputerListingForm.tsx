@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { createListing, updateListing } from "@/app/actions/marketplace";
+import { createListing, updateListing, getMyListings, getMyPhone } from "@/app/actions/marketplace";
 import { Loader2, Plus, Image as ImageIcon, X, Search, ChevronDown, Check, Monitor, Cpu, MemoryStick, HardDrive, Maximize2, AlertCircle, Sparkles } from "lucide-react";
 import {
     COMPUTER_DATABASE,
@@ -39,6 +39,8 @@ interface ComputerSpec {
     extras: string;      // free text for damages / extras
     sku: string;         // model number / SKU from DB
     battery: string;
+    batteryHealth: string;
+    batteryPercent: string;
     ports: string;
     weight: string;
     release_year: string;
@@ -248,10 +250,12 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         cpu: initialData?.extraData?.מעבד || "",
         gpu: initialData?.extraData?.["כרטיס מסך"] || "",
         os: initialData?.extraData?.["מערכת הפעלה"] || "",
-        condition: initialData?.condition || "Used",
-        extras: initialData?.extraData?.החרגות || "",
+        condition: initialData?.condition || "",
+        extras: initialData?.extraData?.["החרגות / נזקים"] || initialData?.extraData?.החרגות || "",
         sku: initialData?.extraData?.["מספר דגם / SKU"] || "",
         battery: initialData?.extraData?.סוללה || "",
+        batteryHealth: initialData?.extraData?.["תקינות סוללה"] || "",
+        batteryPercent: (initialData?.extraData?.["אחוזי סוללה"] || "").replace("%", ""),
         ports: initialData?.extraData?.חיבורים || "",
         weight: initialData?.extraData?.משקל || "",
         release_year: initialData?.extraData?.["שנת ייצור"] || "",
@@ -261,9 +265,17 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         title: initialData?.title || "",
         price: initialData?.price ? initialData.price.toString() : "",
         description: initialData?.description || "",
-        contactPhone: initialData?.contactPhone || initialData?.extraData?.["טלפון ליצירת קשר"] || user?.primaryPhoneNumber?.phoneNumber || "",
+        contactPhone: initialData?.contactPhone || initialData?.extraData?.["טלפון ליצירת קשר"] || "",
         images: initialData?.images || [],
     });
+
+    // Auto-fill phone from DB (Onboarding) or Clerk profile
+    useEffect(() => {
+        if (details.contactPhone) return; // already filled
+        getMyPhone().then(res => {
+            if (res.phone) setDetails(d => ({ ...d, contactPhone: res.phone }));
+        });
+    }, []);
 
     const removeUncertain = (field: string) => {
         setUncertainFields(prev => prev.filter(f => f !== field));
@@ -445,6 +457,17 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             if (!confirmed) return;
         }
 
+        if (!isEditing) {
+            const existingRes = await getMyListings();
+            if (existingRes.success && existingRes.listings) {
+                const isDuplicate = existingRes.listings.some((l: any) => l.title === details.title.trim());
+                if (isDuplicate) {
+                    const confirmedDup = confirm("המוצר כבר פורסם! האם אתה בטוח שאתה רוצה לפרסם את אותו מוצר שוב?");
+                    if (!confirmedDup) return;
+                }
+            }
+        }
+
         setLoading(true);
         try {
             const extraData: Record<string, string> = {
@@ -468,6 +491,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             };
             Object.keys(extraData).forEach(k => { if (!extraData[k]) delete extraData[k]; });
             if (details.contactPhone) extraData["טלפון ליצירת קשר"] = details.contactPhone;
+            if (spec.batteryHealth) extraData["תקינות סוללה"] = spec.batteryHealth;
+            if (spec.batteryPercent) extraData["אחוזי סוללה"] = `${spec.batteryPercent}%`;
 
             const payload = {
                 title: details.title,
@@ -663,7 +688,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
                     {/* ==== SECTION: DETAILS ==== */}
                     <div className="space-y-4">
-                        <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">פרטים ומצב המחשב</h3>
+                        <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">מפרט יצרן (חדש)</h3>
 
                         {/* SKU */}
                         <div className="space-y-1">
@@ -678,22 +703,23 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                         </div>
 
                         {/* Battery + Weight + Year - three in a row */}
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1">
-                                <Label className="text-gray-400 text-xs">🔋 סוללה / בריאות</Label>
+                                <Label className="text-gray-400 text-xs">🔋 סוללה (mAh / סוג)</Label>
                                 <Input
                                     value={spec.battery}
                                     onChange={e => setSpec(s => ({ ...s, battery: e.target.value }))}
-                                    placeholder="תקינה / 85%"
+                                    placeholder="לדוגמא: 72Wh, 6500mAh"
                                     className="bg-gray-800 border-gray-700 text-sm"
+                                    dir="ltr"
                                 />
                             </div>
                             <div className="space-y-1">
-                                <Label className="text-gray-400 text-xs">📐 משקל</Label>
+                                <Label className="text-gray-400 text-xs">📏 משקל</Label>
                                 <Input
                                     value={spec.weight}
                                     onChange={e => setSpec(s => ({ ...s, weight: e.target.value }))}
-                                    placeholder="לדוגמה: 2.2kg"
+                                    placeholder="לדוגמא: 2.2kg"
                                     className="bg-gray-800 border-gray-700 text-sm"
                                     dir="ltr"
                                 />
@@ -772,7 +798,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
                         {/* Condition */}
                         <div className="space-y-2">
-                            <Label className="text-gray-300">לסיכום - מה מצבו?</Label>
+                            <Label className="text-gray-300 font-bold">מצב המחשב <span className="text-red-500">*</span></Label>
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                                 {CONDITION_OPTIONS.map(opt => {
                                     const isSel = spec.condition === opt;
@@ -789,6 +815,44 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                         </button>
                                     );
                                 })}
+                            </div>
+                            {!spec.condition && <p className="text-xs text-yellow-500 mt-1">⚠️ אנא בחר מצב מחשב</p>}
+                        </div>
+
+                        {/* Battery Health - between condition and phone (not related to new-device specs) */}
+                        <div className="space-y-2 border border-gray-700/50 rounded-xl p-3 bg-gray-800/20">
+                            <Label className="text-gray-300 text-sm font-semibold">🔋 תקינות סוללה</Label>
+                            <div className="flex gap-2">
+                                <button type="button"
+                                    onClick={() => setSpec(s => ({ ...s, batteryHealth: "תקינה" }))}
+                                    className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "תקינה" ? "bg-green-600/20 border-green-500 text-green-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
+                                        }`}>
+                                    ✅ תקינה
+                                </button>
+                                <button type="button"
+                                    onClick={() => setSpec(s => ({ ...s, batteryHealth: "לא תקינה" }))}
+                                    className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "לא תקינה" ? "bg-red-600/20 border-red-500 text-red-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
+                                        }`}>
+                                    ❌ לא תקינה
+                                </button>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1">
+                                <Label className="text-gray-400 text-xs whitespace-nowrap">בריאות סוללה:</Label>
+                                <Input
+                                    type="number" min="1" max="100"
+                                    value={spec.batteryPercent}
+                                    onChange={e => setSpec(s => ({ ...s, batteryPercent: e.target.value }))}
+                                    className="bg-gray-800 border-gray-700 w-20 text-center text-sm"
+                                    dir="ltr" placeholder="%"
+                                />
+                                <span className="text-gray-500 text-xs">%</span>
+                                {spec.batteryPercent && (
+                                    <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                                        <div className={`h-full rounded-full transition-all ${Number(spec.batteryPercent) > 80 ? 'bg-green-500' :
+                                            Number(spec.batteryPercent) > 50 ? 'bg-yellow-500' : 'bg-red-500'
+                                            }`} style={{ width: `${Math.min(100, Number(spec.batteryPercent))}%` }} />
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -885,7 +949,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 { label: "אחסון", val: spec.storage, required: true },
                                 { label: "גודל מסך", val: spec.screen, required: false },
                                 { label: "מערכת הפעלה", val: spec.os, required: true },
-                                { label: "סוללה / בריאות", val: spec.battery, required: false },
+                                { label: "תקינות סוללה", val: spec.batteryHealth, required: false },
+                                { label: "בריאות סוללה %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false },
                                 { label: "חיבורים", val: spec.ports, required: false },
                                 { label: "משקל", val: spec.weight, required: false },
                                 { label: "שנת ייצור", val: spec.release_year, required: false },

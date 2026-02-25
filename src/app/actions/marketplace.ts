@@ -454,6 +454,28 @@ export async function updateUserPhone(phone: string) {
     }
 }
 
+export async function getMyPhone() {
+    try {
+        const user = await currentUser();
+        if (!user) return { success: false, phone: "" };
+
+        const dbUser = await prismadb.user.findUnique({
+            where: { clerkId: user.id },
+            select: { phone: true }
+        });
+
+        // Priority: DB phone → Clerk phone → empty
+        const phone = dbUser?.phone ||
+            user.phoneNumbers?.[0]?.phoneNumber ||
+            "";
+
+        return { success: true, phone };
+    } catch (error) {
+        console.error("Failed to get phone:", error);
+        return { success: false, phone: "" };
+    }
+}
+
 // --- AI Knowledge Retrieval ---
 import fs from "fs";
 import path from "path";
