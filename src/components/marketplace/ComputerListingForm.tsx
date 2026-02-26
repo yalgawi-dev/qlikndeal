@@ -353,32 +353,32 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         }
     }, [spec.brand, spec.subModel, spec.cpu, spec.ram, spec.storage]);
     
-    // Motherboard Smart Fill
+    // Motherboard Smart Fill - Updates ALL related fields when a model is selected
     useEffect(() => {
         const mbModel = cbSpec["לוח אם - דגם"];
-        if (mbModel && mbModel.length > 4 && computerTypeMode === "custom_build") {
-            const query = mbModel.toLowerCase();
-            const match = MOTHERBOARD_DATABASE.find(m => 
-                query.includes(m.model.toLowerCase()) || 
-                m.model.toLowerCase().includes(query)
-            );
+        if (mbModel && computerTypeMode === "custom_build") {
+            // Find exact match from our database
+            const match = MOTHERBOARD_DATABASE.find(m => m.model === mbModel);
             
             if (match) {
+                // Normalize chipset: "Intel Z790" -> "Z790" to match our select options
+                const chipset = match.chipset.replace("Intel ", "").replace("AMD ", "");
+                
                 setCbSpec(prev => ({
                     ...prev,
-                    "לוח אם - יצרן": prev["לוח אם - יצרן"] || match.brand,
-                    "לוח אם - ערכת שבבים": prev["לוח אם - ערכת שבבים"] || match.chipset,
-                    "לוח אם - שקע": prev["לוח אם - שקע"] || match.socket,
-                    "לוח אם - פורמט": prev["לוח אם - פורמט"] || match.formFactor,
-                    "RAM - סוג": prev["RAM - סוג"] || (match.ramType.includes("/") ? match.ramType.split("/")[1] : match.ramType), // Prefer DDR5 if hybrid
-                    "לוח אם - חיבור אלחוטי": prev["לוח אם - חיבור אלחוטי"] || (match.wifi !== "nan" ? match.wifi : ""),
-                    "לוח אם - כרטיס רשת": prev["לוח אם - כרטיס רשת"] || match.lan,
-                    "לוח אם - חריצי M.2": prev["לוח אם - חריצי M.2"] || match.m2,
-                    "לוח אם - דור PCIe": prev["לוח אם - דור PCIe"] || match.pcie,
+                    "לוח אם - יצרן": match.brand,
+                    "לוח אם - ערכת שבבים": chipset,
+                    "לוח אם - שקע": match.socket,
+                    "לוח אם - פורמט": match.formFactor,
+                    "RAM - סוג": (match.ramType.includes("/") ? match.ramType.split("/")[1] : match.ramType),
+                    "לוח אם - חיבור אלחוטי": match.wifi !== "nan" ? match.wifi : "ללא",
+                    "לוח אם - כרטיס רשת": match.lan,
+                    "לוח אם - חריצי M.2": match.m2,
+                    "לוח אם - דור PCIe": match.pcie,
                 }));
             }
         }
-    }, [cbSpec["לוח אם - דגם"], computerTypeMode]);
+    }, [cbSpec["לוח אם - דגם"]]);
 
     // active database for dynamic references
     const activeDb = useMemo(() => {
