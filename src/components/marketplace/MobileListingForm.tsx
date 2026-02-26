@@ -247,21 +247,14 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
 
     return (
         <div className="flex flex-col h-full bg-black/40 rounded-2xl border border-gray-800" dir="rtl">
-            {/* Header Sticky */}
-            <div className="sticky top-0 z-10 bg-gray-900/90 backdrop-blur-md border-b border-gray-800 p-4 rounded-t-2xl flex items-center justify-between">
-                <div>
-                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-blue-400" />
-                        פרסום סלולר חכם
-                    </h2>
-                    <p className="text-gray-400 text-xs">חפש במנוע ואנחנו נשלים עבורך את המפרט הטכני!</p>
-                </div>
-                {onCancel && (
-                    <button onClick={onCancel} className="text-gray-500 hover:text-white bg-gray-800 p-1.5 rounded-full transition-colors">
+            {/* Header / Close Button */}
+            {onCancel && (
+                <div className="sticky top-0 z-20 flex justify-end p-4 -mb-12 items-start pointer-events-none">
+                    <button onClick={onCancel} className="text-gray-400 hover:text-white bg-gray-900 border border-gray-700 hover:border-gray-500 p-2 rounded-full transition-all pointer-events-auto shadow-lg backdrop-blur-md">
                         <X className="w-5 h-5" />
                     </button>
-                )}
-            </div>
+                </div>
+            )}
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24">
                 <div className="mb-8">
@@ -584,7 +577,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                         </div>
                     </div>
 
-                    {/* ──── DATA SUMMARY REPORT ──── */}
+                    {/* ──── DYNAMIC RISK / DATA SUMMARY REPORT ──── */}
                     <div className="rounded-2xl border border-gray-700 bg-gray-900/60 p-5 space-y-4">
                         <h3 className="text-base font-bold text-gray-200 flex items-center gap-2">
                             📋 דוח סיכום נתונים – בדוק לפני פרסום
@@ -593,21 +586,16 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                             {[
                                 { label: "יצרן", val: spec.brand, required: true },
                                 { label: "דגם", val: spec.model, required: true },
-                                { label: "RAM", val: spec.ram, required: false },
+                                { label: "זיכרון RAM", val: spec.ram, required: false },
                                 { label: "אחסון", val: spec.storage, required: false },
                                 { label: "מסך", val: spec.screen, required: false },
                                 { label: "מעבד", val: spec.cpu, required: false },
                                 { label: "מערכת הפעלה", val: spec.os, required: false },
-                                { label: "קיבולת סוללה", val: spec.battery, required: false },
-                                { label: "תקינות סוללה", val: spec.batteryHealth, required: false },
-                                { label: "בריאות סוללה %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false },
-                                { label: "מצלמה אחורית", val: spec.rear_camera, required: false },
-                                { label: "מצלמה קדמית", val: spec.front_camera, required: false },
+                                { label: "סוללה %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false },
                                 { label: "מצב המכשיר", val: spec.condition, required: true },
-                                { label: "נזקים / החרגות", val: spec.extras || "ללא נזקים", required: false },
-                                { label: "מחיר", val: details.price ? `₪${Number(details.price).toLocaleString()}` : "", required: true },
-                                { label: "טלפון איש קשר", val: details.contactPhone, required: true },
-                                { label: "תיאור", val: details.description, required: false },
+                                { label: "נזקים / החרגות", val: spec.extras || "ללא", required: false },
+                                { label: "מחיר", val: details.price ? `₪${Number(details.price.replace(/,/g, "")).toLocaleString()}` : "", required: true },
+                                { label: "טלפון לקשר", val: details.contactPhone, required: true },
                                 { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false, warning: true },
                             ].map(({ label, val, required, warning }) => {
                                 const isWarning = !val && warning;

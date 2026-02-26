@@ -18,13 +18,14 @@ const STORAGE_OPTIONS = ["128GB SSD", "256GB SSD", "512GB SSD", "1TB SSD", "2TB 
 const OS_OPTIONS = ["Windows 11 Home", "Windows 11 Pro", "Windows 10 Home", "Windows 10 Pro", "macOS Sequoia", "macOS Sonoma", "macOS Ventura", "macOS Monterey", "Linux", "ללא מערכת הפעלה"];
 
 // ─── Local fuzzy search ───────────────────────────────────────────
-function searchLocalDB(q: string, limit = 6): { label: string; data: any }[] {
+function searchLocalDB(db: any, q: string, limit = 6): { label: string; data: any }[] {
+    if (!q || typeof q !== 'string') return [];
     const terms = q.toLowerCase().trim().split(/\s+/);
     const matchesAll = (text: string) => text && terms.every(t => text.toLowerCase().includes(t));
     const results: { label: string; score: number; data: any }[] = [];
 
-    for (const brand in COMPUTER_DATABASE) {
-        for (const family of COMPUTER_DATABASE[brand]) {
+    for (const brand in db) {
+        for (const family of db[brand]) {
             for (const sub of family.subModels) {
                 const fullName = `${brand} ${sub.name}`;
                 let score = 0;
@@ -62,6 +63,7 @@ function buildSpec(d: { brand: string; family: any; sub: any; matchedSku: any })
     const { brand, family, sub, matchedSku } = d;
     return {
         brand,
+        family: family.name,
         model_name: sub.name,
         model_number: matchedSku?.id || "",
         type: family.type || "laptop",
@@ -80,7 +82,7 @@ function buildSpec(d: { brand: string; family: any; sub: any; matchedSku: any })
 }
 
 // ─── Main Component ───────────────────────────────────────────────
-export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) => void }) {
+export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; onApplySpecs: (specs: any) => void }) {
     const [query, setQuery] = useState("");
     const [suggestions, setSuggestions] = useState<{ label: string; data: any }[]>([]);
     const [showSug, setShowSug] = useState(false);
@@ -96,11 +98,11 @@ export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) 
         if (debounceRef.current) clearTimeout(debounceRef.current);
         if (query.trim().length < 2) { setSuggestions([]); setShowSug(false); return; }
         debounceRef.current = setTimeout(() => {
-            const sug = searchLocalDB(query, 7);
+            const sug = searchLocalDB(activeDb, query, 7);
             setSuggestions(sug);
             setShowSug(sug.length > 0);
         }, 220);
-    }, [query]);
+    }, [query, activeDb]);
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -141,9 +143,18 @@ export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) 
                 setError(e.message);
             } finally { setLoading(false); }
         } else {
-            const top = searchLocalDB(q, 1);
-            if (top.length > 0) { loadSpec(top[0].data); }
-            else setError(`"${q}" לא נמצא במאגר. נסה חיפוש פרימיום (לחצן ירוק) או שנה את ניסוח החיפוש.`);
+            const top = searchLocalDB(activeDb, q, 1);
+            if (top.length > 0) { 
+                loadSpec(top[0].data); 
+            } else {
+                // Check if it exists in the main DB to give a better error message
+                const inMainDb = searchLocalDB(COMPUTER_DATABASE, q, 1);
+                if (inMainDb.length > 0) {
+                    setError(`"${q}" נמצא במערכת אך שייך לקטגוריה אחרת (נייח/נייד) - אנא חזור שלב אחורה ובחר בקטגוריה המתאימה.`);
+                } else {
+                    setError(`"${q}" לא נמצא במאגר. נסה חיפוש פרימיום (לחצן ירוק) או שנה את ניסוח החיפוש.`);
+                }
+            }
             setLoading(false);
         }
     };
@@ -217,25 +228,33 @@ export function ComputerSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) 
                     </div>
 
                     {/* Autocomplete */}
-                    {showSug && suggestions.length > 0 && (
+                    {showSug && query.trim().length >= 2 && (
                         <div style={{
                             position: "absolute", top: "calc(100% + 4px)", right: 0, left: 0, zIndex: 99,
                             background: "#0d1117", border: "1px solid #1e3a5f", borderRadius: 10,
                             overflow: "hidden", boxShadow: "0 10px 30px rgba(0,0,0,.7)"
                         }}>
-                            {suggestions.map((sug, i) => (
-                                <button key={i}
-                                    onMouseDown={e => { e.preventDefault(); pickSuggestion(sug); }}
-                                    style={{
-                                        display: "block", width: "100%", textAlign: "right",
-                                        padding: "9px 14px", background: "none", border: "none",
-                                        borderBottom: i < suggestions.length - 1 ? "1px solid #1e3a5f30" : "none",
-                                        color: "#c8d8f0", cursor: "pointer", fontSize: "0.85rem"
-                                    }}
-                                    onMouseEnter={e => (e.currentTarget.style.background = "#1e3a5f40")}
-                                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                                >💻 {sug.label}</button>
-                            ))}
+                            {suggestions.length > 0 ? (
+                                suggestions.map((sug, i) => (
+                                    <button key={i}
+                                        onMouseDown={e => { e.preventDefault(); pickSuggestion(sug); }}
+                                        style={{
+                                            display: "block", width: "100%", textAlign: "right",
+                                            padding: "9px 14px", background: "none", border: "none",
+                                            borderBottom: i < suggestions.length - 1 ? "1px solid #1e3a5f30" : "none",
+                                            color: "#c8d8f0", cursor: "pointer", fontSize: "0.85rem"
+                                        }}
+                                        onMouseEnter={e => (e.currentTarget.style.background = "#1e3a5f40")}
+                                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                                    >💻 {sug.label}</button>
+                                ))
+                            ) : (
+                                <div style={{
+                                    padding: "16px", textAlign: "center", color: "#64748b", fontSize: "0.85rem"
+                                }}>
+                                    לא נמצאו תוצאות בקטגוריה הנוכחית. נסה חיפוש אחר, או ודא שבחרת בקטגוריה הנכונה (חלק מהדגמים נמצאים תחת ניידים / נייחים בלבד).
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

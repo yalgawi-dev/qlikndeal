@@ -1,4 +1,4 @@
-﻿// =============================================================
+// =============================================================
 //  COMPUTER DATA - Full Hierarchy for Smart Search Engine
 //  יצרן → דגם/סדרה → תת-דגם → מפרטים אפשריים
 // =============================================================
@@ -38,6 +38,7 @@ export type ComputerModelFamily = {
 export type ComputerBrand = {
     models: ComputerModelFamily[];
 };
+
 // ---- Global spec options ----
 export const RAM_OPTIONS = ["4GB", "8GB", "12GB", "16GB", "24GB", "32GB", "48GB", "64GB", "96GB", "128GB", "לא ידוע"];
 export const STORAGE_OPTIONS = ["128GB SSD", "256GB SSD", "512GB SSD", "1TB SSD", "2TB SSD", "4TB SSD", "500GB HDD", "1TB HDD", "2TB HDD", "4TB HDD", "1TB SSD + 1TB HDD", "2TB SSD + 2TB HDD", "לא ידוע"];
@@ -46,54 +47,113 @@ export const OS_OPTIONS = ["Windows 11 Home", "Windows 11 Pro", "Windows 10 Home
 export const CONDITION_OPTIONS = ["חדש", "כמו חדש", "משומש - מצב מצויין", "משומש - מצב טוב", "משומש - מצב בינוני", "לחלקים / לא עובד"];
 
 export const CPU_OPTIONS: Record<string, string[]> = {
-    Intel: [
-        "Intel Core Ultra 9 185H", "Intel Core Ultra 7 165H", "Intel Core Ultra 5 125H",
-        "Intel Core Ultra 9 285H", "Intel Core Ultra 7 265H", "Intel Core Ultra 5 225H",
-        "Intel Core i9-14900HX", "Intel Core i9-13900HX", "Intel Core i9-12900HX",
-        "Intel Core i7-14700HX", "Intel Core i7-13700HX", "Intel Core i7-12700H",
-        "Intel Core i7-1365U", "Intel Core i7-1355U", "Intel Core i7-1260P",
-        "Intel Core i5-14500HX", "Intel Core i5-13500H", "Intel Core i5-12500H",
-        "Intel Core i5-1345U", "Intel Core i5-1335U", "Intel Core i5-1240P",
-        "Intel Core i3-1315U", "Intel Core i3-1305U",
-        "Intel Pentium", "Intel Celeron", "לא ידוע"
+    "Intel": [
+        "Intel Core Ultra 9 185H",
+        "Intel Core Ultra 7 165H",
+        "Intel Core Ultra 5 125H",
+        "Intel Core Ultra 9 285H",
+        "Intel Core Ultra 7 265H",
+        "Intel Core Ultra 5 225H",
+        "Intel Core i9-14900HX",
+        "Intel Core i9-13900HX",
+        "Intel Core i9-12900HX",
+        "Intel Core i7-14700HX",
+        "Intel Core i7-13700HX",
+        "Intel Core i7-12700H",
+        "Intel Core i7-1365U",
+        "Intel Core i7-1355U",
+        "Intel Core i7-1260P",
+        "Intel Core i5-14500HX",
+        "Intel Core i5-13500H",
+        "Intel Core i5-12500H",
+        "Intel Core i5-1345U",
+        "Intel Core i5-1335U",
+        "Intel Core i5-1240P",
+        "Intel Core i3-1315U",
+        "Intel Core i3-1305U",
+        "Intel Pentium",
+        "Intel Celeron",
+        "לא ידוע"
     ],
-    AMD: [
-        "AMD Ryzen 9 7945HX", "AMD Ryzen 9 7940HS", "AMD Ryzen 9 6900HX",
-        "AMD Ryzen 7 7745HX", "AMD Ryzen 7 7735HS", "AMD Ryzen 7 6800H",
-        "AMD Ryzen 7 7730U", "AMD Ryzen 7 5825U", "AMD Ryzen 7 5700U",
-        "AMD Ryzen 5 7530U", "AMD Ryzen 5 5625U", "AMD Ryzen 5 5500U",
-        "AMD Ryzen 5 7600X", "AMD Ryzen 7 7700X", "AMD Ryzen 9 7950X",
-        "AMD Ryzen AI 9 HX 370", "AMD Ryzen AI 7 350", "לא ידוע"
+    "AMD": [
+        "AMD Ryzen 9 7945HX",
+        "AMD Ryzen 9 7940HS",
+        "AMD Ryzen 9 6900HX",
+        "AMD Ryzen 7 7745HX",
+        "AMD Ryzen 7 7735HS",
+        "AMD Ryzen 7 6800H",
+        "AMD Ryzen 7 7730U",
+        "AMD Ryzen 7 5825U",
+        "AMD Ryzen 7 5700U",
+        "AMD Ryzen 5 7530U",
+        "AMD Ryzen 5 5625U",
+        "AMD Ryzen 5 5500U",
+        "AMD Ryzen 5 7600X",
+        "AMD Ryzen 7 7700X",
+        "AMD Ryzen 9 7950X",
+        "AMD Ryzen AI 9 HX 370",
+        "AMD Ryzen AI 7 350",
+        "לא ידוע"
     ],
-    Apple: [
-        "Apple M4 Pro", "Apple M4 Max", "Apple M4",
-        "Apple M3 Pro", "Apple M3 Max", "Apple M3",
-        "Apple M2 Pro", "Apple M2 Max", "Apple M2",
-        "Apple M1 Pro", "Apple M1 Max", "Apple M1", "לא ידוע"
-    ],
+    "Apple": [
+        "Apple M4 Pro",
+        "Apple M4 Max",
+        "Apple M4",
+        "Apple M3 Pro",
+        "Apple M3 Max",
+        "Apple M3",
+        "Apple M2 Pro",
+        "Apple M2 Max",
+        "Apple M2",
+        "Apple M1 Pro",
+        "Apple M1 Max",
+        "Apple M1",
+        "לא ידוע"
+    ]
 };
 
 export const GPU_OPTIONS = [
-    // NVIDIA
-    "NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080", "NVIDIA GeForce RTX 4070 Ti Super",
-    "NVIDIA GeForce RTX 4070 Ti", "NVIDIA GeForce RTX 4070 Super", "NVIDIA GeForce RTX 4070",
-    "NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060",
-    "NVIDIA GeForce RTX 4090 Laptop", "NVIDIA GeForce RTX 4080 Laptop", "NVIDIA GeForce RTX 4070 Laptop",
-    "NVIDIA GeForce RTX 4060 Laptop", "NVIDIA GeForce RTX 4050 Laptop",
-    "NVIDIA GeForce RTX 3080 Ti", "NVIDIA GeForce RTX 3080", "NVIDIA GeForce RTX 3070 Ti",
-    "NVIDIA GeForce RTX 3070", "NVIDIA GeForce RTX 3060 Ti", "NVIDIA GeForce RTX 3060",
-    "NVIDIA GeForce GTX 1650", "NVIDIA GeForce GTX 1660 Ti",
-    // AMD
-    "AMD Radeon RX 7900 XTX", "AMD Radeon RX 7900 XT", "AMD Radeon RX 7800 XT",
-    "AMD Radeon RX 7700 XT", "AMD Radeon RX 7600",
-    "AMD Radeon RX 6800 XT", "AMD Radeon RX 6700 XT", "AMD Radeon RX 6600 XT",
-    "AMD Radeon RX 7600M XT", "AMD Radeon RX 6700M",
-    // Intel
-    "Intel Arc A770", "Intel Arc A750", "Intel Arc A380",
-    "Intel Iris Xe Graphics", "Intel UHD Graphics",
-    // Apple
-    "Apple GPU 10-core", "Apple GPU 16-core", "Apple GPU 30-core", "Apple GPU 38-core", "Apple GPU 40-core",
-    // Integrated
+    "NVIDIA GeForce RTX 4090",
+    "NVIDIA GeForce RTX 4080",
+    "NVIDIA GeForce RTX 4070 Ti Super",
+    "NVIDIA GeForce RTX 4070 Ti",
+    "NVIDIA GeForce RTX 4070 Super",
+    "NVIDIA GeForce RTX 4070",
+    "NVIDIA GeForce RTX 4060 Ti",
+    "NVIDIA GeForce RTX 4060",
+    "NVIDIA GeForce RTX 4090 Laptop",
+    "NVIDIA GeForce RTX 4080 Laptop",
+    "NVIDIA GeForce RTX 4070 Laptop",
+    "NVIDIA GeForce RTX 4060 Laptop",
+    "NVIDIA GeForce RTX 4050 Laptop",
+    "NVIDIA GeForce RTX 3080 Ti",
+    "NVIDIA GeForce RTX 3080",
+    "NVIDIA GeForce RTX 3070 Ti",
+    "NVIDIA GeForce RTX 3070",
+    "NVIDIA GeForce RTX 3060 Ti",
+    "NVIDIA GeForce RTX 3060",
+    "NVIDIA GeForce GTX 1650",
+    "NVIDIA GeForce GTX 1660 Ti",
+    "AMD Radeon RX 7900 XTX",
+    "AMD Radeon RX 7900 XT",
+    "AMD Radeon RX 7800 XT",
+    "AMD Radeon RX 7700 XT",
+    "AMD Radeon RX 7600",
+    "AMD Radeon RX 6800 XT",
+    "AMD Radeon RX 6700 XT",
+    "AMD Radeon RX 6600 XT",
+    "AMD Radeon RX 7600M XT",
+    "AMD Radeon RX 6700M",
+    "Intel Arc A770",
+    "Intel Arc A750",
+    "Intel Arc A380",
+    "Intel Iris Xe Graphics",
+    "Intel UHD Graphics",
+    "Apple GPU 10-core",
+    "Apple GPU 16-core",
+    "Apple GPU 30-core",
+    "Apple GPU 38-core",
+    "Apple GPU 40-core",
     "כרטיס מסך משולב (אינטגרלי)",
     "לא ידוע"
 ];
@@ -103,46 +163,79 @@ export const GPU_OPTIONS = [
 // ============================================================
 
 export const DESKTOP_CPU_OPTIONS = [
-    // Intel Desktop (14th Gen)
-    "Intel Core i9-14900K", "Intel Core i9-14900KF", "Intel Core i9-14900",
-    "Intel Core i7-14700K", "Intel Core i7-14700KF", "Intel Core i7-14700",
-    "Intel Core i5-14600K", "Intel Core i5-14600KF", "Intel Core i5-14500", "Intel Core i5-14400",
-    "Intel Core i3-14100", "Intel Core i3-14100F",
-    // Intel Desktop (13th Gen)
-    "Intel Core i9-13900K", "Intel Core i9-13900KF",
-    "Intel Core i7-13700K", "Intel Core i7-13700KF",
-    "Intel Core i5-13600K", "Intel Core i5-13600KF", "Intel Core i5-13400",
-    // Intel Desktop (12th Gen)
-    "Intel Core i9-12900K", "Intel Core i7-12700K", "Intel Core i5-12600K", "Intel Core i5-12400",
-    // AMD Desktop (Ryzen 7000)
-    "AMD Ryzen 9 7950X", "AMD Ryzen 9 7950X3D", "AMD Ryzen 9 7900X", "AMD Ryzen 9 7900",
-    "AMD Ryzen 7 7800X3D", "AMD Ryzen 7 7700X", "AMD Ryzen 7 7700",
-    "AMD Ryzen 5 7600X", "AMD Ryzen 5 7600",
-    // AMD Desktop (Ryzen 9000)
-    "AMD Ryzen 9 9950X", "AMD Ryzen 9 9900X",
-    "AMD Ryzen 7 9700X", "AMD Ryzen 5 9600X",
-    // AMD Desktop (Ryzen 5000)
-    "AMD Ryzen 9 5950X", "AMD Ryzen 9 5900X",
-    "AMD Ryzen 7 5800X", "AMD Ryzen 7 5800X3D", "AMD Ryzen 7 5700X",
-    "AMD Ryzen 5 5600X", "AMD Ryzen 5 5600",
-    // Workstation / HEDT
-    "AMD Ryzen Threadripper PRO 7995WX", "AMD Ryzen Threadripper PRO 7975WX",
-    "Intel Xeon W5-3435X", "Intel Xeon W3-2435",
-    "אחר", "לא ידוע"
+    "Intel Core i9-14900K",
+    "Intel Core i9-14900KF",
+    "Intel Core i9-14900",
+    "Intel Core i7-14700K",
+    "Intel Core i7-14700KF",
+    "Intel Core i7-14700",
+    "Intel Core i5-14600K",
+    "Intel Core i5-14600KF",
+    "Intel Core i5-14500",
+    "Intel Core i5-14400",
+    "Intel Core i3-14100",
+    "Intel Core i3-14100F",
+    "Intel Core i9-13900K",
+    "Intel Core i9-13900KF",
+    "Intel Core i7-13700K",
+    "Intel Core i7-13700KF",
+    "Intel Core i5-13600K",
+    "Intel Core i5-13600KF",
+    "Intel Core i5-13400",
+    "Intel Core i9-12900K",
+    "Intel Core i7-12700K",
+    "Intel Core i5-12600K",
+    "Intel Core i5-12400",
+    "AMD Ryzen 9 7950X",
+    "AMD Ryzen 9 7950X3D",
+    "AMD Ryzen 9 7900X",
+    "AMD Ryzen 9 7900",
+    "AMD Ryzen 7 7800X3D",
+    "AMD Ryzen 7 7700X",
+    "AMD Ryzen 7 7700",
+    "AMD Ryzen 5 7600X",
+    "AMD Ryzen 5 7600",
+    "AMD Ryzen 9 9950X",
+    "AMD Ryzen 9 9900X",
+    "AMD Ryzen 7 9700X",
+    "AMD Ryzen 5 9600X",
+    "AMD Ryzen 9 5950X",
+    "AMD Ryzen 9 5900X",
+    "AMD Ryzen 7 5800X",
+    "AMD Ryzen 7 5800X3D",
+    "AMD Ryzen 7 5700X",
+    "AMD Ryzen 5 5600X",
+    "AMD Ryzen 5 5600",
+    "AMD Ryzen Threadripper PRO 7995WX",
+    "AMD Ryzen Threadripper PRO 7975WX",
+    "Intel Xeon W5-3435X",
+    "Intel Xeon W3-2435",
+    "אחר",
+    "לא ידוע"
 ];
-
 export const MOTHERBOARD_OPTIONS = {
-    chipsets: [
-        // Intel
-        "Z790", "Z690", "B760", "B660", "H770", "H670", "H610",
-        // AMD
-        "X670E", "X670", "B650E", "B650", "A620",
-        "X570", "B550", "A520",
-        // Workstation
-        "W790 (Intel)", "WRX90 (AMD)",
-        "אחר", "לא ידוע"
+    "chipsets": [
+        "Z790",
+        "Z690",
+        "B760",
+        "B660",
+        "H770",
+        "H670",
+        "H610",
+        "X670E",
+        "X670",
+        "B650E",
+        "B650",
+        "A620",
+        "X570",
+        "B550",
+        "A520",
+        "W790 (Intel)",
+        "WRX90 (AMD)",
+        "אחר",
+        "לא ידוע"
     ],
-    sockets: [
+    "sockets": [
         "LGA 1700 (Intel 12-14th Gen)",
         "LGA 1851 (Intel Arrow Lake)",
         "AM5 (AMD Ryzen 7000/9000)",
@@ -150,28 +243,50 @@ export const MOTHERBOARD_OPTIONS = {
         "sTR5 (Threadripper PRO)",
         "אחר"
     ],
-    formFactors: [
-        "ATX", "Micro-ATX (mATX)", "Mini-ITX", "E-ATX"
+    "formFactors": [
+        "ATX",
+        "Micro-ATX (mATX)",
+        "Mini-ITX",
+        "E-ATX"
     ],
-    brands: [
-        "ASUS", "MSI", "Gigabyte", "ASRock",
-        "NZXT", "EVGA", "Biostar", "אחר"
+    "brands": [
+        "ASUS",
+        "MSI",
+        "Gigabyte",
+        "ASRock",
+        "NZXT",
+        "EVGA",
+        "Biostar",
+        "אחר"
     ],
-    features: [
+    "features": [
         "Wi-Fi 7 + Bluetooth 5.4",
         "Wi-Fi 6E + Bluetooth 5.3",
         "Wi-Fi 6 + Bluetooth 5.2",
-        "ללא Wi-Fi (חוטי בלבד)",
+        "ללא Wi-Fi (חוטי בלבד)"
     ],
-    ethernet: [
-        "10GbE", "5GbE", "2.5GbE", "1GbE", "לא ידוע"
+    "ethernet": [
+        "10GbE",
+        "5GbE",
+        "2.5GbE",
+        "1GbE",
+        "לא ידוע"
     ],
-    m2Slots: ["1", "2", "3", "4", "5+"],
-    pcieGen: ["PCIe 5.0", "PCIe 4.0", "PCIe 3.0"]
+    "m2Slots": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5+"
+    ],
+    "pcieGen": [
+        "PCIe 5.0",
+        "PCIe 4.0",
+        "PCIe 3.0"
+    ]
 };
-
 export const COOLER_OPTIONS = {
-    types: [
+    "types": [
         "קירור מים AIO 360mm",
         "קירור מים AIO 280mm",
         "קירור מים AIO 240mm",
@@ -182,38 +297,66 @@ export const COOLER_OPTIONS = {
         "קירור אוויר בסיסי (Stock)",
         "אחר"
     ],
-    brands: [
-        "Noctua", "be quiet!", "Corsair", "NZXT", "Arctic",
-        "Cooler Master", "DeepCool", "EK", "Lian Li",
-        "AMD Stock (Wraith)", "Intel Stock", "אחר"
+    "brands": [
+        "Noctua",
+        "be quiet!",
+        "Corsair",
+        "NZXT",
+        "Arctic",
+        "Cooler Master",
+        "DeepCool",
+        "EK",
+        "Lian Li",
+        "AMD Stock (Wraith)",
+        "Intel Stock",
+        "אחר"
     ],
-    models: [
-        // Air coolers
-        "Noctua NH-D15", "Noctua NH-U12S", "Noctua NH-D15S",
-        "be quiet! Dark Rock Pro 5", "be quiet! Dark Rock 4",
-        "DeepCool AK620", "DeepCool Assassin IV",
+    "models": [
+        "Noctua NH-D15",
+        "Noctua NH-U12S",
+        "Noctua NH-D15S",
+        "be quiet! Dark Rock Pro 5",
+        "be quiet! Dark Rock 4",
+        "DeepCool AK620",
+        "DeepCool Assassin IV",
         "Cooler Master Hyper 212",
         "Thermalright Peerless Assassin 120",
-        // AIO coolers
-        "Corsair iCUE H150i Elite", "Corsair iCUE H100i Elite",
-        "NZXT Kraken X73", "NZXT Kraken X63", "NZXT Kraken Elite 360",
-        "Arctic Liquid Freezer II 360", "Arctic Liquid Freezer II 280",
+        "Corsair iCUE H150i Elite",
+        "Corsair iCUE H100i Elite",
+        "NZXT Kraken X73",
+        "NZXT Kraken X63",
+        "NZXT Kraken Elite 360",
+        "Arctic Liquid Freezer II 360",
+        "Arctic Liquid Freezer II 280",
         "Lian Li Galahad II Trinity 360",
-        "DeepCool LT720", "DeepCool LS720",
+        "DeepCool LT720",
+        "DeepCool LS720",
         "EK-AIO 360 D-RGB",
         "Cooler Master MasterLiquid ML360R",
-        "AMD Wraith Prism", "AMD Wraith Stealth",
+        "AMD Wraith Prism",
+        "AMD Wraith Stealth",
         "Intel Stock Cooler",
         "אחר"
     ]
 };
-
 export const PSU_OPTIONS = {
-    wattages: [
-        "450W", "500W", "550W", "600W", "650W", "700W", "750W",
-        "850W", "1000W", "1200W", "1300W", "1500W", "1600W", "2000W"
+    "wattages": [
+        "450W",
+        "500W",
+        "550W",
+        "600W",
+        "650W",
+        "700W",
+        "750W",
+        "850W",
+        "1000W",
+        "1200W",
+        "1300W",
+        "1500W",
+        "1600W",
+        "2000W"
     ],
-    efficiencyRatings: [
+    "efficiencyRatings": [
         "80 Plus Titanium",
         "80 Plus Platinum",
         "80 Plus Gold",
@@ -223,12 +366,12 @@ export const PSU_OPTIONS = {
         "ללא דירוג",
         "לא ידוע"
     ],
-    modularity: [
+    "modularity": [
         "Full Modular (כל הכבלים נתקעים)",
         "Semi Modular (חלק קבועים)",
         "Non Modular (הכל קבוע)"
     ],
-    standards: [
+    "standards": [
         "ATX 3.1 (12VHPWR / 12V-2x6)",
         "ATX 3.0 (12VHPWR)",
         "ATX 2.x (רגיל)",
@@ -236,15 +379,24 @@ export const PSU_OPTIONS = {
         "SFX-L",
         "לא ידוע"
     ],
-    brands: [
-        "Corsair", "Seasonic", "EVGA", "be quiet!",
-        "Cooler Master", "Thermaltake", "NZXT", "MSI",
-        "Lian Li", "FSP", "Super Flower", "XPG", "אחר"
+    "brands": [
+        "Corsair",
+        "Seasonic",
+        "EVGA",
+        "be quiet!",
+        "Cooler Master",
+        "Thermaltake",
+        "NZXT",
+        "MSI",
+        "Lian Li",
+        "FSP",
+        "Super Flower",
+        "XPG",
+        "אחר"
     ]
 };
-
 export const CASE_OPTIONS = {
-    formFactors: [
+    "formFactors": [
         "Full Tower",
         "Mid Tower",
         "Mini Tower / Micro-ATX",
@@ -252,20 +404,30 @@ export const CASE_OPTIONS = {
         "Open Frame / Test Bench",
         "HTPC / Slimline"
     ],
-    airflow: [
+    "airflow": [
         "Mesh קדמי (זרימת אוויר מצוינת)",
         "Mesh + זכוכית צדדית",
         "זכוכית מחוזקת (סגור)",
         "פתוח לגמרי (Open Air)",
         "לא ידוע"
     ],
-    brands: [
-        "Lian Li", "Corsair", "NZXT", "Fractal Design",
-        "Phanteks", "be quiet!", "Cooler Master", "Thermaltake",
-        "HYTE", "Meshify (Fractal)", "InWin", "Montech",
-        "DeepCool", "אחר"
+    "brands": [
+        "Lian Li",
+        "Corsair",
+        "NZXT",
+        "Fractal Design",
+        "Phanteks",
+        "be quiet!",
+        "Cooler Master",
+        "Thermaltake",
+        "HYTE",
+        "Meshify (Fractal)",
+        "InWin",
+        "Montech",
+        "DeepCool",
+        "אחר"
     ],
-    frontPanelIO: [
+    "frontPanelIO": [
         "USB-C + 2× USB-A 3.2 + Audio",
         "USB-C + USB-A 3.0 + Audio",
         "2× USB-A 3.0 + Audio",
@@ -274,15 +436,22 @@ export const CASE_OPTIONS = {
         "לא ידוע"
     ]
 };
-
 export const RAM_TYPE_OPTIONS = [
-    "DDR5-8000 (CL36)", "DDR5-7200 (CL34)", "DDR5-6400 (CL32)", "DDR5-6000 (CL30)",
-    "DDR5-5600 (CL36)", "DDR5-5200 (CL40)", "DDR5-4800 (CL40)",
-    "DDR4-3600 (CL16)", "DDR4-3200 (CL16)", "DDR4-3000 (CL15)",
-    "DDR4-2666 (CL19)", "DDR4-2400",
-    "אחר", "לא ידוע"
+    "DDR5-8000 (CL36)",
+    "DDR5-7200 (CL34)",
+    "DDR5-6400 (CL32)",
+    "DDR5-6000 (CL30)",
+    "DDR5-5600 (CL36)",
+    "DDR5-5200 (CL40)",
+    "DDR5-4800 (CL40)",
+    "DDR4-3600 (CL16)",
+    "DDR4-3200 (CL16)",
+    "DDR4-3000 (CL15)",
+    "DDR4-2666 (CL19)",
+    "DDR4-2400",
+    "אחר",
+    "לא ידוע"
 ];
-
 export const RAM_CONFIG_OPTIONS = [
     "2×8GB (16GB Dual Channel)",
     "2×16GB (32GB Dual Channel)",
@@ -295,23 +464,33 @@ export const RAM_CONFIG_OPTIONS = [
     "1×32GB (32GB Single)",
     "אחר"
 ];
-
 export const STORAGE_TYPE_OPTIONS = [
-    // NVMe Gen 5
-    "NVMe M.2 Gen5 500GB", "NVMe M.2 Gen5 1TB", "NVMe M.2 Gen5 2TB", "NVMe M.2 Gen5 4TB",
-    // NVMe Gen 4
-    "NVMe M.2 Gen4 500GB", "NVMe M.2 Gen4 1TB", "NVMe M.2 Gen4 2TB", "NVMe M.2 Gen4 4TB",
-    // NVMe Gen 3
-    "NVMe M.2 Gen3 256GB", "NVMe M.2 Gen3 500GB", "NVMe M.2 Gen3 1TB",
-    // SATA SSD
-    "SATA SSD 2.5\" 256GB", "SATA SSD 2.5\" 500GB", "SATA SSD 2.5\" 1TB", "SATA SSD 2.5\" 2TB",
-    // HDD
-    "HDD 3.5\" 1TB (7200RPM)", "HDD 3.5\" 2TB (7200RPM)", "HDD 3.5\" 4TB", "HDD 3.5\" 8TB",
-    "אין", "אחר"
+    "NVMe M.2 Gen5 500GB",
+    "NVMe M.2 Gen5 1TB",
+    "NVMe M.2 Gen5 2TB",
+    "NVMe M.2 Gen5 4TB",
+    "NVMe M.2 Gen4 500GB",
+    "NVMe M.2 Gen4 1TB",
+    "NVMe M.2 Gen4 2TB",
+    "NVMe M.2 Gen4 4TB",
+    "NVMe M.2 Gen3 256GB",
+    "NVMe M.2 Gen3 500GB",
+    "NVMe M.2 Gen3 1TB",
+    "SATA SSD 2.5\" 256GB",
+    "SATA SSD 2.5\" 500GB",
+    "SATA SSD 2.5\" 1TB",
+    "SATA SSD 2.5\" 2TB",
+    "HDD 3.5\" 1TB (7200RPM)",
+    "HDD 3.5\" 2TB (7200RPM)",
+    "HDD 3.5\" 4TB",
+    "HDD 3.5\" 8TB",
+    "אין",
+    "אחר"
 ];
 
 // ---- Brand → Series → Sub-Models ----
-export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
+
+export const LAPTOP_DATABASE: Record<string, ComputerModelFamily[]> = {
     "Lenovo": [
         {
             "name": "ThinkPad X1",
@@ -2087,24 +2266,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
             ]
         },
         {
-            "name": "ThinkCentre",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "ThinkCentre M90s",
-                    "type": "desktop"
-                },
-                {
-                    "name": "ThinkCentre M70s",
-                    "type": "desktop"
-                },
-                {
-                    "name": "ThinkCentre M Series",
-                    "type": "desktop"
-                }
-            ]
-        },
-        {
             "name": "ThinkPad T14",
             "type": "laptop",
             "subModels": [
@@ -2213,197 +2374,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "release_year": "2023",
                     "notes": "Entry business laptop, good keyboard",
                     "display": "14\" WUXGA IPS, 1920×1200, 300 nits"
-                }
-            ]
-        },
-        {
-            "name": "ThinkPad P16",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "Lenovo ThinkPad P16 Gen 1",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "cpu": [
-                        "Intel Core i9-12950HX"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A5500"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "skus": [
-                        {
-                            "id": "21D6001KUS",
-                            "cpu": [
-                                "Intel Core i9-12950HX"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A5500"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ],
-                            "screenSize": [
-                                "16\""
-                            ]
-                        }
-                    ],
-                    "battery": "94Wh",
-                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
-                    "weight": "2.95kg",
-                    "release_year": "2022",
-                    "notes": "ISV certified, up to 128GB RAM",
-                    "display": "16\" 4K IPS, 3840×2400, 600 nits"
-                }
-            ]
-        },
-        {
-            "name": "ThinkStation",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "Lenovo ThinkStation P3 Tower",
-                    "cpu": [
-                        "Intel Core i9-13900K"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX 4000 SFF Ada"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "skus": [
-                        {
-                            "id": "30GS0033US",
-                            "cpu": [
-                                "Intel Core i9-13900K"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX 4000 SFF Ada"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ],
-                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
-                    "weight": "10.8kg",
-                    "release_year": "2023",
-                    "notes": "ISV certified, tool-less, up to 128GB RAM",
-                    "display": "None (external)"
-                },
-                {
-                    "name": "Lenovo ThinkStation P5",
-                    "cpu": [
-                        "Intel Xeon W5-2445"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A4000"
-                    ],
-                    "ram": [
-                        "32GB DDR5 ECC"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "6× USB-A, 2× USB-C, 2× DP, RJ45",
-                    "weight": "19.9kg",
-                    "release_year": "2022",
-                    "notes": "Professional Xeon workstation",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "30GA000HUS",
-                            "cpu": [
-                                "Intel Xeon W5-2445"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A4000"
-                            ],
-                            "ram": [
-                                "32GB DDR5 ECC"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Lenovo ThinkStation P360 Ultra",
-                    "cpu": [
-                        "Intel Core i9-12900K"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A4000 16GB"
-                    ],
-                    "ram": [
-                        "32GB DDR5 ECC"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "4× USB-A, 2× USB-C/TB4, HDMI, DP, RJ45",
-                    "weight": "2.7kg",
-                    "release_year": "2022",
-                    "notes": "Compact workstation, ISV, 2.7kg",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "30G1003BUS",
-                            "cpu": [
-                                "Intel Core i9-12900K"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A4000 16GB"
-                            ],
-                            "ram": [
-                                "32GB DDR5 ECC"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
                 }
             ]
         },
@@ -2545,153 +2515,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "storage": [
                                 "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "ThinkPad P",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "Lenovo ThinkPad P16 Gen 1",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "cpu": [
-                        "Intel Core i9-12950HX"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A5500"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "94Wh",
-                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
-                    "weight": "2.95kg",
-                    "release_year": "2022",
-                    "notes": "ISV certified, up to 128GB RAM",
-                    "display": "16\" 4K IPS, 3840×2400, 600 nits",
-                    "skus": [
-                        {
-                            "id": "21D6001KUS",
-                            "cpu": [
-                                "Intel Core i9-12950HX"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A5500"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Lenovo ThinkPad P16s Gen 2",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "cpu": [
-                        "AMD Ryzen 7 PRO 7840U"
-                    ],
-                    "gpu": [
-                        "AMD Radeon 780M + NVIDIA T550"
-                    ],
-                    "ram": [
-                        "16GB DDR5"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "86Wh",
-                    "ports": "2× USB-C/TB4, 2× USB-A, HDMI, RJ45, SD card",
-                    "weight": "1.95kg",
-                    "release_year": "2023",
-                    "notes": "Thin mobile workstation, ISV certified",
-                    "display": "16\" WUXGA IPS, 1920×1200, 300 nits",
-                    "skus": [
-                        {
-                            "id": "21HK000LUS",
-                            "cpu": [
-                                "AMD Ryzen 7 PRO 7840U"
-                            ],
-                            "gpu": [
-                                "AMD Radeon 780M + NVIDIA T550"
-                            ],
-                            "ram": [
-                                "16GB DDR5"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Lenovo ThinkPad P16 Gen 2",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "cpu": [
-                        "Intel Core i9-13980HX"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX 3500 Ada"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "94Wh",
-                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
-                    "weight": "2.95kg",
-                    "release_year": "2023",
-                    "notes": "Up to 128GB RAM, ISV certified",
-                    "display": "16\" UHD+ IPS, 3840×2400, 120Hz",
-                    "skus": [
-                        {
-                            "id": "21FA000RUS",
-                            "cpu": [
-                                "Intel Core i9-13980HX"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX 3500 Ada"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
                             ],
                             "os": [
                                 "Windows 11 Pro"
@@ -2889,104 +2712,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "os": [
                                 "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Lenovo ThinkCentre",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Lenovo ThinkCentre M90q Gen 3",
-                    "cpu": [
-                        "Intel Core i7-12700T"
-                    ],
-                    "gpu": [
-                        "Intel UHD Graphics 770"
-                    ],
-                    "ram": [
-                        "16GB DDR4"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
-                    "weight": "1.37kg",
-                    "release_year": "2022",
-                    "notes": "Tiny PC, vPro option",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "11U50003US",
-                            "cpu": [
-                                "Intel Core i7-12700T"
-                            ],
-                            "gpu": [
-                                "Intel UHD Graphics 770"
-                            ],
-                            "ram": [
-                                "16GB DDR4"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Lenovo IdeaCentre",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Lenovo IdeaCentre 3 07ADA05",
-                    "cpu": [
-                        "AMD Ryzen 5 3400G"
-                    ],
-                    "gpu": [
-                        "AMD Radeon RX Vega 11"
-                    ],
-                    "ram": [
-                        "8GB DDR4"
-                    ],
-                    "storage": [
-                        "256GB SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Home"
-                    ],
-                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, SD card, RJ45",
-                    "weight": "3.9kg",
-                    "release_year": "2021",
-                    "notes": "Budget desktop with integrated GPU",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "90MV0061US",
-                            "cpu": [
-                                "AMD Ryzen 5 3400G"
-                            ],
-                            "gpu": [
-                                "AMD Radeon RX Vega 11"
-                            ],
-                            "ram": [
-                                "8GB DDR4"
-                            ],
-                            "storage": [
-                                "256GB SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Home"
                             ]
                         }
                     ]
@@ -4804,472 +4529,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
             ]
         },
         {
-            "name": "Precision",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "Precision 5690",
-                    "screenSize": [
-                        "16\""
-                    ]
-                },
-                {
-                    "name": "Precision 5480",
-                    "screenSize": [
-                        "14\""
-                    ]
-                },
-                {
-                    "name": "Precision 7680",
-                    "screenSize": [
-                        "16\""
-                    ]
-                },
-                {
-                    "name": "Precision 7780",
-                    "screenSize": [
-                        "17.3\""
-                    ]
-                },
-                {
-                    "name": "Dell Precision 5570",
-                    "screenSize": [
-                        "15.6\""
-                    ],
-                    "cpu": [
-                        "Intel Core i7-12700H"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A2000"
-                    ],
-                    "ram": [
-                        "16GB DDR5"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "skus": [
-                        {
-                            "id": "PRS-5570-7619SLV",
-                            "cpu": [
-                                "Intel Core i7-12700H"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A2000"
-                            ],
-                            "ram": [
-                                "16GB DDR5"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ],
-                            "screenSize": [
-                                "15.6\""
-                            ]
-                        }
-                    ],
-                    "battery": "86Wh",
-                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, 3.5mm jack",
-                    "weight": "1.84kg",
-                    "release_year": "2022",
-                    "notes": "Mobile workstation, ISV certified",
-                    "display": "15.6\" FHD+ OLED, 1920×1200"
-                },
-                {
-                    "name": "Dell Precision 3571",
-                    "screenSize": [
-                        "15.6\""
-                    ],
-                    "cpu": [
-                        "Intel Core i7-12700H"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A2000"
-                    ],
-                    "ram": [
-                        "16GB DDR5"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "56Wh",
-                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, SD card",
-                    "weight": "1.85kg",
-                    "release_year": "2022",
-                    "notes": "Entry mobile workstation",
-                    "display": "15.6\" FHD IPS, 1920×1080",
-                    "skus": [
-                        {
-                            "id": "PRS3571-7619SLV",
-                            "cpu": [
-                                "Intel Core i7-12700H"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A2000"
-                            ],
-                            "ram": [
-                                "16GB DDR5"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Dell Precision 5570",
-                    "screenSize": [
-                        "15.6\""
-                    ],
-                    "cpu": [
-                        "Intel Core i7-12700H"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A2000"
-                    ],
-                    "ram": [
-                        "16GB DDR5"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "86Wh",
-                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, 3.5mm jack",
-                    "weight": "1.84kg",
-                    "release_year": "2022",
-                    "notes": "Slim workstation, ISV certified",
-                    "display": "15.6\" FHD+ OLED, 1920×1200",
-                    "skus": [
-                        {
-                            "id": "PRS5570-7619SLV",
-                            "cpu": [
-                                "Intel Core i7-12700H"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A2000"
-                            ],
-                            "ram": [
-                                "16GB DDR5"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Dell Precision 5680",
-                    "screenSize": [
-                        "15.6\""
-                    ],
-                    "cpu": [
-                        "Intel Core i9-13900H"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX 3500 Ada"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "86Wh",
-                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card",
-                    "weight": "1.85kg",
-                    "release_year": "2023",
-                    "notes": "Premium thin workstation, OLED option",
-                    "display": "15.6\" OLED 3.5K, 3456×2160",
-                    "skus": [
-                        {
-                            "id": "PRS5680-7979SLV",
-                            "cpu": [
-                                "Intel Core i9-13900H"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX 3500 Ada"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Dell Precision 7680",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "cpu": [
-                        "Intel Core i9-13950HX"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A5500"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "93Wh",
-                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
-                    "weight": "2.77kg",
-                    "release_year": "2023",
-                    "notes": "Up to 128GB RAM, ISV certified",
-                    "display": "16\" FHD+ IPS, 1920×1200",
-                    "skus": [
-                        {
-                            "id": "PRS7680-7979SLV",
-                            "cpu": [
-                                "Intel Core i9-13950HX"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A5500"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Dell Precision 3480",
-                    "screenSize": [
-                        "14\""
-                    ],
-                    "cpu": [
-                        "Intel Core i5-1345U vPro"
-                    ],
-                    "gpu": [
-                        "Intel Iris Xe Graphics"
-                    ],
-                    "ram": [
-                        "16GB DDR4"
-                    ],
-                    "storage": [
-                        "256GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "51Wh",
-                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, RJ45, SD card",
-                    "weight": "1.45kg",
-                    "release_year": "2023",
-                    "notes": "Entry mobile workstation",
-                    "display": "14\" FHD IPS, 1920×1080, 250 nits",
-                    "skus": [
-                        {
-                            "id": "PRS3480-5616SLV",
-                            "cpu": [
-                                "Intel Core i5-1345U vPro"
-                            ],
-                            "gpu": [
-                                "Intel Iris Xe Graphics"
-                            ],
-                            "ram": [
-                                "16GB DDR4"
-                            ],
-                            "storage": [
-                                "256GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Dell Precision 5820 Tower",
-                    "cpu": [
-                        "Intel Xeon W-2245"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A5000"
-                    ],
-                    "ram": [
-                        "64GB DDR4 ECC"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "6× USB-A, 2× USB-C, 2× DP, RJ45",
-                    "weight": "18kg",
-                    "release_year": "2022",
-                    "notes": "Tower workstation, ECC Xeon",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "PRS5820-7979SLV",
-                            "cpu": [
-                                "Intel Xeon W-2245"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A5000"
-                            ],
-                            "ram": [
-                                "64GB DDR4 ECC"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "OptiPlex",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "OptiPlex 7000 Tower",
-                    "type": "desktop"
-                },
-                {
-                    "name": "OptiPlex 5000 Tower",
-                    "type": "desktop"
-                },
-                {
-                    "name": "OptiPlex 7000 Micro",
-                    "type": "mini"
-                },
-                {
-                    "name": "OptiPlex 3090 Ultra",
-                    "type": "mini"
-                },
-                {
-                    "name": "Dell OptiPlex 7000",
-                    "cpu": [
-                        "Intel Core i7-12700"
-                    ],
-                    "gpu": [
-                        "Intel UHD Graphics 770"
-                    ],
-                    "ram": [
-                        "16GB DDR4"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "skus": [
-                        {
-                            "id": "DTOP073-803",
-                            "cpu": [
-                                "Intel Core i7-12700"
-                            ],
-                            "gpu": [
-                                "Intel UHD Graphics 770"
-                            ],
-                            "ram": [
-                                "16GB DDR4"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ],
-                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
-                    "weight": "5.4kg",
-                    "release_year": "2022",
-                    "notes": "Business desktop, vPro option",
-                    "display": "None (external)"
-                },
-                {
-                    "name": "Dell OptiPlex 3000 Tower",
-                    "cpu": [
-                        "Intel Core i5-12500T"
-                    ],
-                    "gpu": [
-                        "Intel UHD Graphics 770"
-                    ],
-                    "ram": [
-                        "8GB DDR4"
-                    ],
-                    "storage": [
-                        "256GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
-                    "weight": "4.6kg",
-                    "release_year": "2022",
-                    "notes": "Entry business tower",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "XDT3000-5466BLK-PUS",
-                            "cpu": [
-                                "Intel Core i5-12500T"
-                            ],
-                            "gpu": [
-                                "Intel UHD Graphics 770"
-                            ],
-                            "ram": [
-                                "8GB DDR4"
-                            ],
-                            "storage": [
-                                "256GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "G Series",
             "type": "gaming",
             "subModels": [
@@ -6818,158 +6077,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
             ]
         },
         {
-            "name": "ZBook",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "HP ZBook Fury 16 G10",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "cpu": [
-                        "Intel Core i9-13950HX"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX 4000 Ada"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "skus": [
-                        {
-                            "id": "7B623UT#ABA",
-                            "cpu": [
-                                "Intel Core i9-13950HX"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX 4000 Ada"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ],
-                            "screenSize": [
-                                "16\""
-                            ]
-                        }
-                    ],
-                    "battery": "96Wh",
-                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card, RJ45",
-                    "weight": "2.77kg",
-                    "release_year": "2023",
-                    "notes": "ISV certified mobile workstation",
-                    "display": "16\" 4K DreamColor IPS, 3840×2400, 120Hz"
-                },
-                {
-                    "name": "HP ZBook Studio G10",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "cpu": [
-                        "Intel Core i9-13900H"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX 3000 Ada"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "96Wh",
-                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card",
-                    "weight": "2.1kg",
-                    "release_year": "2023",
-                    "notes": "Thin workstation, OLED 4K",
-                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch",
-                    "skus": [
-                        {
-                            "id": "7C6K3UT#ABA",
-                            "cpu": [
-                                "Intel Core i9-13900H"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX 3000 Ada"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Z4",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "HP Z4 G5 Tower Workstation",
-                    "cpu": [
-                        "Intel Xeon W3-2425"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A4000"
-                    ],
-                    "ram": [
-                        "32GB DDR5 ECC"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "skus": [
-                        {
-                            "id": "86D60UT#ABA",
-                            "cpu": [
-                                "Intel Xeon W3-2425"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A4000"
-                            ],
-                            "ram": [
-                                "32GB DDR5 ECC"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ],
-                    "ports": "6× USB-A, 2× USB-C, 2× DP, RJ45",
-                    "weight": "14.5kg",
-                    "release_year": "2023",
-                    "notes": "ECC memory, Xeon CPU, ISV certified",
-                    "display": "None (external)"
-                }
-            ]
-        },
-        {
             "name": "HP Victus",
             "type": "laptop",
             "subModels": [
@@ -7063,104 +6170,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "os": [
                                 "Windows 11 Home"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "HP ENVY",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "HP ENVY Desktop TE02",
-                    "cpu": [
-                        "Intel Core i7-12700"
-                    ],
-                    "gpu": [
-                        "NVIDIA GeForce RTX 3060"
-                    ],
-                    "ram": [
-                        "16GB DDR4"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Home"
-                    ],
-                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, SD card, RJ45",
-                    "weight": "8.6kg",
-                    "release_year": "2022",
-                    "notes": "Creator tower, RTX 3060",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "TE02-0030",
-                            "cpu": [
-                                "Intel Core i7-12700"
-                            ],
-                            "gpu": [
-                                "NVIDIA GeForce RTX 3060"
-                            ],
-                            "ram": [
-                                "16GB DDR4"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Home"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "HP Z8",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "HP Z8 Fury G5 Workstation",
-                    "cpu": [
-                        "Intel Xeon W9-3475X"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX 6000 Ada"
-                    ],
-                    "ram": [
-                        "64GB DDR5 ECC"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "8× USB-A, 4× USB-C, Thunderbolt 4, 2× DP, RJ45",
-                    "weight": "24.7kg",
-                    "release_year": "2023",
-                    "notes": "Dual CPU capable, max 2TB RAM, ultimate workstation",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "5F0R3UT#ABA",
-                            "cpu": [
-                                "Intel Xeon W9-3475X"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX 6000 Ada"
-                            ],
-                            "ram": [
-                                "64GB DDR5 ECC"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
                             ]
                         }
                     ]
@@ -7408,55 +6417,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "ram": [
                                 "16GB LPDDR5"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "HP Z2",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "HP Z2 Mini G9 Workstation",
-                    "cpu": [
-                        "Intel Core i9-13900K"
-                    ],
-                    "gpu": [
-                        "NVIDIA RTX A2000 12GB"
-                    ],
-                    "ram": [
-                        "32GB DDR5 ECC"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "4× USB-A, 2× USB-C/TB4, DP, HDMI, RJ45",
-                    "weight": "2.2kg",
-                    "release_year": "2023",
-                    "notes": "Mini workstation, ISV certified",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "8D7S3UT#ABA",
-                            "cpu": [
-                                "Intel Core i9-13900K"
-                            ],
-                            "gpu": [
-                                "NVIDIA RTX A2000 12GB"
-                            ],
-                            "ram": [
-                                "32GB DDR5 ECC"
                             ],
                             "storage": [
                                 "512GB NVMe SSD"
@@ -7843,134 +6803,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "name": "TUF Gaming F15 (FX507)",
                     "screenSize": [
                         "15.6\""
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "ProArt",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "ProArt Studiobook 16 (H7604)",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "ram": [
-                        "32GB",
-                        "64GB"
-                    ],
-                    "gpu": [
-                        "NVIDIA GeForce RTX 4080 Laptop"
-                    ]
-                },
-                {
-                    "name": "ProArt P16 (H7606)",
-                    "screenSize": [
-                        "16\""
-                    ]
-                },
-                {
-                    "name": "ProArt Studiobook Pro 16 OLED (W7600)",
-                    "screenSize": [
-                        "16\""
-                    ]
-                },
-                {
-                    "name": "ASUS ProArt Studiobook 16",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "cpu": [
-                        "Intel Core i9-12900H"
-                    ],
-                    "gpu": [
-                        "NVIDIA GeForce RTX 3080 Ti"
-                    ],
-                    "ram": [
-                        "64GB DDR5"
-                    ],
-                    "storage": [
-                        "2TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "skus": [
-                        {
-                            "id": "H7600ZX-DB96",
-                            "cpu": [
-                                "Intel Core i9-12900H"
-                            ],
-                            "gpu": [
-                                "NVIDIA GeForce RTX 3080 Ti"
-                            ],
-                            "ram": [
-                                "64GB DDR5"
-                            ],
-                            "storage": [
-                                "2TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ],
-                            "screenSize": [
-                                "16\""
-                            ]
-                        }
-                    ],
-                    "battery": "96Wh",
-                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, HDMI, 3.5mm jack",
-                    "weight": "2.4kg",
-                    "release_year": "2022",
-                    "notes": "OLED creator workstation, Dial knob",
-                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch"
-                },
-                {
-                    "name": "ASUS ProArt Studiobook 16 OLED",
-                    "screenSize": [
-                        "16\""
-                    ],
-                    "cpu": [
-                        "Intel Core i9-12900H"
-                    ],
-                    "gpu": [
-                        "NVIDIA GeForce RTX 3060"
-                    ],
-                    "ram": [
-                        "64GB DDR5"
-                    ],
-                    "storage": [
-                        "2TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "battery": "96Wh",
-                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, HDMI, 3.5mm jack",
-                    "weight": "2.4kg",
-                    "release_year": "2022",
-                    "notes": "OLED creator, ASUS Dial, haptic touchpad",
-                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch",
-                    "skus": [
-                        {
-                            "id": "W7601ZW-XB96",
-                            "cpu": [
-                                "Intel Core i9-12900H"
-                            ],
-                            "gpu": [
-                                "NVIDIA GeForce RTX 3060"
-                            ],
-                            "ram": [
-                                "64GB DDR5"
-                            ],
-                            "storage": [
-                                "2TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
                     ]
                 }
             ]
@@ -8493,55 +7325,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
             ]
         },
         {
-            "name": "Mini",
-            "type": "mini pc",
-            "subModels": [
-                {
-                    "name": "ASUS Mini PC PN64",
-                    "cpu": [
-                        "Intel Core i5-12500H"
-                    ],
-                    "gpu": [
-                        "Intel Iris Xe Graphics"
-                    ],
-                    "ram": [
-                        "16GB DDR4"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "skus": [
-                        {
-                            "id": "PN64-BB5013MD",
-                            "cpu": [
-                                "Intel Core i5-12500H"
-                            ],
-                            "gpu": [
-                                "Intel Iris Xe Graphics"
-                            ],
-                            "ram": [
-                                "16GB DDR4"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ],
-                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45, SD card",
-                    "weight": "0.74kg",
-                    "release_year": "2022",
-                    "notes": "Compact NUC-style, powerful H-series CPU",
-                    "display": "None (external)"
-                }
-            ]
-        },
-        {
             "name": "ROG Zephyrus",
             "type": "laptop",
             "subModels": [
@@ -8970,55 +7753,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "os": [
                                 "Windows 11 Home"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Mini PC PN",
-            "type": "mini pc",
-            "subModels": [
-                {
-                    "name": "ASUS Mini PC PN64",
-                    "cpu": [
-                        "Intel Core i5-12500H"
-                    ],
-                    "gpu": [
-                        "Intel Iris Xe Graphics"
-                    ],
-                    "ram": [
-                        "16GB DDR4"
-                    ],
-                    "storage": [
-                        "512GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45, SD card",
-                    "weight": "0.74kg",
-                    "release_year": "2022",
-                    "notes": "Compact NUC-style, powerful H-series CPU",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "PN64-BB5013MD",
-                            "cpu": [
-                                "Intel Core i5-12500H"
-                            ],
-                            "gpu": [
-                                "Intel Iris Xe Graphics"
-                            ],
-                            "ram": [
-                                "16GB DDR4"
-                            ],
-                            "storage": [
-                                "512GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
                             ]
                         }
                     ]
@@ -9460,55 +8194,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                             ],
                             "os": [
                                 "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "ASUS NUC",
-            "type": "mini pc",
-            "subModels": [
-                {
-                    "name": "ASUS NUC 14 Pro",
-                    "cpu": [
-                        "Intel Core Ultra 7 155H"
-                    ],
-                    "gpu": [
-                        "Intel Arc Graphics"
-                    ],
-                    "ram": [
-                        "None (user-installed, up to 96GB DDR5)"
-                    ],
-                    "storage": [
-                        "None (user-installed)"
-                    ],
-                    "os": [
-                        "None (barebones)"
-                    ],
-                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45, SD card",
-                    "weight": "0.73kg",
-                    "release_year": "2024",
-                    "notes": "ASUS takes over NUC brand, Meteor Lake",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "RNUC14RVSU700000I",
-                            "cpu": [
-                                "Intel Core Ultra 7 155H"
-                            ],
-                            "gpu": [
-                                "Intel Arc Graphics"
-                            ],
-                            "ram": [
-                                "None (user-installed, up to 96GB DDR5)"
-                            ],
-                            "storage": [
-                                "None (user-installed)"
-                            ],
-                            "os": [
-                                "None (barebones)"
                             ]
                         }
                     ]
@@ -11193,759 +9878,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     ]
                 }
             ]
-        },
-        {
-            "name": "Mac Mini",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Mac Mini M4 Pro (2024)",
-                    "ram": [
-                        "24GB",
-                        "48GB",
-                        "64GB"
-                    ],
-                    "cpu": [
-                        "Apple M4 Pro"
-                    ]
-                },
-                {
-                    "name": "Mac Mini M4 (2024)",
-                    "ram": [
-                        "16GB",
-                        "32GB",
-                        "64GB"
-                    ],
-                    "cpu": [
-                        "Apple M4"
-                    ]
-                },
-                {
-                    "name": "Mac Mini M2 Pro (2023)",
-                    "ram": [
-                        "16GB",
-                        "32GB"
-                    ],
-                    "cpu": [
-                        "Apple M2 Pro"
-                    ]
-                },
-                {
-                    "name": "Mac Mini M2 (2023)",
-                    "ram": [
-                        "8GB",
-                        "16GB",
-                        "24GB"
-                    ],
-                    "cpu": [
-                        "Apple M2"
-                    ]
-                },
-                {
-                    "name": "Mac Mini M1 (2020)",
-                    "ram": [
-                        "8GB",
-                        "16GB"
-                    ],
-                    "cpu": [
-                        "Apple M1"
-                    ]
-                },
-                {
-                    "name": "Apple Mac Mini M2",
-                    "cpu": [
-                        "Apple M2, 8-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M2 10-core GPU"
-                    ],
-                    "ram": [
-                        "8GB Unified Memory"
-                    ],
-                    "storage": [
-                        "256GB SSD"
-                    ],
-                    "os": [
-                        "macOS Ventura"
-                    ],
-                    "skus": [
-                        {
-                            "id": "MMFJ3LL/A",
-                            "cpu": [
-                                "Apple M2, 8-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M2 10-core GPU"
-                            ],
-                            "ram": [
-                                "8GB Unified Memory"
-                            ],
-                            "storage": [
-                                "256GB SSD"
-                            ],
-                            "os": [
-                                "macOS Ventura"
-                            ]
-                        }
-                    ],
-                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI 2.0, Ethernet, 3.5mm jack",
-                    "weight": "1.18kg, 197×197×35.8mm",
-                    "release_year": "2023",
-                    "notes": "Compact desktop, supports up to 2 displays",
-                    "display": "None (external)"
-                },
-                {
-                    "name": "Apple Mac Mini M2 Pro",
-                    "cpu": [
-                        "Apple M2 Pro, 10-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M2 Pro 16-core GPU"
-                    ],
-                    "ram": [
-                        "16GB Unified Memory"
-                    ],
-                    "storage": [
-                        "512GB SSD"
-                    ],
-                    "os": [
-                        "macOS Ventura"
-                    ],
-                    "skus": [
-                        {
-                            "id": "MNH73LL/A",
-                            "cpu": [
-                                "Apple M2 Pro, 10-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M2 Pro 16-core GPU"
-                            ],
-                            "ram": [
-                                "16GB Unified Memory"
-                            ],
-                            "storage": [
-                                "512GB SSD"
-                            ],
-                            "os": [
-                                "macOS Ventura"
-                            ]
-                        }
-                    ],
-                    "ports": "3× Thunderbolt 4, 2× USB-A, HDMI 2.0, Ethernet, 3.5mm jack",
-                    "weight": "1.18kg",
-                    "release_year": "2023",
-                    "notes": "Supports up to 3 external displays",
-                    "display": "None (external)"
-                },
-                {
-                    "name": "Apple Mac Mini M4",
-                    "cpu": [
-                        "Apple M4, 10-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M4 10-core GPU"
-                    ],
-                    "ram": [
-                        "16GB Unified Memory"
-                    ],
-                    "storage": [
-                        "256GB SSD"
-                    ],
-                    "os": [
-                        "macOS Sequoia"
-                    ],
-                    "ports": "3× Thunderbolt 4, 2× USB-A, HDMI 2.1, Ethernet, 3.5mm jack",
-                    "weight": "0.67kg",
-                    "release_year": "2024",
-                    "notes": "Smallest Mac Mini ever, redesigned, M4",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "MQXN3LL/A",
-                            "cpu": [
-                                "Apple M4, 10-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M4 10-core GPU"
-                            ],
-                            "ram": [
-                                "16GB Unified Memory"
-                            ],
-                            "storage": [
-                                "256GB SSD"
-                            ],
-                            "os": [
-                                "macOS Sequoia"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Apple Mac Mini M4 Pro",
-                    "cpu": [
-                        "Apple M4 Pro, 14-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M4 Pro 20-core GPU"
-                    ],
-                    "ram": [
-                        "24GB Unified Memory"
-                    ],
-                    "storage": [
-                        "512GB SSD"
-                    ],
-                    "os": [
-                        "macOS Sequoia"
-                    ],
-                    "ports": "3× Thunderbolt 5, 2× USB-A, HDMI 2.1, Ethernet, 3.5mm jack",
-                    "weight": "0.67kg",
-                    "release_year": "2024",
-                    "notes": "M4 Pro, Thunderbolt 5, tiny form factor",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "MQXP3LL/A",
-                            "cpu": [
-                                "Apple M4 Pro, 14-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M4 Pro 20-core GPU"
-                            ],
-                            "ram": [
-                                "24GB Unified Memory"
-                            ],
-                            "storage": [
-                                "512GB SSD"
-                            ],
-                            "os": [
-                                "macOS Sequoia"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Apple Mac Mini M1",
-                    "cpu": [
-                        "Apple M1, 8-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M1 8-core GPU"
-                    ],
-                    "ram": [
-                        "8GB Unified Memory"
-                    ],
-                    "storage": [
-                        "256GB SSD"
-                    ],
-                    "os": [
-                        "macOS Big Sur"
-                    ],
-                    "ports": "2× Thunderbolt 3, 2× USB-A, HDMI 2.0, Ethernet, 3.5mm jack",
-                    "weight": "1.19kg",
-                    "release_year": "2020",
-                    "notes": "First Apple Silicon Mac Mini",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "MGNR3LL/A",
-                            "cpu": [
-                                "Apple M1, 8-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M1 8-core GPU"
-                            ],
-                            "ram": [
-                                "8GB Unified Memory"
-                            ],
-                            "storage": [
-                                "256GB SSD"
-                            ],
-                            "os": [
-                                "macOS Big Sur"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Mac Studio",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Mac Studio M4 Max (2025)",
-                    "ram": [
-                        "36GB",
-                        "64GB",
-                        "96GB",
-                        "128GB"
-                    ],
-                    "cpu": [
-                        "Apple M4 Max"
-                    ]
-                },
-                {
-                    "name": "Mac Studio M4 Ultra (2025)",
-                    "ram": [
-                        "96GB",
-                        "128GB",
-                        "192GB"
-                    ],
-                    "cpu": [
-                        "Apple M4 Ultra"
-                    ]
-                },
-                {
-                    "name": "Mac Studio M2 Max (2023)",
-                    "ram": [
-                        "32GB",
-                        "64GB",
-                        "96GB"
-                    ],
-                    "cpu": [
-                        "Apple M2 Max"
-                    ]
-                },
-                {
-                    "name": "Mac Studio M2 Ultra (2023)",
-                    "ram": [
-                        "64GB",
-                        "128192GB"
-                    ],
-                    "cpu": [
-                        "Apple M2 Ultra"
-                    ]
-                },
-                {
-                    "name": "Mac Studio M1 Max (2022)",
-                    "ram": [
-                        "32GB",
-                        "64GB"
-                    ],
-                    "cpu": [
-                        "Apple M1 Max"
-                    ]
-                },
-                {
-                    "name": "Mac Studio M1 Ultra (2022)",
-                    "ram": [
-                        "64GB",
-                        "128GB"
-                    ],
-                    "cpu": [
-                        "Apple M1 Ultra"
-                    ]
-                },
-                {
-                    "name": "Apple Mac Studio M2 Max",
-                    "cpu": [
-                        "Apple M2 Max, 12-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M2 Max 30-core GPU"
-                    ],
-                    "ram": [
-                        "32GB Unified Memory"
-                    ],
-                    "storage": [
-                        "512GB SSD"
-                    ],
-                    "os": [
-                        "macOS Ventura"
-                    ],
-                    "skus": [
-                        {
-                            "id": "MQGW3LL/A",
-                            "cpu": [
-                                "Apple M2 Max, 12-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M2 Max 30-core GPU"
-                            ],
-                            "ram": [
-                                "32GB Unified Memory"
-                            ],
-                            "storage": [
-                                "512GB SSD"
-                            ],
-                            "os": [
-                                "macOS Ventura"
-                            ]
-                        }
-                    ],
-                    "ports": "2× Thunderbolt 4 (front), 4× Thunderbolt 4 (rear), 2× USB-A, HDMI, SD card, Ethernet",
-                    "weight": "2.69kg",
-                    "release_year": "2023",
-                    "notes": "Compact pro desktop, supports 5 external displays",
-                    "display": "None (external)"
-                },
-                {
-                    "name": "Apple Mac Studio M2 Ultra",
-                    "cpu": [
-                        "Apple M2 Ultra, 24-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M2 Ultra 60-core GPU"
-                    ],
-                    "ram": [
-                        "64GB Unified Memory"
-                    ],
-                    "storage": [
-                        "1TB SSD"
-                    ],
-                    "os": [
-                        "macOS Ventura"
-                    ],
-                    "ports": "2× Thunderbolt 4 (front), 4× Thunderbolt 4 (rear), 2× USB-A, HDMI, SD card, Ethernet",
-                    "weight": "2.69kg",
-                    "release_year": "2023",
-                    "notes": "Up to 192GB RAM, ultimate compact pro",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "MQHX3LL/A",
-                            "cpu": [
-                                "Apple M2 Ultra, 24-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M2 Ultra 60-core GPU"
-                            ],
-                            "ram": [
-                                "64GB Unified Memory"
-                            ],
-                            "storage": [
-                                "1TB SSD"
-                            ],
-                            "os": [
-                                "macOS Ventura"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Apple Mac Studio M1 Max",
-                    "cpu": [
-                        "Apple M1 Max, 10-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M1 Max 24-core GPU"
-                    ],
-                    "ram": [
-                        "32GB Unified Memory"
-                    ],
-                    "storage": [
-                        "512GB SSD"
-                    ],
-                    "os": [
-                        "macOS Monterey"
-                    ],
-                    "ports": "2× Thunderbolt 4 (front), 4× Thunderbolt 4 (rear), 2× USB-A, HDMI, SD card",
-                    "weight": "2.69kg",
-                    "release_year": "2022",
-                    "notes": "First Mac Studio, new compact pro",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "MJMV3LL/A",
-                            "cpu": [
-                                "Apple M1 Max, 10-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M1 Max 24-core GPU"
-                            ],
-                            "ram": [
-                                "32GB Unified Memory"
-                            ],
-                            "storage": [
-                                "512GB SSD"
-                            ],
-                            "os": [
-                                "macOS Monterey"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "iMac",
-            "type": "all-in-one",
-            "subModels": [
-                {
-                    "name": "iMac 24\" M4 (2024)",
-                    "screenSize": [
-                        "24\""
-                    ],
-                    "ram": [
-                        "16GB",
-                        "24GB",
-                        "32GB"
-                    ],
-                    "cpu": [
-                        "Apple M4"
-                    ]
-                },
-                {
-                    "name": "iMac 24\" M3 (2023)",
-                    "screenSize": [
-                        "24\""
-                    ],
-                    "ram": [
-                        "8GB",
-                        "16GB",
-                        "24GB"
-                    ],
-                    "cpu": [
-                        "Apple M3"
-                    ]
-                },
-                {
-                    "name": "iMac 24\" M1 (2021)",
-                    "screenSize": [
-                        "24\""
-                    ],
-                    "ram": [
-                        "8GB",
-                        "16GB"
-                    ],
-                    "cpu": [
-                        "Apple M1"
-                    ]
-                },
-                {
-                    "name": "Apple iMac 24 M3",
-                    "screenSize": [
-                        "24\""
-                    ],
-                    "cpu": [
-                        "Apple M3, 8-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M3 10-core GPU"
-                    ],
-                    "ram": [
-                        "8GB Unified Memory"
-                    ],
-                    "storage": [
-                        "256GB SSD"
-                    ],
-                    "os": [
-                        "macOS Sonoma"
-                    ],
-                    "skus": [
-                        {
-                            "id": "MQRQ3LL/A",
-                            "cpu": [
-                                "Apple M3, 8-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M3 10-core GPU"
-                            ],
-                            "ram": [
-                                "8GB Unified Memory"
-                            ],
-                            "storage": [
-                                "256GB SSD"
-                            ],
-                            "os": [
-                                "macOS Sonoma"
-                            ],
-                            "screenSize": [
-                                "24\""
-                            ]
-                        }
-                    ],
-                    "ports": "2× Thunderbolt 4, 2× USB-C, MagSafe, Ethernet (in power brick)",
-                    "weight": "4.48kg",
-                    "release_year": "2023",
-                    "notes": "7mm thin, available in 7 colors",
-                    "display": "24\" 4.5K Retina, 4480×2520, 500 nits, True Tone"
-                },
-                {
-                    "name": "Apple iMac 24 M3 16GB",
-                    "screenSize": [
-                        "24\""
-                    ],
-                    "cpu": [
-                        "Apple M3, 8-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M3 10-core GPU"
-                    ],
-                    "ram": [
-                        "16GB Unified Memory"
-                    ],
-                    "storage": [
-                        "512GB SSD"
-                    ],
-                    "os": [
-                        "macOS Sonoma"
-                    ],
-                    "ports": "2× Thunderbolt 4, 2× USB-C, 2× USB-A, MagSafe",
-                    "weight": "4.48kg",
-                    "release_year": "2023",
-                    "notes": "16GB config, Magic accessories included",
-                    "display": "24\" 4.5K Retina, 4480×2520, 500 nits",
-                    "skus": [
-                        {
-                            "id": "MQRV3LL/A",
-                            "cpu": [
-                                "Apple M3, 8-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M3 10-core GPU"
-                            ],
-                            "ram": [
-                                "16GB Unified Memory"
-                            ],
-                            "storage": [
-                                "512GB SSD"
-                            ],
-                            "os": [
-                                "macOS Sonoma"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Apple iMac 24 M1",
-                    "screenSize": [
-                        "24\""
-                    ],
-                    "cpu": [
-                        "Apple M1, 8-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M1 8-core GPU"
-                    ],
-                    "ram": [
-                        "8GB Unified Memory"
-                    ],
-                    "storage": [
-                        "256GB SSD"
-                    ],
-                    "os": [
-                        "macOS Big Sur"
-                    ],
-                    "ports": "2× Thunderbolt 4, 2× USB-C, MagSafe",
-                    "weight": "4.48kg",
-                    "release_year": "2021",
-                    "notes": "7mm thin, 7 colors, first Apple Silicon iMac",
-                    "display": "24\" 4.5K Retina, 4480×2520, 500 nits, True Tone",
-                    "skus": [
-                        {
-                            "id": "MGPK3LL/A",
-                            "cpu": [
-                                "Apple M1, 8-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M1 8-core GPU"
-                            ],
-                            "ram": [
-                                "8GB Unified Memory"
-                            ],
-                            "storage": [
-                                "256GB SSD"
-                            ],
-                            "os": [
-                                "macOS Big Sur"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Mac Pro",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Apple Mac Pro M2 Ultra",
-                    "cpu": [
-                        "Apple M2 Ultra, 24-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M2 Ultra 60-core GPU"
-                    ],
-                    "ram": [
-                        "192GB Unified Memory"
-                    ],
-                    "storage": [
-                        "1TB SSD"
-                    ],
-                    "os": [
-                        "macOS Ventura"
-                    ],
-                    "skus": [
-                        {
-                            "id": "MQH63LL/A",
-                            "cpu": [
-                                "Apple M2 Ultra, 24-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M2 Ultra 60-core GPU"
-                            ],
-                            "ram": [
-                                "192GB Unified Memory"
-                            ],
-                            "storage": [
-                                "1TB SSD"
-                            ],
-                            "os": [
-                                "macOS Ventura"
-                            ]
-                        }
-                    ],
-                    "ports": "6× Thunderbolt 4, 2× USB-A, 2× HDMI 2.1, 6× PCIe slots",
-                    "weight": "6.8kg",
-                    "release_year": "2023",
-                    "notes": "Mac Pro with new design, PCIe expansion, up to 192GB RAM",
-                    "display": "None (external)"
-                },
-                {
-                    "name": "Apple Mac Pro Tower M2 Ultra",
-                    "cpu": [
-                        "Apple M2 Ultra, 24-core CPU"
-                    ],
-                    "gpu": [
-                        "Apple M2 Ultra 76-core GPU"
-                    ],
-                    "ram": [
-                        "192GB Unified Memory"
-                    ],
-                    "storage": [
-                        "1TB SSD"
-                    ],
-                    "os": [
-                        "macOS Ventura"
-                    ],
-                    "skus": [
-                        {
-                            "id": "MQH73LL/A",
-                            "cpu": [
-                                "Apple M2 Ultra, 24-core CPU"
-                            ],
-                            "gpu": [
-                                "Apple M2 Ultra 76-core GPU"
-                            ],
-                            "ram": [
-                                "192GB Unified Memory"
-                            ],
-                            "storage": [
-                                "1TB SSD"
-                            ],
-                            "os": [
-                                "macOS Ventura"
-                            ]
-                        }
-                    ],
-                    "ports": "6× Thunderbolt 4, 2× USB-A, 2× HDMI 2.1, 7× PCIe slots",
-                    "weight": "7.0kg",
-                    "release_year": "2023",
-                    "notes": "Full tower expansion, up to 192GB RAM",
-                    "display": "None (external)"
-                }
-            ]
         }
     ],
     "MSI": [
@@ -12208,48 +10140,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "screenSize": [
                         "15.6\""
                     ]
-                }
-            ]
-        },
-        {
-            "name": "Creator / Summit",
-            "type": "workstation",
-            "subModels": [
-                {
-                    "name": "Creator Z17 HX Studio (2023)",
-                    "screenSize": [
-                        "17\""
-                    ]
-                },
-                {
-                    "name": "Creator 15 A12UET",
-                    "screenSize": [
-                        "15.6\""
-                    ]
-                },
-                {
-                    "name": "Summit E16 Flip Evo A13MT",
-                    "screenSize": [
-                        "16\""
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Aegis Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Aegis RS 13NUF5",
-                    "type": "desktop"
-                },
-                {
-                    "name": "Aegis Ti5 13NUG5",
-                    "type": "desktop"
-                },
-                {
-                    "name": "Aegis 3 10SA",
-                    "type": "desktop"
                 }
             ]
         },
@@ -14951,152 +12841,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "display": "14.4\" PixelSense Flow, 2400×1600, 120Hz, touch"
                 }
             ]
-        },
-        {
-            "name": "Microsoft Surface",
-            "type": "all-in-one",
-            "subModels": [
-                {
-                    "name": "Microsoft Surface Studio 2+",
-                    "screenSize": [
-                        "28\""
-                    ],
-                    "cpu": [
-                        "Intel Core i7-11370H"
-                    ],
-                    "gpu": [
-                        "NVIDIA GeForce RTX 3060"
-                    ],
-                    "ram": [
-                        "32GB DDR4"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "2× Thunderbolt 4, 3× USB-A, SD card, 3.5mm jack",
-                    "weight": "9.56kg",
-                    "release_year": "2022",
-                    "notes": "28\" studio AiO, Zero Gravity hinge",
-                    "display": "28\" PixelSense, 4500×3000, touch, 120Hz",
-                    "skus": [
-                        {
-                            "id": "SBG-00001",
-                            "cpu": [
-                                "Intel Core i7-11370H"
-                            ],
-                            "gpu": [
-                                "NVIDIA GeForce RTX 3060"
-                            ],
-                            "ram": [
-                                "32GB DDR4"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Microsoft Surface Book 3 13.5",
-                    "screenSize": [
-                        "13.5\""
-                    ],
-                    "cpu": [
-                        "Intel Core i5-1035G7"
-                    ],
-                    "gpu": [
-                        "NVIDIA GeForce GTX 1650"
-                    ],
-                    "ram": [
-                        "16GB LPDDR4X"
-                    ],
-                    "storage": [
-                        "256GB SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Home"
-                    ],
-                    "battery": "65Wh, up to 17.5h",
-                    "ports": "2× USB-A, USB-C, SD card, Surface Connect",
-                    "weight": "1.64kg",
-                    "release_year": "2020",
-                    "notes": "Detachable design, GPU in base",
-                    "display": "13.5\" PixelSense, 3000×2000, touch",
-                    "skus": [
-                        {
-                            "id": "SLM-00001",
-                            "cpu": [
-                                "Intel Core i5-1035G7"
-                            ],
-                            "gpu": [
-                                "NVIDIA GeForce GTX 1650"
-                            ],
-                            "ram": [
-                                "16GB LPDDR4X"
-                            ],
-                            "storage": [
-                                "256GB SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Home"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Microsoft Surface Go 3",
-                    "screenSize": [
-                        "10.5\""
-                    ],
-                    "cpu": [
-                        "Intel Pentium Gold 6500Y"
-                    ],
-                    "gpu": [
-                        "Intel UHD Graphics 615"
-                    ],
-                    "ram": [
-                        "4GB LPDDR3"
-                    ],
-                    "storage": [
-                        "64GB eMMC"
-                    ],
-                    "os": [
-                        "Windows 11 Home in S mode"
-                    ],
-                    "battery": "27.3Wh, up to 11h",
-                    "ports": "USB-C, Surface Connect, microSD",
-                    "weight": "544g",
-                    "release_year": "2021",
-                    "notes": "Entry budget Surface tablet",
-                    "display": "10.5\" PixelSense, 1920×1280, touch",
-                    "skus": [
-                        {
-                            "id": "8V6-00001",
-                            "cpu": [
-                                "Intel Pentium Gold 6500Y"
-                            ],
-                            "gpu": [
-                                "Intel UHD Graphics 615"
-                            ],
-                            "ram": [
-                                "4GB LPDDR3"
-                            ],
-                            "storage": [
-                                "64GB eMMC"
-                            ],
-                            "os": [
-                                "Windows 11 Home in S mode"
-                            ]
-                        }
-                    ]
-                }
-            ]
         }
     ],
     "Samsung": [
@@ -15832,104 +13576,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     "name": "דגם אחר / לא ברשימה"
                 }
             ]
-        },
-        {
-            "name": "Intel",
-            "type": "mini pc",
-            "subModels": [
-                {
-                    "name": "Intel NUC 13 Pro",
-                    "cpu": [
-                        "Intel Core i5-1340P"
-                    ],
-                    "gpu": [
-                        "Intel Iris Xe Graphics"
-                    ],
-                    "ram": [
-                        "None (user-installed)"
-                    ],
-                    "storage": [
-                        "None (user-installed)"
-                    ],
-                    "os": [
-                        "None (bare bones)"
-                    ],
-                    "skus": [
-                        {
-                            "id": "RNUC13ANHI50002",
-                            "cpu": [
-                                "Intel Core i5-1340P"
-                            ],
-                            "gpu": [
-                                "Intel Iris Xe Graphics"
-                            ],
-                            "ram": [
-                                "None (user-installed)"
-                            ],
-                            "storage": [
-                                "None (user-installed)"
-                            ],
-                            "os": [
-                                "None (bare bones)"
-                            ]
-                        }
-                    ],
-                    "ports": "2× Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45",
-                    "weight": "0.7kg, 117×112×37mm",
-                    "release_year": "2023",
-                    "notes": "Barebones mini PC, user-configurable RAM/storage",
-                    "display": "None (external)"
-                }
-            ]
-        },
-        {
-            "name": "Beelink",
-            "type": "mini pc",
-            "subModels": [
-                {
-                    "name": "Beelink Mini S12 Pro",
-                    "cpu": [
-                        "Intel N100, 4-core, 3.4GHz"
-                    ],
-                    "gpu": [
-                        "Intel UHD Graphics 24EU"
-                    ],
-                    "ram": [
-                        "16GB DDR5"
-                    ],
-                    "storage": [
-                        "500GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "skus": [
-                        {
-                            "id": "BEE-S12PRO",
-                            "cpu": [
-                                "Intel N100, 4-core, 3.4GHz"
-                            ],
-                            "gpu": [
-                                "Intel UHD Graphics 24EU"
-                            ],
-                            "ram": [
-                                "16GB DDR5"
-                            ],
-                            "storage": [
-                                "500GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ],
-                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI, RJ45",
-                    "weight": "0.47kg",
-                    "release_year": "2023",
-                    "notes": "Ultra-budget mini PC, fanless option, great for HTPC",
-                    "display": "None (external)"
-                }
-            ]
         }
     ],
     "Razer": [
@@ -16373,319 +14019,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
         }
     ],
     "Other": [
-        {
-            "name": "Intel NUC",
-            "type": "mini pc",
-            "subModels": [
-                {
-                    "name": "Intel NUC 13 Pro",
-                    "cpu": [
-                        "Intel Core i5-1340P"
-                    ],
-                    "gpu": [
-                        "Intel Iris Xe Graphics"
-                    ],
-                    "ram": [
-                        "None (user-installed)"
-                    ],
-                    "storage": [
-                        "None (user-installed)"
-                    ],
-                    "os": [
-                        "None (bare bones)"
-                    ],
-                    "ports": "2× Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45",
-                    "weight": "0.7kg, 117×112×37mm",
-                    "release_year": "2023",
-                    "notes": "Barebones mini PC, user-configurable RAM/storage",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "RNUC13ANHI50002",
-                            "cpu": [
-                                "Intel Core i5-1340P"
-                            ],
-                            "gpu": [
-                                "Intel Iris Xe Graphics"
-                            ],
-                            "ram": [
-                                "None (user-installed)"
-                            ],
-                            "storage": [
-                                "None (user-installed)"
-                            ],
-                            "os": [
-                                "None (bare bones)"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Intel NUC 12 Pro",
-                    "cpu": [
-                        "Intel Core i5-1240P"
-                    ],
-                    "gpu": [
-                        "Intel Iris Xe Graphics"
-                    ],
-                    "ram": [
-                        "None (user-installed, up to 64GB DDR4)"
-                    ],
-                    "storage": [
-                        "None (user-installed)"
-                    ],
-                    "os": [
-                        "None (barebones)"
-                    ],
-                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45",
-                    "weight": "0.69kg",
-                    "release_year": "2022",
-                    "notes": "Compact NUC, Alder Lake",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "RNUC12WSKi50002",
-                            "cpu": [
-                                "Intel Core i5-1240P"
-                            ],
-                            "gpu": [
-                                "Intel Iris Xe Graphics"
-                            ],
-                            "ram": [
-                                "None (user-installed, up to 64GB DDR4)"
-                            ],
-                            "storage": [
-                                "None (user-installed)"
-                            ],
-                            "os": [
-                                "None (barebones)"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Intel NUC 11 Pro",
-                    "cpu": [
-                        "Intel Core i5-1135G7"
-                    ],
-                    "gpu": [
-                        "Intel Iris Xe Graphics"
-                    ],
-                    "ram": [
-                        "None (user-installed)"
-                    ],
-                    "storage": [
-                        "None (user-installed)"
-                    ],
-                    "os": [
-                        "None (barebones)"
-                    ],
-                    "ports": "Thunderbolt 4, 4× USB-A, HDMI 2.0, DP, RJ45",
-                    "weight": "0.67kg",
-                    "release_year": "2021",
-                    "notes": "Tiger Lake NUC barebones",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "BNUC11TNHI50002",
-                            "cpu": [
-                                "Intel Core i5-1135G7"
-                            ],
-                            "gpu": [
-                                "Intel Iris Xe Graphics"
-                            ],
-                            "ram": [
-                                "None (user-installed)"
-                            ],
-                            "storage": [
-                                "None (user-installed)"
-                            ],
-                            "os": [
-                                "None (barebones)"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Beelink",
-            "type": "mini pc",
-            "subModels": [
-                {
-                    "name": "Beelink Mini S12 Pro",
-                    "cpu": [
-                        "Intel N100, 4-core, 3.4GHz"
-                    ],
-                    "gpu": [
-                        "Intel UHD Graphics 24EU"
-                    ],
-                    "ram": [
-                        "16GB DDR5"
-                    ],
-                    "storage": [
-                        "500GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI, RJ45",
-                    "weight": "0.47kg",
-                    "release_year": "2023",
-                    "notes": "Ultra-budget mini PC, fanless option, great for HTPC",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "BEE-S12PRO",
-                            "cpu": [
-                                "Intel N100, 4-core, 3.4GHz"
-                            ],
-                            "gpu": [
-                                "Intel UHD Graphics 24EU"
-                            ],
-                            "ram": [
-                                "16GB DDR5"
-                            ],
-                            "storage": [
-                                "500GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Beelink SER6 Pro",
-                    "cpu": [
-                        "AMD Ryzen 9 6900HX"
-                    ],
-                    "gpu": [
-                        "AMD Radeon 680M"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "500GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI 2.0, USB4, RJ45",
-                    "weight": "0.55kg",
-                    "release_year": "2022",
-                    "notes": "Powerful mini PC, AMD iGPU gaming capable",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "SER6-PRO-R9",
-                            "cpu": [
-                                "AMD Ryzen 9 6900HX"
-                            ],
-                            "gpu": [
-                                "AMD Radeon 680M"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "500GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Beelink GTR7 Pro",
-                    "cpu": [
-                        "AMD Ryzen 9 7940HX"
-                    ],
-                    "gpu": [
-                        "AMD Radeon 780M"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "3× USB-A, USB-C/Thunderbolt 4, 2× HDMI 2.0, RJ45",
-                    "weight": "0.65kg",
-                    "release_year": "2023",
-                    "notes": "Performance mini PC, Ryzen 9 7940HX",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "GTR7-PRO",
-                            "cpu": [
-                                "AMD Ryzen 9 7940HX"
-                            ],
-                            "gpu": [
-                                "AMD Radeon 780M"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "Beelink EQ12",
-                    "cpu": [
-                        "Intel N100, 4-core, up to 3.4GHz"
-                    ],
-                    "gpu": [
-                        "Intel UHD Graphics 24EU"
-                    ],
-                    "ram": [
-                        "16GB DDR5"
-                    ],
-                    "storage": [
-                        "500GB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI 2.0, RJ45",
-                    "weight": "0.35kg",
-                    "release_year": "2023",
-                    "notes": "Budget mini PC, good for office",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "EQ12",
-                            "cpu": [
-                                "Intel N100, 4-core, up to 3.4GHz"
-                            ],
-                            "gpu": [
-                                "Intel UHD Graphics 24EU"
-                            ],
-                            "ram": [
-                                "16GB DDR5"
-                            ],
-                            "storage": [
-                                "500GB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
         {
             "name": "LG Gram",
             "type": "laptop",
@@ -17275,104 +14608,6 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
             ]
         },
         {
-            "name": "Minisforum UM790",
-            "type": "mini pc",
-            "subModels": [
-                {
-                    "name": "Minisforum UM790 Pro",
-                    "cpu": [
-                        "AMD Ryzen 9 7940HX"
-                    ],
-                    "gpu": [
-                        "AMD Radeon 780M"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "2× USB-A 3.2, 2× USB-A 2.0, 2× HDMI 2.0, USB4, RJ45",
-                    "weight": "0.6kg",
-                    "release_year": "2023",
-                    "notes": "Compact powerhouse, eGPU compatible via OCuLink",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "UM790PRO",
-                            "cpu": [
-                                "AMD Ryzen 9 7940HX"
-                            ],
-                            "gpu": [
-                                "AMD Radeon 780M"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Minisforum MS-01",
-            "type": "mini pc",
-            "subModels": [
-                {
-                    "name": "Minisforum MS-01",
-                    "cpu": [
-                        "Intel Core i9-13900H"
-                    ],
-                    "gpu": [
-                        "Intel Iris Xe Graphics"
-                    ],
-                    "ram": [
-                        "32GB DDR5"
-                    ],
-                    "storage": [
-                        "1TB NVMe SSD"
-                    ],
-                    "os": [
-                        "Windows 11 Pro"
-                    ],
-                    "ports": "2× Thunderbolt 4, 2× USB-C, 4× USB-A, 2× HDMI, 2.5G + 10G RJ45",
-                    "weight": "0.65kg",
-                    "release_year": "2024",
-                    "notes": "Server-grade networking, OCuLink eGPU",
-                    "display": "None (external)",
-                    "skus": [
-                        {
-                            "id": "MS01",
-                            "cpu": [
-                                "Intel Core i9-13900H"
-                            ],
-                            "gpu": [
-                                "Intel Iris Xe Graphics"
-                            ],
-                            "ram": [
-                                "32GB DDR5"
-                            ],
-                            "storage": [
-                                "1TB NVMe SSD"
-                            ],
-                            "os": [
-                                "Windows 11 Pro"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "name": "Panasonic Toughbook",
             "type": "laptop",
             "subModels": [
@@ -17583,6 +14818,3960 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                     ]
                 }
             ]
+        }
+    ]
+};
+
+export const BRAND_DESKTOP_DATABASE: Record<string, ComputerModelFamily[]> = {
+    "Lenovo": [
+        {
+            "name": "ThinkCentre",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ThinkCentre M90s",
+                    "type": "desktop"
+                },
+                {
+                    "name": "ThinkCentre M70s",
+                    "type": "desktop"
+                },
+                {
+                    "name": "ThinkCentre M Series",
+                    "type": "desktop"
+                }
+            ]
+        },
+        {
+            "name": "ThinkPad P16",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "Lenovo ThinkPad P16 Gen 1",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12950HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A5500"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "skus": [
+                        {
+                            "id": "21D6001KUS",
+                            "cpu": [
+                                "Intel Core i9-12950HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A5500"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ],
+                            "screenSize": [
+                                "16\""
+                            ]
+                        }
+                    ],
+                    "battery": "94Wh",
+                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.95kg",
+                    "release_year": "2022",
+                    "notes": "ISV certified, up to 128GB RAM",
+                    "display": "16\" 4K IPS, 3840×2400, 600 nits"
+                }
+            ]
+        },
+        {
+            "name": "ThinkStation",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "Lenovo ThinkStation P3 Tower",
+                    "cpu": [
+                        "Intel Core i9-13900K"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 4000 SFF Ada"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "skus": [
+                        {
+                            "id": "30GS0033US",
+                            "cpu": [
+                                "Intel Core i9-13900K"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 4000 SFF Ada"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
+                    "weight": "10.8kg",
+                    "release_year": "2023",
+                    "notes": "ISV certified, tool-less, up to 128GB RAM",
+                    "display": "None (external)"
+                },
+                {
+                    "name": "Lenovo ThinkStation P5",
+                    "cpu": [
+                        "Intel Xeon W5-2445"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A4000"
+                    ],
+                    "ram": [
+                        "32GB DDR5 ECC"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, 2× DP, RJ45",
+                    "weight": "19.9kg",
+                    "release_year": "2022",
+                    "notes": "Professional Xeon workstation",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "30GA000HUS",
+                            "cpu": [
+                                "Intel Xeon W5-2445"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A4000"
+                            ],
+                            "ram": [
+                                "32GB DDR5 ECC"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkStation P360 Ultra",
+                    "cpu": [
+                        "Intel Core i9-12900K"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A4000 16GB"
+                    ],
+                    "ram": [
+                        "32GB DDR5 ECC"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C/TB4, HDMI, DP, RJ45",
+                    "weight": "2.7kg",
+                    "release_year": "2022",
+                    "notes": "Compact workstation, ISV, 2.7kg",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "30G1003BUS",
+                            "cpu": [
+                                "Intel Core i9-12900K"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A4000 16GB"
+                            ],
+                            "ram": [
+                                "32GB DDR5 ECC"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ThinkPad P",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "Lenovo ThinkPad P16 Gen 1",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12950HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A5500"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "94Wh",
+                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.95kg",
+                    "release_year": "2022",
+                    "notes": "ISV certified, up to 128GB RAM",
+                    "display": "16\" 4K IPS, 3840×2400, 600 nits",
+                    "skus": [
+                        {
+                            "id": "21D6001KUS",
+                            "cpu": [
+                                "Intel Core i9-12950HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A5500"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad P16s Gen 2",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "AMD Ryzen 7 PRO 7840U"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 780M + NVIDIA T550"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "2× USB-C/TB4, 2× USB-A, HDMI, RJ45, SD card",
+                    "weight": "1.95kg",
+                    "release_year": "2023",
+                    "notes": "Thin mobile workstation, ISV certified",
+                    "display": "16\" WUXGA IPS, 1920×1200, 300 nits",
+                    "skus": [
+                        {
+                            "id": "21HK000LUS",
+                            "cpu": [
+                                "AMD Ryzen 7 PRO 7840U"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 780M + NVIDIA T550"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Lenovo ThinkPad P16 Gen 2",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13980HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 3500 Ada"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "94Wh",
+                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.95kg",
+                    "release_year": "2023",
+                    "notes": "Up to 128GB RAM, ISV certified",
+                    "display": "16\" UHD+ IPS, 3840×2400, 120Hz",
+                    "skus": [
+                        {
+                            "id": "21FA000RUS",
+                            "cpu": [
+                                "Intel Core i9-13980HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 3500 Ada"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Lenovo ThinkCentre",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Lenovo ThinkCentre M90q Gen 3",
+                    "cpu": [
+                        "Intel Core i7-12700T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
+                    "weight": "1.37kg",
+                    "release_year": "2022",
+                    "notes": "Tiny PC, vPro option",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "11U50003US",
+                            "cpu": [
+                                "Intel Core i7-12700T"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 770"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Lenovo IdeaCentre",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Lenovo IdeaCentre 3 07ADA05",
+                    "cpu": [
+                        "AMD Ryzen 5 3400G"
+                    ],
+                    "gpu": [
+                        "AMD Radeon RX Vega 11"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, SD card, RJ45",
+                    "weight": "3.9kg",
+                    "release_year": "2021",
+                    "notes": "Budget desktop with integrated GPU",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "90MV0061US",
+                            "cpu": [
+                                "AMD Ryzen 5 3400G"
+                            ],
+                            "gpu": [
+                                "AMD Radeon RX Vega 11"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ThinkCentre M Series",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ThinkCentre M90q Gen 5 Tiny",
+                    "cpu": [
+                        "Intel Core i9-14900T",
+                        "Intel Core i7-14700T",
+                        "Intel Core i5-14500T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A 3.2, 2× USB-C (Thunderbolt 4), DisplayPort, HDMI, RJ-45, 3.5mm",
+                    "weight": "1.25kg",
+                    "release_year": "2024",
+                    "notes": "Ultra-compact 1L form factor business desktop",
+                    "skus": [
+                        {
+                            "id": "12E2001DUS",
+                            "cpu": [
+                                "Intel Core i7-14700T"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 770"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ThinkCentre M70q Gen 5 Tiny",
+                    "cpu": [
+                        "Intel Core i7-14700T",
+                        "Intel Core i5-14500T",
+                        "Intel Core i3-14100T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A 3.2, 1× USB-C, DisplayPort, HDMI, RJ-45",
+                    "weight": "1.25kg",
+                    "release_year": "2024",
+                    "notes": "Mainstream business Tiny desktop"
+                },
+                {
+                    "name": "ThinkCentre M90s Gen 5 SFF",
+                    "cpu": [
+                        "Intel Core i9-14900",
+                        "Intel Core i7-14700",
+                        "Intel Core i5-14500"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770",
+                        "NVIDIA GeForce GTX 1650 LP"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD",
+                        "2TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A 3.2, 2× USB-C, DisplayPort, HDMI, VGA, RJ-45, Serial",
+                    "weight": "6.3kg",
+                    "release_year": "2024",
+                    "notes": "Small Form Factor business workstation"
+                },
+                {
+                    "name": "ThinkCentre M720q Tiny",
+                    "cpu": [
+                        "Intel Core i7-9700T",
+                        "Intel Core i5-9600T",
+                        "Intel Core i3-9100T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 630"
+                    ],
+                    "ram": [
+                        "8GB DDR4",
+                        "16GB DDR4",
+                        "32GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 10 Pro",
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "5× USB-A, 1× USB-C, 2× DisplayPort, RJ-45",
+                    "weight": "1.32kg",
+                    "release_year": "2019",
+                    "notes": "Popular refurbished Tiny PC"
+                },
+                {
+                    "name": "ThinkCentre M920q Tiny",
+                    "cpu": [
+                        "Intel Core i7-8700T",
+                        "Intel Core i5-8500T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 630"
+                    ],
+                    "ram": [
+                        "8GB DDR4",
+                        "16GB DDR4",
+                        "32GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "Windows 10 Pro"
+                    ],
+                    "ports": "6× USB-A, 2× DisplayPort, RJ-45",
+                    "weight": "1.3kg",
+                    "release_year": "2018",
+                    "notes": "Widely available refurbished"
+                }
+            ]
+        },
+        {
+            "name": "IdeaCentre",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "IdeaCentre 5i Gen 8 Tower",
+                    "cpu": [
+                        "Intel Core i7-14700",
+                        "Intel Core i5-14400"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770",
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD",
+                        "512GB SSD + 1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DisplayPort, RJ-45, SD Card, 3.5mm",
+                    "weight": "7.9kg",
+                    "release_year": "2024",
+                    "notes": "Consumer tower, good all-rounder"
+                },
+                {
+                    "name": "IdeaCentre Mini (1L)",
+                    "cpu": [
+                        "Intel Core i7-13700H",
+                        "Intel Core i5-13500H"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "3× USB-A, 1× USB-C, HDMI 2.1, DisplayPort, RJ-45",
+                    "weight": "0.74kg",
+                    "release_year": "2023",
+                    "notes": "Ultra compact consumer mini PC"
+                },
+                {
+                    "name": "IdeaCentre AIO 27 Gen 9",
+                    "cpu": [
+                        "Intel Core Ultra 7 155H",
+                        "Intel Core Ultra 5 125H"
+                    ],
+                    "gpu": [
+                        "Intel Arc Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "screenSize": [
+                        "27\""
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, RJ-45",
+                    "weight": "8.5kg",
+                    "release_year": "2024",
+                    "notes": "All-in-One 27\", 2.5K touch display"
+                }
+            ]
+        },
+        {
+            "name": "Legion Tower",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Legion Tower 7i Gen 9",
+                    "cpu": [
+                        "Intel Core i9-14900KF",
+                        "Intel Core i7-14700KF"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090",
+                        "NVIDIA GeForce RTX 4080 Super",
+                        "NVIDIA GeForce RTX 4070 Ti Super"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB SSD",
+                        "2TB SSD",
+                        "1TB SSD + 2TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "6× USB-A, 4× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45 2.5GbE, Wi-Fi 7",
+                    "weight": "23kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming tower, liquid cooling optional"
+                },
+                {
+                    "name": "Legion Tower 5i Gen 9",
+                    "cpu": [
+                        "Intel Core i7-14700KF",
+                        "Intel Core i5-14600KF"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070 Ti Super",
+                        "NVIDIA GeForce RTX 4070 Super",
+                        "NVIDIA GeForce RTX 4060 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD",
+                        "1TB SSD + 1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45",
+                    "weight": "18kg",
+                    "release_year": "2024",
+                    "notes": "Mid-range gaming tower"
+                },
+                {
+                    "name": "Legion Tower 5 Gen 8 (AMD)",
+                    "cpu": [
+                        "AMD Ryzen 7 7700X",
+                        "AMD Ryzen 5 7600X"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070",
+                        "NVIDIA GeForce RTX 4060 Ti",
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45",
+                    "weight": "16kg",
+                    "release_year": "2023",
+                    "notes": "AMD gaming tower"
+                }
+            ]
+        }
+    ],
+    "Dell": [
+        {
+            "name": "Precision",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "Precision 5690",
+                    "screenSize": [
+                        "16\""
+                    ]
+                },
+                {
+                    "name": "Precision 5480",
+                    "screenSize": [
+                        "14\""
+                    ]
+                },
+                {
+                    "name": "Precision 7680",
+                    "screenSize": [
+                        "16\""
+                    ]
+                },
+                {
+                    "name": "Precision 7780",
+                    "screenSize": [
+                        "17.3\""
+                    ]
+                },
+                {
+                    "name": "Dell Precision 5570",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A2000"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "skus": [
+                        {
+                            "id": "PRS-5570-7619SLV",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A2000"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ],
+                            "screenSize": [
+                                "15.6\""
+                            ]
+                        }
+                    ],
+                    "battery": "86Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, 3.5mm jack",
+                    "weight": "1.84kg",
+                    "release_year": "2022",
+                    "notes": "Mobile workstation, ISV certified",
+                    "display": "15.6\" FHD+ OLED, 1920×1200"
+                },
+                {
+                    "name": "Dell Precision 3571",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A2000"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "56Wh",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.85kg",
+                    "release_year": "2022",
+                    "notes": "Entry mobile workstation",
+                    "display": "15.6\" FHD IPS, 1920×1080",
+                    "skus": [
+                        {
+                            "id": "PRS3571-7619SLV",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A2000"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 5570",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-12700H"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A2000"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, 3.5mm jack",
+                    "weight": "1.84kg",
+                    "release_year": "2022",
+                    "notes": "Slim workstation, ISV certified",
+                    "display": "15.6\" FHD+ OLED, 1920×1200",
+                    "skus": [
+                        {
+                            "id": "PRS5570-7619SLV",
+                            "cpu": [
+                                "Intel Core i7-12700H"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A2000"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 5680",
+                    "screenSize": [
+                        "15.6\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 3500 Ada"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "86Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "1.85kg",
+                    "release_year": "2023",
+                    "notes": "Premium thin workstation, OLED option",
+                    "display": "15.6\" OLED 3.5K, 3456×2160",
+                    "skus": [
+                        {
+                            "id": "PRS5680-7979SLV",
+                            "cpu": [
+                                "Intel Core i9-13900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 3500 Ada"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 7680",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13950HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A5500"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "93Wh",
+                    "ports": "2× Thunderbolt 4, 3× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.77kg",
+                    "release_year": "2023",
+                    "notes": "Up to 128GB RAM, ISV certified",
+                    "display": "16\" FHD+ IPS, 1920×1200",
+                    "skus": [
+                        {
+                            "id": "PRS7680-7979SLV",
+                            "cpu": [
+                                "Intel Core i9-13950HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A5500"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 3480",
+                    "screenSize": [
+                        "14\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1345U vPro"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "51Wh",
+                    "ports": "Thunderbolt 4, 2× USB-A, HDMI, RJ45, SD card",
+                    "weight": "1.45kg",
+                    "release_year": "2023",
+                    "notes": "Entry mobile workstation",
+                    "display": "14\" FHD IPS, 1920×1080, 250 nits",
+                    "skus": [
+                        {
+                            "id": "PRS3480-5616SLV",
+                            "cpu": [
+                                "Intel Core i5-1345U vPro"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Dell Precision 5820 Tower",
+                    "cpu": [
+                        "Intel Xeon W-2245"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A5000"
+                    ],
+                    "ram": [
+                        "64GB DDR4 ECC"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, 2× DP, RJ45",
+                    "weight": "18kg",
+                    "release_year": "2022",
+                    "notes": "Tower workstation, ECC Xeon",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "PRS5820-7979SLV",
+                            "cpu": [
+                                "Intel Xeon W-2245"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A5000"
+                            ],
+                            "ram": [
+                                "64GB DDR4 ECC"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "OptiPlex",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "OptiPlex 7000 Tower",
+                    "type": "desktop"
+                },
+                {
+                    "name": "OptiPlex 5000 Tower",
+                    "type": "desktop"
+                },
+                {
+                    "name": "OptiPlex 7000 Micro",
+                    "type": "mini"
+                },
+                {
+                    "name": "OptiPlex 3090 Ultra",
+                    "type": "mini"
+                },
+                {
+                    "name": "Dell OptiPlex 7000",
+                    "cpu": [
+                        "Intel Core i7-12700"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "skus": [
+                        {
+                            "id": "DTOP073-803",
+                            "cpu": [
+                                "Intel Core i7-12700"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 770"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
+                    "weight": "5.4kg",
+                    "release_year": "2022",
+                    "notes": "Business desktop, vPro option",
+                    "display": "None (external)"
+                },
+                {
+                    "name": "Dell OptiPlex 3000 Tower",
+                    "cpu": [
+                        "Intel Core i5-12500T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "8GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, RJ45",
+                    "weight": "4.6kg",
+                    "release_year": "2022",
+                    "notes": "Entry business tower",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "XDT3000-5466BLK-PUS",
+                            "cpu": [
+                                "Intel Core i5-12500T"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 770"
+                            ],
+                            "ram": [
+                                "8GB DDR4"
+                            ],
+                            "storage": [
+                                "256GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "OptiPlex",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "OptiPlex 7020 Tower",
+                    "cpu": [
+                        "Intel Core i7-14700",
+                        "Intel Core i5-14500",
+                        "Intel Core i3-14100"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770",
+                        "NVIDIA GeForce RTX 4060 LP"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD",
+                        "512GB SSD + 1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, DisplayPort 1.4, HDMI, VGA, RJ-45, Serial, 3.5mm",
+                    "weight": "7.5kg",
+                    "release_year": "2024",
+                    "notes": "Business tower, tool-free chassis"
+                },
+                {
+                    "name": "OptiPlex 7020 SFF",
+                    "cpu": [
+                        "Intel Core i7-14700",
+                        "Intel Core i5-14500"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, 1× USB-C, DisplayPort, HDMI, RJ-45, Serial",
+                    "weight": "5.1kg",
+                    "release_year": "2024",
+                    "notes": "Compact business SFF"
+                },
+                {
+                    "name": "OptiPlex 7020 Micro",
+                    "cpu": [
+                        "Intel Core i7-14700T",
+                        "Intel Core i5-14500T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 1× USB-C, DisplayPort, HDMI, RJ-45",
+                    "weight": "1.2kg",
+                    "release_year": "2024",
+                    "notes": "Ultra-compact 1L business PC"
+                },
+                {
+                    "name": "OptiPlex 5000 Tower",
+                    "cpu": [
+                        "Intel Core i7-12700",
+                        "Intel Core i5-12500"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro",
+                        "Windows 10 Pro"
+                    ],
+                    "ports": "6× USB-A, 1× USB-C, DisplayPort, HDMI, VGA, RJ-45",
+                    "weight": "7.3kg",
+                    "release_year": "2022",
+                    "notes": "Popular mid-range business desktop"
+                },
+                {
+                    "name": "OptiPlex 3090 SFF",
+                    "cpu": [
+                        "Intel Core i5-10505",
+                        "Intel Core i3-10105"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 630"
+                    ],
+                    "ram": [
+                        "8GB DDR4",
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 10 Pro",
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, DisplayPort, HDMI, VGA, RJ-45, Serial",
+                    "weight": "5.0kg",
+                    "release_year": "2021",
+                    "notes": "Entry-level business, widely refurbished"
+                }
+            ]
+        },
+        {
+            "name": "XPS Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "XPS Desktop 8960",
+                    "cpu": [
+                        "Intel Core i9-14900K",
+                        "Intel Core i7-14700K",
+                        "Intel Core i5-14600K"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090",
+                        "NVIDIA GeForce RTX 4070 Ti",
+                        "NVIDIA GeForce RTX 4060 Ti",
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD",
+                        "2TB SSD",
+                        "1TB SSD + 2TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home",
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A 3.2, 2× USB-C (Thunderbolt 4), SD Card, HDMI, 3.5mm, RJ-45",
+                    "weight": "12.7kg",
+                    "release_year": "2024",
+                    "notes": "Premium consumer tower, sleek design"
+                },
+                {
+                    "name": "XPS Desktop 8950",
+                    "cpu": [
+                        "Intel Core i9-12900K",
+                        "Intel Core i7-12700K",
+                        "Intel Core i5-12600K"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3090",
+                        "NVIDIA GeForce RTX 3070",
+                        "NVIDIA GeForce RTX 3060 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD",
+                        "1TB SSD + 1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, HDMI, SD Card, RJ-45",
+                    "weight": "12.3kg",
+                    "release_year": "2022",
+                    "notes": "Previous gen premium tower"
+                }
+            ]
+        },
+        {
+            "name": "Inspiron Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Inspiron 3030 Tower",
+                    "cpu": [
+                        "Intel Core i7-14700",
+                        "Intel Core i5-14400",
+                        "Intel Core i3-14100"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770",
+                        "NVIDIA GeForce RTX 3050"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD",
+                        "512GB SSD + 1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DisplayPort, RJ-45, SD Card, 3.5mm",
+                    "weight": "7.6kg",
+                    "release_year": "2024",
+                    "notes": "Budget-friendly consumer tower"
+                },
+                {
+                    "name": "Inspiron 24 AIO 5420",
+                    "cpu": [
+                        "Intel Core i7-13700H",
+                        "Intel Core i5-13500H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce MX550",
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4",
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "screenSize": [
+                        "24\""
+                    ],
+                    "ports": "2× USB-A, 2× USB-C, HDMI-out, RJ-45, SD Card",
+                    "weight": "7.0kg",
+                    "release_year": "2023",
+                    "notes": "All-in-One 24\", FHD touch"
+                }
+            ]
+        },
+        {
+            "name": "Alienware Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Alienware Aurora R16",
+                    "cpu": [
+                        "Intel Core i9-14900KF",
+                        "Intel Core i7-14700KF"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090",
+                        "NVIDIA GeForce RTX 4080 Super",
+                        "NVIDIA GeForce RTX 4070 Ti Super",
+                        "NVIDIA GeForce RTX 4070 Super"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB SSD",
+                        "2TB SSD",
+                        "4TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "6× USB-A, 3× USB-C (Thunderbolt 4), 2.5GbE RJ-45, 3.5mm, front USB-C",
+                    "weight": "16.8kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming desktop, liquid-cooled, Legend 3.0 design"
+                },
+                {
+                    "name": "Alienware Aurora R15 (AMD)",
+                    "cpu": [
+                        "AMD Ryzen 9 7950X",
+                        "AMD Ryzen 7 7700X"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090",
+                        "NVIDIA GeForce RTX 4080",
+                        "NVIDIA GeForce RTX 4070 Ti"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB SSD",
+                        "2TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "6× USB-A, 3× USB-C, 2.5GbE RJ-45",
+                    "weight": "16kg",
+                    "release_year": "2023",
+                    "notes": "AMD gaming beast, liquid-cooled CPU"
+                }
+            ]
+        },
+        {
+            "name": "Precision Tower",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Precision 3680 Tower",
+                    "cpu": [
+                        "Intel Core i9-14900K",
+                        "Intel Core i7-14700K",
+                        "Intel Core i5-14600K"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A2000",
+                        "NVIDIA RTX 4000 Ada",
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5",
+                        "128GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD",
+                        "2TB SSD",
+                        "1TB SSD + 2TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "8× USB-A, 2× USB-C (Thunderbolt 4), 2× DisplayPort, HDMI, RJ-45, Serial",
+                    "weight": "10.6kg",
+                    "release_year": "2024",
+                    "notes": "Entry workstation, ISV certified"
+                }
+            ]
+        }
+    ],
+    "HP": [
+        {
+            "name": "ZBook",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "HP ZBook Fury 16 G10",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13950HX"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 4000 Ada"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "skus": [
+                        {
+                            "id": "7B623UT#ABA",
+                            "cpu": [
+                                "Intel Core i9-13950HX"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 4000 Ada"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ],
+                            "screenSize": [
+                                "16\""
+                            ]
+                        }
+                    ],
+                    "battery": "96Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card, RJ45",
+                    "weight": "2.77kg",
+                    "release_year": "2023",
+                    "notes": "ISV certified mobile workstation",
+                    "display": "16\" 4K DreamColor IPS, 3840×2400, 120Hz"
+                },
+                {
+                    "name": "HP ZBook Studio G10",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-13900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 3000 Ada"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "96Wh",
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI, SD card",
+                    "weight": "2.1kg",
+                    "release_year": "2023",
+                    "notes": "Thin workstation, OLED 4K",
+                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch",
+                    "skus": [
+                        {
+                            "id": "7C6K3UT#ABA",
+                            "cpu": [
+                                "Intel Core i9-13900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 3000 Ada"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Z4",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "HP Z4 G5 Tower Workstation",
+                    "cpu": [
+                        "Intel Xeon W3-2425"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A4000"
+                    ],
+                    "ram": [
+                        "32GB DDR5 ECC"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "skus": [
+                        {
+                            "id": "86D60UT#ABA",
+                            "cpu": [
+                                "Intel Xeon W3-2425"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A4000"
+                            ],
+                            "ram": [
+                                "32GB DDR5 ECC"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, 2× DP, RJ45",
+                    "weight": "14.5kg",
+                    "release_year": "2023",
+                    "notes": "ECC memory, Xeon CPU, ISV certified",
+                    "display": "None (external)"
+                }
+            ]
+        },
+        {
+            "name": "HP ENVY",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "HP ENVY Desktop TE02",
+                    "cpu": [
+                        "Intel Core i7-12700"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI, DP, SD card, RJ45",
+                    "weight": "8.6kg",
+                    "release_year": "2022",
+                    "notes": "Creator tower, RTX 3060",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "TE02-0030",
+                            "cpu": [
+                                "Intel Core i7-12700"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HP Z8",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "HP Z8 Fury G5 Workstation",
+                    "cpu": [
+                        "Intel Xeon W9-3475X"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX 6000 Ada"
+                    ],
+                    "ram": [
+                        "64GB DDR5 ECC"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "8× USB-A, 4× USB-C, Thunderbolt 4, 2× DP, RJ45",
+                    "weight": "24.7kg",
+                    "release_year": "2023",
+                    "notes": "Dual CPU capable, max 2TB RAM, ultimate workstation",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "5F0R3UT#ABA",
+                            "cpu": [
+                                "Intel Xeon W9-3475X"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX 6000 Ada"
+                            ],
+                            "ram": [
+                                "64GB DDR5 ECC"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HP Z2",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "HP Z2 Mini G9 Workstation",
+                    "cpu": [
+                        "Intel Core i9-13900K"
+                    ],
+                    "gpu": [
+                        "NVIDIA RTX A2000 12GB"
+                    ],
+                    "ram": [
+                        "32GB DDR5 ECC"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C/TB4, DP, HDMI, RJ45",
+                    "weight": "2.2kg",
+                    "release_year": "2023",
+                    "notes": "Mini workstation, ISV certified",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "8D7S3UT#ABA",
+                            "cpu": [
+                                "Intel Core i9-13900K"
+                            ],
+                            "gpu": [
+                                "NVIDIA RTX A2000 12GB"
+                            ],
+                            "ram": [
+                                "32GB DDR5 ECC"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ProDesk / Pro Tower",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "HP Pro Tower 400 G9",
+                    "cpu": [
+                        "Intel Core i7-13700",
+                        "Intel Core i5-13500",
+                        "Intel Core i3-13100"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770",
+                        "NVIDIA GeForce RTX 3060 LP"
+                    ],
+                    "ram": [
+                        "8GB DDR4",
+                        "16GB DDR4",
+                        "32GB DDR4",
+                        "64GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD",
+                        "1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, DisplayPort 1.4, HDMI, VGA, RJ-45, Serial, 3.5mm",
+                    "weight": "7.2kg",
+                    "release_year": "2023",
+                    "notes": "Mainstream business tower"
+                },
+                {
+                    "name": "HP EliteDesk 800 G9 Tower",
+                    "cpu": [
+                        "Intel Core i9-13900",
+                        "Intel Core i7-13700",
+                        "Intel Core i5-13500"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770",
+                        "NVIDIA RTX A2000"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD",
+                        "2TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "8× USB-A, 2× USB-C (Thunderbolt 4), 2× DisplayPort, HDMI, RJ-45",
+                    "weight": "8.5kg",
+                    "release_year": "2023",
+                    "notes": "Premium business desktop, enterprise"
+                },
+                {
+                    "name": "HP EliteDesk 800 G6 Mini",
+                    "cpu": [
+                        "Intel Core i7-10700T",
+                        "Intel Core i5-10500T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 630"
+                    ],
+                    "ram": [
+                        "8GB DDR4",
+                        "16GB DDR4",
+                        "32GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "Windows 10 Pro"
+                    ],
+                    "ports": "6× USB-A, 1× USB-C, 2× DisplayPort, RJ-45",
+                    "weight": "1.25kg",
+                    "release_year": "2020",
+                    "notes": "Popular refurbished mini desktop"
+                }
+            ]
+        },
+        {
+            "name": "OMEN Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "OMEN 45L GT22-2000",
+                    "cpu": [
+                        "Intel Core i9-14900KF",
+                        "Intel Core i7-14700KF"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090",
+                        "NVIDIA GeForce RTX 4080 Super",
+                        "NVIDIA GeForce RTX 4070 Ti Super"
+                    ],
+                    "ram": [
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB SSD",
+                        "2TB SSD",
+                        "2TB SSD + 2TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C (Thunderbolt 4), 2.5GbE RJ-45, Wi-Fi 7, 3.5mm",
+                    "weight": "22kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming tower, 45L CryoChamber cooling, RGB"
+                },
+                {
+                    "name": "OMEN 25L GT15-1000",
+                    "cpu": [
+                        "Intel Core i7-14700F",
+                        "Intel Core i5-14400F"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060 Ti",
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 1× USB-C, RJ-45, 3.5mm",
+                    "weight": "12kg",
+                    "release_year": "2024",
+                    "notes": "Entry gaming tower, 25L compact"
+                }
+            ]
+        },
+        {
+            "name": "Pavilion Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "HP Pavilion Desktop TP01",
+                    "cpu": [
+                        "Intel Core i7-14700",
+                        "Intel Core i5-14400",
+                        "AMD Ryzen 7 7700",
+                        "AMD Ryzen 5 7600"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770",
+                        "AMD Radeon RX 6400",
+                        "NVIDIA GeForce GTX 1650"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD",
+                        "512GB SSD + 1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 1× USB-C, HDMI, VGA, RJ-45, SD Card, 3.5mm",
+                    "weight": "6.0kg",
+                    "release_year": "2024",
+                    "notes": "Budget consumer desktop"
+                }
+            ]
+        }
+    ],
+    "ASUS": [
+        {
+            "name": "ProArt",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "ProArt Studiobook 16 (H7604)",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "ram": [
+                        "32GB",
+                        "64GB"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4080 Laptop"
+                    ]
+                },
+                {
+                    "name": "ProArt P16 (H7606)",
+                    "screenSize": [
+                        "16\""
+                    ]
+                },
+                {
+                    "name": "ProArt Studiobook Pro 16 OLED (W7600)",
+                    "screenSize": [
+                        "16\""
+                    ]
+                },
+                {
+                    "name": "ASUS ProArt Studiobook 16",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3080 Ti"
+                    ],
+                    "ram": [
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "skus": [
+                        {
+                            "id": "H7600ZX-DB96",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3080 Ti"
+                            ],
+                            "ram": [
+                                "64GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ],
+                            "screenSize": [
+                                "16\""
+                            ]
+                        }
+                    ],
+                    "battery": "96Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, HDMI, 3.5mm jack",
+                    "weight": "2.4kg",
+                    "release_year": "2022",
+                    "notes": "OLED creator workstation, Dial knob",
+                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch"
+                },
+                {
+                    "name": "ASUS ProArt Studiobook 16 OLED",
+                    "screenSize": [
+                        "16\""
+                    ],
+                    "cpu": [
+                        "Intel Core i9-12900H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "battery": "96Wh",
+                    "ports": "2× Thunderbolt 4, USB-A, USB-C, SD card, HDMI, 3.5mm jack",
+                    "weight": "2.4kg",
+                    "release_year": "2022",
+                    "notes": "OLED creator, ASUS Dial, haptic touchpad",
+                    "display": "16\" 4K OLED, 3840×2400, 60Hz, touch",
+                    "skus": [
+                        {
+                            "id": "W7601ZW-XB96",
+                            "cpu": [
+                                "Intel Core i9-12900H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "64GB DDR5"
+                            ],
+                            "storage": [
+                                "2TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Mini",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "ASUS Mini PC PN64",
+                    "cpu": [
+                        "Intel Core i5-12500H"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "skus": [
+                        {
+                            "id": "PN64-BB5013MD",
+                            "cpu": [
+                                "Intel Core i5-12500H"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45, SD card",
+                    "weight": "0.74kg",
+                    "release_year": "2022",
+                    "notes": "Compact NUC-style, powerful H-series CPU",
+                    "display": "None (external)"
+                }
+            ]
+        },
+        {
+            "name": "Mini PC PN",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "ASUS Mini PC PN64",
+                    "cpu": [
+                        "Intel Core i5-12500H"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "512GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45, SD card",
+                    "weight": "0.74kg",
+                    "release_year": "2022",
+                    "notes": "Compact NUC-style, powerful H-series CPU",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "PN64-BB5013MD",
+                            "cpu": [
+                                "Intel Core i5-12500H"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "16GB DDR4"
+                            ],
+                            "storage": [
+                                "512GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ASUS NUC",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "ASUS NUC 14 Pro",
+                    "cpu": [
+                        "Intel Core Ultra 7 155H"
+                    ],
+                    "gpu": [
+                        "Intel Arc Graphics"
+                    ],
+                    "ram": [
+                        "None (user-installed, up to 96GB DDR5)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (barebones)"
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45, SD card",
+                    "weight": "0.73kg",
+                    "release_year": "2024",
+                    "notes": "ASUS takes over NUC brand, Meteor Lake",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "RNUC14RVSU700000I",
+                            "cpu": [
+                                "Intel Core Ultra 7 155H"
+                            ],
+                            "gpu": [
+                                "Intel Arc Graphics"
+                            ],
+                            "ram": [
+                                "None (user-installed, up to 96GB DDR5)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (barebones)"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ROG Strix Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ROG Strix G35CZ",
+                    "cpu": [
+                        "Intel Core i9-14900KF",
+                        "Intel Core i7-14700KF"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090",
+                        "NVIDIA GeForce RTX 4080",
+                        "NVIDIA GeForce RTX 4070 Ti"
+                    ],
+                    "ram": [
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB SSD",
+                        "2TB SSD",
+                        "1TB SSD + 2TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), 2.5GbE, Wi-Fi 7, 3.5mm",
+                    "weight": "19kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming tower, overclock-ready"
+                },
+                {
+                    "name": "ROG Strix G16CH",
+                    "cpu": [
+                        "Intel Core i7-14700F",
+                        "Intel Core i5-14400F"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070 Super",
+                        "NVIDIA GeForce RTX 4060 Ti",
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45, Wi-Fi 6E",
+                    "weight": "12kg",
+                    "release_year": "2024",
+                    "notes": "Mid-range gaming tower"
+                }
+            ]
+        },
+        {
+            "name": "ExpertCenter Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ExpertCenter D900MD Tower",
+                    "cpu": [
+                        "Intel Core i7-14700",
+                        "Intel Core i5-14500",
+                        "Intel Core i3-14100"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770",
+                        "NVIDIA GeForce GT 1030"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD",
+                        "1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, 2× USB-C, HDMI, DisplayPort, VGA, RJ-45, Serial, 3.5mm",
+                    "weight": "8.0kg",
+                    "release_year": "2024",
+                    "notes": "Business tower, military-grade reliability"
+                }
+            ]
+        },
+        {
+            "name": "ASUS NUC",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "ASUS NUC 14 Pro+",
+                    "cpu": [
+                        "Intel Core Ultra 9 185H",
+                        "Intel Core Ultra 7 155H"
+                    ],
+                    "gpu": [
+                        "Intel Arc Graphics"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD",
+                        "2TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "3× USB-A, 2× Thunderbolt 4, HDMI 2.1, DisplayPort, 2.5GbE RJ-45",
+                    "weight": "0.83kg",
+                    "release_year": "2024",
+                    "notes": "Ultra-compact NUC, ex-Intel NUC line"
+                },
+                {
+                    "name": "ASUS ROG NUC",
+                    "cpu": [
+                        "Intel Core Ultra 9 185H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070 Laptop"
+                    ],
+                    "ram": [
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB SSD",
+                        "2TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "6× USB-A, 2× Thunderbolt 4, HDMI 2.1, 2× DisplayPort, 2.5GbE RJ-45",
+                    "weight": "2.6kg",
+                    "release_year": "2024",
+                    "notes": "Gaming NUC, RTX 4070 in mini form factor"
+                }
+            ]
+        }
+    ],
+    "Apple": [
+        {
+            "name": "Mac Mini",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Mac Mini M4 Pro (2024)",
+                    "ram": [
+                        "24GB",
+                        "48GB",
+                        "64GB"
+                    ],
+                    "cpu": [
+                        "Apple M4 Pro"
+                    ]
+                },
+                {
+                    "name": "Mac Mini M4 (2024)",
+                    "ram": [
+                        "16GB",
+                        "32GB",
+                        "64GB"
+                    ],
+                    "cpu": [
+                        "Apple M4"
+                    ]
+                },
+                {
+                    "name": "Mac Mini M2 Pro (2023)",
+                    "ram": [
+                        "16GB",
+                        "32GB"
+                    ],
+                    "cpu": [
+                        "Apple M2 Pro"
+                    ]
+                },
+                {
+                    "name": "Mac Mini M2 (2023)",
+                    "ram": [
+                        "8GB",
+                        "16GB",
+                        "24GB"
+                    ],
+                    "cpu": [
+                        "Apple M2"
+                    ]
+                },
+                {
+                    "name": "Mac Mini M1 (2020)",
+                    "ram": [
+                        "8GB",
+                        "16GB"
+                    ],
+                    "cpu": [
+                        "Apple M1"
+                    ]
+                },
+                {
+                    "name": "Apple Mac Mini M2",
+                    "cpu": [
+                        "Apple M2, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 10-core GPU"
+                    ],
+                    "ram": [
+                        "8GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "skus": [
+                        {
+                            "id": "MMFJ3LL/A",
+                            "cpu": [
+                                "Apple M2, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 10-core GPU"
+                            ],
+                            "ram": [
+                                "8GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-A, HDMI 2.0, Ethernet, 3.5mm jack",
+                    "weight": "1.18kg, 197×197×35.8mm",
+                    "release_year": "2023",
+                    "notes": "Compact desktop, supports up to 2 displays",
+                    "display": "None (external)"
+                },
+                {
+                    "name": "Apple Mac Mini M2 Pro",
+                    "cpu": [
+                        "Apple M2 Pro, 10-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 Pro 16-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "skus": [
+                        {
+                            "id": "MNH73LL/A",
+                            "cpu": [
+                                "Apple M2 Pro, 10-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 Pro 16-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ],
+                    "ports": "3× Thunderbolt 4, 2× USB-A, HDMI 2.0, Ethernet, 3.5mm jack",
+                    "weight": "1.18kg",
+                    "release_year": "2023",
+                    "notes": "Supports up to 3 external displays",
+                    "display": "None (external)"
+                },
+                {
+                    "name": "Apple Mac Mini M4",
+                    "cpu": [
+                        "Apple M4, 10-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M4 10-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sequoia"
+                    ],
+                    "ports": "3× Thunderbolt 4, 2× USB-A, HDMI 2.1, Ethernet, 3.5mm jack",
+                    "weight": "0.67kg",
+                    "release_year": "2024",
+                    "notes": "Smallest Mac Mini ever, redesigned, M4",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MQXN3LL/A",
+                            "cpu": [
+                                "Apple M4, 10-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M4 10-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sequoia"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple Mac Mini M4 Pro",
+                    "cpu": [
+                        "Apple M4 Pro, 14-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M4 Pro 20-core GPU"
+                    ],
+                    "ram": [
+                        "24GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sequoia"
+                    ],
+                    "ports": "3× Thunderbolt 5, 2× USB-A, HDMI 2.1, Ethernet, 3.5mm jack",
+                    "weight": "0.67kg",
+                    "release_year": "2024",
+                    "notes": "M4 Pro, Thunderbolt 5, tiny form factor",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MQXP3LL/A",
+                            "cpu": [
+                                "Apple M4 Pro, 14-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M4 Pro 20-core GPU"
+                            ],
+                            "ram": [
+                                "24GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sequoia"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple Mac Mini M1",
+                    "cpu": [
+                        "Apple M1, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 8-core GPU"
+                    ],
+                    "ram": [
+                        "8GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Big Sur"
+                    ],
+                    "ports": "2× Thunderbolt 3, 2× USB-A, HDMI 2.0, Ethernet, 3.5mm jack",
+                    "weight": "1.19kg",
+                    "release_year": "2020",
+                    "notes": "First Apple Silicon Mac Mini",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MGNR3LL/A",
+                            "cpu": [
+                                "Apple M1, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 8-core GPU"
+                            ],
+                            "ram": [
+                                "8GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Big Sur"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Mac Studio",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Mac Studio M4 Max (2025)",
+                    "ram": [
+                        "36GB",
+                        "64GB",
+                        "96GB",
+                        "128GB"
+                    ],
+                    "cpu": [
+                        "Apple M4 Max"
+                    ]
+                },
+                {
+                    "name": "Mac Studio M4 Ultra (2025)",
+                    "ram": [
+                        "96GB",
+                        "128GB",
+                        "192GB"
+                    ],
+                    "cpu": [
+                        "Apple M4 Ultra"
+                    ]
+                },
+                {
+                    "name": "Mac Studio M2 Max (2023)",
+                    "ram": [
+                        "32GB",
+                        "64GB",
+                        "96GB"
+                    ],
+                    "cpu": [
+                        "Apple M2 Max"
+                    ]
+                },
+                {
+                    "name": "Mac Studio M2 Ultra (2023)",
+                    "ram": [
+                        "64GB",
+                        "128192GB"
+                    ],
+                    "cpu": [
+                        "Apple M2 Ultra"
+                    ]
+                },
+                {
+                    "name": "Mac Studio M1 Max (2022)",
+                    "ram": [
+                        "32GB",
+                        "64GB"
+                    ],
+                    "cpu": [
+                        "Apple M1 Max"
+                    ]
+                },
+                {
+                    "name": "Mac Studio M1 Ultra (2022)",
+                    "ram": [
+                        "64GB",
+                        "128GB"
+                    ],
+                    "cpu": [
+                        "Apple M1 Ultra"
+                    ]
+                },
+                {
+                    "name": "Apple Mac Studio M2 Max",
+                    "cpu": [
+                        "Apple M2 Max, 12-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 Max 30-core GPU"
+                    ],
+                    "ram": [
+                        "32GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "skus": [
+                        {
+                            "id": "MQGW3LL/A",
+                            "cpu": [
+                                "Apple M2 Max, 12-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 Max 30-core GPU"
+                            ],
+                            "ram": [
+                                "32GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ],
+                    "ports": "2× Thunderbolt 4 (front), 4× Thunderbolt 4 (rear), 2× USB-A, HDMI, SD card, Ethernet",
+                    "weight": "2.69kg",
+                    "release_year": "2023",
+                    "notes": "Compact pro desktop, supports 5 external displays",
+                    "display": "None (external)"
+                },
+                {
+                    "name": "Apple Mac Studio M2 Ultra",
+                    "cpu": [
+                        "Apple M2 Ultra, 24-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 Ultra 60-core GPU"
+                    ],
+                    "ram": [
+                        "64GB Unified Memory"
+                    ],
+                    "storage": [
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "ports": "2× Thunderbolt 4 (front), 4× Thunderbolt 4 (rear), 2× USB-A, HDMI, SD card, Ethernet",
+                    "weight": "2.69kg",
+                    "release_year": "2023",
+                    "notes": "Up to 192GB RAM, ultimate compact pro",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MQHX3LL/A",
+                            "cpu": [
+                                "Apple M2 Ultra, 24-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 Ultra 60-core GPU"
+                            ],
+                            "ram": [
+                                "64GB Unified Memory"
+                            ],
+                            "storage": [
+                                "1TB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Apple Mac Studio M1 Max",
+                    "cpu": [
+                        "Apple M1 Max, 10-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 Max 24-core GPU"
+                    ],
+                    "ram": [
+                        "32GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Monterey"
+                    ],
+                    "ports": "2× Thunderbolt 4 (front), 4× Thunderbolt 4 (rear), 2× USB-A, HDMI, SD card",
+                    "weight": "2.69kg",
+                    "release_year": "2022",
+                    "notes": "First Mac Studio, new compact pro",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MJMV3LL/A",
+                            "cpu": [
+                                "Apple M1 Max, 10-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 Max 24-core GPU"
+                            ],
+                            "ram": [
+                                "32GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Monterey"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Mac Pro",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Apple Mac Pro M2 Ultra",
+                    "cpu": [
+                        "Apple M2 Ultra, 24-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 Ultra 60-core GPU"
+                    ],
+                    "ram": [
+                        "192GB Unified Memory"
+                    ],
+                    "storage": [
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "skus": [
+                        {
+                            "id": "MQH63LL/A",
+                            "cpu": [
+                                "Apple M2 Ultra, 24-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 Ultra 60-core GPU"
+                            ],
+                            "ram": [
+                                "192GB Unified Memory"
+                            ],
+                            "storage": [
+                                "1TB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ],
+                    "ports": "6× Thunderbolt 4, 2× USB-A, 2× HDMI 2.1, 6× PCIe slots",
+                    "weight": "6.8kg",
+                    "release_year": "2023",
+                    "notes": "Mac Pro with new design, PCIe expansion, up to 192GB RAM",
+                    "display": "None (external)"
+                },
+                {
+                    "name": "Apple Mac Pro Tower M2 Ultra",
+                    "cpu": [
+                        "Apple M2 Ultra, 24-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M2 Ultra 76-core GPU"
+                    ],
+                    "ram": [
+                        "192GB Unified Memory"
+                    ],
+                    "storage": [
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "macOS Ventura"
+                    ],
+                    "skus": [
+                        {
+                            "id": "MQH73LL/A",
+                            "cpu": [
+                                "Apple M2 Ultra, 24-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M2 Ultra 76-core GPU"
+                            ],
+                            "ram": [
+                                "192GB Unified Memory"
+                            ],
+                            "storage": [
+                                "1TB SSD"
+                            ],
+                            "os": [
+                                "macOS Ventura"
+                            ]
+                        }
+                    ],
+                    "ports": "6× Thunderbolt 4, 2× USB-A, 2× HDMI 2.1, 7× PCIe slots",
+                    "weight": "7.0kg",
+                    "release_year": "2023",
+                    "notes": "Full tower expansion, up to 192GB RAM",
+                    "display": "None (external)"
+                }
+            ]
+        }
+    ],
+    "MSI": [
+        {
+            "name": "Creator / Summit",
+            "type": "workstation",
+            "subModels": [
+                {
+                    "name": "Creator Z17 HX Studio (2023)",
+                    "screenSize": [
+                        "17\""
+                    ]
+                },
+                {
+                    "name": "Creator 15 A12UET",
+                    "screenSize": [
+                        "15.6\""
+                    ]
+                },
+                {
+                    "name": "Summit E16 Flip Evo A13MT",
+                    "screenSize": [
+                        "16\""
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Aegis Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Aegis RS 13NUF5",
+                    "type": "desktop"
+                },
+                {
+                    "name": "Aegis Ti5 13NUG5",
+                    "type": "desktop"
+                },
+                {
+                    "name": "Aegis 3 10SA",
+                    "type": "desktop"
+                }
+            ]
+        },
+        {
+            "name": "MAG / MEG Gaming Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "MSI MEG Trident X2 14th",
+                    "cpu": [
+                        "Intel Core i9-14900KF",
+                        "Intel Core i7-14700KF"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090",
+                        "NVIDIA GeForce RTX 4080 Super"
+                    ],
+                    "ram": [
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "2TB SSD",
+                        "2TB SSD + 2TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "6× USB-A, 3× USB-C (Thunderbolt 4), HDMI, 3× DP (GPU), 2.5GbE, Wi-Fi 7",
+                    "weight": "14kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming, compact console-like design"
+                },
+                {
+                    "name": "MSI MAG Infinite S3 14th",
+                    "cpu": [
+                        "Intel Core i7-14700F",
+                        "Intel Core i5-14400F"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4070 Super",
+                        "NVIDIA GeForce RTX 4060 Ti",
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB SSD",
+                        "1TB SSD + 1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45",
+                    "weight": "10.5kg",
+                    "release_year": "2024",
+                    "notes": "Mid-range gaming tower, popular"
+                }
+            ]
+        },
+        {
+            "name": "PRO Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "MSI PRO DP180 14th",
+                    "cpu": [
+                        "Intel Core i7-14700",
+                        "Intel Core i5-14500",
+                        "Intel Core i3-14100"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "6× USB-A, 1× USB-C, HDMI, DisplayPort, VGA, RJ-45, COM port",
+                    "weight": "7.5kg",
+                    "release_year": "2024",
+                    "notes": "Business tower, value"
+                }
+            ]
+        }
+    ],
+    "Acer": [
+        {
+            "name": "Predator Orion",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Predator Orion 7000 (2024)",
+                    "cpu": [
+                        "Intel Core i9-14900KF",
+                        "Intel Core i7-14700KF"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4090",
+                        "NVIDIA GeForce RTX 4080 Super",
+                        "NVIDIA GeForce RTX 4070 Ti Super"
+                    ],
+                    "ram": [
+                        "32GB DDR5",
+                        "64GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB SSD",
+                        "2TB SSD",
+                        "2TB SSD + 2TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "8× USB-A, 2× USB-C (Thunderbolt 4), 2.5GbE, Wi-Fi 7, Front USB-C",
+                    "weight": "20kg",
+                    "release_year": "2024",
+                    "notes": "Flagship gaming tower, FrostBlade 2.0 cooling"
+                },
+                {
+                    "name": "Predator Orion 3000 (2024)",
+                    "cpu": [
+                        "Intel Core i7-14700F",
+                        "Intel Core i5-14400F"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 4060 Ti",
+                        "NVIDIA GeForce RTX 4060"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 1× USB-C, RJ-45",
+                    "weight": "10kg",
+                    "release_year": "2024",
+                    "notes": "Entry gaming tower"
+                }
+            ]
+        },
+        {
+            "name": "Aspire Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Aspire TC-1780",
+                    "cpu": [
+                        "Intel Core i7-14700",
+                        "Intel Core i5-14400",
+                        "Intel Core i3-14100"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770",
+                        "NVIDIA GeForce GTX 1650"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD",
+                        "512GB SSD + 1TB HDD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "ports": "4× USB-A, 1× USB-C, HDMI, VGA, RJ-45, SD Card",
+                    "weight": "6.2kg",
+                    "release_year": "2024",
+                    "notes": "Home/Office budget tower"
+                },
+                {
+                    "name": "Aspire C27 AIO",
+                    "cpu": [
+                        "Intel Core i7-1355U",
+                        "Intel Core i5-1335U"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "8GB DDR4",
+                        "16GB DDR4"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD",
+                        "1TB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "screenSize": [
+                        "27\""
+                    ],
+                    "ports": "2× USB-A, 1× USB-C, HDMI-out, RJ-45",
+                    "weight": "5.6kg",
+                    "release_year": "2023",
+                    "notes": "All-in-One 27\" FHD, slim bezel"
+                }
+            ]
+        },
+        {
+            "name": "Veriton Business Desktop",
+            "type": "desktop",
+            "subModels": [
+                {
+                    "name": "Veriton N4710GT Mini",
+                    "cpu": [
+                        "Intel Core i7-13700T",
+                        "Intel Core i5-13500T"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 770"
+                    ],
+                    "ram": [
+                        "8GB DDR5",
+                        "16GB DDR5",
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "256GB SSD",
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "4× USB-A, 1× USB-C, HDMI, DisplayPort, RJ-45",
+                    "weight": "1.2kg",
+                    "release_year": "2023",
+                    "notes": "Ultra-compact business mini PC"
+                }
+            ]
+        }
+    ],
+    "אחר (Other)": [
+        {
+            "name": "Intel",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Intel NUC 13 Pro",
+                    "cpu": [
+                        "Intel Core i5-1340P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "None (user-installed)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (bare bones)"
+                    ],
+                    "skus": [
+                        {
+                            "id": "RNUC13ANHI50002",
+                            "cpu": [
+                                "Intel Core i5-1340P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "None (user-installed)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (bare bones)"
+                            ]
+                        }
+                    ],
+                    "ports": "2× Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45",
+                    "weight": "0.7kg, 117×112×37mm",
+                    "release_year": "2023",
+                    "notes": "Barebones mini PC, user-configurable RAM/storage",
+                    "display": "None (external)"
+                }
+            ]
+        },
+        {
+            "name": "Beelink",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Beelink Mini S12 Pro",
+                    "cpu": [
+                        "Intel N100, 4-core, 3.4GHz"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 24EU"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "500GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "skus": [
+                        {
+                            "id": "BEE-S12PRO",
+                            "cpu": [
+                                "Intel N100, 4-core, 3.4GHz"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 24EU"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "500GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ],
+                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI, RJ45",
+                    "weight": "0.47kg",
+                    "release_year": "2023",
+                    "notes": "Ultra-budget mini PC, fanless option, great for HTPC",
+                    "display": "None (external)"
+                }
+            ]
+        }
+    ],
+    "Other": [
+        {
+            "name": "Intel NUC",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Intel NUC 13 Pro",
+                    "cpu": [
+                        "Intel Core i5-1340P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "None (user-installed)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (bare bones)"
+                    ],
+                    "ports": "2× Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45",
+                    "weight": "0.7kg, 117×112×37mm",
+                    "release_year": "2023",
+                    "notes": "Barebones mini PC, user-configurable RAM/storage",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "RNUC13ANHI50002",
+                            "cpu": [
+                                "Intel Core i5-1340P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "None (user-installed)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (bare bones)"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Intel NUC 12 Pro",
+                    "cpu": [
+                        "Intel Core i5-1240P"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "None (user-installed, up to 64GB DDR4)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (barebones)"
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI, DP, RJ45",
+                    "weight": "0.69kg",
+                    "release_year": "2022",
+                    "notes": "Compact NUC, Alder Lake",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "RNUC12WSKi50002",
+                            "cpu": [
+                                "Intel Core i5-1240P"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "None (user-installed, up to 64GB DDR4)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (barebones)"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Intel NUC 11 Pro",
+                    "cpu": [
+                        "Intel Core i5-1135G7"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "None (user-installed)"
+                    ],
+                    "storage": [
+                        "None (user-installed)"
+                    ],
+                    "os": [
+                        "None (barebones)"
+                    ],
+                    "ports": "Thunderbolt 4, 4× USB-A, HDMI 2.0, DP, RJ45",
+                    "weight": "0.67kg",
+                    "release_year": "2021",
+                    "notes": "Tiger Lake NUC barebones",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "BNUC11TNHI50002",
+                            "cpu": [
+                                "Intel Core i5-1135G7"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "None (user-installed)"
+                            ],
+                            "storage": [
+                                "None (user-installed)"
+                            ],
+                            "os": [
+                                "None (barebones)"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Beelink",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Beelink Mini S12 Pro",
+                    "cpu": [
+                        "Intel N100, 4-core, 3.4GHz"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 24EU"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "500GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI, RJ45",
+                    "weight": "0.47kg",
+                    "release_year": "2023",
+                    "notes": "Ultra-budget mini PC, fanless option, great for HTPC",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "BEE-S12PRO",
+                            "cpu": [
+                                "Intel N100, 4-core, 3.4GHz"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 24EU"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "500GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Beelink SER6 Pro",
+                    "cpu": [
+                        "AMD Ryzen 9 6900HX"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 680M"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "500GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI 2.0, USB4, RJ45",
+                    "weight": "0.55kg",
+                    "release_year": "2022",
+                    "notes": "Powerful mini PC, AMD iGPU gaming capable",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "SER6-PRO-R9",
+                            "cpu": [
+                                "AMD Ryzen 9 6900HX"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 680M"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "500GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Beelink GTR7 Pro",
+                    "cpu": [
+                        "AMD Ryzen 9 7940HX"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 780M"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "3× USB-A, USB-C/Thunderbolt 4, 2× HDMI 2.0, RJ45",
+                    "weight": "0.65kg",
+                    "release_year": "2023",
+                    "notes": "Performance mini PC, Ryzen 9 7940HX",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "GTR7-PRO",
+                            "cpu": [
+                                "AMD Ryzen 9 7940HX"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 780M"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Beelink EQ12",
+                    "cpu": [
+                        "Intel N100, 4-core, up to 3.4GHz"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 24EU"
+                    ],
+                    "ram": [
+                        "16GB DDR5"
+                    ],
+                    "storage": [
+                        "500GB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.0, 2× USB-A 2.0, 2× HDMI 2.0, RJ45",
+                    "weight": "0.35kg",
+                    "release_year": "2023",
+                    "notes": "Budget mini PC, good for office",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "EQ12",
+                            "cpu": [
+                                "Intel N100, 4-core, up to 3.4GHz"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 24EU"
+                            ],
+                            "ram": [
+                                "16GB DDR5"
+                            ],
+                            "storage": [
+                                "500GB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Minisforum UM790",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Minisforum UM790 Pro",
+                    "cpu": [
+                        "AMD Ryzen 9 7940HX"
+                    ],
+                    "gpu": [
+                        "AMD Radeon 780M"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× USB-A 3.2, 2× USB-A 2.0, 2× HDMI 2.0, USB4, RJ45",
+                    "weight": "0.6kg",
+                    "release_year": "2023",
+                    "notes": "Compact powerhouse, eGPU compatible via OCuLink",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "UM790PRO",
+                            "cpu": [
+                                "AMD Ryzen 9 7940HX"
+                            ],
+                            "gpu": [
+                                "AMD Radeon 780M"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Minisforum MS-01",
+            "type": "mini pc",
+            "subModels": [
+                {
+                    "name": "Minisforum MS-01",
+                    "cpu": [
+                        "Intel Core i9-13900H"
+                    ],
+                    "gpu": [
+                        "Intel Iris Xe Graphics"
+                    ],
+                    "ram": [
+                        "32GB DDR5"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-C, 4× USB-A, 2× HDMI, 2.5G + 10G RJ45",
+                    "weight": "0.65kg",
+                    "release_year": "2024",
+                    "notes": "Server-grade networking, OCuLink eGPU",
+                    "display": "None (external)",
+                    "skus": [
+                        {
+                            "id": "MS01",
+                            "cpu": [
+                                "Intel Core i9-13900H"
+                            ],
+                            "gpu": [
+                                "Intel Iris Xe Graphics"
+                            ],
+                            "ram": [
+                                "32GB DDR5"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
             "name": "Minisforum UN100P",
@@ -17731,666 +18920,368 @@ export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {
                 }
             ]
         }
-    ],
+    ]
 };
 
-// ============================================================
-//  DESKTOP COMPUTERS (מחשבים נייחים) – merged into main DB
-// ============================================================
-const DESKTOP_FAMILIES: Record<string, ComputerModelFamily[]> = {
-    "Lenovo": [
+export const ALL_IN_ONE_DATABASE: Record<string, ComputerModelFamily[]> = {
+    "Apple": [
         {
-            "name": "ThinkCentre M Series",
-            "type": "desktop",
+            "name": "iMac",
+            "type": "all-in-one",
             "subModels": [
                 {
-                    "name": "ThinkCentre M90q Gen 5 Tiny",
-                    "cpu": ["Intel Core i9-14900T", "Intel Core i7-14700T", "Intel Core i5-14500T"],
-                    "gpu": ["Intel UHD Graphics 770"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "4× USB-A 3.2, 2× USB-C (Thunderbolt 4), DisplayPort, HDMI, RJ-45, 3.5mm",
-                    "weight": "1.25kg",
-                    "release_year": "2024",
-                    "notes": "Ultra-compact 1L form factor business desktop",
-                    "skus": [{ "id": "12E2001DUS", "cpu": ["Intel Core i7-14700T"], "gpu": ["Intel UHD Graphics 770"], "ram": ["16GB DDR5"], "storage": ["512GB SSD"], "os": ["Windows 11 Pro"] }]
+                    "name": "iMac 24\" M4 (2024)",
+                    "screenSize": [
+                        "24\""
+                    ],
+                    "ram": [
+                        "16GB",
+                        "24GB",
+                        "32GB"
+                    ],
+                    "cpu": [
+                        "Apple M4"
+                    ]
                 },
                 {
-                    "name": "ThinkCentre M70q Gen 5 Tiny",
-                    "cpu": ["Intel Core i7-14700T", "Intel Core i5-14500T", "Intel Core i3-14100T"],
-                    "gpu": ["Intel UHD Graphics 770"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "4× USB-A 3.2, 1× USB-C, DisplayPort, HDMI, RJ-45",
-                    "weight": "1.25kg",
-                    "release_year": "2024",
-                    "notes": "Mainstream business Tiny desktop"
+                    "name": "iMac 24\" M3 (2023)",
+                    "screenSize": [
+                        "24\""
+                    ],
+                    "ram": [
+                        "8GB",
+                        "16GB",
+                        "24GB"
+                    ],
+                    "cpu": [
+                        "Apple M3"
+                    ]
                 },
                 {
-                    "name": "ThinkCentre M90s Gen 5 SFF",
-                    "cpu": ["Intel Core i9-14900", "Intel Core i7-14700", "Intel Core i5-14500"],
-                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce GTX 1650 LP"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "2TB SSD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "6× USB-A 3.2, 2× USB-C, DisplayPort, HDMI, VGA, RJ-45, Serial",
-                    "weight": "6.3kg",
-                    "release_year": "2024",
-                    "notes": "Small Form Factor business workstation"
+                    "name": "iMac 24\" M1 (2021)",
+                    "screenSize": [
+                        "24\""
+                    ],
+                    "ram": [
+                        "8GB",
+                        "16GB"
+                    ],
+                    "cpu": [
+                        "Apple M1"
+                    ]
                 },
                 {
-                    "name": "ThinkCentre M720q Tiny",
-                    "cpu": ["Intel Core i7-9700T", "Intel Core i5-9600T", "Intel Core i3-9100T"],
-                    "gpu": ["Intel UHD Graphics 630"],
-                    "ram": ["8GB DDR4", "16GB DDR4", "32GB DDR4"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB HDD"],
-                    "os": ["Windows 10 Pro", "Windows 11 Pro"],
-                    "ports": "5× USB-A, 1× USB-C, 2× DisplayPort, RJ-45",
-                    "weight": "1.32kg",
-                    "release_year": "2019",
-                    "notes": "Popular refurbished Tiny PC"
-                },
-                {
-                    "name": "ThinkCentre M920q Tiny",
-                    "cpu": ["Intel Core i7-8700T", "Intel Core i5-8500T"],
-                    "gpu": ["Intel UHD Graphics 630"],
-                    "ram": ["8GB DDR4", "16GB DDR4", "32GB DDR4"],
-                    "storage": ["256GB SSD", "512GB SSD"],
-                    "os": ["Windows 10 Pro"],
-                    "ports": "6× USB-A, 2× DisplayPort, RJ-45",
-                    "weight": "1.3kg",
-                    "release_year": "2018",
-                    "notes": "Widely available refurbished"
-                }
-            ]
-        },
-        {
-            "name": "IdeaCentre",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "IdeaCentre 5i Gen 8 Tower",
-                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14400"],
-                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce RTX 3060"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "4× USB-A, 2× USB-C, HDMI, DisplayPort, RJ-45, SD Card, 3.5mm",
-                    "weight": "7.9kg",
-                    "release_year": "2024",
-                    "notes": "Consumer tower, good all-rounder"
-                },
-                {
-                    "name": "IdeaCentre Mini (1L)",
-                    "cpu": ["Intel Core i7-13700H", "Intel Core i5-13500H"],
-                    "gpu": ["Intel Iris Xe Graphics"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "3× USB-A, 1× USB-C, HDMI 2.1, DisplayPort, RJ-45",
-                    "weight": "0.74kg",
+                    "name": "Apple iMac 24 M3",
+                    "screenSize": [
+                        "24\""
+                    ],
+                    "cpu": [
+                        "Apple M3, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M3 10-core GPU"
+                    ],
+                    "ram": [
+                        "8GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sonoma"
+                    ],
+                    "skus": [
+                        {
+                            "id": "MQRQ3LL/A",
+                            "cpu": [
+                                "Apple M3, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M3 10-core GPU"
+                            ],
+                            "ram": [
+                                "8GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sonoma"
+                            ],
+                            "screenSize": [
+                                "24\""
+                            ]
+                        }
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-C, MagSafe, Ethernet (in power brick)",
+                    "weight": "4.48kg",
                     "release_year": "2023",
-                    "notes": "Ultra compact consumer mini PC"
+                    "notes": "7mm thin, available in 7 colors",
+                    "display": "24\" 4.5K Retina, 4480×2520, 500 nits, True Tone"
                 },
                 {
-                    "name": "IdeaCentre AIO 27 Gen 9",
-                    "cpu": ["Intel Core Ultra 7 155H", "Intel Core Ultra 5 125H"],
-                    "gpu": ["Intel Arc Graphics"],
-                    "ram": ["16GB DDR5", "32GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "screenSize": ["27\""],
-                    "ports": "4× USB-A, 2× USB-C, HDMI, RJ-45",
-                    "weight": "8.5kg",
-                    "release_year": "2024",
-                    "notes": "All-in-One 27\", 2.5K touch display"
-                }
-            ]
-        },
-        {
-            "name": "Legion Tower",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Legion Tower 7i Gen 9",
-                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
-                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super", "NVIDIA GeForce RTX 4070 Ti Super"],
-                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["1TB SSD", "2TB SSD", "1TB SSD + 2TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "6× USB-A, 4× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45 2.5GbE, Wi-Fi 7",
-                    "weight": "23kg",
-                    "release_year": "2024",
-                    "notes": "Flagship gaming tower, liquid cooling optional"
-                },
-                {
-                    "name": "Legion Tower 5i Gen 9",
-                    "cpu": ["Intel Core i7-14700KF", "Intel Core i5-14600KF"],
-                    "gpu": ["NVIDIA GeForce RTX 4070 Ti Super", "NVIDIA GeForce RTX 4070 Super", "NVIDIA GeForce RTX 4060 Ti"],
-                    "ram": ["16GB DDR5", "32GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD", "1TB SSD + 1TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "6× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45",
-                    "weight": "18kg",
-                    "release_year": "2024",
-                    "notes": "Mid-range gaming tower"
-                },
-                {
-                    "name": "Legion Tower 5 Gen 8 (AMD)",
-                    "cpu": ["AMD Ryzen 7 7700X", "AMD Ryzen 5 7600X"],
-                    "gpu": ["NVIDIA GeForce RTX 4070", "NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
-                    "ram": ["16GB DDR5", "32GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "4× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45",
-                    "weight": "16kg",
+                    "name": "Apple iMac 24 M3 16GB",
+                    "screenSize": [
+                        "24\""
+                    ],
+                    "cpu": [
+                        "Apple M3, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M3 10-core GPU"
+                    ],
+                    "ram": [
+                        "16GB Unified Memory"
+                    ],
+                    "storage": [
+                        "512GB SSD"
+                    ],
+                    "os": [
+                        "macOS Sonoma"
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-C, 2× USB-A, MagSafe",
+                    "weight": "4.48kg",
                     "release_year": "2023",
-                    "notes": "AMD gaming tower"
-                }
-            ]
-        }
-    ],
-
-    "Dell": [
-        {
-            "name": "OptiPlex",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "OptiPlex 7020 Tower",
-                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14500", "Intel Core i3-14100"],
-                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce RTX 4060 LP"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "6× USB-A, 2× USB-C, DisplayPort 1.4, HDMI, VGA, RJ-45, Serial, 3.5mm",
-                    "weight": "7.5kg",
-                    "release_year": "2024",
-                    "notes": "Business tower, tool-free chassis"
+                    "notes": "16GB config, Magic accessories included",
+                    "display": "24\" 4.5K Retina, 4480×2520, 500 nits",
+                    "skus": [
+                        {
+                            "id": "MQRV3LL/A",
+                            "cpu": [
+                                "Apple M3, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M3 10-core GPU"
+                            ],
+                            "ram": [
+                                "16GB Unified Memory"
+                            ],
+                            "storage": [
+                                "512GB SSD"
+                            ],
+                            "os": [
+                                "macOS Sonoma"
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "name": "OptiPlex 7020 SFF",
-                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14500"],
-                    "gpu": ["Intel UHD Graphics 770"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "6× USB-A, 1× USB-C, DisplayPort, HDMI, RJ-45, Serial",
-                    "weight": "5.1kg",
-                    "release_year": "2024",
-                    "notes": "Compact business SFF"
-                },
-                {
-                    "name": "OptiPlex 7020 Micro",
-                    "cpu": ["Intel Core i7-14700T", "Intel Core i5-14500T"],
-                    "gpu": ["Intel UHD Graphics 770"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "4× USB-A, 1× USB-C, DisplayPort, HDMI, RJ-45",
-                    "weight": "1.2kg",
-                    "release_year": "2024",
-                    "notes": "Ultra-compact 1L business PC"
-                },
-                {
-                    "name": "OptiPlex 5000 Tower",
-                    "cpu": ["Intel Core i7-12700", "Intel Core i5-12500"],
-                    "gpu": ["Intel UHD Graphics 770"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Pro", "Windows 10 Pro"],
-                    "ports": "6× USB-A, 1× USB-C, DisplayPort, HDMI, VGA, RJ-45",
-                    "weight": "7.3kg",
-                    "release_year": "2022",
-                    "notes": "Popular mid-range business desktop"
-                },
-                {
-                    "name": "OptiPlex 3090 SFF",
-                    "cpu": ["Intel Core i5-10505", "Intel Core i3-10105"],
-                    "gpu": ["Intel UHD Graphics 630"],
-                    "ram": ["8GB DDR4", "16GB DDR4"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB HDD"],
-                    "os": ["Windows 10 Pro", "Windows 11 Pro"],
-                    "ports": "6× USB-A, DisplayPort, HDMI, VGA, RJ-45, Serial",
-                    "weight": "5.0kg",
+                    "name": "Apple iMac 24 M1",
+                    "screenSize": [
+                        "24\""
+                    ],
+                    "cpu": [
+                        "Apple M1, 8-core CPU"
+                    ],
+                    "gpu": [
+                        "Apple M1 8-core GPU"
+                    ],
+                    "ram": [
+                        "8GB Unified Memory"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "macOS Big Sur"
+                    ],
+                    "ports": "2× Thunderbolt 4, 2× USB-C, MagSafe",
+                    "weight": "4.48kg",
                     "release_year": "2021",
-                    "notes": "Entry-level business, widely refurbished"
+                    "notes": "7mm thin, 7 colors, first Apple Silicon iMac",
+                    "display": "24\" 4.5K Retina, 4480×2520, 500 nits, True Tone",
+                    "skus": [
+                        {
+                            "id": "MGPK3LL/A",
+                            "cpu": [
+                                "Apple M1, 8-core CPU"
+                            ],
+                            "gpu": [
+                                "Apple M1 8-core GPU"
+                            ],
+                            "ram": [
+                                "8GB Unified Memory"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "macOS Big Sur"
+                            ]
+                        }
+                    ]
                 }
             ]
-        },
+        }
+    ],
+    "Microsoft": [
         {
-            "name": "XPS Desktop",
-            "type": "desktop",
+            "name": "Microsoft Surface",
+            "type": "all-in-one",
             "subModels": [
                 {
-                    "name": "XPS Desktop 8960",
-                    "cpu": ["Intel Core i9-14900K", "Intel Core i7-14700K", "Intel Core i5-14600K"],
-                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4070 Ti", "NVIDIA GeForce RTX 4060 Ti", "Intel UHD Graphics 770"],
-                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD", "2TB SSD", "1TB SSD + 2TB HDD"],
-                    "os": ["Windows 11 Home", "Windows 11 Pro"],
-                    "ports": "6× USB-A 3.2, 2× USB-C (Thunderbolt 4), SD Card, HDMI, 3.5mm, RJ-45",
-                    "weight": "12.7kg",
-                    "release_year": "2024",
-                    "notes": "Premium consumer tower, sleek design"
-                },
-                {
-                    "name": "XPS Desktop 8950",
-                    "cpu": ["Intel Core i9-12900K", "Intel Core i7-12700K", "Intel Core i5-12600K"],
-                    "gpu": ["NVIDIA GeForce RTX 3090", "NVIDIA GeForce RTX 3070", "NVIDIA GeForce RTX 3060 Ti"],
-                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD", "1TB SSD + 1TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "6× USB-A, 2× USB-C, HDMI, SD Card, RJ-45",
-                    "weight": "12.3kg",
+                    "name": "Microsoft Surface Studio 2+",
+                    "screenSize": [
+                        "28\""
+                    ],
+                    "cpu": [
+                        "Intel Core i7-11370H"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce RTX 3060"
+                    ],
+                    "ram": [
+                        "32GB DDR4"
+                    ],
+                    "storage": [
+                        "1TB NVMe SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Pro"
+                    ],
+                    "ports": "2× Thunderbolt 4, 3× USB-A, SD card, 3.5mm jack",
+                    "weight": "9.56kg",
                     "release_year": "2022",
-                    "notes": "Previous gen premium tower"
-                }
-            ]
-        },
-        {
-            "name": "Inspiron Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Inspiron 3030 Tower",
-                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14400", "Intel Core i3-14100"],
-                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce RTX 3050"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "4× USB-A, 2× USB-C, HDMI, DisplayPort, RJ-45, SD Card, 3.5mm",
-                    "weight": "7.6kg",
-                    "release_year": "2024",
-                    "notes": "Budget-friendly consumer tower"
+                    "notes": "28\" studio AiO, Zero Gravity hinge",
+                    "display": "28\" PixelSense, 4500×3000, touch, 120Hz",
+                    "skus": [
+                        {
+                            "id": "SBG-00001",
+                            "cpu": [
+                                "Intel Core i7-11370H"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce RTX 3060"
+                            ],
+                            "ram": [
+                                "32GB DDR4"
+                            ],
+                            "storage": [
+                                "1TB NVMe SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Pro"
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "name": "Inspiron 24 AIO 5420",
-                    "cpu": ["Intel Core i7-13700H", "Intel Core i5-13500H"],
-                    "gpu": ["NVIDIA GeForce MX550", "Intel Iris Xe Graphics"],
-                    "ram": ["8GB DDR4", "16GB DDR4"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "screenSize": ["24\""],
-                    "ports": "2× USB-A, 2× USB-C, HDMI-out, RJ-45, SD Card",
-                    "weight": "7.0kg",
-                    "release_year": "2023",
-                    "notes": "All-in-One 24\", FHD touch"
-                }
-            ]
-        },
-        {
-            "name": "Alienware Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Alienware Aurora R16",
-                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
-                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super", "NVIDIA GeForce RTX 4070 Ti Super", "NVIDIA GeForce RTX 4070 Super"],
-                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["1TB SSD", "2TB SSD", "4TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "6× USB-A, 3× USB-C (Thunderbolt 4), 2.5GbE RJ-45, 3.5mm, front USB-C",
-                    "weight": "16.8kg",
-                    "release_year": "2024",
-                    "notes": "Flagship gaming desktop, liquid-cooled, Legend 3.0 design"
-                },
-                {
-                    "name": "Alienware Aurora R15 (AMD)",
-                    "cpu": ["AMD Ryzen 9 7950X", "AMD Ryzen 7 7700X"],
-                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080", "NVIDIA GeForce RTX 4070 Ti"],
-                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["1TB SSD", "2TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "6× USB-A, 3× USB-C, 2.5GbE RJ-45",
-                    "weight": "16kg",
-                    "release_year": "2023",
-                    "notes": "AMD gaming beast, liquid-cooled CPU"
-                }
-            ]
-        },
-        {
-            "name": "Precision Tower",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Precision 3680 Tower",
-                    "cpu": ["Intel Core i9-14900K", "Intel Core i7-14700K", "Intel Core i5-14600K"],
-                    "gpu": ["NVIDIA RTX A2000", "NVIDIA RTX 4000 Ada", "Intel UHD Graphics 770"],
-                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5", "128GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD", "2TB SSD", "1TB SSD + 2TB HDD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "8× USB-A, 2× USB-C (Thunderbolt 4), 2× DisplayPort, HDMI, RJ-45, Serial",
-                    "weight": "10.6kg",
-                    "release_year": "2024",
-                    "notes": "Entry workstation, ISV certified"
-                }
-            ]
-        }
-    ],
-
-    "HP": [
-        {
-            "name": "ProDesk / Pro Tower",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "HP Pro Tower 400 G9",
-                    "cpu": ["Intel Core i7-13700", "Intel Core i5-13500", "Intel Core i3-13100"],
-                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce RTX 3060 LP"],
-                    "ram": ["8GB DDR4", "16GB DDR4", "32GB DDR4", "64GB DDR4"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "1TB HDD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "6× USB-A, 2× USB-C, DisplayPort 1.4, HDMI, VGA, RJ-45, Serial, 3.5mm",
-                    "weight": "7.2kg",
-                    "release_year": "2023",
-                    "notes": "Mainstream business tower"
-                },
-                {
-                    "name": "HP EliteDesk 800 G9 Tower",
-                    "cpu": ["Intel Core i9-13900", "Intel Core i7-13700", "Intel Core i5-13500"],
-                    "gpu": ["Intel UHD Graphics 770", "NVIDIA RTX A2000"],
-                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD", "2TB SSD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "8× USB-A, 2× USB-C (Thunderbolt 4), 2× DisplayPort, HDMI, RJ-45",
-                    "weight": "8.5kg",
-                    "release_year": "2023",
-                    "notes": "Premium business desktop, enterprise"
-                },
-                {
-                    "name": "HP EliteDesk 800 G6 Mini",
-                    "cpu": ["Intel Core i7-10700T", "Intel Core i5-10500T"],
-                    "gpu": ["Intel UHD Graphics 630"],
-                    "ram": ["8GB DDR4", "16GB DDR4", "32GB DDR4"],
-                    "storage": ["256GB SSD", "512GB SSD"],
-                    "os": ["Windows 10 Pro"],
-                    "ports": "6× USB-A, 1× USB-C, 2× DisplayPort, RJ-45",
-                    "weight": "1.25kg",
+                    "name": "Microsoft Surface Book 3 13.5",
+                    "screenSize": [
+                        "13.5\""
+                    ],
+                    "cpu": [
+                        "Intel Core i5-1035G7"
+                    ],
+                    "gpu": [
+                        "NVIDIA GeForce GTX 1650"
+                    ],
+                    "ram": [
+                        "16GB LPDDR4X"
+                    ],
+                    "storage": [
+                        "256GB SSD"
+                    ],
+                    "os": [
+                        "Windows 11 Home"
+                    ],
+                    "battery": "65Wh, up to 17.5h",
+                    "ports": "2× USB-A, USB-C, SD card, Surface Connect",
+                    "weight": "1.64kg",
                     "release_year": "2020",
-                    "notes": "Popular refurbished mini desktop"
-                }
-            ]
-        },
-        {
-            "name": "OMEN Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "OMEN 45L GT22-2000",
-                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
-                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super", "NVIDIA GeForce RTX 4070 Ti Super"],
-                    "ram": ["32GB DDR5", "64GB DDR5"],
-                    "storage": ["1TB SSD", "2TB SSD", "2TB SSD + 2TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "6× USB-A, 2× USB-C (Thunderbolt 4), 2.5GbE RJ-45, Wi-Fi 7, 3.5mm",
-                    "weight": "22kg",
-                    "release_year": "2024",
-                    "notes": "Flagship gaming tower, 45L CryoChamber cooling, RGB"
+                    "notes": "Detachable design, GPU in base",
+                    "display": "13.5\" PixelSense, 3000×2000, touch",
+                    "skus": [
+                        {
+                            "id": "SLM-00001",
+                            "cpu": [
+                                "Intel Core i5-1035G7"
+                            ],
+                            "gpu": [
+                                "NVIDIA GeForce GTX 1650"
+                            ],
+                            "ram": [
+                                "16GB LPDDR4X"
+                            ],
+                            "storage": [
+                                "256GB SSD"
+                            ],
+                            "os": [
+                                "Windows 11 Home"
+                            ]
+                        }
+                    ]
                 },
                 {
-                    "name": "OMEN 25L GT15-1000",
-                    "cpu": ["Intel Core i7-14700F", "Intel Core i5-14400F"],
-                    "gpu": ["NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
-                    "ram": ["16GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "4× USB-A, 1× USB-C, RJ-45, 3.5mm",
-                    "weight": "12kg",
-                    "release_year": "2024",
-                    "notes": "Entry gaming tower, 25L compact"
-                }
-            ]
-        },
-        {
-            "name": "Pavilion Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "HP Pavilion Desktop TP01",
-                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14400", "AMD Ryzen 7 7700", "AMD Ryzen 5 7600"],
-                    "gpu": ["Intel UHD Graphics 770", "AMD Radeon RX 6400", "NVIDIA GeForce GTX 1650"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "4× USB-A, 1× USB-C, HDMI, VGA, RJ-45, SD Card, 3.5mm",
-                    "weight": "6.0kg",
-                    "release_year": "2024",
-                    "notes": "Budget consumer desktop"
-                }
-            ]
-        }
-    ],
-
-    "ASUS": [
-        {
-            "name": "ROG Strix Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "ROG Strix G35CZ",
-                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
-                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080", "NVIDIA GeForce RTX 4070 Ti"],
-                    "ram": ["32GB DDR5", "64GB DDR5"],
-                    "storage": ["1TB SSD", "2TB SSD", "1TB SSD + 2TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "6× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), 2.5GbE, Wi-Fi 7, 3.5mm",
-                    "weight": "19kg",
-                    "release_year": "2024",
-                    "notes": "Flagship gaming tower, overclock-ready"
-                },
-                {
-                    "name": "ROG Strix G16CH",
-                    "cpu": ["Intel Core i7-14700F", "Intel Core i5-14400F"],
-                    "gpu": ["NVIDIA GeForce RTX 4070 Super", "NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
-                    "ram": ["16GB DDR5", "32GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "4× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45, Wi-Fi 6E",
-                    "weight": "12kg",
-                    "release_year": "2024",
-                    "notes": "Mid-range gaming tower"
-                }
-            ]
-        },
-        {
-            "name": "ExpertCenter Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "ExpertCenter D900MD Tower",
-                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14500", "Intel Core i3-14100"],
-                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce GT 1030"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "1TB HDD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "6× USB-A, 2× USB-C, HDMI, DisplayPort, VGA, RJ-45, Serial, 3.5mm",
-                    "weight": "8.0kg",
-                    "release_year": "2024",
-                    "notes": "Business tower, military-grade reliability"
-                }
-            ]
-        },
-        {
-            "name": "ASUS NUC",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "ASUS NUC 14 Pro+",
-                    "cpu": ["Intel Core Ultra 9 185H", "Intel Core Ultra 7 155H"],
-                    "gpu": ["Intel Arc Graphics"],
-                    "ram": ["16GB DDR5", "32GB DDR5", "64GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD", "2TB SSD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "3× USB-A, 2× Thunderbolt 4, HDMI 2.1, DisplayPort, 2.5GbE RJ-45",
-                    "weight": "0.83kg",
-                    "release_year": "2024",
-                    "notes": "Ultra-compact NUC, ex-Intel NUC line"
-                },
-                {
-                    "name": "ASUS ROG NUC",
-                    "cpu": ["Intel Core Ultra 9 185H"],
-                    "gpu": ["NVIDIA GeForce RTX 4070 Laptop"],
-                    "ram": ["32GB DDR5", "64GB DDR5"],
-                    "storage": ["1TB SSD", "2TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "6× USB-A, 2× Thunderbolt 4, HDMI 2.1, 2× DisplayPort, 2.5GbE RJ-45",
-                    "weight": "2.6kg",
-                    "release_year": "2024",
-                    "notes": "Gaming NUC, RTX 4070 in mini form factor"
-                }
-            ]
-        }
-    ],
-
-    "MSI": [
-        {
-            "name": "MAG / MEG Gaming Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "MSI MEG Trident X2 14th",
-                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
-                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super"],
-                    "ram": ["32GB DDR5", "64GB DDR5"],
-                    "storage": ["2TB SSD", "2TB SSD + 2TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "6× USB-A, 3× USB-C (Thunderbolt 4), HDMI, 3× DP (GPU), 2.5GbE, Wi-Fi 7",
-                    "weight": "14kg",
-                    "release_year": "2024",
-                    "notes": "Flagship gaming, compact console-like design"
-                },
-                {
-                    "name": "MSI MAG Infinite S3 14th",
-                    "cpu": ["Intel Core i7-14700F", "Intel Core i5-14400F"],
-                    "gpu": ["NVIDIA GeForce RTX 4070 Super", "NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
-                    "ram": ["16GB DDR5", "32GB DDR5"],
-                    "storage": ["1TB SSD", "1TB SSD + 1TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "4× USB-A, 2× USB-C, HDMI (GPU), 3× DP (GPU), RJ-45",
-                    "weight": "10.5kg",
-                    "release_year": "2024",
-                    "notes": "Mid-range gaming tower, popular"
-                }
-            ]
-        },
-        {
-            "name": "PRO Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "MSI PRO DP180 14th",
-                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14500", "Intel Core i3-14100"],
-                    "gpu": ["Intel UHD Graphics 770"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "6× USB-A, 1× USB-C, HDMI, DisplayPort, VGA, RJ-45, COM port",
-                    "weight": "7.5kg",
-                    "release_year": "2024",
-                    "notes": "Business tower, value"
-                }
-            ]
-        }
-    ],
-
-    "Acer": [
-        {
-            "name": "Predator Orion",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Predator Orion 7000 (2024)",
-                    "cpu": ["Intel Core i9-14900KF", "Intel Core i7-14700KF"],
-                    "gpu": ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080 Super", "NVIDIA GeForce RTX 4070 Ti Super"],
-                    "ram": ["32GB DDR5", "64GB DDR5"],
-                    "storage": ["1TB SSD", "2TB SSD", "2TB SSD + 2TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "8× USB-A, 2× USB-C (Thunderbolt 4), 2.5GbE, Wi-Fi 7, Front USB-C",
-                    "weight": "20kg",
-                    "release_year": "2024",
-                    "notes": "Flagship gaming tower, FrostBlade 2.0 cooling"
-                },
-                {
-                    "name": "Predator Orion 3000 (2024)",
-                    "cpu": ["Intel Core i7-14700F", "Intel Core i5-14400F"],
-                    "gpu": ["NVIDIA GeForce RTX 4060 Ti", "NVIDIA GeForce RTX 4060"],
-                    "ram": ["16GB DDR5"],
-                    "storage": ["512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "4× USB-A, 1× USB-C, RJ-45",
-                    "weight": "10kg",
-                    "release_year": "2024",
-                    "notes": "Entry gaming tower"
-                }
-            ]
-        },
-        {
-            "name": "Aspire Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Aspire TC-1780",
-                    "cpu": ["Intel Core i7-14700", "Intel Core i5-14400", "Intel Core i3-14100"],
-                    "gpu": ["Intel UHD Graphics 770", "NVIDIA GeForce GTX 1650"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD", "512GB SSD + 1TB HDD"],
-                    "os": ["Windows 11 Home"],
-                    "ports": "4× USB-A, 1× USB-C, HDMI, VGA, RJ-45, SD Card",
-                    "weight": "6.2kg",
-                    "release_year": "2024",
-                    "notes": "Home/Office budget tower"
-                },
-                {
-                    "name": "Aspire C27 AIO",
-                    "cpu": ["Intel Core i7-1355U", "Intel Core i5-1335U"],
-                    "gpu": ["Intel Iris Xe Graphics"],
-                    "ram": ["8GB DDR4", "16GB DDR4"],
-                    "storage": ["256GB SSD", "512GB SSD", "1TB SSD"],
-                    "os": ["Windows 11 Home"],
-                    "screenSize": ["27\""],
-                    "ports": "2× USB-A, 1× USB-C, HDMI-out, RJ-45",
-                    "weight": "5.6kg",
-                    "release_year": "2023",
-                    "notes": "All-in-One 27\" FHD, slim bezel"
-                }
-            ]
-        },
-        {
-            "name": "Veriton Business Desktop",
-            "type": "desktop",
-            "subModels": [
-                {
-                    "name": "Veriton N4710GT Mini",
-                    "cpu": ["Intel Core i7-13700T", "Intel Core i5-13500T"],
-                    "gpu": ["Intel UHD Graphics 770"],
-                    "ram": ["8GB DDR5", "16GB DDR5", "32GB DDR5"],
-                    "storage": ["256GB SSD", "512GB SSD"],
-                    "os": ["Windows 11 Pro"],
-                    "ports": "4× USB-A, 1× USB-C, HDMI, DisplayPort, RJ-45",
-                    "weight": "1.2kg",
-                    "release_year": "2023",
-                    "notes": "Ultra-compact business mini PC"
+                    "name": "Microsoft Surface Go 3",
+                    "screenSize": [
+                        "10.5\""
+                    ],
+                    "cpu": [
+                        "Intel Pentium Gold 6500Y"
+                    ],
+                    "gpu": [
+                        "Intel UHD Graphics 615"
+                    ],
+                    "ram": [
+                        "4GB LPDDR3"
+                    ],
+                    "storage": [
+                        "64GB eMMC"
+                    ],
+                    "os": [
+                        "Windows 11 Home in S mode"
+                    ],
+                    "battery": "27.3Wh, up to 11h",
+                    "ports": "USB-C, Surface Connect, microSD",
+                    "weight": "544g",
+                    "release_year": "2021",
+                    "notes": "Entry budget Surface tablet",
+                    "display": "10.5\" PixelSense, 1920×1280, touch",
+                    "skus": [
+                        {
+                            "id": "8V6-00001",
+                            "cpu": [
+                                "Intel Pentium Gold 6500Y"
+                            ],
+                            "gpu": [
+                                "Intel UHD Graphics 615"
+                            ],
+                            "ram": [
+                                "4GB LPDDR3"
+                            ],
+                            "storage": [
+                                "64GB eMMC"
+                            ],
+                            "os": [
+                                "Windows 11 Home in S mode"
+                            ]
+                        }
+                    ]
                 }
             ]
         }
     ]
 };
 
-// Merge desktop families into main database
-for (const [brand, families] of Object.entries(DESKTOP_FAMILIES)) {
-    if (COMPUTER_DATABASE[brand]) {
-        COMPUTER_DATABASE[brand].push(...families);
-    } else {
-        COMPUTER_DATABASE[brand] = families;
-    }
-}
+// Keep backwards compat export for older modules?
+// export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = LAPTOP_DATABASE;
 
 
 // ============================================================
-//  MONITOR OPTIONS (מסכים)
+// AGGREGATED DATABASE FOR GENERIC SEARCH
+// ============================================================
+export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {};
+const mergeIntoGlobal = (db: Record<string, ComputerModelFamily[]>) => {
+    for (const [brand, families] of Object.entries(db)) {
+        if (!COMPUTER_DATABASE[brand]) COMPUTER_DATABASE[brand] = [];
+        COMPUTER_DATABASE[brand].push(...families);
+    }
+};
+mergeIntoGlobal(LAPTOP_DATABASE);
+mergeIntoGlobal(BRAND_DESKTOP_DATABASE);
+mergeIntoGlobal(ALL_IN_ONE_DATABASE);
+
 // ============================================================
 
 export const MONITOR_OPTIONS = {

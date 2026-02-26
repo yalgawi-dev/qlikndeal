@@ -1187,7 +1187,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                             <SelectItem value="Vehicles">רכב 🚗</SelectItem>
                             <SelectItem value="Real Estate">נדלן 🏠</SelectItem>
                             <SelectItem value="Phones">טלפונים 📱</SelectItem>
-                            <SelectItem value="Computers">מחשבים 💻</SelectItem>
+                            {/* Computers removed here because they have their own dedicated form */}
                             <SelectItem value="Electronics">אלקטרוניקה 📡</SelectItem>
                             <SelectItem value="Furniture">ריהוט 🛋️</SelectItem>
                             <SelectItem value="Appliances">מוצרי חשמל 🔌</SelectItem>
@@ -1220,37 +1220,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                {formData.category === "Computers" && (
-                    <div className="space-y-3 p-3 bg-gray-900/50 rounded-lg border border-purple-500/20 mb-4 animate-in fade-in slide-in-from-top-2">
-                        <Label className="text-purple-300">תת-קטגוריה (סוג המחשב)</Label>
-                        <Select value={getExtraVal("סוג המחשב") || "מחשב נייד (Laptop)"} onValueChange={val => handleExtraChange("סוג המחשב", val)}>
-                            <SelectTrigger className="bg-gray-800 border-gray-700 text-right" dir="rtl">
-                                <SelectValue placeholder="בחר סוג מחשב (למשל: מחשב נייד, גיימינג...)" />
-                            </SelectTrigger>
-                            <SelectContent dir="rtl">
-                                <SelectItem value="מחשב נייד (Laptop)">💻 מחשב נייד (Laptop)</SelectItem>
-                                <SelectItem value="מחשב נייח (Desktop)">🖥️ מחשב נייח מותג (Desktop)</SelectItem>
-                                <SelectItem value="מחשב All-in-One">🖥️ מחשב All-in-One</SelectItem>
-                                <SelectItem value="בנייה עצמית (Custom Build)">🔧 בנייה עצמית (Custom Build)</SelectItem>
-                                <SelectItem value="מחשב גיימינג">🎮 מחשב גיימינג</SelectItem>
-                                <SelectItem value="מיני מחשב (Mini PC)">📦 מיני מחשב (Mini PC)</SelectItem>
-                                <SelectItem value="תחנת עבודה (Workstation)">⚙️ תחנת עבודה (Workstation)</SelectItem>
-                            </SelectContent>
-                        </Select>
 
-                        {/* Custom Build sub-category description */}
-                        {getExtraVal("סוג המחשב") === "בנייה עצמית (Custom Build)" && (
-                            <p className="text-xs text-amber-400/80 bg-amber-500/10 border border-amber-500/20 rounded px-3 py-2">
-                                🔧 מחשב שהורכב מרכיבים בודדים – מלא פרטי רכיבים למטה
-                            </p>
-                        )}
-                        {getExtraVal("סוג המחשב") === "מחשב All-in-One" && (
-                            <p className="text-xs text-blue-400/80 bg-blue-500/10 border border-blue-500/20 rounded px-3 py-2">
-                                🖥️ מחשב משולב עם מסך מובנה – כולל פרטי מסך
-                            </p>
-                        )}
-                    </div>
-                )}
 
                 <div className="space-y-2">
                     <Label>כותרת המוצר</Label>

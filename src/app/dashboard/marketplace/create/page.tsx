@@ -342,6 +342,7 @@ function CreateListingContent() {
                                 onComplete={() => window.location.href = "/dashboard/marketplace/my-listings"}
                                 onCancel={() => setCategoryMode("select")}
                                 initialData={initialSmartData}
+                                preSelectedCategory={categoryMode === "desktop" ? "desktop" : "laptop"}
                             />
                         </div>
                     </div>

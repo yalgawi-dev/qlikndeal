@@ -10,6 +10,9 @@ import { Label } from "@/components/ui/label";
 import { createListing, updateListing, getMyListings, getMyPhone } from "@/app/actions/marketplace";
 import { Loader2, Plus, Image as ImageIcon, X, Search, ChevronDown, Check, Monitor, Cpu, MemoryStick, HardDrive, Maximize2, AlertCircle, Sparkles } from "lucide-react";
 import {
+    LAPTOP_DATABASE,
+    BRAND_DESKTOP_DATABASE,
+    ALL_IN_ONE_DATABASE,
     COMPUTER_DATABASE,
     RAM_OPTIONS,
     STORAGE_OPTIONS,
@@ -62,6 +65,7 @@ interface ComputerListingFormProps {
     initialData?: any;
     isEditing?: boolean;
     listingId?: string;
+    preSelectedCategory?: "laptop" | "desktop" | null;
 }
 
 const COMPUTER_TYPE_LABELS: Record<string, string> = {
@@ -264,7 +268,7 @@ function SpecSelector({
 // ============================================================
 //  MAIN COMPONENT (One Page Smart Form)
 // ============================================================
-export function ComputerListingForm({ onComplete, onCancel, initialData, isEditing, listingId }: ComputerListingFormProps) {
+export function ComputerListingForm({ onComplete, onCancel, initialData, isEditing, listingId, preSelectedCategory }: ComputerListingFormProps) {
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -301,13 +305,13 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     });
 
     const [mainCategory, setMainCategory] = useState<"laptop" | "desktop" | null>(
-        initialData ? (initialData?.extraData?.["סוג המחשב"]?.includes("נייד") || initialData?.extraData?.["סוג המחשב"] === "laptop" ? "laptop" : "desktop") : null
+        initialData ? (initialData?.extraData?.["סוג המחשב"]?.includes("נייד") || initialData?.extraData?.["סוג המחשב"] === "laptop" ? "laptop" : "desktop") : (preSelectedCategory || null)
     );
 
-    const [computerTypeMode, setComputerTypeMode] = useState<"brand_desktop" | "all_in_one" | "custom_build">(
+    const [computerTypeMode, setComputerTypeMode] = useState<"brand_desktop" | "all_in_one" | "custom_build" | null>(
         initialData?.extraData?.["סוג המחשב"] === "בנייה עצמית" ? "custom_build"
             : initialData?.extraData?.["סוג המחשב"] === "מחשב All-in-One" ? "all_in_one"
-                : "brand_desktop"
+                : (initialData?.extraData?.["סוג המחשב"] === "מחשב נייח מותג" ? "brand_desktop" : null)
     );
 
     const [cbSpec, setCbSpec] = useState<Record<string, string>>({});
@@ -347,11 +351,19 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         }
     }, [spec.brand, spec.subModel, spec.cpu, spec.ram, spec.storage]);
 
+    // active database for dynamic references
+    const activeDb = useMemo(() => {
+        if (!mainCategory) return COMPUTER_DATABASE;
+        if (mainCategory === "laptop") return LAPTOP_DATABASE;
+        if (computerTypeMode === "all_in_one") return ALL_IN_ONE_DATABASE;
+        return BRAND_DESKTOP_DATABASE;
+    }, [mainCategory, computerTypeMode]);
+
     // Flat list of all available submodels for the fast global search
     const allModelsFlat = useMemo(() => {
         const list: { brand: string; family: ComputerModelFamily; sub: ComputerSubModel; sku?: any; searchText: string; displayName: string }[] = [];
-        for (const brand of Object.keys(COMPUTER_DATABASE)) {
-            const families = COMPUTER_DATABASE[brand].filter(fam => mainCategory === "laptop" ? (!fam.type || fam.type === "laptop") : (fam.type && fam.type !== "laptop"));
+        for (const brand of Object.keys(activeDb)) {
+            const families = activeDb[brand];
             for (const fam of families) {
                 for (const sub of fam.subModels) {
                     // add the base submodel
@@ -380,7 +392,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             }
         }
         return list;
-    }, [mainCategory]);
+    }, [mainCategory, activeDb]);
 
     const filteredGlobalModels = useMemo(() => {
         if (!globalSearch.trim()) return [];
@@ -391,10 +403,10 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     }, [globalSearch, allModelsFlat]);
 
     // Derived options based on current selections
-    const modelFamilies = useMemo(() => spec.brand ? (COMPUTER_DATABASE[spec.brand] || []).filter(fam => mainCategory === "laptop" ? (!fam.type || fam.type === "laptop") : (fam.type && fam.type !== "laptop")) : [], [spec.brand, mainCategory]);
+    const modelFamilies = useMemo(() => spec.brand ? (activeDb[spec.brand] || []) : [], [spec.brand, activeDb]);
     const selectedFamilyObj = useMemo(() => modelFamilies.find(f => f.name === spec.family), [spec.family, modelFamilies]);
     const subModelsList = useMemo(() => selectedFamilyObj ? selectedFamilyObj.subModels : [], [selectedFamilyObj]);
-    const availableBrands = useMemo(() => Object.keys(COMPUTER_DATABASE).filter(b => COMPUTER_DATABASE[b].some(fam => mainCategory === "laptop" ? (!fam.type || fam.type === "laptop") : (fam.type && fam.type !== "laptop"))).sort(), [mainCategory]);
+    const availableBrands = useMemo(() => Object.keys(activeDb).sort(), [activeDb]);
 
     const specOptions = useMemo(() => {
         if (spec.brand && spec.family && spec.subModel) {
@@ -606,6 +618,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         setSpec(s => ({
             ...s,
             brand: result.brand || result.model_name?.split(" ")[0] || s.brand,
+            family: result.family || s.family,
             subModel: result.model_name || s.subModel,
             sku: result.model_number || s.sku,          // ← SKU from DB
             ram: result.ram || s.ram,
@@ -633,27 +646,40 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         }, 300);
     };
 
+    const handleMainCategoryChange = (cat: "laptop" | "desktop") => {
+        if (cat !== mainCategory) {
+            setMainCategory(cat);
+            setSpec(s => ({ ...s, brand: "", family: "", subModel: "", sku: "", condition: "", extras: "", ports: "", weight: "", release_year: "", batteryHealth: "", batteryPercent: "" }));
+            setCbSpec({});
+            setUncertainFields([]);
+            setVideoUrl("");
+        }
+    };
+
+    const handleComputerTypeModeChange = (mode: "brand_desktop" | "all_in_one" | "custom_build") => {
+        if (mode !== computerTypeMode) {
+            setComputerTypeMode(mode);
+            setSpec(s => ({ ...s, brand: "", family: "", subModel: "", sku: "", condition: "", extras: "", ports: "", weight: "", release_year: "", batteryHealth: "", batteryPercent: "" }));
+            setCbSpec({});
+            setUncertainFields([]);
+            setVideoUrl("");
+        }
+    };
+
     return (
         <div className="flex flex-col h-full bg-black/40 rounded-2xl border border-gray-800" dir="rtl">
-            {/* Header Sticky */}
-            <div className="sticky top-0 z-10 bg-gray-900/90 backdrop-blur-md border-b border-gray-800 p-4 rounded-t-2xl flex items-center justify-between">
-                <div>
-                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-indigo-400" />
-                        פרסום מחשב חכם
-                    </h2>
-                    <p className="text-gray-400 text-xs">הזן דגם ואנו נשלים עבורך את שאר הפרטים!</p>
-                </div>
-                {onCancel && (
-                    <button onClick={onCancel} className="text-gray-500 hover:text-white bg-gray-800 p-1.5 rounded-full transition-colors">
+            {/* Header / Close Button */}
+            {onCancel && (
+                <div className="sticky top-0 z-20 flex justify-end p-4 -mb-12 items-start pointer-events-none">
+                    <button onClick={onCancel} className="text-gray-400 hover:text-white bg-gray-900 border border-gray-700 hover:border-gray-500 p-2 rounded-full transition-all pointer-events-auto shadow-lg backdrop-blur-md">
                         <X className="w-5 h-5" />
                     </button>
-                )}
-            </div>
+                </div>
+            )}
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24">
 
-                {!mainCategory ? (
+                {!mainCategory && !preSelectedCategory ? (
                     <div className="flex flex-col items-center justify-center space-y-8 animate-in fade-in zoom-in duration-500 py-12">
                         <div className="text-center space-y-2">
                             <h3 className="text-2xl font-bold text-white">בחר את סוג המחשב שלך</h3>
@@ -661,7 +687,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-lg">
                             <button
-                                onClick={() => setMainCategory("laptop")}
+                                onClick={() => handleMainCategoryChange("laptop")}
                                 className="group relative overflow-hidden rounded-2xl border-2 border-gray-700 bg-gray-800/50 p-6 flex flex-col items-center gap-4 hover:border-indigo-500 hover:bg-gray-800 transition-all duration-300"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -672,7 +698,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 </div>
                             </button>
                             <button
-                                onClick={() => setMainCategory("desktop")}
+                                onClick={() => handleMainCategoryChange("desktop")}
                                 className="group relative overflow-hidden rounded-2xl border-2 border-gray-700 bg-gray-800/50 p-6 flex flex-col items-center gap-4 hover:border-purple-500 hover:bg-gray-800 transition-all duration-300"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -686,36 +712,39 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                     </div>
                 ) : (
                     <>
-                        {/* ──── SMART SEARCH (identification) ──── */}
-                        {(mainCategory === "laptop" || computerTypeMode !== "custom_build") && (
-                            <div className="mb-6 animate-in fade-in slide-in-from-top-4">
-                                <ComputerSearchUI onApplySpecs={handleApplySearchEngineSpecs} />
+                        {/* ==== SECTION: COMPUTER TYPE ==== */}
+                        {mainCategory === "desktop" && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-4 mb-8">
+                                <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">סוג מחשב נייח (Desktop)</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    {DESKTOP_SUB_CATEGORIES.map(category => (
+                                        <button
+                                            key={category.value}
+                                            type="button"
+                                            onClick={() => handleComputerTypeModeChange(category.value as any)}
+                                            className={`p-4 rounded-xl border-2 text-right transition-all flex flex-col items-start ${computerTypeMode === category.value ? 'bg-indigo-900/30 border-indigo-500' : 'bg-gray-800/50 border-gray-700 hover:border-gray-500 hover:bg-gray-800'}`}
+                                        >
+                                            <span className={`font-bold ${computerTypeMode === category.value ? 'text-indigo-300' : 'text-gray-200'}`}>{category.label}</span>
+                                            <span className="text-xs text-gray-400 mt-1">{category.description}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         )}
 
-                        <form id="manual-specs-section" onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
-
-                            {/* ==== SECTION: COMPUTER TYPE ==== */}
-                            {mainCategory === "desktop" && (
-                                <div className="space-y-4 animate-in fade-in slide-in-from-top-4 mb-8">
-                                    <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">סוג מחשב נייח (Desktop)</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                        {DESKTOP_SUB_CATEGORIES.map(category => (
-                                            <button
-                                                key={category.value}
-                                                type="button"
-                                                onClick={() => setComputerTypeMode(category.value as any)}
-                                                className={`p-4 rounded-xl border-2 text-right transition-all flex flex-col items-start ${computerTypeMode === category.value ? 'bg-indigo-900/30 border-indigo-500' : 'bg-gray-800/50 border-gray-700 hover:border-gray-500 hover:bg-gray-800'}`}
-                                            >
-                                                <span className={`font-bold ${computerTypeMode === category.value ? 'text-indigo-300' : 'text-gray-200'}`}>{category.label}</span>
-                                                <span className="text-xs text-gray-400 mt-1">{category.description}</span>
-                                            </button>
-                                        ))}
+                        {/* GATEKEEPER LOGIC: Hide the rest if desktop and no type selected yet */}
+                        {(mainCategory !== "desktop" || computerTypeMode !== null) && (
+                            <>
+                                {/* ──── SMART SEARCH (identification) ──── */}
+                                {(mainCategory === "laptop" || computerTypeMode !== "custom_build") && (
+                                    <div className="mb-6 animate-in fade-in slide-in-from-top-4">
+                                        <ComputerSearchUI activeDb={activeDb} onApplySpecs={handleApplySearchEngineSpecs} />
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {computerTypeMode === 'custom_build' ? (
+                                <form id="manual-specs-section" onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
+
+                                    {computerTypeMode === 'custom_build' ? (
                                 <div className="space-y-6 animate-in fade-in slide-in-from-top-4">
                                     <h3 className="text-lg font-bold border-b border-indigo-900/50 pb-2 text-indigo-300">⚙️ מפרט בנייה עצמית (Custom Build)</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1058,8 +1087,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 {!spec.condition && <p className="text-xs text-yellow-500 mt-1">⚠️ אנא בחר מצב מחשב</p>}
                             </div>
 
-                            {/* Battery Health - between condition and phone (not related to new-device specs) */}
-                            {(!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
+                            {/* Battery Health - Only for laptops */}
+                            {mainCategory === "laptop" && (
                                 <div className="space-y-2 border border-gray-700/50 rounded-xl p-3 bg-gray-800/20">
                                     <Label className="text-gray-300 text-sm font-semibold">🔋 תקינות סוללה</Label>
                                     <div className="flex gap-2">
@@ -1171,37 +1200,81 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 </div>
                             </div>
 
-                            {/* ──── RISK / DATA SUMMARY REPORT ──── */}
+                            {/* ──── DYNAMIC RISK / DATA SUMMARY REPORT ──── */}
                             <div className="rounded-2xl border border-gray-700 bg-gray-900/60 p-5 space-y-4">
                                 <h3 className="text-base font-bold text-gray-200 flex items-center gap-2">
                                     📋 דוח סיכום נתונים – בדוק לפני פרסום
                                 </h3>
                                 <div className="grid grid-cols-2 gap-2 text-xs">
-                                    {[
-                                        // ── שדות חובה / עיקריים ──
-                                        { label: "יצרן", val: spec.brand, required: true },
-                                        { label: "סדרה", val: spec.family, required: false },
-                                        { label: "דגם", val: spec.subModel, required: true },
-                                        { label: "מספר דגם / SKU", val: spec.sku, required: false },
-                                        { label: "מעבד", val: spec.cpu, required: true },
-                                        { label: "כרטיס מסך", val: spec.gpu, required: false },
-                                        { label: "זיכרון RAM", val: spec.ram, required: true },
-                                        { label: "אחסון", val: spec.storage, required: true },
-                                        (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) ? { label: "גודל מסך", val: spec.screen, required: false } : null,
-                                        { label: "מערכת הפעלה", val: spec.os, required: true },
-                                        (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) ? { label: "תקינות סוללה", val: spec.batteryHealth, required: false } : null,
-                                        (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) ? { label: "בריאות סוללה %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false } : null,
-                                        { label: "חיבורים", val: spec.ports, required: false },
-                                        { label: "משקל", val: spec.weight, required: false },
-                                        { label: "שנת ייצור", val: spec.release_year, required: false },
-                                        { label: "מצב", val: spec.condition, required: true },
-                                        { label: "נזקים / החרגות", val: spec.extras || "ללא נזקים", required: false },
-                                        { label: "מחיר", val: details.price ? `₪${Number(details.price).toLocaleString()}` : "", required: true },
-                                        { label: "טלפון איש קשר", val: details.contactPhone, required: true },
-                                        { label: "תיאור", val: details.description, required: false },
-                                        { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false, warning: true },
-                                        { label: "🎬 סרטון", val: videoUrl || "", required: false, warning: true },
-                                    ].flatMap(item => item ? [item] : []).map(({ label, val, required, warning }) => {
+                                    {(() => {
+                                        // Generate contextual report items
+                                        let items: any[] = [];
+                                        
+                                        if (computerTypeMode === 'custom_build') {
+                                            // ── CUSTOM BUILD REPORT ──
+                                            items = [
+                                                { label: "לוח אם", val: cbSpec["לוח אם - יצרן"], required: true },
+                                                { label: "דגם לוח אם", val: cbSpec["לוח אם - דגם"], required: false },
+                                                { label: "מעבד", val: cbSpec["מעבד"], required: true },
+                                                { label: "קירור מעבד", val: cbSpec["קירור למעבד"], required: false },
+                                                { label: "כרטיס מסך", val: cbSpec["כרטיס מסך"], required: true },
+                                                { label: "זיכרון RAM", val: `${cbSpec["RAM - סוג"] || ""} ${cbSpec["RAM - תצורה"] || ""}`.trim(), required: true },
+                                                { label: "מהירות RAM", val: cbSpec["RAM - מהירות"], required: false },
+                                                { label: "כונן ראשי", val: cbSpec["כונן ראשי"], required: true },
+                                                { label: "כונן נוסף", val: cbSpec["כונן נוסף"], required: false },
+                                                { label: "מארז", val: cbSpec["מארז - יצרן"], required: true },
+                                                { label: "ספק כח", val: cbSpec["ספק כח - יצרן"], required: true },
+                                                { label: "הספק (Watts)", val: cbSpec["ספק כח - הספק"], required: false },
+                                                { label: "מערכת הפעלה", val: cbSpec["מערכת הפעלה"], required: true },
+                                            ];
+                                        } else {
+                                            // ── BRANDED / AIO / LAPTOP REPORT ──
+                                            items = [
+                                                { label: "יצרן", val: spec.brand, required: true },
+                                                { label: "דגם", val: spec.subModel, required: true },
+                                                { label: "מעבד", val: spec.cpu, required: true },
+                                                { label: "כרטיס מסך", val: spec.gpu, required: false },
+                                                { label: "זיכרון RAM", val: spec.ram, required: true },
+                                                { label: "אחסון", val: spec.storage, required: true },
+                                                { label: "מערכת הפעלה", val: spec.os, required: true },
+                                            ];
+
+                                            if (mainCategory === "laptop") {
+                                                items.push(
+                                                    { label: "גודל מסך", val: spec.screen, required: true },
+                                                    { label: "תקינות סוללה", val: spec.batteryHealth, required: false },
+                                                    { label: "בריאות %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false },
+                                                    { label: "משקל", val: spec.weight, required: false }
+                                                );
+                                            }
+
+                                            if (computerTypeMode === "all_in_one") {
+                                                items.push(
+                                                    { label: "מסך מובנה", val: cbSpec["מסך - גודל"], required: true },
+                                                    { label: "רזולוציה", val: cbSpec["מסך - רזולוציה"], required: false },
+                                                    { label: "פאנל", val: cbSpec["מסך - סוג פאנל"], required: false }
+                                                );
+                                            }
+
+                                            if (computerTypeMode === "brand_desktop") {
+                                                items.push(
+                                                    { label: "תצורת מארז", val: spec.ports, required: false } // Using ports field temporarily or just label
+                                                );
+                                            }
+                                        }
+
+                                        // Common fields
+                                        items.push(
+                                            { label: "מצב", val: spec.condition, required: true },
+                                            { label: "מחיר", val: details.price ? `₪${Number(details.price.replace(/,/g, "")).toLocaleString()}` : "", required: true },
+                                            { label: "טלפון לקשר", val: details.contactPhone, required: true },
+                                            { label: "תיאור/נזקים", val: spec.extras || "ללא", required: false },
+                                            { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false, warning: true },
+                                            { label: "🎬 סרטון", val: videoUrl || "", required: false, warning: true }
+                                        );
+
+                                        return items;
+                                    })().map(({ label, val, required, warning }) => {
                                         const isWarning = !val && warning;
                                         return (
                                             <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
@@ -1248,6 +1321,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                         </form>
                     </>
                 )}
+                </>
+            )}
 
             </div>
         </div >
