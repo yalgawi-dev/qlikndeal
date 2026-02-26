@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Search, ChevronDown, Check, Zap, Sparkles, X, ChevronRight } from "lucide-react";
-import { ALL_PHONES } from "@/lib/phone-data";
+import React, { useState, useRef, useEffect } from "react";
+import { Search, ChevronDown, Check, Zap, Sparkles, X, ChevronRight, Smartphone } from "lucide-react";
+import { ALL_PHONES, PhoneModel } from "@/lib/phone-data";
 
 export const MOBILE_SEARCH_FIELDS = [
     { key: "model_name", label: "שם הדגם", icon: "🏷️", locked: true },
@@ -21,15 +21,122 @@ export const MOBILE_SEARCH_FIELDS = [
     { key: "notes", label: "הערות נוספות", icon: "📝", locked: true },
 ];
 
+function searchPhoneDB(q: string, limit = 8): { label: string; data: PhoneModel }[] {
+    if (!q || q.length < 2) return [];
+    const lowerQ = q.toLowerCase().trim();
+    const terms = lowerQ.split(/\s+/);
+    
+    const results: { label: string; score: number; data: PhoneModel }[] = [];
+    
+    for (const p of ALL_PHONES) {
+        let score = 0;
+        const fullName = `${p.brand} ${p.model}`.toLowerCase();
+        
+        // Exact match
+        if (fullName === lowerQ || p.model.toLowerCase() === lowerQ) {
+            score += 100;
+        } else if (fullName.startsWith(lowerQ) || p.model.toLowerCase().startsWith(lowerQ)) {
+            score += 50;
+        } else if (terms.every(t => fullName.includes(t))) {
+            score += 20;
+        }
+        
+        // Hebrew alias match
+        if (p.hebrewAliases) {
+            for (const alias of p.hebrewAliases) {
+                const lowerA = alias.toLowerCase();
+                if (lowerA === lowerQ) score += 90;
+                else if (lowerA.startsWith(lowerQ)) score += 40;
+                else if (terms.every(t => lowerA.includes(t))) score += 15;
+            }
+        }
+        
+        if (score > 0) {
+            results.push({ label: `${p.brand} ${p.model}`, score, data: p });
+        }
+    }
+    
+    return results
+        .sort((a, b) => b.score - a.score)
+        .slice(0, limit)
+        .map(r => ({ label: r.label, data: r.data }));
+}
+
 export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) => void }) {
     const [query, setQuery] = useState("");
+    const [suggestions, setSuggestions] = useState<{ label: string; data: PhoneModel }[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isPremium, setIsPremium] = useState(false);
-
-    // Editable State overrides
     const [editableFields, setEditableFields] = useState<Record<string, string>>({});
+    
+    const containerRef = useRef<HTMLDivElement>(null);
+    const debounceRef = useRef<any>(null);
+
+    // Handle Autocomplete
+    useEffect(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        if (query.trim().length < 2 || isPremium) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        debounceRef.current = setTimeout(() => {
+            const results = searchPhoneDB(query);
+            setSuggestions(results);
+            setShowSuggestions(results.length > 0);
+        }, 200);
+    }, [query, isPremium]);
+
+    // Close suggestions on click outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setShowSuggestions(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleSelectPhone = (phone: PhoneModel) => {
+        setQuery(`${phone.brand} ${phone.model}`);
+        setShowSuggestions(false);
+        applyLocalPhone(phone);
+    };
+
+    const applyLocalPhone = (phone: PhoneModel) => {
+        const localResult = {
+            model_name: phone.model,
+            brand: phone.brand,
+            model_number: "",
+            type: "smartphone",
+            ram: phone.ram ? phone.ram + "GB" : "לא ידוע",
+            storage: phone.storages?.map((s: number) => s + "GB").join(" / ") || "לא ידוע",
+            display: phone.screen ? phone.screen + '"' : "",
+            os: phone.os || "",
+            release_year: phone.releaseYear?.toString() || "",
+            cpu: phone.cpu || "",
+            battery: phone.battery || "",
+            rear_camera: phone.rear_camera || "",
+            front_camera: phone.front_camera || "",
+            dimensions: phone.dimensions || "",
+            weight: phone.weight || "",
+            usb_type: phone.usb_type || "",
+            nfc: phone.nfc !== undefined ? (phone.nfc ? "כן" : "לא") : "",
+            wireless_charging: phone.wireless_charging !== undefined ? (phone.wireless_charging ? "כן" : "לא") : "",
+            notes: ""
+        };
+        setResult(localResult);
+        setEditableFields({
+            ram: localResult.ram,
+            storage: localResult.storage,
+            os: localResult.os
+        });
+    };
 
     const doSearch = async () => {
         if (!query.trim()) return;
@@ -37,6 +144,7 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
         setError(null);
         setResult(null);
         setEditableFields({});
+        setShowSuggestions(false);
 
         try {
             if (isPremium) {
@@ -51,65 +159,16 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
                 if (data.error) throw new Error(data.error);
                 setResult(data);
 
-                // Set initial values for editable fields
                 setEditableFields({
                     ram: data.ram || "ללא ידוע",
                     storage: data.storage || "ללא ידוע",
                     os: data.os || "ללא מערכת הפעלה"
                 });
             } else {
-                // Local free search from ALL_PHONES
-                const q = query.toLowerCase().trim();
-                const terms = q.split(/\s+/);
-                const matchesAllTerms = (text: string) => {
-                    if (!text) return false;
-                    return terms.every(t => text.toLowerCase().includes(t));
-                };
-
-                let bestPhone: any = null;
-                let bestScore = 0;
-
-                for (const p of ALL_PHONES) {
-                    let score = 0;
-                    if (matchesAllTerms(p.model)) {
-                        score += 10;
-                        if (p.model.toLowerCase() === q || `${p.brand} ${p.model}`.toLowerCase() === q) score += 20;
-                        else if (p.model.toLowerCase().startsWith(q) || `${p.brand} ${p.model}`.toLowerCase().startsWith(q)) score += 5;
-                    }
-                    if (p.hebrewAliases?.some(a => matchesAllTerms(a))) score += 8;
-                    if (matchesAllTerms(`${p.brand} ${p.model}`)) score += 3;
-
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestPhone = p;
-                    }
-                }
-
-                if (bestPhone) {
-                    const localResult = {
-                        model_name: bestPhone.model,
-                        model_number: "",
-                        type: "smartphone",
-                        cpu: "",
-                        ram: bestPhone.ram ? String(bestPhone.ram) : "ללא ידוע",
-                        storage: bestPhone.storages?.map((s: number) => s + "GB").join(" / ") || "ללא ידוע",
-                        display: bestPhone.screen ? bestPhone.screen + '"' : "",
-                        rear_camera: "",
-                        front_camera: "",
-                        battery: "",
-                        os: bestPhone.os || "",
-                        ports: "",
-                        weight: "",
-                        price: "",
-                        release_year: bestPhone.releaseYear?.toString() || "",
-                        notes: ""
-                    };
-                    setResult(localResult);
-                    setEditableFields({
-                        ram: localResult.ram,
-                        storage: localResult.storage,
-                        os: localResult.os
-                    });
+                // Try local first
+                const localMatches = searchPhoneDB(query, 1);
+                if (localMatches.length > 0) {
+                    applyLocalPhone(localMatches[0].data);
                 } else {
                     throw new Error(`"${query}" לא נמצא במאגר המקומי. נסה להפעיל חיפוש פרימיום ברשת (לחצן כחול) לחיפוש מפורט.`);
                 }
@@ -136,7 +195,7 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
     };
 
     return (
-        <div style={{
+        <div ref={containerRef} style={{
             background: "linear-gradient(160deg, #080b14 0%, #0a0f1e 60%, #080b14 100%)",
             color: "#e2e8f0",
             direction: "rtl",
@@ -183,29 +242,49 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
 
             <div style={{ padding: "24px" }}>
                 {/* Search Input Bar */}
-                <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
-                    <input
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && doSearch()}
-                        placeholder='הזן SKU, דגם או מפרט חלקי... (לדוגמה iPhone 15 Pro)'
-                        style={{
-                            width: "100%", padding: "12px 16px", borderRadius: "12px",
-                            border: "1px solid #1a2744", background: "#070b14",
-                            color: "#e2e8f0", fontSize: "0.95rem", outline: "none",
-                        }}
-                    />
-                    <button
-                        onClick={doSearch}
-                        disabled={loading || !query.trim()}
-                        style={{
-                            padding: "0 24px", borderRadius: "12px", border: "none",
-                            background: loading ? "#1a2744" : "linear-gradient(135deg, #38bdf8, #818cf8)",
-                            color: "white", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer"
-                        }}
-                    >
-                        {loading ? "מחפש..." : "חפש"}
-                    </button>
+                <div style={{ position: "relative", marginBottom: "24px" }}>
+                    <div style={{ display: "flex", gap: "12px" }}>
+                        <div className="relative flex-1">
+                            <input
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && doSearch()}
+                                onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                                placeholder='הזן SKU, דגם או מפרט חלקי... (לדוגמה iPhone 15 Pro)'
+                                style={{
+                                    width: "100%", padding: "12px 16px", borderRadius: "12px",
+                                    border: "1px solid #1a2744", background: "#070b14",
+                                    color: "#e2e8f0", fontSize: "0.95rem", outline: "none",
+                                }}
+                            />
+                            {/* Autocomplete Dropdown */}
+                            {showSuggestions && (
+                                <div className="absolute top-full left-0 right-0 mt-2 bg-[#0d1117] border border-[#1a2744] rounded-xl shadow-2xl z-[100] overflow-hidden max-h-[300px] overflow-y-auto backdrop-blur-md">
+                                    {suggestions.map((sug, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => handleSelectPhone(sug.data)}
+                                            className="w-full text-right px-4 py-3 text-sm text-gray-300 hover:bg-blue-500/10 hover:text-blue-400 transition-colors flex items-center gap-3 border-b border-gray-800/50 last:border-0"
+                                        >
+                                            <Smartphone className="w-4 h-4 text-gray-500" />
+                                            <span>{sug.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <button
+                            onClick={doSearch}
+                            disabled={loading || !query.trim()}
+                            style={{
+                                padding: "0 24px", borderRadius: "12px", border: "none",
+                                background: loading ? "#1a2744" : "linear-gradient(135deg, #38bdf8, #818cf8)",
+                                color: "white", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer"
+                            }}
+                        >
+                            {loading ? "מחפש..." : "חפש"}
+                        </button>
+                    </div>
                 </div>
 
                 {error && (

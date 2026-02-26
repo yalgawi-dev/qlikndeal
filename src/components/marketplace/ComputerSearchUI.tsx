@@ -73,8 +73,8 @@ function buildSpec(d: { brand: string; family: any; sub: any; matchedSku: any })
         storage: matchedSku?.storage?.[0] || sub.storage?.[0] || "",
         display: sub.display || sub.screenSize?.[0] || "",
         os: matchedSku?.os?.[0] || sub.os?.[0] || "",
-        battery_info: sub.battery || "",   // manufacturer battery info (from DB)
-        ports_info: sub.ports || "",   // manufacturer ports info (from DB)
+        battery: sub.battery || "",
+        ports: sub.ports || "",
         weight: sub.weight || "",
         release_year: sub.release_year || "",
         notes: sub.notes || "",

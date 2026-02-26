@@ -27,6 +27,7 @@ import {
     CUSTOM_BUILD_CATEGORIES,
     DESKTOP_SUB_CATEGORIES
 } from "@/lib/computer-data";
+import { MOTHERBOARD_DATABASE } from "@/lib/motherboard-database";
 import { ComputerSearchUI } from "@/components/marketplace/ComputerSearchUI";
 
 // ---- Types ----
@@ -80,6 +81,8 @@ const COMPUTER_TYPE_LABELS: Record<string, string> = {
 const CUSTOM_BUILD_FIELDS = [
     { key: "מעבד", label: "מעבד (CPU)", dataKey: "cpu" as const },
     { key: "כרטיס מסך", label: "כרטיס מסך (GPU)", dataKey: "gpu" as const },
+    { key: "לוח אם - יצרן", label: "יצרן לוח אם", dataKey: "motherboard_brand" as const },
+    { key: "לוח אם - דגם", label: "דגם לוח אם (למשל: ROG STRIX Z790-E)", dataKey: "motherboard_model" as const },
     { key: "לוח אם - ערכת שבבים", label: "ערכת שבבים (Chipset)", dataKey: "motherboard_chipset" as const },
     { key: "לוח אם - שקע", label: "שקע מעבד (Socket)", dataKey: "motherboard_socket" as const },
     { key: "לוח אם - פורמט", label: "פורמט לוח אם", dataKey: "motherboard_form" as const },
@@ -87,7 +90,6 @@ const CUSTOM_BUILD_FIELDS = [
     { key: "לוח אם - כרטיס רשת", label: "חיבור רשת (Ethernet)", dataKey: "motherboard_ethernet" as const },
     { key: "לוח אם - חריצי M.2", label: "חריצי M.2", dataKey: "motherboard_m2" as const },
     { key: "לוח אם - דור PCIe", label: "דור PCIe ראשי", dataKey: "motherboard_pcie" as const },
-    { key: "לוח אם - יצרן", label: "יצרן לוח אם", dataKey: "motherboard_brand" as const },
     { key: "RAM - סוג", label: "סוג זיכרון (RAM)", dataKey: "ram_type" as const },
     { key: "RAM - תצורה", label: "תצורת זיכרון", dataKey: "ram_config" as const },
     { key: "כונן ראשי", label: "כונן ראשי", dataKey: "storage_primary" as const },
@@ -350,6 +352,33 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             setDetails(d => ({ ...d, title: auto }));
         }
     }, [spec.brand, spec.subModel, spec.cpu, spec.ram, spec.storage]);
+    
+    // Motherboard Smart Fill
+    useEffect(() => {
+        const mbModel = cbSpec["לוח אם - דגם"];
+        if (mbModel && mbModel.length > 4 && computerTypeMode === "custom_build") {
+            const query = mbModel.toLowerCase();
+            const match = MOTHERBOARD_DATABASE.find(m => 
+                query.includes(m.model.toLowerCase()) || 
+                m.model.toLowerCase().includes(query)
+            );
+            
+            if (match) {
+                setCbSpec(prev => ({
+                    ...prev,
+                    "לוח אם - יצרן": prev["לוח אם - יצרן"] || match.brand,
+                    "לוח אם - ערכת שבבים": prev["לוח אם - ערכת שבבים"] || match.chipset,
+                    "לוח אם - שקע": prev["לוח אם - שקע"] || match.socket,
+                    "לוח אם - פורמט": prev["לוח אם - פורמט"] || match.formFactor,
+                    "RAM - סוג": prev["RAM - סוג"] || (match.ramType.includes("/") ? match.ramType.split("/")[1] : match.ramType), // Prefer DDR5 if hybrid
+                    "לוח אם - חיבור אלחוטי": prev["לוח אם - חיבור אלחוטי"] || (match.wifi !== "nan" ? match.wifi : ""),
+                    "לוח אם - כרטיס רשת": prev["לוח אם - כרטיס רשת"] || match.lan,
+                    "לוח אם - חריצי M.2": prev["לוח אם - חריצי M.2"] || match.m2,
+                    "לוח אם - דור PCIe": prev["לוח אם - דור PCIe"] || match.pcie,
+                }));
+            }
+        }
+    }, [cbSpec["לוח אם - דגם"], computerTypeMode]);
 
     // active database for dynamic references
     const activeDb = useMemo(() => {
@@ -569,7 +598,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                 MONITOR_FIELDS.forEach(f => { if (cbSpec[f.key]) extraData[f.key] = cbSpec[f.key]; });
             } else {
                 extraData = {
-                    "סוג המחשב": computerTypeMode === "all_in_one" ? "מחשב All-in-One" : (selectedFamilyObj ? selectedFamilyObj.type : ""),
+                    "סוג המחשב": computerTypeMode === "all_in_one" ? "מחשב All-in-One" : (selectedFamilyObj ? (selectedFamilyObj.type || "מחשב נייח") : "מחשב נייח"),
                     "יצרן": spec.brand,
                     "סדרה": spec.family,
                     "דגם": spec.subModel,
@@ -580,13 +609,15 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                     "גודל מסך": spec.screen,
                     "כרטיס מסך": spec.gpu,
                     "מערכת הפעלה": spec.os,
-                    "סוללה": spec.battery,
                     "חיבורים": spec.ports,
-                    "משקל": spec.weight,
                     "שנת ייצור": spec.release_year,
                     "החרגות / נזקים": spec.extras,
                     "סרטון": videoUrl,
                 };
+                if (mainCategory === "laptop") {
+                    extraData["סוללה"] = spec.battery;
+                    extraData["משקל"] = spec.weight;
+                }
                 if (computerTypeMode === "all_in_one") {
                     MONITOR_FIELDS.forEach(f => { if (cbSpec[f.key]) extraData[f.key] = cbSpec[f.key]; });
                 }
@@ -594,8 +625,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
             Object.keys(extraData).forEach(k => { if (!extraData[k]) delete extraData[k]; });
             if (details.contactPhone) extraData["טלפון ליצירת קשר"] = details.contactPhone;
-            if (computerTypeMode !== "custom_build" && spec.batteryHealth) extraData["תקינות סוללה"] = spec.batteryHealth;
-            if (computerTypeMode !== "custom_build" && spec.batteryPercent) extraData["אחוזי סוללה"] = `${spec.batteryPercent}%`;
+            if (mainCategory === "laptop" && spec.batteryHealth) extraData["תקינות סוללה"] = spec.batteryHealth;
+            if (mainCategory === "laptop" && spec.batteryPercent) extraData["אחוזי סוללה"] = `${spec.batteryPercent}%`;
 
             const payload = {
                 title: details.title,
@@ -753,17 +784,27 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                             return (
                                                 <div key={field.key} className="space-y-1">
                                                     <Label className="text-gray-300 text-sm">{field.label}</Label>
-                                                    <select
-                                                        value={cbSpec[field.key] || ""}
-                                                        onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
-                                                        className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                                                        dir={field.key.includes("עברית") ? "rtl" : "ltr"}
-                                                    >
-                                                        <option value="" disabled>בחר {field.label}</option>
-                                                        {options.map((opt: string) => (
-                                                            <option key={opt} value={opt}>{opt}</option>
-                                                        ))}
-                                                    </select>
+                                                    {options && options.length > 0 ? (
+                                                        <select
+                                                            value={cbSpec[field.key] || ""}
+                                                            onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
+                                                            className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                                                            dir={field.key.includes("עברית") ? "rtl" : "ltr"}
+                                                        >
+                                                            <option value="" disabled>בחר {field.label}</option>
+                                                            {options.map((opt: string) => (
+                                                                <option key={opt} value={opt}>{opt}</option>
+                                                            ))}
+                                                        </select>
+                                                    ) : (
+                                                        <Input
+                                                            value={cbSpec[field.key] || ""}
+                                                            onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
+                                                            className="w-full bg-gray-900 border border-gray-700 text-sm py-2"
+                                                            placeholder={`הקלד ${field.label}...`}
+                                                            dir="ltr"
+                                                        />
+                                                    )}
                                                 </div>
                                             );
                                         })}
@@ -938,9 +979,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                             />
                                         </div>
 
-                                        {/* Battery + Weight + Year */}
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                            {(!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
+                                            {mainCategory !== "desktop" && (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
                                                 <div className="space-y-1">
                                                     <Label className="text-gray-400 text-xs">🔋 סוללה (mAh / סוג)</Label>
                                                     <Input
@@ -952,22 +992,24 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                                     />
                                                 </div>
                                             )}
-                                            <div className="space-y-1">
-                                                <Label className="text-gray-400 text-xs">📏 משקל</Label>
-                                                <Input
-                                                    value={spec.weight}
-                                                    onChange={e => setSpec(s => ({ ...s, weight: e.target.value }))}
-                                                    placeholder="לדוגמא: 2.2kg"
-                                                    className="bg-gray-800 border-gray-700 text-sm"
-                                                    dir="ltr"
-                                                />
-                                            </div>
+                                            {mainCategory !== "desktop" && (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
+                                                <div className="space-y-1">
+                                                    <Label className="text-gray-400 text-xs">📏 משקל</Label>
+                                                    <Input
+                                                        value={spec.weight}
+                                                        onChange={e => setSpec(s => ({ ...s, weight: e.target.value }))}
+                                                        placeholder="לדוגמא: 2.2kg"
+                                                        className="bg-gray-800 border-gray-700 text-sm"
+                                                        dir="ltr"
+                                                    />
+                                                </div>
+                                            )}
                                             <div className="space-y-1">
                                                 <Label className="text-gray-400 text-xs">📅 שנת ייצור</Label>
                                                 <Input
                                                     value={spec.release_year}
                                                     onChange={e => setSpec(s => ({ ...s, release_year: e.target.value }))}
-                                                    placeholder="2023"
+                                                    placeholder="לדוגמא: 2023"
                                                     className="bg-gray-800 border-gray-700 text-sm"
                                                     dir="ltr"
                                                 />
@@ -1056,7 +1098,10 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                             <Input
                                                 value={spec.extras}
                                                 onChange={e => setSpec(s => ({ ...s, extras: e.target.value }))}
-                                                placeholder="למשל: סוללה חלשה, בקע קטן בפלסטיק... (השאר ריק אם הכול מושלם)"
+                                                placeholder={mainCategory === "laptop"
+                                                    ? "למשל: סוללה חלשה, בקע קטן בפלסטיק... (השאר ריק אם הכול מושלם)"
+                                                    : "למשל: שריטות במארז, חיבור USB תקול... (השאר ריק אם הכול מושלם)"
+                                                }
                                                 className="bg-gray-800 border-orange-500/30 text-orange-400 placeholder:text-gray-600 focus:border-orange-500"
                                             />
                                         </div>

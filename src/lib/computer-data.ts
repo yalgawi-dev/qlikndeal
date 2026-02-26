@@ -19286,16 +19286,15 @@ mergeIntoGlobal(ALL_IN_ONE_DATABASE);
 
 export const MONITOR_OPTIONS = {
     sizes: [
-        "21.5\"", "23.8\"", "24\"", "27\"", "28\"", "31.5\"", "32\"", "34\" (Ultrawide)",
-        "38\" (Ultrawide)", "40\"", "42\"", "43\"", "49\" (Super Ultrawide)", "אחר"
+        "15.6\"", "17\"", "21.5\"", "23.8\"", "24\"", "24.5\"", "27\"", "28\"", "31.5\"", "32\"", "34\" (Ultrawide)", "38\" (Ultrawide)", "42\"", "45\"", "48\"", "49\" (Super Ultrawide)"
     ],
     panelTypes: [
-        "IPS", "VA", "TN", "OLED", "QD-OLED", "Mini-LED", "Nano IPS", "Fast IPS", "אחר"
+        "IPS (צבעים מדוייקים)", "VA (ניגודיות גבוהה)", "TN (זמן תגובה מהיר)", "OLED (שחור מוחלט)", "QD-OLED", "Mini-LED", "לא ידוע"
     ],
     resolutions: [
         "1920×1080 (Full HD)",
         "2560×1080 (Ultrawide FHD)",
-        "2560×1440 (QHD / 2K)",
+        "2560×1440 (2K QHD)",
         "3440×1440 (Ultrawide QHD)",
         "3840×1600 (Ultrawide WQHD+)",
         "3840×2160 (4K UHD)",
@@ -19342,6 +19341,7 @@ export const CUSTOM_BUILD_CATEGORIES = {
     motherboard_socket: { label: "שקע מעבד (Socket)", options: MOTHERBOARD_OPTIONS.sockets },
     motherboard_form: { label: "פורמט לוח אם", options: MOTHERBOARD_OPTIONS.formFactors },
     motherboard_brand: { label: "יצרן לוח אם", options: MOTHERBOARD_OPTIONS.brands },
+    motherboard_model: { label: "דגם לוח אם (למשל: ROG STRIX Z790-E)", options: [] },
     motherboard_features: { label: "חיבור אלחוטי (Wi-Fi/BT)", options: MOTHERBOARD_OPTIONS.features },
     motherboard_ethernet: { label: "חיבור רשת (Ethernet)", options: MOTHERBOARD_OPTIONS.ethernet },
     motherboard_m2: { label: "חריצי M.2", options: MOTHERBOARD_OPTIONS.m2Slots },

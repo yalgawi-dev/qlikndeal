@@ -1959,6 +1959,29 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                         , document.body)
                 }
 
+                {/* ──── DYNAMIC SUMMARY REPORT ──── */}
+                <div className="rounded-2xl border border-gray-700 bg-gray-900/60 p-6 space-y-4 animate-in fade-in slide-in-from-bottom-5">
+                    <h3 className="text-base font-bold text-gray-200 flex items-center gap-2">
+                        📋 דוח סיכום ודיוק נתונים - לשירותך
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        {[
+                            { label: "קטגוריה", val: formData.category },
+                            { label: "יצרן", val: formData.make },
+                            { label: "דגם", val: formData.model },
+                            { label: formData.category === "Real Estate" ? 'מחיפה/עיר' : "שנת השקה / ייצור", val: formData.year, hide: !formData.year },
+                            { label: "מחיר", val: formData.price ? `₪${Number(formData.price.replace(/,/g, "")).toLocaleString()}` : "" },
+                            { label: "מצב", val: formData.condition },
+                            ...formData.extraData.map(e => ({ label: e.key, val: e.value })),
+                        ].filter(item => item.val && !item.hide).map(({ label, val }) => (
+                            <div key={label} className="bg-gray-800/40 p-2 rounded-lg border border-gray-700 flex justify-between items-center">
+                                <span className="text-gray-400 font-medium">{label}:</span>
+                                <span className="text-gray-100 font-bold truncate max-w-[150px]" dir="auto">{val}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="border-t border-amber-500/20 pt-4 mb-4">
                     <label className="flex items-center gap-3 p-3 bg-slate-900/50 hover:bg-slate-900/80 rounded-xl cursor-pointer transition-colors border border-amber-500/20">
                         <div className="relative flex items-center">

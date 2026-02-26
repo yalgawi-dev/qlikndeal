@@ -100,56 +100,56 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
         // --- Local Data Fallback Function ---
         const getLocalSuggestions = (queryStr: string) => {
             const q = queryStr.toLowerCase().trim();
-            const terms = q.split(/\s+/); // Split by space for multi-word fuzzy matching
-
-            // Helper to check if all terms exist in text
-            const matchesAllTerms = (text: string) => {
-                const textLower = text.toLowerCase();
-                return terms.every(term => textLower.includes(term));
-            };
+            const terms = q.split(/\s+/); 
 
             const scoredMatches: { text: string; score: number }[] = [];
 
             if (category === "Phones") {
                 ALL_PHONES.forEach(p => {
                     let score = 0;
-                    if (matchesAllTerms(p.model)) score += 10;
-                    if (p.hebrewAliases?.some(a => matchesAllTerms(a))) score += 8;
-                    if (matchesAllTerms(`${p.brand} ${p.model}`)) score += 5;
+                    const modelLower = p.model.toLowerCase();
+                    const brandLower = p.brand.toLowerCase();
+                    const fullName = `${brandLower} ${modelLower}`;
+
+                    if (fullName === q || modelLower === q) score += 100;
+                    else if (fullName.startsWith(q) || modelLower.startsWith(q)) score += 50;
+                    else if (terms.every(t => fullName.includes(t))) score += 20;
+
+                    if (p.hebrewAliases) {
+                        for (const alias of p.hebrewAliases) {
+                            const a = alias.toLowerCase();
+                            if (a === q) score += 90;
+                            else if (a.startsWith(q)) score += 40;
+                            else if (terms.every(t => a.includes(t))) score += 15;
+                        }
+                    }
 
                     if (score > 0) {
-                        scoredMatches.push({ text: p.model, score });
+                        scoredMatches.push({ text: `${p.brand} ${p.model}`, score });
                     }
                 });
-            } else {
+            } else if (category === "Computers") {
                 for (const brand in COMPUTER_DATABASE) {
+                    const brandLower = brand.toLowerCase();
                     for (const family of COMPUTER_DATABASE[brand]) {
+                        const familyLower = family.name.toLowerCase();
                         for (const sub of family.subModels) {
                             let score = 0;
-                            const fullName = `${brand} ${sub.name}`;
+                            const modelLower = sub.name.toLowerCase();
+                            const fullName = `${brandLower} ${modelLower}`;
 
-                            if (matchesAllTerms(sub.name)) {
-                                score += 10;
-                                // Bonus if it matches exactly or starts with the exact query (avoids Nitro 16 winning over Nitro 5)
-                                if (sub.name.toLowerCase() === q || fullName.toLowerCase() === q) score += 20;
-                                else if (sub.name.toLowerCase().startsWith(q) || fullName.toLowerCase().startsWith(q)) score += 5;
-                            }
-                            else if (matchesAllTerms(fullName)) score += 8;
-                            else if (matchesAllTerms(brand) && matchesAllTerms(family.name)) score += 5;
-
-                            if (score > 0) {
-                                scoredMatches.push({ text: sub.name, score });
-                            }
+                            if (fullName === q || modelLower === q) score += 100;
+                            else if (fullName.startsWith(q) || modelLower.startsWith(q)) score += 50;
+                            else if (terms.every(t => fullName.includes(t))) score += 20;
 
                             if (sub.skus) {
                                 for (const sku of sub.skus) {
-                                    if (sku.id && matchesAllTerms(sku.id)) {
-                                        // High score for SKU matches
-                                        scoredMatches.push({ text: sku.id, score: 12 });
-                                        // Also add the model name with a slightly lower score 
-                                        scoredMatches.push({ text: sub.name, score: score + 2 });
-                                    }
+                                    if (sku.id && sku.id.toLowerCase().includes(q)) score += 30;
                                 }
+                            }
+
+                            if (score > 0) {
+                                scoredMatches.push({ text: `${brand} ${sub.name}`, score });
                             }
                         }
                     }
@@ -158,8 +158,16 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
 
             // Sort by score (descending), get unique texts, and take top 5
             scoredMatches.sort((a, b) => b.score - a.score);
-            const uniqueTexts = Array.from(new Set(scoredMatches.map(m => m.text)));
-            return uniqueTexts.slice(0, 5);
+            const seen = new Set<string>();
+            const uniqueResults: string[] = [];
+            for (const m of scoredMatches) {
+                if (!seen.has(m.text)) {
+                    seen.add(m.text);
+                    uniqueResults.push(m.text);
+                }
+                if (uniqueResults.length >= 6) break;
+            }
+            return uniqueResults;
         };
 
         try {

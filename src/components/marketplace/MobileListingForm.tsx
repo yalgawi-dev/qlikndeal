@@ -1,23 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import React from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { createListing, updateListing, getMyListings, getMyPhone } from "@/app/actions/marketplace";
-import { Loader2, Plus, Image as ImageIcon, X, Sparkles, Smartphone, Cpu, MemoryStick, HardDrive, Battery, Camera } from "lucide-react";
+import { Loader2, Plus, Image as ImageIcon, X, Sparkles, Smartphone, Cpu, MemoryStick, HardDrive, Battery, Camera, Search, Check, ChevronDown } from "lucide-react";
 import { MobileSearchUI } from "@/components/marketplace/MobileSearchUI";
+import { ALL_PHONES } from "@/lib/phone-data";
 
-export const MOBILE_CONDITION_OPTIONS = [
-    "חדש באריזה",
-    "כמו חדש (ללא שריטות)",
-    "משומש במצב טוב",
-    "יש שריטות/מכות מובהקות",
-    "תקול / למכירה לחלקים"
-];
+export const MOBILE_CONDITION_OPTIONS = ["חדש (בקופסה)", "כמו חדש (ללא שריטות)", "משומש (מצב טוב)", "משומש (עם סימני שימוש)", "מחודש", "לא תקין / לחלקים"];
 
 // ---- Types ----
 interface MobileSpec {
@@ -64,6 +58,107 @@ interface MobileListingFormProps {
     listingId?: string;
 }
 
+// ---- Searchable Dropdown ----
+function SearchableDropdown({
+    options,
+    value,
+    onChange,
+    placeholder,
+    disabled = false,
+    emptyLabel = "אין תוצאות",
+}: {
+    options: string[];
+    value: string;
+    onChange: (val: string) => void;
+    placeholder: string;
+    disabled?: boolean;
+    emptyLabel?: string;
+}) {
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState("");
+    const ref = useRef<HTMLDivElement>(null);
+
+    const filtered = useMemo(() =>
+        options.filter(o => o.toLowerCase().includes(query.toLowerCase())),
+        [options, query]
+    );
+
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false);
+                setQuery("");
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    return (
+        <div className="relative" ref={ref}>
+            <button
+                type="button"
+                disabled={disabled}
+                onClick={() => !disabled && setOpen(o => !o)}
+                className={`w-full flex items-center justify-between gap-2 px-3 py-2 bg-gray-800 border transition-all rounded-md text-sm
+                    ${disabled ? 'opacity-50 cursor-not-allowed border-gray-700' : 'border-gray-700 hover:border-gray-600'}
+                    ${open ? 'border-blue-500 ring-1 ring-blue-500/20' : ''}`}
+            >
+                <span className={value ? "text-gray-100" : "text-gray-500"}>
+                    {value || placeholder}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+            </button>
+
+            {open && (
+                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-gray-900 border border-gray-700 rounded-md shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                    <div className="p-2 border-b border-gray-800">
+                        <div className="relative">
+                            <Search className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                            <input
+                                autoFocus
+                                value={query}
+                                onChange={e => setQuery(e.target.value)}
+                                placeholder="חפש..."
+                                className="w-full bg-gray-800 border border-gray-700 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-none focus:border-blue-500"
+                            />
+                        </div>
+                    </div>
+                    <div className="max-h-[220px] overflow-y-auto custom-scrollbar">
+                        {filtered.length > 0 ? (
+                            filtered.map(opt => (
+                                <button
+                                    key={opt}
+                                    type="button"
+                                    onClick={() => {
+                                        onChange(opt);
+                                        setOpen(false);
+                                        setQuery("");
+                                    }}
+                                    className={`w-full text-right px-4 py-2 text-sm hover:bg-blue-600/20 transition-colors
+                                        ${value === opt ? 'bg-blue-600/30 text-blue-200' : 'text-gray-300'}`}
+                                >
+                                    {opt}
+                                </button>
+                            ))
+                        ) : (
+                            <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                                {emptyLabel}
+                                <button
+                                    onClick={() => { onChange(query); setOpen(false); setQuery(""); }}
+                                    className="block w-full mt-2 text-blue-400 hover:underline"
+                                >
+                                    השתמש ב-"{query}" כערך מותאם אישית
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ==== MAIN COMPONENT ====
 export function MobileListingForm({ onComplete, onCancel, initialData, isEditing, listingId }: MobileListingFormProps) {
     const { user } = useUser();
@@ -80,8 +175,8 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
         cpu: initialData?.extraData?.מעבד || "",
         os: initialData?.extraData?.["מערכת הפעלה"] || "",
         battery: initialData?.extraData?.["קיבולת סוללה"] || initialData?.extraData?.סוללה || "",
-        batteryHealth: initialData?.extraData?.["תקינות סוללה"] || "",
-        batteryPercent: (initialData?.extraData?.["אחוזי סוללה"] || "").replace("%", ""),
+        batteryHealth: initialData?.extraData?.["תקינות סוללה"] || "תקינה",
+        batteryPercent: (initialData?.extraData?.["אחוזי סוללה"] || "100").replace("%", ""),
         rear_camera: initialData?.extraData?.["מצלמות אחוריות"] || initialData?.extraData?.["מצלמה אחורית"] || "",
         front_camera: initialData?.extraData?.["מצלמה קדמית"] || "",
         dimensions: initialData?.extraData?.מידות || "",
@@ -106,6 +201,16 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
         contactPhone: initialData?.contactPhone || initialData?.extraData?.["טלפון ליצירת קשר"] || "",
         images: initialData?.images || [],
     });
+
+    const BRANDS = useMemo(() => Array.from(new Set(ALL_PHONES.map(p => p.brand))).sort(), []);
+    const MODELS_FOR_BRAND = useMemo(() => {
+        if (!spec.brand) return [];
+        return Array.from(new Set(
+            ALL_PHONES
+                .filter(p => p.brand === spec.brand)
+                .map(p => p.model)
+        )).sort();
+    }, [spec.brand]);
 
     // Auto-fill phone from DB (Onboarding) or Clerk profile
     useEffect(() => {
@@ -211,6 +316,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                 "מערכת הפעלה": spec.os,
                 "מידות": spec.dimensions,
                 "עובי": spec.thickness,
+                "משקל": spec.weight,
                 "הרחבת זיכרון": spec.expandable_storage,
                 "מצלמות אחוריות": spec.rear_camera,
                 "מצלמה קדמית": spec.front_camera,
@@ -269,11 +375,52 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                                 <Label className="text-gray-300">יצרן / מותג</Label>
-                                <Input value={spec.brand} onChange={e => setSpec(s => ({ ...s, brand: e.target.value }))} className="bg-gray-800 border-gray-700" placeholder="Apple, Samsung..." dir="ltr" />
+                                <SearchableDropdown
+                                    options={BRANDS}
+                                    value={spec.brand}
+                                    onChange={val => setSpec(s => ({ ...s, brand: val, model: "" }))}
+                                    placeholder="בחר יצרן..."
+                                />
                             </div>
                             <div className="space-y-1.5">
                                 <Label className="text-gray-300">דגם מלא</Label>
-                                <Input value={spec.model} onChange={e => setSpec(s => ({ ...s, model: e.target.value }))} className="bg-gray-800 border-gray-700" placeholder="Galaxy S23 Ultra, iPhone 14 Pro..." dir="ltr" />
+                                <SearchableDropdown
+                                    options={MODELS_FOR_BRAND}
+                                    value={spec.model}
+                                    onChange={val => {
+                                        setSpec(s => {
+                                            const newSpec = { ...s, model: val };
+                                            // Auto-fill lookup
+                                            const phone = ALL_PHONES.find(p => p.brand === s.brand && p.model === val);
+                                            if (phone) {
+                                                if (phone.screen) newSpec.screen = `${phone.screen}"`;
+                                                if (phone.storages && phone.storages.length > 0) newSpec.storage = `${phone.storages[0]}GB`;
+                                                if (phone.cpu) newSpec.cpu = phone.cpu;
+                                                if (phone.ram) newSpec.ram = `${phone.ram}GB`;
+                                                if (phone.os) newSpec.os = phone.os;
+                                                if (phone.battery) newSpec.battery = phone.battery;
+                                                if (phone.rear_camera) newSpec.rear_camera = phone.rear_camera;
+                                                if (phone.front_camera) newSpec.front_camera = phone.front_camera;
+                                                if (phone.dimensions) newSpec.dimensions = phone.dimensions;
+                                                if (phone.weight) newSpec.weight = phone.weight;
+                                                if (phone.usb_type) newSpec.usb_type = phone.usb_type;
+                                                if (phone.nfc !== undefined) newSpec.nfc = phone.nfc ? "כן" : "לא";
+                                                if (phone.wireless_charging !== undefined) newSpec.wireless_charging = phone.wireless_charging ? "כן" : "לא";
+                                                if (phone.network) newSpec.network = phone.network;
+                                                if (phone.esim !== undefined) newSpec.esim = phone.esim ? "כן" : "לא";
+                                                if (phone.wifi) newSpec.wifi = phone.wifi;
+                                                if (phone.headphone_jack !== undefined) newSpec.headphone_jack = phone.headphone_jack ? "כן" : "לא";
+                                                if (phone.thickness) newSpec.thickness = phone.thickness;
+                                                if (phone.expandable_storage) newSpec.expandable_storage = phone.expandable_storage;
+                                            }
+                                            return newSpec;
+                                        });
+                                        // Update title
+                                        setDetails(d => ({ ...d, title: `${spec.brand} ${val}` }));
+                                    }}
+                                    placeholder={spec.brand ? "בחר דגם..." : "בחר יצרן תחילה"}
+                                    disabled={!spec.brand}
+                                />
                             </div>
                         </div>
                     </div>
@@ -312,6 +459,11 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                                         <Label className="text-gray-400 text-xs">עובי</Label>
                                         <Input value={spec.thickness} onChange={e => setSpec(s => ({ ...s, thickness: e.target.value }))}
                                             className="bg-gray-800 border-gray-700 text-sm" dir="ltr" placeholder="7.4mm" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-gray-400 text-xs">משקל</Label>
+                                        <Input value={spec.weight} onChange={e => setSpec(s => ({ ...s, weight: e.target.value }))}
+                                            className="bg-gray-800 border-gray-700 text-sm" dir="ltr" placeholder="185g" />
                                     </div>
                                 </div>
                             </div>
