@@ -781,6 +781,24 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {CUSTOM_BUILD_FIELDS.map(field => {
                                             const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
+                                            
+                                            // Special handling for Motherboard Model: Searchable Dropdown with ABC sorting
+                                            if (field.dataKey === "motherboard_model") {
+                                                const mbOptions = MOTHERBOARD_DATABASE.map(m => m.model).sort((a, b) => a.localeCompare(b));
+                                                return (
+                                                    <div key={field.key} className="space-y-1">
+                                                        <Label className="text-gray-300 text-sm">{field.label}</Label>
+                                                        <SearchableDropdown
+                                                            options={mbOptions}
+                                                            value={cbSpec[field.key] || ""}
+                                                            onChange={val => setCbSpec(s => ({ ...s, [field.key]: val }))}
+                                                            placeholder={`חפש ${field.label}...`}
+                                                            emptyLabel="לא נמצא דגם תואם"
+                                                        />
+                                                    </div>
+                                                );
+                                            }
+
                                             return (
                                                 <div key={field.key} className="space-y-1">
                                                     <Label className="text-gray-300 text-sm">{field.label}</Label>
