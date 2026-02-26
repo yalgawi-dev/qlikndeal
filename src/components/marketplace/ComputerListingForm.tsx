@@ -1209,14 +1209,14 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                     {(() => {
                                         // Generate contextual report items
                                         let items: any[] = [];
-                                        
+
                                         if (computerTypeMode === 'custom_build') {
-                                            // ── CUSTOM BUILD REPORT ──
+                                            // ── CUSTOM BUILD ──
                                             items = [
                                                 { label: "לוח אם", val: cbSpec["לוח אם - יצרן"], required: true },
-                                                { label: "דגם לוח אם", val: cbSpec["לוח אם - דגם"], required: false },
+                                                { label: "דגם לוח", val: cbSpec["לוח אם - דגם"], required: false },
                                                 { label: "מעבד", val: cbSpec["מעבד"], required: true },
-                                                { label: "קירור מעבד", val: cbSpec["קירור למעבד"], required: false },
+                                                { label: "קירור", val: cbSpec["קירור למעבד"], required: false },
                                                 { label: "כרטיס מסך", val: cbSpec["כרטיס מסך"], required: true },
                                                 { label: "זיכרון RAM", val: `${cbSpec["RAM - סוג"] || ""} ${cbSpec["RAM - תצורה"] || ""}`.trim(), required: true },
                                                 { label: "מהירות RAM", val: cbSpec["RAM - מהירות"], required: false },
@@ -1224,11 +1224,17 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                                 { label: "כונן נוסף", val: cbSpec["כונן נוסף"], required: false },
                                                 { label: "מארז", val: cbSpec["מארז - יצרן"], required: true },
                                                 { label: "ספק כח", val: cbSpec["ספק כח - יצרן"], required: true },
-                                                { label: "הספק (Watts)", val: cbSpec["ספק כח - הספק"], required: false },
                                                 { label: "מערכת הפעלה", val: cbSpec["מערכת הפעלה"], required: true },
                                             ];
+
+                                            // Add monitor if custom build includes one
+                                            if (cbSpec["מסך - גודל"]) {
+                                                items.push(
+                                                    { label: "מסך כלול", val: `${cbSpec["מסך - גודל"]} ${cbSpec["מסך - רזולוציה"] || ""}`.trim(), required: false }
+                                                );
+                                            }
                                         } else {
-                                            // ── BRANDED / AIO / LAPTOP REPORT ──
+                                            // ── BRANDED / AIO / LAPTOP ──
                                             items = [
                                                 { label: "יצרן", val: spec.brand, required: true },
                                                 { label: "דגם", val: spec.subModel, required: true },
@@ -1246,34 +1252,30 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                                     { label: "בריאות %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false },
                                                     { label: "משקל", val: spec.weight, required: false }
                                                 );
-                                            }
-
-                                            if (computerTypeMode === "all_in_one") {
+                                            } else if (computerTypeMode === "all_in_one") {
                                                 items.push(
                                                     { label: "מסך מובנה", val: cbSpec["מסך - גודל"], required: true },
-                                                    { label: "רזולוציה", val: cbSpec["מסך - רזולוציה"], required: false },
-                                                    { label: "פאנל", val: cbSpec["מסך - סוג פאנל"], required: false }
+                                                    { label: "רזולוציה", val: cbSpec["מסך - רזולוציה"], required: false }
                                                 );
-                                            }
-
-                                            if (computerTypeMode === "brand_desktop") {
-                                                items.push(
-                                                    { label: "תצורת מארז", val: spec.ports, required: false } // Using ports field temporarily or just label
-                                                );
+                                            } else if (mainCategory === "desktop") {
+                                                // General Desktop (Branded) - check if user added external monitor info
+                                                if (cbSpec["מסך - גודל"]) {
+                                                    items.push({ label: "מסך חיצוני", val: cbSpec["מסך - גודל"], required: false });
+                                                }
                                             }
                                         }
 
-                                        // Common fields
-                                        items.push(
+                                        // Common fields (Added to all)
+                                        const common = [
                                             { label: "מצב", val: spec.condition, required: true },
                                             { label: "מחיר", val: details.price ? `₪${Number(details.price.replace(/,/g, "")).toLocaleString()}` : "", required: true },
                                             { label: "טלפון לקשר", val: details.contactPhone, required: true },
-                                            { label: "תיאור/נזקים", val: spec.extras || "ללא", required: false },
+                                            { label: "נזקים/הערות", val: spec.extras || "ללא", required: false },
                                             { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false, warning: true },
                                             { label: "🎬 סרטון", val: videoUrl || "", required: false, warning: true }
-                                        );
+                                        ];
 
-                                        return items;
+                                        return [...items, ...common];
                                     })().map(({ label, val, required, warning }) => {
                                         const isWarning = !val && warning;
                                         return (
