@@ -114,7 +114,7 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
     const loadSpec = (data: any) => {
         const s = buildSpec(data);
         // Map the db fields to standard names correctly and pass raw directly to the parent
-        onApplySpecs({ ...s, battery: s.battery_info, ports: s.ports_info, notes: s.notes });
+        onApplySpecs({ ...s, battery: (s as any).battery_info || s.battery, ports: (s as any).ports_info || s.ports, notes: s.notes });
         setShowSug(false);
     };
 
@@ -144,8 +144,8 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
             } finally { setLoading(false); }
         } else {
             const top = searchLocalDB(activeDb, q, 1);
-            if (top.length > 0) { 
-                loadSpec(top[0].data); 
+            if (top.length > 0) {
+                loadSpec(top[0].data);
             } else {
                 // Check if it exists in the main DB to give a better error message
                 const inMainDb = searchLocalDB(COMPUTER_DATABASE, q, 1);

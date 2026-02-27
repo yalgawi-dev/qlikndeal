@@ -37,6 +37,7 @@
     ],
     "exclude": [
         "node_modules",
+        "backup_today",
         "test_*.ts",
         "test_*.tsx"
     ]

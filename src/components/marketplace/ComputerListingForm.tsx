@@ -365,18 +365,18 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             setDetails(d => ({ ...d, title: auto }));
         }
     }, [spec.brand, spec.subModel, spec.cpu, spec.ram, spec.storage]);
-    
+
     // Motherboard Smart Fill - Updates ALL related fields when a model is selected
     useEffect(() => {
         const mbModel = cbSpec["לוח אם - דגם"];
         if (mbModel && computerTypeMode === "custom_build") {
             // Find exact match from our database
             const match = MOTHERBOARD_DATABASE.find(m => m.model === mbModel);
-            
+
             if (match) {
                 // Normalize chipset: "Intel Z790" -> "Z790" to match our select options
                 const chipset = match.chipset.replace("Intel ", "").replace("AMD ", "");
-                
+
                 setCbSpec(prev => ({
                     ...prev,
                     "לוח אם - יצרן": match.brand,
@@ -627,7 +627,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                     "החרגות / נזקים": spec.extras,
                     "סרטון": videoUrl,
                 };
-                if (mainCategory === "laptop") {
+                if ((mainCategory as any) === "laptop") {
                     extraData["סוללה"] = spec.battery;
                     extraData["משקל"] = spec.weight;
                 }
@@ -789,618 +789,618 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 <form id="manual-specs-section" onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
 
                                     {computerTypeMode === 'custom_build' ? (
-                                <div className="space-y-6 animate-in fade-in slide-in-from-top-4">
-                                    <h3 className="text-lg font-bold border-b border-indigo-900/50 pb-2 text-indigo-300">⚙️ מפרט בנייה עצמית (Custom Build)</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {CUSTOM_BUILD_FIELDS.map(field => {
-                                            const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
-                                            
-                                            // Special handling for Motherboard Model: Searchable Dropdown with ABC sorting
-                                            if (field.dataKey === "motherboard_model") {
-                                                const mbOptions = MOTHERBOARD_DATABASE.map(m => m.model).sort((a, b) => a.localeCompare(b));
-                                                return (
-                                                    <div key={field.key} className="space-y-1">
-                                                        <Label className="text-gray-300 text-sm">{field.label}</Label>
-                                                        <SearchableDropdown
-                                                            options={mbOptions}
-                                                            value={cbSpec[field.key] || ""}
-                                                            onChange={val => setCbSpec(s => ({ ...s, [field.key]: val }))}
-                                                            placeholder={`חפש ${field.label}...`}
-                                                            emptyLabel="לא נמצא דגם תואם"
-                                                        />
-                                                    </div>
-                                                );
-                                            }
+                                        <div className="space-y-6 animate-in fade-in slide-in-from-top-4">
+                                            <h3 className="text-lg font-bold border-b border-indigo-900/50 pb-2 text-indigo-300">⚙️ מפרט בנייה עצמית (Custom Build)</h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {CUSTOM_BUILD_FIELDS.map(field => {
+                                                    const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
 
-                                            return (
-                                                <div key={field.key} className="space-y-1">
-                                                    <Label className="text-gray-300 text-sm">{field.label}</Label>
-                                                    {options && options.length > 0 ? (
-                                                        <select
-                                                            value={cbSpec[field.key] || ""}
-                                                            onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
-                                                            className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                                                            dir={field.key.includes("עברית") ? "rtl" : "ltr"}
-                                                        >
-                                                            <option value="" disabled>בחר {field.label}</option>
-                                                            {options.map((opt: string) => (
-                                                                <option key={opt} value={opt}>{opt}</option>
-                                                            ))}
-                                                        </select>
-                                                    ) : (
-                                                        <Input
-                                                            value={cbSpec[field.key] || ""}
-                                                            onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
-                                                            className="w-full bg-gray-900 border border-gray-700 text-sm py-2"
-                                                            placeholder={`הקלד ${field.label}...`}
-                                                            dir="ltr"
-                                                        />
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-
-                                    <h3 className="text-lg font-bold border-b border-blue-900/50 pb-2 text-blue-300 mt-6">🖥️ מסך מחשב (אם מצורף)</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {MONITOR_FIELDS.map(field => {
-                                            const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
-                                            return (
-                                                <div key={field.key} className="space-y-1">
-                                                    <Label className="text-blue-200 text-sm">{field.label}</Label>
-                                                    <select
-                                                        value={cbSpec[field.key] || ""}
-                                                        onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
-                                                        className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                                                        dir="ltr"
-                                                    >
-                                                        <option value="" disabled>בחר {field.label}</option>
-                                                        {options.map((opt: string) => (
-                                                            <option key={opt} value={opt}>{opt}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-gray-300">⚠️ החרגות / נזקים פיזיים בעמדה</Label>
-                                        <Input
-                                            value={spec.extras}
-                                            onChange={e => setSpec(s => ({ ...s, extras: e.target.value }))}
-                                            placeholder="למשל: סריטה על המארז... (השאר ריק אם הכול מושלם)"
-                                            className="bg-gray-800 border-orange-500/30 text-orange-400 placeholder:text-gray-600 focus:border-orange-500"
-                                        />
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="space-y-8 animate-in fade-in slide-in-from-top-4">
-                                    {/* ==== SECTION: IDENTIFICATION ==== */}
-                                    <div className="space-y-4">
-                                        <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">זיהוי (יצרן וסדרה)</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                            <SpecSelector
-                                                label="יצרן"
-                                                options={availableBrands}
-                                                value={spec.brand}
-                                                onChange={v => {
-                                                    setSpec(s => ({ ...s, brand: v }));
-                                                }}
-                                            />
-                                            <SpecSelector
-                                                label="סדרה (Family)"
-                                                options={(spec.brand ? modelFamilies.map(f => f.name) : Array.from(new Set(allModelsFlat.map(m => m.family.name)))).sort()}
-                                                value={spec.family}
-                                                onChange={v => {
-                                                    const mappedBrand = spec.brand ? spec.brand : allModelsFlat.find(m => m.family.name === v)?.brand || "";
-                                                    setSpec(s => ({ ...s, brand: mappedBrand, family: v }));
-                                                }}
-                                            />
-                                            <SpecSelector
-                                                label="תת דגם / מק״ט"
-                                                options={[
-                                                    ...(spec.family
-                                                        ? allModelsFlat.filter(m => m.family.name === spec.family).map(m => m.displayName)
-                                                        : Array.from(new Set(allModelsFlat.map(m => m.displayName)))
-                                                    ).sort(),
-                                                    "אחר / לא ברשימה"
-                                                ]}
-                                                value={spec.subModel}
-                                                onChange={v => {
-                                                    if (v !== "אחר / לא ברשימה") {
-                                                        const found = allModelsFlat.find(m => m.sub.name === v || m.displayName === v);
-                                                        if (found) applySmartModelPick(found.brand, found.family.name, found.sub, found.sku);
-                                                    } else {
-                                                        setSpec(s => ({ ...s, subModel: v }));
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-                                        {spec.subModel === "אחר / לא ברשימה" && (
-                                            <Input
-                                                value={spec.subModel === "אחר / לא ברשימה" ? "" : spec.subModel}
-                                                onChange={e => setSpec(s => ({ ...s, subModel: e.target.value }))}
-                                                placeholder="הקלד את הדגם המלא ידנית..."
-                                                className="bg-gray-800 border-gray-700"
-                                                dir="ltr"
-                                            />
-                                        )}
-                                    </div>
-
-                                    {/* ==== SECTION: SPECS ==== */}
-                                    <div className="space-y-4 relative">
-                                        <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">מפרט טכני</h3>
-                                        {!spec.brand && !spec.family && !spec.subModel && <div className="absolute inset-x-0 bottom-0 top-10 bg-gray-900/80 backdrop-blur-[1px] z-10 rounded-xl flex items-center justify-center">
-                                            <div className="text-gray-400 bg-gray-900 border border-gray-700 px-4 py-2 rounded-full text-sm">אנא בחר דגם או התחל זיהוי מהיר למעלה</div>
-                                        </div>}
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <SpecSelector
-                                                label="זיכרון RAM"
-                                                options={specOptions.ram}
-                                                value={spec.ram}
-                                                onChange={v => setSpec(s => ({ ...s, ram: v }))}
-                                                icon={<MemoryStick className="w-4 h-4" />}
-                                                uncertain={uncertainFields.includes('ram')}
-                                                onConfirm={() => removeUncertain('ram')}
-                                            />
-                                            <SpecSelector
-                                                label="נפח אחסון"
-                                                options={specOptions.storage}
-                                                value={spec.storage}
-                                                onChange={v => setSpec(s => ({ ...s, storage: v }))}
-                                                icon={<HardDrive className="w-4 h-4" />}
-                                                uncertain={uncertainFields.includes('storage')}
-                                                onConfirm={() => removeUncertain('storage')}
-                                            />
-                                            <SpecSelector
-                                                label="מעבד (CPU)"
-                                                options={specOptions.cpu}
-                                                value={spec.cpu}
-                                                onChange={v => setSpec(s => ({ ...s, cpu: v }))}
-                                                icon={<Cpu className="w-4 h-4" />}
-                                                uncertain={uncertainFields.includes('cpu')}
-                                                onConfirm={() => removeUncertain('cpu')}
-                                            />
-                                            <SpecSelector
-                                                label="כרטיס מסך (GPU)"
-                                                options={specOptions.gpu.length > 0 ? specOptions.gpu : GPU_OPTIONS}
-                                                value={spec.gpu}
-                                                onChange={v => setSpec(s => ({ ...s, gpu: v }))}
-                                                icon={<Monitor className="w-4 h-4" />}
-                                                uncertain={uncertainFields.includes('gpu')}
-                                                onConfirm={() => removeUncertain('gpu')}
-                                            />
-                                            {(!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
-                                                <SpecSelector
-                                                    label="גודל מסך"
-                                                    options={specOptions.screen}
-                                                    value={spec.screen}
-                                                    onChange={v => setSpec(s => ({ ...s, screen: v }))}
-                                                    icon={<Maximize2 className="w-4 h-4" />}
-                                                    uncertain={uncertainFields.includes('screen')}
-                                                    onConfirm={() => removeUncertain('screen')}
-                                                />
-                                            )}
-                                            <SpecSelector
-                                                label="מערכת הפעלה"
-                                                options={OS_OPTIONS}
-                                                value={spec.os}
-                                                onChange={v => setSpec(s => ({ ...s, os: v }))}
-                                                uncertain={uncertainFields.includes('os')}
-                                                onConfirm={() => removeUncertain('os')}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* ==== SECTION: DETAILS ==== */}
-                                    <div className="space-y-4">
-                                        <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">מפרט יצרן (חדש)</h3>
-
-                                        {/* SKU */}
-                                        <div className="space-y-1">
-                                            <Label className="text-gray-400 text-xs font-mono">מספר דגם / SKU (מהתווית / קופסה)</Label>
-                                            <Input
-                                                value={spec.sku}
-                                                onChange={e => setSpec(s => ({ ...s, sku: e.target.value }))}
-                                                placeholder="לדוגמה: AN515-58-525P"
-                                                className="bg-gray-800 border-gray-700 font-mono text-sm"
-                                                dir="ltr"
-                                            />
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                            {mainCategory !== "desktop" && (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
-                                                <div className="space-y-1">
-                                                    <Label className="text-gray-400 text-xs">🔋 סוללה (mAh / סוג)</Label>
-                                                    <Input
-                                                        value={spec.battery}
-                                                        onChange={e => setSpec(s => ({ ...s, battery: e.target.value }))}
-                                                        placeholder="לדוגמא: 72Wh, 6500mAh"
-                                                        className="bg-gray-800 border-gray-700 text-sm"
-                                                        dir="ltr"
-                                                    />
-                                                </div>
-                                            )}
-                                            {mainCategory !== "desktop" && (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
-                                                <div className="space-y-1">
-                                                    <Label className="text-gray-400 text-xs">📏 משקל</Label>
-                                                    <Input
-                                                        value={spec.weight}
-                                                        onChange={e => setSpec(s => ({ ...s, weight: e.target.value }))}
-                                                        placeholder="לדוגמא: 2.2kg"
-                                                        className="bg-gray-800 border-gray-700 text-sm"
-                                                        dir="ltr"
-                                                    />
-                                                </div>
-                                            )}
-                                            <div className="space-y-1">
-                                                <Label className="text-gray-400 text-xs">📅 שנת ייצור</Label>
-                                                <Input
-                                                    value={spec.release_year}
-                                                    onChange={e => setSpec(s => ({ ...s, release_year: e.target.value }))}
-                                                    placeholder="לדוגמא: 2023"
-                                                    className="bg-gray-800 border-gray-700 text-sm"
-                                                    dir="ltr"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Ports - chip multi-select */}
-                                        <div className="space-y-2">
-                                            <Label className="text-gray-400 text-xs">🔌 חיבורים (ports) – בחר או הקלד</Label>
-                                            {/* Auto-filled text from DB shown as hint */}
-                                            {spec.ports && spec.ports.includes(",") && (
-                                                <p className="text-xs text-blue-400/70 bg-blue-500/5 border border-blue-500/20 rounded px-2 py-1">
-                                                    📌 לפי יצרן: {spec.ports}
-                                                </p>
-                                            )}
-                                            <div className="flex flex-wrap gap-2">
-                                                {[
-                                                    "USB-A 3.2", "USB-A 2.0", "USB-C 3.2",
-                                                    "Thunderbolt 4", "Thunderbolt 3",
-                                                    "HDMI 2.1", "HDMI 2.0", "HDMI 1.4",
-                                                    "DisplayPort", "Mini DisplayPort",
-                                                    "SD Card", "Ethernet (RJ-45)", "Audio 3.5mm", "VGA"
-                                                ].map(port => {
-                                                    const active = spec.ports?.includes(port);
-                                                    return (
-                                                        <button
-                                                            key={port} type="button"
-                                                            onClick={() => {
-                                                                setSpec(s => {
-                                                                    const current = (s.ports || "").split(",").map(p => p.trim()).filter(Boolean);
-                                                                    const next = current.includes(port)
-                                                                        ? current.filter(p => p !== port)
-                                                                        : [...current, port];
-                                                                    return { ...s, ports: next.join(", ") };
-                                                                });
-                                                            }}
-                                                            className={`px-2.5 py-1 rounded-full text-xs border font-medium transition-all ${active
-                                                                ? "bg-blue-500/20 border-blue-500 text-blue-300"
-                                                                : "bg-gray-800/50 border-gray-700 text-gray-500 hover:border-gray-500"
-                                                                }`}
-                                                        >
-                                                            {active ? "✓ " : ""}{port}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                            <Input
-                                                value={spec.ports}
-                                                onChange={e => setSpec(s => ({ ...s, ports: e.target.value }))}
-                                                placeholder="או הקלד חיבורים בחופשי: USB-C, USB-A ×3, HDMI..."
-                                                className="bg-gray-800/40 border-gray-700 text-sm mt-1"
-                                                dir="ltr"
-                                            />
-                                        </div>
-
-                                        {computerTypeMode === 'all_in_one' && (
-                                            <div className="space-y-4 pb-4 border-b border-gray-800/50">
-                                                <h3 className="text-lg font-bold text-blue-300">🖥️ נתוני מסך מובנה</h3>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {MONITOR_FIELDS.map(field => {
-                                                        const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
+                                                    // Special handling for Motherboard Model: Searchable Dropdown with ABC sorting
+                                                    if (field.dataKey === "motherboard_model") {
+                                                        const mbOptions = MOTHERBOARD_DATABASE.map(m => m.model).sort((a, b) => a.localeCompare(b));
                                                         return (
                                                             <div key={field.key} className="space-y-1">
-                                                                <Label className="text-blue-200 text-sm">{field.label}</Label>
+                                                                <Label className="text-gray-300 text-sm">{field.label}</Label>
+                                                                <SearchableDropdown
+                                                                    options={mbOptions}
+                                                                    value={cbSpec[field.key] || ""}
+                                                                    onChange={val => setCbSpec(s => ({ ...s, [field.key]: val }))}
+                                                                    placeholder={`חפש ${field.label}...`}
+                                                                    emptyLabel="לא נמצא דגם תואם"
+                                                                />
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <div key={field.key} className="space-y-1">
+                                                            <Label className="text-gray-300 text-sm">{field.label}</Label>
+                                                            {options && options.length > 0 ? (
                                                                 <select
                                                                     value={cbSpec[field.key] || ""}
                                                                     onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
-                                                                    className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                                                                    dir="ltr"
+                                                                    className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                                                                    dir={field.key.includes("עברית") ? "rtl" : "ltr"}
                                                                 >
                                                                     <option value="" disabled>בחר {field.label}</option>
                                                                     {options.map((opt: string) => (
                                                                         <option key={opt} value={opt}>{opt}</option>
                                                                     ))}
                                                                 </select>
-                                                            </div>
-                                                        );
-                                                    })}
+                                                            ) : (
+                                                                <Input
+                                                                    value={cbSpec[field.key] || ""}
+                                                                    onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
+                                                                    className="w-full bg-gray-900 border border-gray-700 text-sm py-2"
+                                                                    placeholder={`הקלד ${field.label}...`}
+                                                                    dir="ltr"
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            <h3 className="text-lg font-bold border-b border-blue-900/50 pb-2 text-blue-300 mt-6">🖥️ מסך מחשב (אם מצורף)</h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {MONITOR_FIELDS.map(field => {
+                                                    const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
+                                                    return (
+                                                        <div key={field.key} className="space-y-1">
+                                                            <Label className="text-blue-200 text-sm">{field.label}</Label>
+                                                            <select
+                                                                value={cbSpec[field.key] || ""}
+                                                                onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
+                                                                className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                                                dir="ltr"
+                                                            >
+                                                                <option value="" disabled>בחר {field.label}</option>
+                                                                {options.map((opt: string) => (
+                                                                    <option key={opt} value={opt}>{opt}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label className="text-gray-300">⚠️ החרגות / נזקים פיזיים בעמדה</Label>
+                                                <Input
+                                                    value={spec.extras}
+                                                    onChange={e => setSpec(s => ({ ...s, extras: e.target.value }))}
+                                                    placeholder="למשל: סריטה על המארז... (השאר ריק אם הכול מושלם)"
+                                                    className="bg-gray-800 border-orange-500/30 text-orange-400 placeholder:text-gray-600 focus:border-orange-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-8 animate-in fade-in slide-in-from-top-4">
+                                            {/* ==== SECTION: IDENTIFICATION ==== */}
+                                            <div className="space-y-4">
+                                                <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">זיהוי (יצרן וסדרה)</h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    <SpecSelector
+                                                        label="יצרן"
+                                                        options={availableBrands}
+                                                        value={spec.brand}
+                                                        onChange={v => {
+                                                            setSpec(s => ({ ...s, brand: v }));
+                                                        }}
+                                                    />
+                                                    <SpecSelector
+                                                        label="סדרה (Family)"
+                                                        options={(spec.brand ? modelFamilies.map(f => f.name) : Array.from(new Set(allModelsFlat.map(m => m.family.name)))).sort()}
+                                                        value={spec.family}
+                                                        onChange={v => {
+                                                            const mappedBrand = spec.brand ? spec.brand : allModelsFlat.find(m => m.family.name === v)?.brand || "";
+                                                            setSpec(s => ({ ...s, brand: mappedBrand, family: v }));
+                                                        }}
+                                                    />
+                                                    <SpecSelector
+                                                        label="תת דגם / מק״ט"
+                                                        options={[
+                                                            ...(spec.family
+                                                                ? allModelsFlat.filter(m => m.family.name === spec.family).map(m => m.displayName)
+                                                                : Array.from(new Set(allModelsFlat.map(m => m.displayName)))
+                                                            ).sort(),
+                                                            "אחר / לא ברשימה"
+                                                        ]}
+                                                        value={spec.subModel}
+                                                        onChange={v => {
+                                                            if (v !== "אחר / לא ברשימה") {
+                                                                const found = allModelsFlat.find(m => m.sub.name === v || m.displayName === v);
+                                                                if (found) applySmartModelPick(found.brand, found.family.name, found.sub, found.sku);
+                                                            } else {
+                                                                setSpec(s => ({ ...s, subModel: v }));
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                                {spec.subModel === "אחר / לא ברשימה" && (
+                                                    <Input
+                                                        value={spec.subModel === "אחר / לא ברשימה" ? "" : spec.subModel}
+                                                        onChange={e => setSpec(s => ({ ...s, subModel: e.target.value }))}
+                                                        placeholder="הקלד את הדגם המלא ידנית..."
+                                                        className="bg-gray-800 border-gray-700"
+                                                        dir="ltr"
+                                                    />
+                                                )}
+                                            </div>
+
+                                            {/* ==== SECTION: SPECS ==== */}
+                                            <div className="space-y-4 relative">
+                                                <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">מפרט טכני</h3>
+                                                {!spec.brand && !spec.family && !spec.subModel && <div className="absolute inset-x-0 bottom-0 top-10 bg-gray-900/80 backdrop-blur-[1px] z-10 rounded-xl flex items-center justify-center">
+                                                    <div className="text-gray-400 bg-gray-900 border border-gray-700 px-4 py-2 rounded-full text-sm">אנא בחר דגם או התחל זיהוי מהיר למעלה</div>
+                                                </div>}
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <SpecSelector
+                                                        label="זיכרון RAM"
+                                                        options={specOptions.ram}
+                                                        value={spec.ram}
+                                                        onChange={v => setSpec(s => ({ ...s, ram: v }))}
+                                                        icon={<MemoryStick className="w-4 h-4" />}
+                                                        uncertain={uncertainFields.includes('ram')}
+                                                        onConfirm={() => removeUncertain('ram')}
+                                                    />
+                                                    <SpecSelector
+                                                        label="נפח אחסון"
+                                                        options={specOptions.storage}
+                                                        value={spec.storage}
+                                                        onChange={v => setSpec(s => ({ ...s, storage: v }))}
+                                                        icon={<HardDrive className="w-4 h-4" />}
+                                                        uncertain={uncertainFields.includes('storage')}
+                                                        onConfirm={() => removeUncertain('storage')}
+                                                    />
+                                                    <SpecSelector
+                                                        label="מעבד (CPU)"
+                                                        options={specOptions.cpu}
+                                                        value={spec.cpu}
+                                                        onChange={v => setSpec(s => ({ ...s, cpu: v }))}
+                                                        icon={<Cpu className="w-4 h-4" />}
+                                                        uncertain={uncertainFields.includes('cpu')}
+                                                        onConfirm={() => removeUncertain('cpu')}
+                                                    />
+                                                    <SpecSelector
+                                                        label="כרטיס מסך (GPU)"
+                                                        options={specOptions.gpu.length > 0 ? specOptions.gpu : GPU_OPTIONS}
+                                                        value={spec.gpu}
+                                                        onChange={v => setSpec(s => ({ ...s, gpu: v }))}
+                                                        icon={<Monitor className="w-4 h-4" />}
+                                                        uncertain={uncertainFields.includes('gpu')}
+                                                        onConfirm={() => removeUncertain('gpu')}
+                                                    />
+                                                    {(!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
+                                                        <SpecSelector
+                                                            label="גודל מסך"
+                                                            options={specOptions.screen}
+                                                            value={spec.screen}
+                                                            onChange={v => setSpec(s => ({ ...s, screen: v }))}
+                                                            icon={<Maximize2 className="w-4 h-4" />}
+                                                            uncertain={uncertainFields.includes('screen')}
+                                                            onConfirm={() => removeUncertain('screen')}
+                                                        />
+                                                    )}
+                                                    <SpecSelector
+                                                        label="מערכת הפעלה"
+                                                        options={OS_OPTIONS}
+                                                        value={spec.os}
+                                                        onChange={v => setSpec(s => ({ ...s, os: v }))}
+                                                        uncertain={uncertainFields.includes('os')}
+                                                        onConfirm={() => removeUncertain('os')}
+                                                    />
                                                 </div>
                                             </div>
-                                        )}
 
-                                        {/* Extras / damages */}
+                                            {/* ==== SECTION: DETAILS ==== */}
+                                            <div className="space-y-4">
+                                                <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">מפרט יצרן (חדש)</h3>
+
+                                                {/* SKU */}
+                                                <div className="space-y-1">
+                                                    <Label className="text-gray-400 text-xs font-mono">מספר דגם / SKU (מהתווית / קופסה)</Label>
+                                                    <Input
+                                                        value={spec.sku}
+                                                        onChange={e => setSpec(s => ({ ...s, sku: e.target.value }))}
+                                                        placeholder="לדוגמה: AN515-58-525P"
+                                                        className="bg-gray-800 border-gray-700 font-mono text-sm"
+                                                        dir="ltr"
+                                                    />
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                    {mainCategory !== "desktop" && (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
+                                                        <div className="space-y-1">
+                                                            <Label className="text-gray-400 text-xs">🔋 סוללה (mAh / סוג)</Label>
+                                                            <Input
+                                                                value={spec.battery}
+                                                                onChange={e => setSpec(s => ({ ...s, battery: e.target.value }))}
+                                                                placeholder="לדוגמא: 72Wh, 6500mAh"
+                                                                className="bg-gray-800 border-gray-700 text-sm"
+                                                                dir="ltr"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    {mainCategory !== "desktop" && (!selectedFamilyObj || (selectedFamilyObj.type !== "desktop" && selectedFamilyObj.type !== "mini" && selectedFamilyObj.type !== "workstation")) && (
+                                                        <div className="space-y-1">
+                                                            <Label className="text-gray-400 text-xs">📏 משקל</Label>
+                                                            <Input
+                                                                value={spec.weight}
+                                                                onChange={e => setSpec(s => ({ ...s, weight: e.target.value }))}
+                                                                placeholder="לדוגמא: 2.2kg"
+                                                                className="bg-gray-800 border-gray-700 text-sm"
+                                                                dir="ltr"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    <div className="space-y-1">
+                                                        <Label className="text-gray-400 text-xs">📅 שנת ייצור</Label>
+                                                        <Input
+                                                            value={spec.release_year}
+                                                            onChange={e => setSpec(s => ({ ...s, release_year: e.target.value }))}
+                                                            placeholder="לדוגמא: 2023"
+                                                            className="bg-gray-800 border-gray-700 text-sm"
+                                                            dir="ltr"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Ports - chip multi-select */}
+                                                <div className="space-y-2">
+                                                    <Label className="text-gray-400 text-xs">🔌 חיבורים (ports) – בחר או הקלד</Label>
+                                                    {/* Auto-filled text from DB shown as hint */}
+                                                    {spec.ports && spec.ports.includes(",") && (
+                                                        <p className="text-xs text-blue-400/70 bg-blue-500/5 border border-blue-500/20 rounded px-2 py-1">
+                                                            📌 לפי יצרן: {spec.ports}
+                                                        </p>
+                                                    )}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {[
+                                                            "USB-A 3.2", "USB-A 2.0", "USB-C 3.2",
+                                                            "Thunderbolt 4", "Thunderbolt 3",
+                                                            "HDMI 2.1", "HDMI 2.0", "HDMI 1.4",
+                                                            "DisplayPort", "Mini DisplayPort",
+                                                            "SD Card", "Ethernet (RJ-45)", "Audio 3.5mm", "VGA"
+                                                        ].map(port => {
+                                                            const active = spec.ports?.includes(port);
+                                                            return (
+                                                                <button
+                                                                    key={port} type="button"
+                                                                    onClick={() => {
+                                                                        setSpec(s => {
+                                                                            const current = (s.ports || "").split(",").map(p => p.trim()).filter(Boolean);
+                                                                            const next = current.includes(port)
+                                                                                ? current.filter(p => p !== port)
+                                                                                : [...current, port];
+                                                                            return { ...s, ports: next.join(", ") };
+                                                                        });
+                                                                    }}
+                                                                    className={`px-2.5 py-1 rounded-full text-xs border font-medium transition-all ${active
+                                                                        ? "bg-blue-500/20 border-blue-500 text-blue-300"
+                                                                        : "bg-gray-800/50 border-gray-700 text-gray-500 hover:border-gray-500"
+                                                                        }`}
+                                                                >
+                                                                    {active ? "✓ " : ""}{port}
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                    <Input
+                                                        value={spec.ports}
+                                                        onChange={e => setSpec(s => ({ ...s, ports: e.target.value }))}
+                                                        placeholder="או הקלד חיבורים בחופשי: USB-C, USB-A ×3, HDMI..."
+                                                        className="bg-gray-800/40 border-gray-700 text-sm mt-1"
+                                                        dir="ltr"
+                                                    />
+                                                </div>
+
+                                                {computerTypeMode === 'all_in_one' && (
+                                                    <div className="space-y-4 pb-4 border-b border-gray-800/50">
+                                                        <h3 className="text-lg font-bold text-blue-300">🖥️ נתוני מסך מובנה</h3>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            {MONITOR_FIELDS.map(field => {
+                                                                const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
+                                                                return (
+                                                                    <div key={field.key} className="space-y-1">
+                                                                        <Label className="text-blue-200 text-sm">{field.label}</Label>
+                                                                        <select
+                                                                            value={cbSpec[field.key] || ""}
+                                                                            onChange={e => setCbSpec(s => ({ ...s, [field.key]: e.target.value }))}
+                                                                            className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-sm text-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                                                            dir="ltr"
+                                                                        >
+                                                                            <option value="" disabled>בחר {field.label}</option>
+                                                                            {options.map((opt: string) => (
+                                                                                <option key={opt} value={opt}>{opt}</option>
+                                                                            ))}
+                                                                        </select>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Extras / damages */}
+                                                <div className="space-y-2">
+                                                    <Label className="text-gray-300">⚠️ החרגות / נזקים פיזיים</Label>
+                                                    <Input
+                                                        value={spec.extras}
+                                                        onChange={e => setSpec(s => ({ ...s, extras: e.target.value }))}
+                                                        placeholder={mainCategory === "laptop"
+                                                            ? "למשל: סוללה חלשה, בקע קטן בפלסטיק... (השאר ריק אם הכול מושלם)"
+                                                            : "למשל: שריטות במארז, חיבור USB תקול... (השאר ריק אם הכול מושלם)"
+                                                        }
+                                                        className="bg-gray-800 border-orange-500/30 text-orange-400 placeholder:text-gray-600 focus:border-orange-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )} {/* Close regular computer fields form section */}
+
+                                    {/* Condition */}
+                                    <div className="space-y-2">
+                                        <Label className="text-gray-300 font-bold">מצב המחשב <span className="text-red-500">*</span></Label>
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                                            {CONDITION_OPTIONS.map(opt => {
+                                                const isSel = spec.condition === opt;
+                                                const cColor = opt.includes("חדש") ? "green" : opt.includes("לחלקים") ? "red" : "blue";
+                                                return (
+                                                    <button
+                                                        key={opt} type="button"
+                                                        onClick={() => setSpec(s => ({ ...s, condition: opt }))}
+                                                        className={`py-2 px-1 text-sm rounded-lg border font-medium transition-all ${isSel ? (cColor === "green" ? "bg-green-600/20 border-green-500 text-green-300" : cColor === "red" ? "bg-red-600/20 border-red-500 text-red-300" : "bg-blue-600/20 border-blue-500 text-blue-300")
+                                                            : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800 hover:border-gray-500"
+                                                            }`}
+                                                    >
+                                                        {opt}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        {!spec.condition && <p className="text-xs text-yellow-500 mt-1">⚠️ אנא בחר מצב מחשב</p>}
+                                    </div>
+
+                                    {/* Battery Health - Only for laptops */}
+                                    {mainCategory === "laptop" && (
+                                        <div className="space-y-2 border border-gray-700/50 rounded-xl p-3 bg-gray-800/20">
+                                            <Label className="text-gray-300 text-sm font-semibold">🔋 תקינות סוללה</Label>
+                                            <div className="flex gap-2">
+                                                <button type="button"
+                                                    onClick={() => setSpec(s => ({ ...s, batteryHealth: "תקינה" }))}
+                                                    className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "תקינה" ? "bg-green-600/20 border-green-500 text-green-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
+                                                        }`}>
+                                                    ✅ תקינה
+                                                </button>
+                                                <button type="button"
+                                                    onClick={() => setSpec(s => ({ ...s, batteryHealth: "לא תקינה" }))}
+                                                    className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "לא תקינה" ? "bg-red-600/20 border-red-500 text-red-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
+                                                        }`}>
+                                                    ❌ לא תקינה
+                                                </button>
+                                            </div>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <Label className="text-gray-400 text-xs whitespace-nowrap">בריאות סוללה:</Label>
+                                                <Input
+                                                    type="number" min="1" max="100"
+                                                    value={spec.batteryPercent}
+                                                    onChange={e => setSpec(s => ({ ...s, batteryPercent: e.target.value }))}
+                                                    className="bg-gray-800 border-gray-700 w-20 text-center text-sm"
+                                                    dir="ltr" placeholder="%"
+                                                />
+                                                <span className="text-gray-500 text-xs">%</span>
+                                                {spec.batteryPercent && (
+                                                    <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
+                                                        <div className={`h-full rounded-full transition-all ${Number(spec.batteryPercent) > 80 ? 'bg-green-500' :
+                                                            Number(spec.batteryPercent) > 50 ? 'bg-yellow-500' : 'bg-red-500'
+                                                            }`} style={{ width: `${Math.min(100, Number(spec.batteryPercent))}%` }} />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-2 gap-4 mt-2">
                                         <div className="space-y-2">
-                                            <Label className="text-gray-300">⚠️ החרגות / נזקים פיזיים</Label>
-                                            <Input
-                                                value={spec.extras}
-                                                onChange={e => setSpec(s => ({ ...s, extras: e.target.value }))}
-                                                placeholder={mainCategory === "laptop"
-                                                    ? "למשל: סוללה חלשה, בקע קטן בפלסטיק... (השאר ריק אם הכול מושלם)"
-                                                    : "למשל: שריטות במארז, חיבור USB תקול... (השאר ריק אם הכול מושלם)"
-                                                }
-                                                className="bg-gray-800 border-orange-500/30 text-orange-400 placeholder:text-gray-600 focus:border-orange-500"
-                                            />
+                                            <Label className="text-gray-300 font-bold">טלפון ליצירת קשר <span className="text-red-500">*</span></Label>
+                                            <Input value={details.contactPhone} onChange={e => setDetails(d => ({ ...d, contactPhone: e.target.value }))} dir="ltr" className="bg-gray-800 border-gray-700" placeholder="05X-XXXXXXX" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-gray-300 font-bold">מחיר מבוקש (₪) <span className="text-red-500">*</span></Label>
+                                            <Input value={details.price ? Number(details.price.replace(/,/g, "")).toLocaleString() : ""} onChange={handlePriceChange} dir="ltr" className="bg-gray-800 border-blue-500 font-bold text-center text-lg" placeholder="0" />
                                         </div>
                                     </div>
-                                </div>
-                            )} {/* Close regular computer fields form section */}
 
-                            {/* Condition */}
-                            <div className="space-y-2">
-                                <Label className="text-gray-300 font-bold">מצב המחשב <span className="text-red-500">*</span></Label>
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                                    {CONDITION_OPTIONS.map(opt => {
-                                        const isSel = spec.condition === opt;
-                                        const cColor = opt.includes("חדש") ? "green" : opt.includes("לחלקים") ? "red" : "blue";
-                                        return (
-                                            <button
-                                                key={opt} type="button"
-                                                onClick={() => setSpec(s => ({ ...s, condition: opt }))}
-                                                className={`py-2 px-1 text-sm rounded-lg border font-medium transition-all ${isSel ? (cColor === "green" ? "bg-green-600/20 border-green-500 text-green-300" : cColor === "red" ? "bg-red-600/20 border-red-500 text-red-300" : "bg-blue-600/20 border-blue-500 text-blue-300")
-                                                    : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800 hover:border-gray-500"
-                                                    }`}
-                                            >
-                                                {opt}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                                {!spec.condition && <p className="text-xs text-yellow-500 mt-1">⚠️ אנא בחר מצב מחשב</p>}
-                            </div>
-
-                            {/* Battery Health - Only for laptops */}
-                            {mainCategory === "laptop" && (
-                                <div className="space-y-2 border border-gray-700/50 rounded-xl p-3 bg-gray-800/20">
-                                    <Label className="text-gray-300 text-sm font-semibold">🔋 תקינות סוללה</Label>
-                                    <div className="flex gap-2">
-                                        <button type="button"
-                                            onClick={() => setSpec(s => ({ ...s, batteryHealth: "תקינה" }))}
-                                            className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "תקינה" ? "bg-green-600/20 border-green-500 text-green-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
-                                                }`}>
-                                            ✅ תקינה
-                                        </button>
-                                        <button type="button"
-                                            onClick={() => setSpec(s => ({ ...s, batteryHealth: "לא תקינה" }))}
-                                            className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-all ${spec.batteryHealth === "לא תקינה" ? "bg-red-600/20 border-red-500 text-red-300" : "bg-gray-800/50 border-gray-700 text-gray-400 hover:bg-gray-800"
-                                                }`}>
-                                            ❌ לא תקינה
-                                        </button>
-                                    </div>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <Label className="text-gray-400 text-xs whitespace-nowrap">בריאות סוללה:</Label>
-                                        <Input
-                                            type="number" min="1" max="100"
-                                            value={spec.batteryPercent}
-                                            onChange={e => setSpec(s => ({ ...s, batteryPercent: e.target.value }))}
-                                            className="bg-gray-800 border-gray-700 w-20 text-center text-sm"
-                                            dir="ltr" placeholder="%"
+                                    <div className="space-y-2 mt-2">
+                                        <Label className="text-gray-300">טקסט חופשי למודעה (תיאור)</Label>
+                                        <Textarea
+                                            value={details.description}
+                                            onChange={e => setDetails(d => ({ ...d, description: e.target.value }))}
+                                            placeholder="כתוב כאן כל מה שצריך מסביב - סיבת מכירה, תוספות מעניינות..."
+                                            className="bg-gray-800 border-gray-700 h-24"
                                         />
-                                        <span className="text-gray-500 text-xs">%</span>
-                                        {spec.batteryPercent && (
-                                            <div className="flex-1 bg-gray-800 rounded-full h-2 overflow-hidden">
-                                                <div className={`h-full rounded-full transition-all ${Number(spec.batteryPercent) > 80 ? 'bg-green-500' :
-                                                    Number(spec.batteryPercent) > 50 ? 'bg-yellow-500' : 'bg-red-500'
-                                                    }`} style={{ width: `${Math.min(100, Number(spec.batteryPercent))}%` }} />
+                                    </div>
+
+                                    {/* ==== SECTION: IMAGES ==== */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">🖼️ תמונות וסרטון</h3>
+                                        <p className="text-gray-500 text-xs">מומלץ להעלות תמונות אמיתיות (לא מספר דגם מרשת) + סרטון קצר שמוריא את המוצר מתפקד.</p>
+
+                                        {/* Image previews */}
+                                        {details.images.length > 0 && (
+                                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
+                                                {details.images.map((img, i) => (
+                                                    <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-gray-800 border border-gray-700 group">
+                                                        <img src={img} alt="Preview" className="w-full h-full object-cover" />
+                                                        <button type="button" onClick={() => setDetails(d => ({ ...d, images: d.images.filter((_, j) => j !== i) }))} className="absolute top-2 right-2 bg-red-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <X className="w-4 h-4 text-white" />
+                                                        </button>
+                                                    </div>
+                                                ))}
                                             </div>
                                         )}
-                                    </div>
-                                </div>
-                            )}
 
-                            <div className="grid grid-cols-2 gap-4 mt-2">
-                                <div className="space-y-2">
-                                    <Label className="text-gray-300 font-bold">טלפון ליצירת קשר <span className="text-red-500">*</span></Label>
-                                    <Input value={details.contactPhone} onChange={e => setDetails(d => ({ ...d, contactPhone: e.target.value }))} dir="ltr" className="bg-gray-800 border-gray-700" placeholder="05X-XXXXXXX" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="text-gray-300 font-bold">מחיר מבוקש (₪) <span className="text-red-500">*</span></Label>
-                                    <Input value={details.price ? Number(details.price.replace(/,/g, "")).toLocaleString() : ""} onChange={handlePriceChange} dir="ltr" className="bg-gray-800 border-blue-500 font-bold text-center text-lg" placeholder="0" />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2 mt-2">
-                                <Label className="text-gray-300">טקסט חופשי למודעה (תיאור)</Label>
-                                <Textarea
-                                    value={details.description}
-                                    onChange={e => setDetails(d => ({ ...d, description: e.target.value }))}
-                                    placeholder="כתוב כאן כל מה שצריך מסביב - סיבת מכירה, תוספות מעניינות..."
-                                    className="bg-gray-800 border-gray-700 h-24"
-                                />
-                            </div>
-
-                            {/* ==== SECTION: IMAGES ==== */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-bold border-b border-gray-800 pb-2 text-gray-200">🖼️ תמונות וסרטון</h3>
-                                <p className="text-gray-500 text-xs">מומלץ להעלות תמונות אמיתיות (לא מספר דגם מרשת) + סרטון קצר שמוריא את המוצר מתפקד.</p>
-
-                                {/* Image previews */}
-                                {details.images.length > 0 && (
-                                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
-                                        {details.images.map((img, i) => (
-                                            <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-gray-800 border border-gray-700 group">
-                                                <img src={img} alt="Preview" className="w-full h-full object-cover" />
-                                                <button type="button" onClick={() => setDetails(d => ({ ...d, images: d.images.filter((_, j) => j !== i) }))} className="absolute top-2 right-2 bg-red-600 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        {/* Video preview */}
+                                        {videoUrl && (
+                                            <div className="relative rounded-xl overflow-hidden bg-gray-800 border border-purple-700/50 mb-3">
+                                                <video src={videoUrl} controls className="w-full max-h-48 object-contain" />
+                                                <button type="button" onClick={() => setVideoUrl("")} className="absolute top-2 right-2 bg-red-600 rounded-full p-1">
                                                     <X className="w-4 h-4 text-white" />
                                                 </button>
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
+                                        )}
 
-                                {/* Video preview */}
-                                {videoUrl && (
-                                    <div className="relative rounded-xl overflow-hidden bg-gray-800 border border-purple-700/50 mb-3">
-                                        <video src={videoUrl} controls className="w-full max-h-48 object-contain" />
-                                        <button type="button" onClick={() => setVideoUrl("")} className="absolute top-2 right-2 bg-red-600 rounded-full p-1">
-                                            <X className="w-4 h-4 text-white" />
-                                        </button>
-                                    </div>
-                                )}
+                                        <div className="flex gap-4">
+                                            {/* Image upload */}
+                                            <label className="flex-1 flex flex-col items-center justify-center p-4 border border-dashed border-gray-600 rounded-xl cursor-pointer hover:border-gray-500 hover:bg-gray-800/50 transition-colors">
+                                                {uploading ? <Loader2 className="w-6 h-6 animate-spin text-purple-400 mb-2" /> : <ImageIcon className="w-6 h-6 text-gray-400 mb-2" />}
+                                                <span className="text-sm font-medium text-gray-300">{uploading ? "מעלה תמונה..." : "🖼️ העלה תמונה"}</span>
+                                                <span className="text-xs text-gray-500 mt-1">תמונות מהמכשיר / סלולרי</span>
+                                                <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={uploading} />
+                                            </label>
 
-                                <div className="flex gap-4">
-                                    {/* Image upload */}
-                                    <label className="flex-1 flex flex-col items-center justify-center p-4 border border-dashed border-gray-600 rounded-xl cursor-pointer hover:border-gray-500 hover:bg-gray-800/50 transition-colors">
-                                        {uploading ? <Loader2 className="w-6 h-6 animate-spin text-purple-400 mb-2" /> : <ImageIcon className="w-6 h-6 text-gray-400 mb-2" />}
-                                        <span className="text-sm font-medium text-gray-300">{uploading ? "מעלה תמונה..." : "🖼️ העלה תמונה"}</span>
-                                        <span className="text-xs text-gray-500 mt-1">תמונות מהמכשיר / סלולרי</span>
-                                        <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={uploading} />
-                                    </label>
-
-                                    {/* Video upload */}
-                                    <label className="flex-1 flex flex-col items-center justify-center p-4 border border-dashed border-purple-700/50 rounded-xl cursor-pointer hover:border-purple-600 hover:bg-purple-900/10 transition-colors">
-                                        {uploadingVideo
-                                            ? <Loader2 className="w-6 h-6 animate-spin text-purple-400 mb-2" />
-                                            : <span className="text-2xl mb-2">🎬</span>
-                                        }
-                                        <span className="text-sm font-medium text-gray-300">
-                                            {uploadingVideo ? "מעלה סרטון..." : videoUrl ? "שנה סרטון" : "🎬 העלה סרטון"}
-                                        </span>
-                                        <span className="text-xs text-gray-500 mt-1">מכשיר / סלולרי בלבד (MP4, MOV...)</span>
-                                        <input type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} disabled={uploadingVideo} />
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* ──── DYNAMIC RISK / DATA SUMMARY REPORT ──── */}
-                            <div className="rounded-2xl border border-gray-700 bg-gray-900/60 p-5 space-y-4">
-                                <h3 className="text-base font-bold text-gray-200 flex items-center gap-2">
-                                    📋 דוח סיכום נתונים – בדוק לפני פרסום
-                                </h3>
-                                <div className="grid grid-cols-2 gap-2 text-xs">
-                                    {(() => {
-                                        // Generate contextual report items
-                                        let items: any[] = [];
-
-                                        if (computerTypeMode === 'custom_build') {
-                                            // ── CUSTOM BUILD ──
-                                            items = [
-                                                { label: "לוח אם", val: cbSpec["לוח אם - יצרן"], required: true },
-                                                { label: "דגם לוח", val: cbSpec["לוח אם - דגם"], required: false },
-                                                { label: "מעבד", val: cbSpec["מעבד"], required: true },
-                                                { label: "קירור", val: cbSpec["קירור למעבד"], required: false },
-                                                { label: "כרטיס מסך", val: cbSpec["כרטיס מסך"], required: true },
-                                                { label: "זיכרון RAM", val: `${cbSpec["RAM - סוג"] || ""} ${cbSpec["RAM - תצורה"] || ""}`.trim(), required: true },
-                                                { label: "מהירות RAM", val: cbSpec["RAM - מהירות"], required: false },
-                                                { label: "כונן ראשי", val: cbSpec["כונן ראשי"], required: true },
-                                                { label: "כונן נוסף", val: cbSpec["כונן נוסף"], required: false },
-                                                { label: "מארז", val: cbSpec["מארז - יצרן"], required: true },
-                                                { label: "ספק כח", val: cbSpec["ספק כח - יצרן"], required: true },
-                                                { label: "מערכת הפעלה", val: cbSpec["מערכת הפעלה"], required: true },
-                                            ];
-
-                                            // Add monitor if custom build includes one
-                                            if (cbSpec["מסך - גודל"]) {
-                                                items.push(
-                                                    { label: "מסך כלול", val: `${cbSpec["מסך - גודל"]} ${cbSpec["מסך - רזולוציה"] || ""}`.trim(), required: false }
-                                                );
-                                            }
-                                        } else {
-                                            // ── BRANDED / AIO / LAPTOP ──
-                                            items = [
-                                                { label: "יצרן", val: spec.brand, required: true },
-                                                { label: "דגם", val: spec.subModel, required: true },
-                                                { label: "מעבד", val: spec.cpu, required: true },
-                                                { label: "כרטיס מסך", val: spec.gpu, required: false },
-                                                { label: "זיכרון RAM", val: spec.ram, required: true },
-                                                { label: "אחסון", val: spec.storage, required: true },
-                                                { label: "מערכת הפעלה", val: spec.os, required: true },
-                                            ];
-
-                                            if (mainCategory === "laptop") {
-                                                items.push(
-                                                    { label: "גודל מסך", val: spec.screen, required: true },
-                                                    { label: "תקינות סוללה", val: spec.batteryHealth, required: false },
-                                                    { label: "בריאות %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false },
-                                                    { label: "משקל", val: spec.weight, required: false }
-                                                );
-                                            } else if (computerTypeMode === "all_in_one") {
-                                                items.push(
-                                                    { label: "מסך מובנה", val: cbSpec["מסך - גודל"], required: true },
-                                                    { label: "רזולוציה", val: cbSpec["מסך - רזולוציה"], required: false }
-                                                );
-                                            } else if (mainCategory === "desktop") {
-                                                // General Desktop (Branded) - check if user added external monitor info
-                                                if (cbSpec["מסך - גודל"]) {
-                                                    items.push({ label: "מסך חיצוני", val: cbSpec["מסך - גודל"], required: false });
+                                            {/* Video upload */}
+                                            <label className="flex-1 flex flex-col items-center justify-center p-4 border border-dashed border-purple-700/50 rounded-xl cursor-pointer hover:border-purple-600 hover:bg-purple-900/10 transition-colors">
+                                                {uploadingVideo
+                                                    ? <Loader2 className="w-6 h-6 animate-spin text-purple-400 mb-2" />
+                                                    : <span className="text-2xl mb-2">🎬</span>
                                                 }
-                                            }
-                                        }
-
-                                        // Common fields (Added to all)
-                                        const common = [
-                                            { label: "מצב", val: spec.condition, required: true },
-                                            { label: "מחיר", val: details.price ? `₪${Number(details.price.replace(/,/g, "")).toLocaleString()}` : "", required: true },
-                                            { label: "טלפון לקשר", val: details.contactPhone, required: true },
-                                            { label: "נזקים/הערות", val: spec.extras || "ללא", required: false },
-                                            { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false, warning: true },
-                                            { label: "🎬 סרטון", val: videoUrl || "", required: false, warning: true }
-                                        ];
-
-                                        return [...items, ...common];
-                                    })().map(({ label, val, required, warning }) => {
-                                        const isWarning = !val && warning;
-                                        return (
-                                            <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
-                                                ? "bg-gray-800/60"
-                                                : required
-                                                    ? "bg-red-900/20 border border-red-800/40"
-                                                    : isWarning
-                                                        ? "bg-yellow-900/20 border border-yellow-700/40"
-                                                        : "bg-gray-800/30 border border-gray-700/40"
-                                                }`}>
-                                                <span className={val ? "text-green-400" : required ? "text-red-400" : isWarning ? "text-yellow-400" : "text-gray-500"} style={{ flexShrink: 0 }}>
-                                                    {val ? "✓" : required ? "✗" : isWarning ? "!" : "–"}
+                                                <span className="text-sm font-medium text-gray-300">
+                                                    {uploadingVideo ? "מעלה סרטון..." : videoUrl ? "שנה סרטון" : "🎬 העלה סרטון"}
                                                 </span>
-                                                <span className="text-gray-400">{label}:</span>
-                                                <span className={`font-medium truncate ${val ? "text-white" : required ? "text-red-400" : isWarning ? "text-yellow-400" : "text-gray-600"
-                                                    }`}>{val || (required ? "חסר!" : isWarning ? "מומלץ להוסיף" : "לא מולא")}</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                                {uncertainFields.length > 0 && (
-                                    <div className="flex items-center gap-2 text-yellow-400 text-xs bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
-                                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                                        שדות מסומנים בצהוב לא אושרו – אנא בדוק לפני פרסום
+                                                <span className="text-xs text-gray-500 mt-1">מכשיר / סלולרי בלבד (MP4, MOV...)</span>
+                                                <input type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} disabled={uploadingVideo} />
+                                            </label>
+                                        </div>
                                     </div>
-                                )}
-                            </div>
 
-                            {/* ALWAYS VISIBLE SUBMIT */}
-                            <div className="sticky bottom-4 pt-4 border-t border-gray-800 bg-gray-900/90 backdrop-blur z-10 p-4 -mx-4 md:mx-0 md:p-0 md:bg-transparent rounded-xl">
-                                <Button
-                                    type="submit"
-                                    disabled={loading || !spec.brand || !spec.subModel || !details.price}
-                                    className={`w-full h-14 text-lg font-bold rounded-xl transition-all shadow-lg ${uncertainFields.length > 0
-                                        ? "bg-yellow-600 hover:bg-yellow-700 text-white"
-                                        : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-purple-500/20"
-                                        }`}
-                                >
-                                    {loading ? <Loader2 className="animate-spin w-6 h-6 ml-2" /> : null}
-                                    {uncertainFields.length > 0 ? "פרסם מודעה (שים לב לנתונים הצהובים)" : "פרסם מודעה 🚀"}
-                                </Button>
-                            </div>
+                                    {/* ──── DYNAMIC RISK / DATA SUMMARY REPORT ──── */}
+                                    <div className="rounded-2xl border border-gray-700 bg-gray-900/60 p-5 space-y-4">
+                                        <h3 className="text-base font-bold text-gray-200 flex items-center gap-2">
+                                            📋 דוח סיכום נתונים – בדוק לפני פרסום
+                                        </h3>
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            {(() => {
+                                                // Generate contextual report items
+                                                let items: any[] = [];
 
-                        </form>
+                                                if (computerTypeMode === 'custom_build') {
+                                                    // ── CUSTOM BUILD ──
+                                                    items = [
+                                                        { label: "לוח אם", val: cbSpec["לוח אם - יצרן"], required: true },
+                                                        { label: "דגם לוח", val: cbSpec["לוח אם - דגם"], required: false },
+                                                        { label: "מעבד", val: cbSpec["מעבד"], required: true },
+                                                        { label: "קירור", val: cbSpec["קירור למעבד"], required: false },
+                                                        { label: "כרטיס מסך", val: cbSpec["כרטיס מסך"], required: true },
+                                                        { label: "זיכרון RAM", val: `${cbSpec["RAM - סוג"] || ""} ${cbSpec["RAM - תצורה"] || ""}`.trim(), required: true },
+                                                        { label: "מהירות RAM", val: cbSpec["RAM - מהירות"], required: false },
+                                                        { label: "כונן ראשי", val: cbSpec["כונן ראשי"], required: true },
+                                                        { label: "כונן נוסף", val: cbSpec["כונן נוסף"], required: false },
+                                                        { label: "מארז", val: cbSpec["מארז - יצרן"], required: true },
+                                                        { label: "ספק כח", val: cbSpec["ספק כח - יצרן"], required: true },
+                                                        { label: "מערכת הפעלה", val: cbSpec["מערכת הפעלה"], required: true },
+                                                    ];
+
+                                                    // Add monitor if custom build includes one
+                                                    if (cbSpec["מסך - גודל"]) {
+                                                        items.push(
+                                                            { label: "מסך כלול", val: `${cbSpec["מסך - גודל"]} ${cbSpec["מסך - רזולוציה"] || ""}`.trim(), required: false }
+                                                        );
+                                                    }
+                                                } else {
+                                                    // ── BRANDED / AIO / LAPTOP ──
+                                                    items = [
+                                                        { label: "יצרן", val: spec.brand, required: true },
+                                                        { label: "דגם", val: spec.subModel, required: true },
+                                                        { label: "מעבד", val: spec.cpu, required: true },
+                                                        { label: "כרטיס מסך", val: spec.gpu, required: false },
+                                                        { label: "זיכרון RAM", val: spec.ram, required: true },
+                                                        { label: "אחסון", val: spec.storage, required: true },
+                                                        { label: "מערכת הפעלה", val: spec.os, required: true },
+                                                    ];
+
+                                                    if (mainCategory === "laptop") {
+                                                        items.push(
+                                                            { label: "גודל מסך", val: spec.screen, required: true },
+                                                            { label: "תקינות סוללה", val: spec.batteryHealth, required: false },
+                                                            { label: "בריאות %", val: spec.batteryPercent ? `${spec.batteryPercent}%` : "", required: false },
+                                                            { label: "משקל", val: spec.weight, required: false }
+                                                        );
+                                                    } else if (computerTypeMode === "all_in_one") {
+                                                        items.push(
+                                                            { label: "מסך מובנה", val: cbSpec["מסך - גודל"], required: true },
+                                                            { label: "רזולוציה", val: cbSpec["מסך - רזולוציה"], required: false }
+                                                        );
+                                                    } else if (mainCategory === "desktop") {
+                                                        // General Desktop (Branded) - check if user added external monitor info
+                                                        if (cbSpec["מסך - גודל"]) {
+                                                            items.push({ label: "מסך חיצוני", val: cbSpec["מסך - גודל"], required: false });
+                                                        }
+                                                    }
+                                                }
+
+                                                // Common fields (Added to all)
+                                                const common = [
+                                                    { label: "מצב", val: spec.condition, required: true },
+                                                    { label: "מחיר", val: details.price ? `₪${Number(details.price.replace(/,/g, "")).toLocaleString()}` : "", required: true },
+                                                    { label: "טלפון לקשר", val: details.contactPhone, required: true },
+                                                    { label: "נזקים/הערות", val: spec.extras || "ללא", required: false },
+                                                    { label: "🖼️ תמונות", val: details.images.length > 0 ? `${details.images.length} תמונות` : "", required: false, warning: true },
+                                                    { label: "🎬 סרטון", val: videoUrl || "", required: false, warning: true }
+                                                ];
+
+                                                return [...items, ...common];
+                                            })().map(({ label, val, required, warning }) => {
+                                                const isWarning = !val && warning;
+                                                return (
+                                                    <div key={label} className={`flex items-start gap-2 p-2 rounded-lg ${val
+                                                        ? "bg-gray-800/60"
+                                                        : required
+                                                            ? "bg-red-900/20 border border-red-800/40"
+                                                            : isWarning
+                                                                ? "bg-yellow-900/20 border border-yellow-700/40"
+                                                                : "bg-gray-800/30 border border-gray-700/40"
+                                                        }`}>
+                                                        <span className={val ? "text-green-400" : required ? "text-red-400" : isWarning ? "text-yellow-400" : "text-gray-500"} style={{ flexShrink: 0 }}>
+                                                            {val ? "✓" : required ? "✗" : isWarning ? "!" : "–"}
+                                                        </span>
+                                                        <span className="text-gray-400">{label}:</span>
+                                                        <span className={`font-medium truncate ${val ? "text-white" : required ? "text-red-400" : isWarning ? "text-yellow-400" : "text-gray-600"
+                                                            }`}>{val || (required ? "חסר!" : isWarning ? "מומלץ להוסיף" : "לא מולא")}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                        {uncertainFields.length > 0 && (
+                                            <div className="flex items-center gap-2 text-yellow-400 text-xs bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+                                                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                                שדות מסומנים בצהוב לא אושרו – אנא בדוק לפני פרסום
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* ALWAYS VISIBLE SUBMIT */}
+                                    <div className="sticky bottom-4 pt-4 border-t border-gray-800 bg-gray-900/90 backdrop-blur z-10 p-4 -mx-4 md:mx-0 md:p-0 md:bg-transparent rounded-xl">
+                                        <Button
+                                            type="submit"
+                                            disabled={loading || !spec.brand || !spec.subModel || !details.price}
+                                            className={`w-full h-14 text-lg font-bold rounded-xl transition-all shadow-lg ${uncertainFields.length > 0
+                                                ? "bg-yellow-600 hover:bg-yellow-700 text-white"
+                                                : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-purple-500/20"
+                                                }`}
+                                        >
+                                            {loading ? <Loader2 className="animate-spin w-6 h-6 ml-2" /> : null}
+                                            {uncertainFields.length > 0 ? "פרסם מודעה (שים לב לנתונים הצהובים)" : "פרסם מודעה 🚀"}
+                                        </Button>
+                                    </div>
+
+                                </form>
+                            </>
+                        )}
                     </>
                 )}
-                </>
-            )}
 
             </div>
         </div >
