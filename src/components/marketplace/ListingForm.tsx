@@ -247,11 +247,11 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
         description: initialData?.description || "",
         condition: CONDITION_MAP[initialData?.condition] || initialData?.condition || "Used",
         category: CATEGORY_MAP[initialData?.category] || initialData?.category || "General",
-        make: initialData?.make || "",
-        model: initialData?.model || "",
-        year: initialData?.year || "",
-        hand: initialData?.hand || "",
-        kilometrage: initialData?.kilometrage || "",
+        make: initialData?.make || initialData?.extraData?.["יצרן"] || "",
+        model: initialData?.model || initialData?.extraData?.["דגם"] || "",
+        year: initialData?.year || initialData?.extraData?.["שנת ייצור"] || initialData?.extraData?.["שנה"] || "",
+        hand: initialData?.hand || initialData?.extraData?.["יד"] || "",
+        kilometrage: initialData?.kilometrage || initialData?.extraData?.["קילומטראז'"] || "",
         images: initialData?.images || [] as string[],
         videos: initialData?.videos || [] as string[],
         contactPhone: initialData?.contactPhone || initialData?.extraData?.["טלפון ליצירת קשר"] || "",
@@ -1414,7 +1414,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                 {["Phones", "Computers"].includes(formData.category) && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-3">
                         {/* Hardware Search - hide for custom build since user picks components individually */}
-                        {getExtraVal("סוג המחשב") !== "בנייה עצמית (Custom Build)" && (
+                        {getExtraVal("סוג המחשב") !== "בנייה עצמית" && (
                             <HardwareSearchEngine
                                 category={formData.category}
                                 onSelect={(hardwareData) => {
@@ -1438,7 +1438,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
                         <div className="grid grid-cols-2 gap-4">
                             {/* For Custom Build: show component selectors with dropdowns */}
-                            {formData.category === "Computers" && getExtraVal("סוג המחשב") === "בנייה עצמית (Custom Build)" ? (
+                            {formData.category === "Computers" && getExtraVal("סוג המחשב") === "בנייה עצמית" ? (
                                 <>
                                     {/* Custom Build Component Fields with dropdown selectors */}
                                     {CUSTOM_BUILD_FIELDS.map(field => {

@@ -310,13 +310,26 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         initialData ? (initialData?.extraData?.["סוג המחשב"]?.includes("נייד") || initialData?.extraData?.["סוג המחשב"] === "laptop" ? "laptop" : "desktop") : (preSelectedCategory || null)
     );
 
-    const [computerTypeMode, setComputerTypeMode] = useState<"brand_desktop" | "all_in_one" | "custom_build" | null>(
-        initialData?.extraData?.["סוג המחשב"] === "בנייה עצמית" ? "custom_build"
-            : initialData?.extraData?.["סוג המחשב"] === "מחשב All-in-One" ? "all_in_one"
-                : (initialData?.extraData?.["סוג המחשב"] === "מחשב נייח מותג" ? "brand_desktop" : null)
-    );
+    const [computerTypeMode, setComputerTypeMode] = useState<"brand_desktop" | "all_in_one" | "custom_build" | null>(() => {
+        const type = initialData?.extraData?.["סוג המחשב"];
+        if (!type) return preSelectedCategory === "desktop" ? null : null;
+        if (type.includes("בנייה עצמית")) return "custom_build";
+        if (type.includes("All-in-One")) return "all_in_one";
+        if (type.includes("מותג")) return "brand_desktop";
+        return null;
+    });
 
-    const [cbSpec, setCbSpec] = useState<Record<string, string>>({});
+    const [cbSpec, setCbSpec] = useState<Record<string, string>>(() => {
+        if (!initialData?.extraData) return {};
+        const initialCb: Record<string, string> = {};
+        CUSTOM_BUILD_FIELDS.forEach(f => {
+            if (initialData.extraData[f.key]) initialCb[f.key] = initialData.extraData[f.key];
+        });
+        MONITOR_FIELDS.forEach(f => {
+            if (initialData.extraData[f.key]) initialCb[f.key] = initialData.extraData[f.key];
+        });
+        return initialCb;
+    });
 
     const [details, setDetails] = useState<FormDetails>({
         title: initialData?.title || "",
@@ -586,7 +599,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                 };
             } else if (computerTypeMode === "custom_build") {
                 extraData = {
-                    "סוג המחשב": "בנייה עצמית - מחשב נייח",
+                    "סוג המחשב": "בנייה עצמית",
                     "מעבד": cbSpec["מעבד"] || "",
                     "כרטיס מסך": cbSpec["כרטיס מסך"] || "",
                     "RAM": `${cbSpec["RAM - סוג"] || ""} ${cbSpec["RAM - תצורה"] || ""}`.trim(),

@@ -311,7 +311,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                 "דגם": spec.model,
                 "מעבד": spec.cpu,
                 "RAM": spec.ram,
-                "נפח מובנה": spec.storage,
+                "נפח אחסון": spec.storage,
                 "מסך": spec.screen,
                 "מערכת הפעלה": spec.os,
                 "מידות": spec.dimensions,
