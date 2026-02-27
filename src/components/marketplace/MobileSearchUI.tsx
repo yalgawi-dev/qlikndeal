@@ -21,7 +21,7 @@ export const MOBILE_SEARCH_FIELDS = [
     { key: "notes", label: "הערות נוספות", icon: "📝", locked: true },
 ];
 
-function searchPhoneDB(q: string, limit = 8): { label: string; data: PhoneModel }[] {
+function searchPhoneDB(q: string, limit = 15): { label: string; data: PhoneModel }[] {
     if (!q || q.length < 2) return [];
     const lowerQ = q.toLowerCase().trim();
     const terms = lowerQ.split(/\s+/);
@@ -30,24 +30,32 @@ function searchPhoneDB(q: string, limit = 8): { label: string; data: PhoneModel 
     
     for (const p of ALL_PHONES) {
         let score = 0;
-        const fullName = `${p.brand} ${p.model}`.toLowerCase();
+        const brand = p.brand.toLowerCase();
+        const model = p.model.toLowerCase();
+        const fullName = `${brand} ${model}`;
         
-        // Exact match
-        if (fullName === lowerQ || p.model.toLowerCase() === lowerQ) {
+        // Exact match on full name or model
+        if (fullName === lowerQ || model === lowerQ) {
             score += 100;
-        } else if (fullName.startsWith(lowerQ) || p.model.toLowerCase().startsWith(lowerQ)) {
-            score += 50;
-        } else if (terms.every(t => fullName.includes(t))) {
-            score += 20;
+        } 
+        // Starts with
+        else if (fullName.startsWith(lowerQ) || model.startsWith(lowerQ)) {
+            score += 60;
+        }
+        // Contains brand AND model terms
+        else if (terms.every(t => fullName.includes(t))) {
+            score += 40;
+            // Higher score if the brand is specifically mentioned
+            if (terms.includes(brand)) score += 10;
         }
         
         // Hebrew alias match
         if (p.hebrewAliases) {
             for (const alias of p.hebrewAliases) {
                 const lowerA = alias.toLowerCase();
-                if (lowerA === lowerQ) score += 90;
-                else if (lowerA.startsWith(lowerQ)) score += 40;
-                else if (terms.every(t => lowerA.includes(t))) score += 15;
+                if (lowerA === lowerQ) score = Math.max(score, 95);
+                else if (lowerA.startsWith(lowerQ)) score = Math.max(score, 50);
+                else if (terms.every(t => lowerA.includes(t))) score = Math.max(score, 30);
             }
         }
         
@@ -57,7 +65,7 @@ function searchPhoneDB(q: string, limit = 8): { label: string; data: PhoneModel 
     }
     
     return results
-        .sort((a, b) => b.score - a.score)
+        .sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
         .slice(0, limit)
         .map(r => ({ label: r.label, data: r.data }));
 }
