@@ -85,58 +85,34 @@ export default async function AdminDashboardPage() {
                     </div>
                 </div>
 
-                {/* System Tasks & Collaboration */}
+                {/* System Tasks */}
                 <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-                    <h2 className="text-xl font-bold mb-6">ניהול ושיתוף פעולה</h2>
+                    <h2 className="text-xl font-bold mb-6">משימות מערכת</h2>
 
                     <div className="space-y-3">
-                        <Link href="/admin/tasks" className="flex items-center justify-between p-4 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/20 rounded-2xl transition-all">
+                        <Link href="/admin/listings" className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg">
-                                    <CheckSquare className="w-5 h-5" />
+                                    <ShoppingBag className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-sm">יומן משימות צוות</p>
-                                    <p className="text-xs text-gray-400">נהל משימות פתוחות ועדכונים</p>
+                                    <p className="font-semibold text-sm">סינון מודעות קיימות</p>
+                                    <p className="text-xs text-gray-400">מחק או הסתר מודעות לא מתאימות</p>
                                 </div>
                             </div>
                         </Link>
 
-                        <Link href="/admin/notes" className="flex items-center justify-between p-4 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/20 rounded-2xl transition-all">
+                        <Link href="/admin/users" className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-purple-500/20 text-purple-400 rounded-lg">
-                                    <StickyNote className="w-5 h-5" />
+                                <div className="p-2 bg-pink-500/20 text-pink-400 rounded-lg">
+                                    <Users className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-sm">הערות וסיכומי צוות</p>
-                                    <p className="text-xs text-gray-400">מרחב משותף לתיעוד ורעיונות</p>
+                                    <p className="font-semibold text-sm">ניהול הרשאות משתמשים</p>
+                                    <p className="text-xs text-gray-400">הגדר נותני שירות וספקים</p>
                                 </div>
                             </div>
                         </Link>
-
-                        <div className="pt-2 border-t border-white/5 mt-2">
-                            <Link href="/admin/listings" className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all mb-2">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white/10 text-gray-400 rounded-lg">
-                                        <ShoppingBag className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold text-sm">ניהול מודעות</p>
-                                    </div>
-                                </div>
-                            </Link>
-
-                            <Link href="/admin/users" className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white/10 text-gray-400 rounded-lg">
-                                        <Users className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold text-sm">ניהול משתמשים</p>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
                     </div>
                 </div>
 
