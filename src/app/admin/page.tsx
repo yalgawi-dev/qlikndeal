@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prismadb";
-import { Users, ShoppingBag, Truck, CheckCircle, CheckSquare, StickyNote } from "lucide-react";
+import { Users, ShoppingBag, Truck, CheckCircle, CheckSquare, StickyNote, FileSpreadsheet } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
@@ -110,6 +110,18 @@ export default async function AdminDashboardPage() {
                                 <div>
                                     <p className="font-semibold text-sm">הערות וסיכומי צוות</p>
                                     <p className="text-xs text-gray-400">מרחב משותף לתיעוד ורעיונות</p>
+                                </div>
+                            </div>
+                        </Link>
+
+                        <Link href="/admin/export" className="flex items-center justify-between p-4 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 rounded-2xl transition-all">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg">
+                                    <FileSpreadsheet className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-sm">ייצוא מאגרי נתונים</p>
+                                    <p className="text-xs text-gray-400">הורד את רשימות המחשבים והטלפונים לאקסל</p>
                                 </div>
                             </div>
                         </Link>
