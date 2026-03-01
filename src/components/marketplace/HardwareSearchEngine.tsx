@@ -115,7 +115,7 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                         score = 1000;
                     }
                     // TIER 2: Any word starts with query
-                    else if (fullName.split(/\s+/).some(word => word.startsWith(q))) {
+                    else if (fullName.split(/\s+/).some((word: string) => word.startsWith(q))) {
                         score = 500;
                     }
                     // TIER 3: Contains
@@ -140,7 +140,7 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                             if (displayLabel.toLowerCase().startsWith(q)) {
                                 score = 1000;
                             }
-                            else if (fullName.split(/\s+/).some(word => word.toLowerCase().startsWith(q))) {
+                            else if (fullName.split(/\s+/).some((word: string) => word.toLowerCase().startsWith(q))) {
                                 score = 500;
                             }
                             else if (fullName.includes(q)) {

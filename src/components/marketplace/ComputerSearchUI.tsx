@@ -38,7 +38,7 @@ function searchLocalDB(db: any, q: string, limit = 10): { label: string; data: a
                     score = 1000;
                 }
                 // TIER 2: Any word starts with query (e.g. "Alienware" in "Dell Alienware")
-                else if (fullName.split(/\s+/).some(word => word.startsWith(queryStr))) {
+                else if (fullName.split(/\s+/).some((word: string) => word.startsWith(queryStr))) {
                     score = 500;
                 }
                 // TIER 3: Contains query

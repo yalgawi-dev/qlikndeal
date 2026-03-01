@@ -42,7 +42,7 @@ function searchPhoneDB(q: string, limit = 20): { label: string; data: PhoneModel
             score = 900;
         }
         // TIER 3: Any word starts with query
-        else if (fullName.split(/\s+/).some(word => word.startsWith(queryStr))) {
+        else if (fullName.split(/\s+/).some((word: string) => word.startsWith(queryStr))) {
             score = 500;
         }
         // TIER 4: Contains query
