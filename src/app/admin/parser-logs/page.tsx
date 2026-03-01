@@ -94,27 +94,44 @@ export default function AdminParserLogsPage() {
     };
 
     const exportCSV = () => {
-        const rows = [
-            ["ID", "Date", "Tester", "Category", "Input Mode", "Quality", "Has Corrections", "Tester Note", "Original Text", "AI Parsed", "User Final", "Corrections Detail"],
-            ...logs.map(l => [
-                l.id,
-                new Date(l.createdAt).toLocaleDateString("he-IL"),
-                l.testerName || "",
-                l.category || "",
-                l.inputMode || "",
-                l.quality || "",
-                l.corrections && l.corrections !== "{}" ? "כן" : "לא",
-                `"${(l.testerNote || "").replace(/"/g, '""')}"`,
-                `"${l.originalText.replace(/"/g, '""')}"`,
-                `"${(l.aiParsed || "").replace(/"/g, '""')}"`,
-                `"${(l.userFinal || "").replace(/"/g, '""')}"`,
-                `"${(l.corrections || "").replace(/"/g, '""')}"`,
-            ])
-        ];
-        const csv = rows.map(r => r.join(",")).join("\n");
-        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+        const header = ["ID", "תאריך", "בודק", "קטגוריה", "מצב קלט", "איכות", "תיקונים", "הערת בודק", "טקסט מקורי", "פענוח AI", "סופי", "פירוט תיקונים"];
+        
+        let html = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="utf-8" /><style>td { mso-number-format:"\\@"; } th { background-color: #f4f4f4; }</style></head>
+        <body dir="rtl">
+        <table border="1">
+        <thead>
+            <tr>${header.map(h => `<th>${h}</th>`).join("")}</tr>
+        </thead>
+        <tbody>`;
+
+        logs.forEach(l => {
+            html += `
+            <tr>
+                <td>${l.id}</td>
+                <td>${new Date(l.createdAt).toLocaleDateString("he-IL")}</td>
+                <td>${l.testerName || ""}</td>
+                <td>${l.category || ""}</td>
+                <td>${l.inputMode || ""}</td>
+                <td>${l.quality || ""}</td>
+                <td>${l.corrections && l.corrections !== "{}" ? "כן" : "לא"}</td>
+                <td>${(l.testerNote || "").replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                <td>${l.originalText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                <td>${(l.aiParsed || "").replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                <td>${(l.userFinal || "").replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+                <td>${(l.corrections || "").replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+            </tr>`;
+        });
+
+        html += `</tbody></table></body></html>`;
+        
+        const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a"); a.href = url; a.download = "parser-logs.csv"; a.click();
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `parser-logs_${new Date().toLocaleDateString()}.xls`;
+        a.click();
     };
 
     const qualityBadge = (q?: string, reviewed?: boolean) => {
@@ -158,7 +175,7 @@ export default function AdminParserLogsPage() {
                         </button>
                         <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-sm">
                             <Download className="w-4 h-4" />
-                            ייצוא CSV
+                            ייצוא לאקסל
                         </button>
                         {!showArchived && logs.length > 0 && (
                             <button

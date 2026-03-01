@@ -19268,6 +19268,8 @@ export const ALL_IN_ONE_DATABASE: Record<string, ComputerModelFamily[]> = {
 // export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = LAPTOP_DATABASE;
 
 
+import { NEW_LAPTOPS_2025_DATABASE } from "./laptops-update-2025";
+
 // ============================================================
 // AGGREGATED DATABASE FOR GENERIC SEARCH
 // ============================================================
@@ -19281,6 +19283,7 @@ const mergeIntoGlobal = (db: Record<string, ComputerModelFamily[]>) => {
 mergeIntoGlobal(LAPTOP_DATABASE);
 mergeIntoGlobal(BRAND_DESKTOP_DATABASE);
 mergeIntoGlobal(ALL_IN_ONE_DATABASE);
+mergeIntoGlobal(NEW_LAPTOPS_2025_DATABASE);
 
 // ============================================================
 

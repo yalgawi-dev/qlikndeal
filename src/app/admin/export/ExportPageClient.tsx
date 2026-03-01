@@ -49,7 +49,7 @@ export default function ExportPageClient() {
         <div className="p-6 max-w-4xl mx-auto">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">ייצוא מאגרי נתונים</h1>
-                <p className="text-slate-500">הורד את רשימות המכשירים המלאות לקובץ אקסל (CSV)</p>
+                <p className="text-slate-500">הורד את רשימות המכשירים המלאות לקובץ אקסל תקני (XLS)</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
