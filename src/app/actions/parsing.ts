@@ -114,7 +114,13 @@ export async function parseLinkAction(url: string): Promise<LinkParseResult> {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
 
-            const response = await fetch(url, { signal: controller.signal });
+            const response = await fetch(url, { 
+                signal: controller.signal,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1',
+                    'Accept-Language': 'he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7'
+                }
+            });
             clearTimeout(timeoutId);
 
             if (!response.ok) throw new Error("Failed to fetch");
