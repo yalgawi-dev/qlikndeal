@@ -21,27 +21,34 @@ export const MOBILE_SEARCH_FIELDS = [
     { key: "notes", label: "הערות נוספות", icon: "📝", locked: true },
 ];
 
-function searchPhoneDB(q: string, limit = 15): { label: string; data: PhoneModel }[] {
+function searchPhoneDB(q: string, limit = 20): { label: string; data: PhoneModel }[] {
     if (!q || q.length < 1) return [];
     const queryStr = q.toLowerCase().trim();
     const results: { label: string; score: number; data: PhoneModel }[] = [];
     
     for (const p of ALL_PHONES) {
-        let score = 0;
         const brandLower = p.brand.toLowerCase();
         const modelLower = p.model.toLowerCase();
-        const fullName = `${brandLower} ${modelLower}`;
+        const fullName = modelLower.includes(brandLower) ? p.model.toLowerCase() : `${brandLower} ${p.model.toLowerCase()}`;
+        const displayLabel = modelLower.startsWith(brandLower) ? p.model : `${p.brand} ${p.model}`;
         
-        // TIER 1: Exact matches
-        if (brandLower === queryStr || modelLower === queryStr || fullName === queryStr) score = 1000;
-        // TIER 2: Starts with query
-        else if (fullName.startsWith(queryStr) || modelLower.startsWith(queryStr)) score = 800;
-        // TIER 3: Brand name starts with query
-        else if (brandLower.startsWith(queryStr)) score = 600;
-        // TIER 4: Any word starts with query
-        else if (fullName.split(/\s+/).some(word => word.startsWith(queryStr))) score = 400;
-        // TIER 5: Contains query
-        else if (fullName.includes(queryStr)) score = 200;
+        let score = 0;
+        // TIER 1: Full label starts with query
+        if (displayLabel.toLowerCase().startsWith(queryStr)) {
+            score = 1000;
+        }
+        // TIER 2: Exact word matches
+        else if (brandLower === queryStr || modelLower === queryStr || fullName === queryStr) {
+            score = 900;
+        }
+        // TIER 3: Any word starts with query
+        else if (fullName.split(/\s+/).some(word => word.startsWith(queryStr))) {
+            score = 500;
+        }
+        // TIER 4: Contains query
+        else if (fullName.includes(queryStr)) {
+            score = 100;
+        }
         
         // Hebrew ALiases Boost
         if (p.hebrewAliases) {
@@ -54,14 +61,14 @@ function searchPhoneDB(q: string, limit = 15): { label: string; data: PhoneModel
         }
         
         if (score > 0) {
-            results.push({ label: `${p.brand} ${p.model}`, score, data: p });
+            results.push({ label: displayLabel, score, data: p });
         }
     }
 
     // Sort: Score (desc) then Alphabetical (asc)
     results.sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
-        return a.label.localeCompare(b.label);
+        return a.label.localeCompare(b.label, 'en', { sensitivity: 'base' });
     });
 
     return results.slice(0, limit).map(r => ({ label: r.label, data: r.data }));
