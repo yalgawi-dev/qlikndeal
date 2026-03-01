@@ -19270,6 +19270,16 @@ export const ALL_IN_ONE_DATABASE: Record<string, ComputerModelFamily[]> = {
 
 import { NEW_LAPTOPS_2025_DATABASE } from "./laptops-update-2025";
 
+// Merge new data into category databases too
+const mergeIntoDb = (target: Record<string, ComputerModelFamily[]>, source: Record<string, ComputerModelFamily[]>) => {
+    for (const [brand, families] of Object.entries(source)) {
+        if (!target[brand]) target[brand] = [];
+        target[brand].push(...families);
+    }
+};
+
+mergeIntoDb(LAPTOP_DATABASE, NEW_LAPTOPS_2025_DATABASE);
+
 // ============================================================
 // AGGREGATED DATABASE FOR GENERIC SEARCH
 // ============================================================
@@ -19283,7 +19293,7 @@ const mergeIntoGlobal = (db: Record<string, ComputerModelFamily[]>) => {
 mergeIntoGlobal(LAPTOP_DATABASE);
 mergeIntoGlobal(BRAND_DESKTOP_DATABASE);
 mergeIntoGlobal(ALL_IN_ONE_DATABASE);
-mergeIntoGlobal(NEW_LAPTOPS_2025_DATABASE);
+// No need to merge NEW_LAPTOPS_2025_DATABASE here separately anymore as it's already in LAPTOP_DATABASE
 
 // ============================================================
 

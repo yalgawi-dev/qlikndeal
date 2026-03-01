@@ -18,39 +18,55 @@ const STORAGE_OPTIONS = ["128GB SSD", "256GB SSD", "512GB SSD", "1TB SSD", "2TB 
 const OS_OPTIONS = ["Windows 11 Home", "Windows 11 Pro", "Windows 10 Home", "Windows 10 Pro", "macOS Sequoia", "macOS Sonoma", "macOS Ventura", "macOS Monterey", "Linux", "ללא מערכת הפעלה"];
 
 // ─── Local fuzzy search ───────────────────────────────────────────
-function searchLocalDB(db: any, q: string, limit = 6): { label: string; data: any }[] {
+function searchLocalDB(db: any, q: string, limit = 10): { label: string; data: any }[] {
     if (!q || typeof q !== 'string') return [];
-    const terms = q.toLowerCase().trim().split(/\s+/);
-    const matchesAll = (text: string) => text && terms.every(t => text.toLowerCase().includes(t));
+    const queryStr = q.toLowerCase().trim();
     const results: { label: string; score: number; data: any }[] = [];
 
     for (const brand in db) {
+        const brandLower = brand.toLowerCase();
         for (const family of db[brand]) {
             for (const sub of family.subModels) {
-                const fullName = `${brand} ${sub.name}`;
+                const modelLower = sub.name.toLowerCase();
+                const fullName = `${brandLower} ${modelLower}`;
                 let score = 0;
 
-                if (matchesAll(sub.name)) {
-                    score += 10;
-                    if (sub.name.toLowerCase() === q || fullName.toLowerCase() === q) score += 20;
-                    else if (sub.name.toLowerCase().startsWith(q) || fullName.toLowerCase().startsWith(q)) score += 5;
-                } else if (matchesAll(fullName)) {
-                    score += 8;
-                }
+                // TIER 1: Exact matches
+                if (brandLower === queryStr || modelLower === queryStr || fullName === queryStr) score = 1000;
+                // TIER 2: Starts with query
+                else if (fullName.startsWith(queryStr) || modelLower.startsWith(queryStr)) score = 800;
+                // TIER 3: Brand name starts with query
+                else if (brandLower.startsWith(queryStr)) score = 600;
+                // TIER 4: Any word starts with query
+                else if (fullName.split(/\s+/).some(word => word.startsWith(queryStr))) score = 400;
+                // TIER 5: Contains query
+                else if (fullName.includes(queryStr)) score = 200;
 
-                let matchedSku: any = null;
-                if (sub.skus) {
-                    for (const sku of sub.skus) {
-                        if (sku.id && matchesAll(sku.id)) { score += 15; matchedSku = sku; break; }
+                if (score > 0) {
+                    // Check SKUs for even better matches
+                    let bestSku: any = null;
+                    if (sub.skus) {
+                        for (const sku of sub.skus) {
+                            if (sku.id) {
+                                const sid = sku.id.toLowerCase();
+                                if (sid === queryStr) score = Math.max(score, 1100);
+                                else if (sid.startsWith(queryStr)) score = Math.max(score, 850);
+                                else if (sid.includes(queryStr)) score = Math.max(score, 300);
+                            }
+                        }
                     }
+                    results.push({ label: `${brand} ${sub.name}`, score, data: { brand, family, sub, matchedSku: bestSku } });
                 }
-
-                if (score > 0) results.push({ label: sub.name, score, data: { brand, family, sub, matchedSku } });
             }
         }
     }
 
-    results.sort((a, b) => b.score - a.score);
+    // Sort: Score (desc) then Alphabetical (asc)
+    results.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.label.localeCompare(b.label);
+    });
+
     const seen = new Set<string>();
     return results
         .filter(r => { if (seen.has(r.label)) return false; seen.add(r.label); return true; })
