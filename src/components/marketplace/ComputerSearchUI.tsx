@@ -244,9 +244,9 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
                     </div>
 
                     {/* Autocomplete */}
-                    {showSug && query.trim().length >= 2 && (
+                    {showSug && query.trim().length >= 1 && (
                         <div style={{
-                            position: "absolute", top: "calc(100% + 4px)", right: 0, left: 0, zIndex: 99,
+                            position: "absolute", top: "calc(100% + 4px)", right: 0, left: 0, zIndex: 999,
                             background: "#0d1117", border: "1px solid #1e3a5f", borderRadius: 10,
                             overflow: "hidden", boxShadow: "0 10px 30px rgba(0,0,0,.7)"
                         }}>

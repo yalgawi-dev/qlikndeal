@@ -422,7 +422,7 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                 </Button>
 
                 {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute top-full right-0 left-[108px] mt-1 bg-gray-900 border border-cyan-800/50 rounded-lg shadow-xl z-50 overflow-hidden">
+                    <div className="absolute top-full right-0 left-[108px] mt-1 bg-gray-900 border border-cyan-800/50 rounded-lg shadow-xl z-[999] overflow-hidden">
                         {suggestions.map((s, i) => (
                             <button
                                 key={i}

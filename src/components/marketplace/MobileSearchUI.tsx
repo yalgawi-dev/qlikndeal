@@ -80,21 +80,23 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
     const containerRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<any>(null);
 
-    // Handle Autocomplete
+    // Handle Autocomplete (Trigger on 1 char, even in Premium mode)
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        if (query.trim().length < 1 || isPremium) {
+        const trimmed = query.trim();
+        
+        if (trimmed.length < 1) {
             setSuggestions([]);
             setShowSuggestions(false);
             return;
         }
 
         debounceRef.current = setTimeout(() => {
-            const results = searchPhoneDB(query);
+            const results = searchPhoneDB(trimmed);
             setSuggestions(results);
             setShowSuggestions(results.length > 0);
         }, 150);
-    }, [query, isPremium]);
+    }, [query]);
 
     // Close suggestions on click outside
     useEffect(() => {
@@ -263,12 +265,16 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
                                 }}
                             />
                             {/* Autocomplete Dropdown */}
-                            {showSuggestions && (
-                                <div className="absolute top-full left-0 right-0 mt-2 bg-[#0d1117] border border-[#1a2744] rounded-xl shadow-2xl z-[100] overflow-hidden max-h-[300px] overflow-y-auto backdrop-blur-md">
+                            {showSuggestions && suggestions.length > 0 && (
+                                <div className="absolute top-full left-0 right-0 mt-2 bg-[#0d1117] border border-[#1a2744] rounded-xl shadow-2xl z-[999] overflow-hidden max-h-[300px] overflow-y-auto backdrop-blur-md">
                                     {suggestions.map((sug, i) => (
                                         <button
                                             key={i}
-                                            onClick={() => handleSelectPhone(sug.data)}
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleSelectPhone(sug.data);
+                                            }}
                                             className="w-full text-right px-4 py-3 text-sm text-gray-300 hover:bg-blue-500/10 hover:text-blue-400 transition-colors flex items-center gap-3 border-b border-gray-800/50 last:border-0"
                                         >
                                             <Smartphone className="w-4 h-4 text-gray-500" />
