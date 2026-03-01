@@ -112,7 +112,7 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
     // Autocomplete
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        if (query.trim().length < 2) { setSuggestions([]); setShowSug(false); return; }
+        if (query.trim().length < 1) { setSuggestions([]); setShowSug(false); return; }
         debounceRef.current = setTimeout(() => {
             const sug = searchLocalDB(activeDb, query, 7);
             setSuggestions(sug);

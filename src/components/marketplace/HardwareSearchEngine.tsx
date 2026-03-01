@@ -89,7 +89,7 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
     const prompts = getPrompts(category);
 
     const fetchSuggestions = useCallback(async (text: string, token: number) => {
-        if (text.length < 2) {
+        if (text.length < 1) {
             setSuggestions([]);
             setShowSuggestions(false);
             setSuggestionsLoading(false);
@@ -221,7 +221,7 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         const trimmed = query.trim();
-        if (trimmed.length >= 2) {
+        if (trimmed.length >= 1) {
             debounceRef.current = setTimeout(() => {
                 abortTokenRef.current += 1;
                 fetchSuggestions(trimmed, abortTokenRef.current);
