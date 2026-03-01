@@ -24,7 +24,8 @@ export async function getFacebookListing(url: string, userToken?: string) {
 
         // 3. Call Graph API
         // Endpoint: https://graph.facebook.com/v19.0/{listing-id}
-        const fields = "id,title,description,price,currency,photos{image},condition";
+        // Adding more fields: message and name (sometimes descriptions are in these fields)
+        const fields = "id,title,description,price,currency,photos{image},condition,message,name";
         const apiUrl = `https://graph.facebook.com/v19.0/${listingId}?fields=${fields}&access_token=${accessToken}`;
 
         const res = await fetch(apiUrl);
@@ -36,12 +37,16 @@ export async function getFacebookListing(url: string, userToken?: string) {
         }
 
         // 4. Map Response to our structure
+        // Preference: description > message > name
+        const finalDescription = data.description || data.message || "";
+        const finalTitle = data.title || data.name || "";
+
         return {
             success: true,
             data: {
-                title: data.title || "",
-                description: data.description || "",
-                price: data.price || "", // API often returns formatted price or separate currency
+                title: finalTitle,
+                description: finalDescription,
+                price: data.price || "",
                 images: data.photos?.data.map((p: any) => p.image.src) || [],
                 condition: data.condition || ""
             }

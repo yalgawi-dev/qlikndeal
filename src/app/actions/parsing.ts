@@ -121,10 +121,10 @@ export async function parseLinkAction(url: string): Promise<LinkParseResult> {
 
             const html = await response.text();
 
-            // Simple Regex for OG tags
-            const titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/i);
-            const descMatch = html.match(/<meta property="og:description" content="([^"]+)"/i);
-            const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/i);
+            // Improved Regex for OG tags (handles quotes inside content better)
+            const titleMatch = html.match(/<meta\s+(?:property="og:title"|name="twitter:title")\s+content="([^"]+)"/i);
+            const descMatch = html.match(/<meta\s+(?:property="og:description"|name="twitter:description")\s+content="([^"]+)"/i);
+            const imageMatch = html.match(/<meta\s+(?:property="og:image"|name="twitter:image")\s+content="([^"]+)"/i);
 
             const title = titleMatch ? titleMatch[1] : "";
             const description = descMatch ? descMatch[1] : "";

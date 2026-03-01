@@ -45,6 +45,7 @@ async function main() {
         console.log(`  Phone: ${u.phone || "MISSING"}`);
         console.log(`  Clerk ID: ${u.clerkId}`);
         console.log(`  Image URL: ${u.imageUrl ? "EXISTS" : "MISSING"} (${u.imageUrl?.substring(0, 30)}...)`);
+        console.log(`  Roles: ${u.roles.join(', ')}`);
         console.log(`  Shipments as Seller: ${u._count.shipmentsAsSeller}`);
         console.log(`  Shipments as Buyer: ${u._count.shipmentsAsBuyer}`);
     });
