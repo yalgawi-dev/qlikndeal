@@ -126,9 +126,25 @@ export async function parseLinkAction(url: string): Promise<LinkParseResult> {
             const descMatch = html.match(/<meta\s+(?:property="og:description"|name="twitter:description")\s+content="([^"]+)"/i);
             const imageMatch = html.match(/<meta\s+(?:property="og:image"|name="twitter:image")\s+content="([^"]+)"/i);
 
-            const title = titleMatch ? titleMatch[1] : "";
-            const description = descMatch ? descMatch[1] : "";
+            let title = titleMatch ? titleMatch[1] : "";
+            let description = descMatch ? descMatch[1] : "";
             const image = imageMatch ? imageMatch[1] : null;
+
+            // --- DEEP SCRAPE FALLBACK ---
+            // If the description is truncated (ends with ...) or too short, look for the full message in JSON blobs
+            if (description.endsWith("...") || description.length < 200) {
+                const jsonMatch = html.match(/"message":\{"text":"(.*?)"\}/);
+                if (jsonMatch && jsonMatch[1]) {
+                    // Unescape unicode characters if present
+                    const fullText = jsonMatch[1].replace(/\\u([0-9a-fA-F]{4})/g, (match, grp) => 
+                        String.fromCharCode(parseInt(grp, 16))
+                    ).replace(/\\n/g, '\n').replace(/\\"/g, '"');
+                    
+                    if (fullText.length > description.length) {
+                        description = fullText;
+                    }
+                }
+            }
 
             if (title || description) {
                 const combinedText = `${title}\n${description}`;
