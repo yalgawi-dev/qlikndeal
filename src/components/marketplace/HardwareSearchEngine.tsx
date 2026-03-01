@@ -97,12 +97,11 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
         }
         setSuggestionsLoading(true);
 
-        // --- Local Data Fallback Function ---
-        const getLocalSuggestions = (queryStr: string) => {
+        // --- Local Data Matching Logic ---
+        const getScoredMatches = (queryStr: string) => {
             const q = queryStr.toLowerCase().trim();
             const terms = q.split(/\s+/); 
-
-            const scoredMatches: { text: string; score: number }[] = [];
+            const scored: { text: string; score: number }[] = [];
 
             if (category === "Phones") {
                 ALL_PHONES.forEach(p => {
@@ -111,18 +110,12 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                     const modelLower = p.model.toLowerCase();
                     const fullName = `${brandLower} ${modelLower}`;
 
-                    // TIER 1: Exact matches
                     if (brandLower === q || modelLower === q || fullName === q) score = 1000;
-                    // TIER 2: Starts with query
                     else if (fullName.startsWith(q) || modelLower.startsWith(q)) score = 800;
-                    // TIER 3: Brand name starts with query
                     else if (brandLower.startsWith(q)) score = 600;
-                    // TIER 4: Any word starts with query
                     else if (fullName.split(/\s+/).some(word => word.startsWith(q))) score = 400;
-                    // TIER 5: Contains query
                     else if (fullName.includes(q)) score = 200;
 
-                    // Hebrew ALiases Boost
                     if (p.hebrewAliases) {
                         for (const alias of p.hebrewAliases) {
                             const a = alias.toLowerCase();
@@ -131,10 +124,7 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                             else if (a.includes(q)) score = Math.max(score, 150);
                         }
                     }
-
-                    if (score > 0) {
-                        scoredMatches.push({ text: `${p.brand} ${p.model}`, score });
-                    }
+                    if (score > 0) scored.push({ text: `${p.brand} ${p.model}`, score });
                 });
             } else if (category === "Computers") {
                 for (const brand in COMPUTER_DATABASE) {
@@ -148,15 +138,10 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                             const modelLower = sub.name.toLowerCase();
                             const fullName = `${brandLower} ${modelLower}`;
 
-                            // TIER 1: Brand/FullName/Model Exact Match
                             if (brandLower === q || fullName === q || modelLower === q) score = 1000;
-                            // TIER 2: Brand or Name Starts with Query
                             else if (fullName.startsWith(q) || modelLower.startsWith(q)) score = 800;
-                            // TIER 3: Brand Starts with Query
                             else if (brandStartsWith) score = 600;
-                            // TIER 4: Any word in model starts with query
                             else if (sub.name.split(/\s+/).some(word => word.toLowerCase().startsWith(q))) score = 400;
-                            // TIER 5: Brand contains or model contains
                             else if (brandContains || fullName.includes(q)) score = 200;
 
                             if (sub.skus) {
@@ -165,32 +150,29 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                                     else if (sku.id && sku.id.toLowerCase().includes(q)) score = Math.max(score, 300);
                                 }
                             }
-
-                            if (score > 0) {
-                                scoredMatches.push({ text: `${brand} ${sub.name}`, score });
-                            }
+                            if (score > 0) scored.push({ text: `${brand} ${sub.name}`, score });
                         }
                     }
                 }
             }
 
-            // Sort by score (descending) THEN alphabetically (ascending)
-            scoredMatches.sort((a, b) => {
+            // Internal Sort: Score (Desc) then ABC (Asc)
+            scored.sort((a, b) => {
                 if (b.score !== a.score) return b.score - a.score;
                 return a.text.localeCompare(b.text);
             });
 
-            const seen = new Set<string>();
-            const uniqueResults: string[] = [];
-            for (const m of scoredMatches) {
-                if (!seen.has(m.text)) {
-                    seen.add(m.text);
-                    uniqueResults.push(m.text);
-                }
-                if (uniqueResults.length >= 10) break; // Increased to 10 for better variety
-            }
-            return uniqueResults;
+            return scored;
         };
+
+        const localMatches = getScoredMatches(text);
+        const localTexts = localMatches.map(m => m.text);
+        
+        // Initial show with local data to be fast
+        if (localTexts.length > 0) {
+            setSuggestions(localTexts.slice(0, 8));
+            setShowSuggestions(true);
+        }
 
         try {
             const response = await fetch("/api/hardware-search", {
@@ -206,20 +188,30 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
 
             if (data.error) throw new Error(data.error);
             const textContent = data.content?.[0]?.text || "[]";
-            const parsed = JSON.parse(textContent);
+            const aiRaw: string[] = JSON.parse(textContent);
 
             if (token !== abortTokenRef.current) return;
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                setSuggestions(parsed);
-                setShowSuggestions(true);
-            } else {
-                throw new Error("No API suggestions");
+            
+            // Merge AI suggestions with local ones, avoiding duplicates
+            const combinedSet = new Set(localTexts);
+            const finalResults = [...localTexts];
+            
+            if (Array.isArray(aiRaw)) {
+                for (const aiS of aiRaw) {
+                    if (!combinedSet.has(aiS)) {
+                        combinedSet.add(aiS);
+                        finalResults.push(aiS);
+                    }
+                }
             }
+
+            // Final truncation to 10
+            setSuggestions(finalResults.slice(0, 10));
+            setShowSuggestions(finalResults.length > 0);
         } catch (e) {
             if (token === abortTokenRef.current) {
-                const fallback = getLocalSuggestions(text);
-                setSuggestions(fallback);
-                setShowSuggestions(fallback.length > 0);
+                setSuggestions(localTexts.slice(0, 10));
+                setShowSuggestions(localTexts.length > 0);
             }
         } finally {
             if (token === abortTokenRef.current) setSuggestionsLoading(false);
