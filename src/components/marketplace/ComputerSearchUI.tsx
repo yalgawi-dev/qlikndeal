@@ -117,7 +117,7 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
             const sug = searchLocalDB(activeDb, query, 7);
             setSuggestions(sug);
             setShowSug(sug.length > 0);
-        }, 220);
+        }, 150);
     }, [query, activeDb]);
 
     // Close dropdown on outside click

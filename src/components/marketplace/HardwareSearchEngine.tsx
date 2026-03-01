@@ -225,7 +225,7 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
             debounceRef.current = setTimeout(() => {
                 abortTokenRef.current += 1;
                 fetchSuggestions(trimmed, abortTokenRef.current);
-            }, 400);
+            }, 150);
         } else {
             setSuggestions([]);
             setShowSuggestions(false);

@@ -93,7 +93,7 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
             const results = searchPhoneDB(query);
             setSuggestions(results);
             setShowSuggestions(results.length > 0);
-        }, 200);
+        }, 150);
     }, [query, isPremium]);
 
     // Close suggestions on click outside
