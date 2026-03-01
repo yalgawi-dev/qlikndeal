@@ -28,9 +28,15 @@ export default async function AdminDashboardPage() {
 
     return (
         <div className="p-6 max-w-7xl mx-auto space-y-8" dir="rtl">
-            <div>
-                <h1 className="text-3xl font-bold mb-2">סקירה כללית</h1>
-                <p className="text-gray-400">ברוך הבא למערכת הניהול של Qlikndeal.</p>
+            <div className="flex justify-between items-center mb-2">
+                <div>
+                    <h1 className="text-3xl font-bold mb-2">סקירה כללית</h1>
+                    <p className="text-gray-400">ברוך הבא למערכת הניהול של Qlikndeal.</p>
+                </div>
+                <Link href="/admin/export" className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-medium transition-all shadow-lg shadow-emerald-900/20">
+                    <FileSpreadsheet size={20} />
+                    ייצוא נתונים (אקסל)
+                </Link>
             </div>
 
             {/* Stats Grid */}
