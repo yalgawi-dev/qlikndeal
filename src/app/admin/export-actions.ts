@@ -12,8 +12,8 @@ function clean(text: any) {
 }
 
 export async function exportComputersToCSV(type: "laptop" | "desktop" | "all") {
-    let csvContent = "\ufeff"; // BOM for UTF-8 Excel support
-    csvContent += "יצרן,סדרה,דגם,סוג,מסך,מעבד,זיכרון RAM,אחסון,מאיץ גרפי,שנה,הערות\n";
+    let csvContent = ""; 
+    csvContent += "יצרן;סדרה;דגם;סוג;מסך;מעבד;זיכרון RAM;אחסון;מאיץ גרפי;שנה;הערות\n";
 
     for (const [brand, families] of Object.entries(LAPTOP_DATABASE)) {
         for (const family of families) {
@@ -34,7 +34,7 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "all") {
                     clean(sub.release_year),
                     clean(sub.notes)
                 ];
-                csvContent += row.join(",") + "\n";
+                csvContent += row.join(";") + "\n";
             }
         }
     }
@@ -43,8 +43,8 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "all") {
 }
 
 export async function exportPhonesToCSV() {
-    let csvContent = "\ufeff"; // BOM for UTF-8 Excel support
-    csvContent += "מותג,סדרה,דגם,מסך,שנת יציאה,מעבד,RAM,אחסון,סוללה,מצלמה אחורית,משקל\n";
+    let csvContent = "";
+    csvContent += "מותג;סדרה;דגם;מסך;שנת יציאה;מעבד;RAM;אחסון;סוללה;מצלמה אחורית;משקל\n";
 
     for (const phone of ALL_PHONES) {
         const row = [
@@ -60,7 +60,7 @@ export async function exportPhonesToCSV() {
             clean(phone.rear_camera),
             clean(phone.weight)
         ];
-        csvContent += row.join(",") + "\n";
+        csvContent += row.join(";") + "\n";
     }
 
     return csvContent;

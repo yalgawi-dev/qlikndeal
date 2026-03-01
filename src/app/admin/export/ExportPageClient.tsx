@@ -10,7 +10,9 @@ export default function ExportPageClient() {
     const [loading, setLoading] = useState<string | null>(null);
 
     const downloadFile = (content: string, fileName: string) => {
-        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        // הוספת BOM של UTF-8 בצורה מפורשת בינארית כדי שאקסל יזהה את העברית
+        const BOM = new Uint8Array([0xEF, 0xBB, 0xBF]);
+        const blob = new Blob([BOM, content], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
