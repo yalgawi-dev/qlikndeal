@@ -31,10 +31,10 @@ export default function ExportPageClient() {
 
             if (type === "phone") {
                 content = await exportPhonesToCSV();
-                fileName = `phone_database_${new Date().toLocaleDateString()}.csv`;
+                fileName = `phone_database_${new Date().toLocaleDateString()}.xls`;
             } else {
                 content = await exportComputersToCSV(type);
-                fileName = `${type}_database_${new Date().toLocaleDateString()}.csv`;
+                fileName = `${type}_database_${new Date().toLocaleDateString()}.xls`;
             }
 
             downloadFile(content, fileName);

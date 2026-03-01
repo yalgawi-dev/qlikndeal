@@ -13,7 +13,7 @@ function clean(text: any) {
 
 export async function exportComputersToCSV(type: "laptop" | "desktop" | "all") {
     let csvContent = ""; 
-    csvContent += "יצרן;סדרה;דגם;סוג;מסך;מעבד;זיכרון RAM;אחסון;מאיץ גרפי;שנה;הערות\n";
+    csvContent += "יצרן\tסדרה\tדגם\tסוג\tמסך\tמעבד\tזיכרון RAM\tאחסון\tמאיץ גרפי\tשנה\tהערות\n";
 
     for (const [brand, families] of Object.entries(LAPTOP_DATABASE)) {
         for (const family of families) {
@@ -34,7 +34,7 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "all") {
                     clean(sub.release_year),
                     clean(sub.notes)
                 ];
-                csvContent += row.join(";") + "\n";
+                csvContent += row.join("\t") + "\n";
             }
         }
     }
@@ -44,7 +44,7 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "all") {
 
 export async function exportPhonesToCSV() {
     let csvContent = "";
-    csvContent += "מותג;סדרה;דגם;מסך;שנת יציאה;מעבד;RAM;אחסון;סוללה;מצלמה אחורית;משקל\n";
+    csvContent += "מותג\tסדרה\tדגם\tמסך\tשנת יציאה\tמעבד\tRAM\tאחסון\tסוללה\tמצלמה אחורית\tמשקל\n";
 
     for (const phone of ALL_PHONES) {
         const row = [
@@ -60,7 +60,7 @@ export async function exportPhonesToCSV() {
             clean(phone.rear_camera),
             clean(phone.weight)
         ];
-        csvContent += row.join(";") + "\n";
+        csvContent += row.join("\t") + "\n";
     }
 
     return csvContent;
