@@ -100,66 +100,65 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
         // --- Local Data Matching Logic ---
         const getScoredMatches = (queryStr: string) => {
             const q = queryStr.toLowerCase().trim();
-            const terms = q.split(/\s+/); 
             const scored: { text: string; score: number }[] = [];
 
             if (category === "Phones") {
                 ALL_PHONES.forEach(p => {
-                    let score = 0;
                     const brandLower = p.brand.toLowerCase();
                     const modelLower = p.model.toLowerCase();
-                    const fullName = `${brandLower} ${modelLower}`;
-
-                    if (brandLower === q || modelLower === q || fullName === q) score = 1000;
-                    else if (fullName.startsWith(q) || modelLower.startsWith(q)) score = 800;
-                    else if (brandLower.startsWith(q)) score = 600;
-                    else if (fullName.split(/\s+/).some(word => word.startsWith(q))) score = 400;
-                    else if (fullName.includes(q)) score = 200;
-
-                    if (p.hebrewAliases) {
-                        for (const alias of p.hebrewAliases) {
-                            const a = alias.toLowerCase();
-                            if (a === q) score = Math.max(score, 900);
-                            else if (a.startsWith(q)) score = Math.max(score, 700);
-                            else if (a.includes(q)) score = Math.max(score, 150);
-                        }
+                    const fullName = modelLower.includes(brandLower) ? p.model.toLowerCase() : `${brandLower} ${p.model.toLowerCase()}`;
+                    const displayLabel = modelLower.startsWith(brandLower) ? p.model : `${p.brand} ${p.model}`;
+                    
+                    let score = 0;
+                    // TIER 1: Prefix match on the full visible label
+                    if (displayLabel.toLowerCase().startsWith(q)) {
+                        score = 1000;
                     }
-                    if (score > 0) scored.push({ text: `${p.brand} ${p.model}`, score });
+                    // TIER 2: Any word starts with query
+                    else if (fullName.split(/\s+/).some(word => word.startsWith(q))) {
+                        score = 500;
+                    }
+                    // TIER 3: Contains
+                    else if (fullName.includes(q)) {
+                        score = 100;
+                    }
+
+                    if (score > 0) {
+                        scored.push({ text: displayLabel, score });
+                    }
                 });
             } else if (category === "Computers") {
                 for (const brand in COMPUTER_DATABASE) {
                     const brandLower = brand.toLowerCase();
-                    const brandStartsWith = brandLower.startsWith(q);
-                    const brandContains = brandLower.includes(q);
-
                     for (const family of COMPUTER_DATABASE[brand]) {
                         for (const sub of family.subModels) {
-                            let score = 0;
                             const modelLower = sub.name.toLowerCase();
-                            const fullName = `${brandLower} ${modelLower}`;
-
-                            if (brandLower === q || fullName === q || modelLower === q) score = 1000;
-                            else if (fullName.startsWith(q) || modelLower.startsWith(q)) score = 800;
-                            else if (brandStartsWith) score = 600;
-                            else if (sub.name.split(/\s+/).some(word => word.toLowerCase().startsWith(q))) score = 400;
-                            else if (brandContains || fullName.includes(q)) score = 200;
-
-                            if (sub.skus) {
-                                for (const sku of sub.skus) {
-                                    if (sku.id && sku.id.toLowerCase().startsWith(q)) score = Math.max(score, 750);
-                                    else if (sku.id && sku.id.toLowerCase().includes(q)) score = Math.max(score, 300);
-                                }
+                            const fullName = modelLower.includes(brandLower) ? sub.name.toLowerCase() : `${brandLower} ${modelLower}`;
+                            const displayLabel = modelLower.startsWith(brandLower) ? sub.name : `${brand} ${sub.name}`;
+                            
+                            let score = 0;
+                            if (displayLabel.toLowerCase().startsWith(q)) {
+                                score = 1000;
                             }
-                            if (score > 0) scored.push({ text: `${brand} ${sub.name}`, score });
+                            else if (fullName.split(/\s+/).some(word => word.toLowerCase().startsWith(q))) {
+                                score = 500;
+                            }
+                            else if (fullName.includes(q)) {
+                                score = 100;
+                            }
+
+                            if (score > 0) {
+                                scored.push({ text: displayLabel, score });
+                            }
                         }
                     }
                 }
             }
 
-            // Internal Sort: Score (Desc) then ABC (Asc)
+            // Internal Sort: Score (Tier) then ABC (Asc)
             scored.sort((a, b) => {
                 if (b.score !== a.score) return b.score - a.score;
-                return a.text.localeCompare(b.text);
+                return a.text.localeCompare(b.text, 'en', { sensitivity: 'base' });
             });
 
             return scored;
@@ -170,7 +169,7 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
         
         // Initial show with local data to be fast
         if (localTexts.length > 0) {
-            setSuggestions(localTexts.slice(0, 8));
+            setSuggestions(localTexts.slice(0, 20));
             setShowSuggestions(true);
         }
 
@@ -205,12 +204,12 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                 }
             }
 
-            // Final truncation to 10
-            setSuggestions(finalResults.slice(0, 10));
+            // Final truncation to 20
+            setSuggestions(finalResults.slice(0, 20));
             setShowSuggestions(finalResults.length > 0);
         } catch (e) {
             if (token === abortTokenRef.current) {
-                setSuggestions(localTexts.slice(0, 10));
+                setSuggestions(localTexts.slice(0, 20));
                 setShowSuggestions(localTexts.length > 0);
             }
         } finally {

@@ -28,49 +28,45 @@ function searchLocalDB(db: any, q: string, limit = 10): { label: string; data: a
         for (const family of db[brand]) {
             for (const sub of family.subModels) {
                 const modelLower = sub.name.toLowerCase();
-                const fullName = `${brandLower} ${modelLower}`;
+                const brandLower = brand.toLowerCase();
+                const fullName = modelLower.includes(brandLower) ? sub.name.toLowerCase() : `${brandLower} ${modelLower}`;
+                let displayLabel = modelLower.toLowerCase().startsWith(brandLower) ? sub.name : `${brand} ${sub.name}`;
                 let score = 0;
 
-                // TIER 1: Exact matches
-                if (brandLower === queryStr || modelLower === queryStr || fullName === queryStr) score = 1000;
-                // TIER 2: Starts with query
-                else if (fullName.startsWith(queryStr) || modelLower.startsWith(queryStr)) score = 800;
-                // TIER 3: Brand name starts with query
-                else if (brandLower.startsWith(queryStr)) score = 600;
-                // TIER 4: Any word starts with query
-                else if (fullName.split(/\s+/).some(word => word.startsWith(queryStr))) score = 400;
-                // TIER 5: Contains query
-                else if (fullName.includes(queryStr)) score = 200;
+                // TIER 1: Full name starts with query (e.g. "Apple" or "Acer")
+                if (displayLabel.toLowerCase().startsWith(queryStr)) {
+                    score = 1000;
+                }
+                // TIER 2: Any word starts with query (e.g. "Alienware" in "Dell Alienware")
+                else if (fullName.split(/\s+/).some(word => word.startsWith(queryStr))) {
+                    score = 500;
+                }
+                // TIER 3: Contains query
+                else if (fullName.includes(queryStr)) {
+                    score = 100;
+                }
 
                 if (score > 0) {
-                    // Check SKUs for even better matches
-                    let bestSku: any = null;
-                    if (sub.skus) {
-                        for (const sku of sub.skus) {
-                            if (sku.id) {
-                                const sid = sku.id.toLowerCase();
-                                if (sid === queryStr) score = Math.max(score, 1100);
-                                else if (sid.startsWith(queryStr)) score = Math.max(score, 850);
-                                else if (sid.includes(queryStr)) score = Math.max(score, 300);
-                            }
-                        }
-                    }
-                    results.push({ label: `${brand} ${sub.name}`, score, data: { brand, family, sub, matchedSku: bestSku } });
+                    results.push({ 
+                        label: displayLabel, 
+                        score, 
+                        data: { brand, family, sub, matchedSku: null } 
+                    });
                 }
             }
         }
     }
 
-    // Sort: Score (desc) then Alphabetical (asc)
+    // Sort: Tier Score (Desc) then Alpha Label (Asc)
     results.sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
-        return a.label.localeCompare(b.label);
+        return a.label.localeCompare(b.label, 'en', { sensitivity: 'base' });
     });
 
     const seen = new Set<string>();
     return results
         .filter(r => { if (seen.has(r.label)) return false; seen.add(r.label); return true; })
-        .slice(0, limit)
+        .slice(0, 20)
         .map(r => ({ label: r.label, data: r.data }));
 }
 
@@ -114,7 +110,7 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
         if (debounceRef.current) clearTimeout(debounceRef.current);
         if (query.trim().length < 1) { setSuggestions([]); setShowSug(false); return; }
         debounceRef.current = setTimeout(() => {
-            const sug = searchLocalDB(activeDb, query, 7);
+            const sug = searchLocalDB(activeDb, query, 20);
             setSuggestions(sug);
             setShowSug(sug.length > 0);
         }, 150);
