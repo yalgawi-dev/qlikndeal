@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, Users, Menu, X, ArrowLeft, Bot, CheckSquare, StickyNote } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Users, Menu, X, ArrowLeft, Bot, CheckSquare, StickyNote, FileSpreadsheet } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -16,6 +16,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: "למידת AI", href: "/admin/parser-logs", icon: Bot },
         { name: "יומן משימות", href: "/admin/tasks", icon: CheckSquare },
         { name: "הערות צוות", href: "/admin/notes", icon: StickyNote },
+        { name: "ייצוא נתונים", href: "/admin/export", icon: FileSpreadsheet, color: "text-emerald-400" },
     ];
 
     return (

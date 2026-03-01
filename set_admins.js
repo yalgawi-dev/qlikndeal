@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function makeAdmins() {
-  const emails = ['yalgawi@gmail.com', 'darohadd@walla.com', 'dpccomp@gmail.com'];
+  const emails = ['yalgawi@gmail.com', 'darohadd@walla.com', 'dpccomp@gmail.com', 'itay@qlikndeal.com'];
   
   console.log("Upgrading users to ADMIN...");
   

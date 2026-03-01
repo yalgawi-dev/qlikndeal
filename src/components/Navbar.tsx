@@ -8,7 +8,7 @@ import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/n
 import { Settings } from "lucide-react";
 
 // Admin emails — users who see the Admin panel link
-const ADMIN_EMAILS = ["yalgawi@gmail.com", "darohadd@walla.com", "itay@qlikndeal.com"];
+const ADMIN_EMAILS = ["yalgawi@gmail.com", "darohadd@walla.com", "itay@qlikndeal.com", "dpccomp@gmail.com"];
 
 export function Navbar() {
     return (
@@ -52,7 +52,7 @@ function AdminLink() {
     if (!ADMIN_EMAILS.includes(email)) return null;
 
     return (
-        <Link href="/admin/parser-logs" title="Admin Panel">
+        <Link href="/admin" title="Admin Panel">
             <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 gap-1.5">
                 <Settings className="w-3.5 h-3.5" />
                 Admin

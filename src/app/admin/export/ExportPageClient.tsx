@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Laptop, Monitor, Tablet, Download, FileSpreadsheet, Loader2 } from "lucide-react";
-import { exportComputersToCSV, exportPhonesToCSV } from "./export-actions";
+import { exportComputersToCSV, exportPhonesToCSV } from "../export-actions";
 import { toast } from "sonner";
 
 export default function ExportPageClient() {
