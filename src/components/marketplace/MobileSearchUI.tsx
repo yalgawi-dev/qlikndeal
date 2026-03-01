@@ -22,40 +22,34 @@ export const MOBILE_SEARCH_FIELDS = [
 ];
 
 function searchPhoneDB(q: string, limit = 15): { label: string; data: PhoneModel }[] {
-    if (!q || q.length < 2) return [];
-    const lowerQ = q.toLowerCase().trim();
-    const terms = lowerQ.split(/\s+/);
-    
+    if (!q || q.length < 1) return [];
+    const queryStr = q.toLowerCase().trim();
     const results: { label: string; score: number; data: PhoneModel }[] = [];
     
     for (const p of ALL_PHONES) {
         let score = 0;
-        const brand = p.brand.toLowerCase();
-        const model = p.model.toLowerCase();
-        const fullName = `${brand} ${model}`;
+        const brandLower = p.brand.toLowerCase();
+        const modelLower = p.model.toLowerCase();
+        const fullName = `${brandLower} ${modelLower}`;
         
-        // Exact match on full name or model
-        if (fullName === lowerQ || model === lowerQ) {
-            score += 100;
-        } 
-        // Starts with
-        else if (fullName.startsWith(lowerQ) || model.startsWith(lowerQ)) {
-            score += 60;
-        }
-        // Contains brand AND model terms
-        else if (terms.every(t => fullName.includes(t))) {
-            score += 40;
-            // Higher score if the brand is specifically mentioned
-            if (terms.includes(brand)) score += 10;
-        }
+        // TIER 1: Exact matches
+        if (brandLower === queryStr || modelLower === queryStr || fullName === queryStr) score = 1000;
+        // TIER 2: Starts with query
+        else if (fullName.startsWith(queryStr) || modelLower.startsWith(queryStr)) score = 800;
+        // TIER 3: Brand name starts with query
+        else if (brandLower.startsWith(queryStr)) score = 600;
+        // TIER 4: Any word starts with query
+        else if (fullName.split(/\s+/).some(word => word.startsWith(queryStr))) score = 400;
+        // TIER 5: Contains query
+        else if (fullName.includes(queryStr)) score = 200;
         
-        // Hebrew alias match
+        // Hebrew ALiases Boost
         if (p.hebrewAliases) {
             for (const alias of p.hebrewAliases) {
-                const lowerA = alias.toLowerCase();
-                if (lowerA === lowerQ) score = Math.max(score, 95);
-                else if (lowerA.startsWith(lowerQ)) score = Math.max(score, 50);
-                else if (terms.every(t => lowerA.includes(t))) score = Math.max(score, 30);
+                const a = alias.toLowerCase();
+                if (a === queryStr) score = Math.max(score, 900);
+                else if (a.startsWith(queryStr)) score = Math.max(score, 700);
+                else if (a.includes(queryStr)) score = Math.max(score, 150);
             }
         }
         
@@ -63,11 +57,14 @@ function searchPhoneDB(q: string, limit = 15): { label: string; data: PhoneModel
             results.push({ label: `${p.brand} ${p.model}`, score, data: p });
         }
     }
-    
-    return results
-        .sort((a, b) => b.score - a.score || a.label.localeCompare(b.label))
-        .slice(0, limit)
-        .map(r => ({ label: r.label, data: r.data }));
+
+    // Sort: Score (desc) then Alphabetical (asc)
+    results.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.label.localeCompare(b.label);
+    });
+
+    return results.slice(0, limit).map(r => ({ label: r.label, data: r.data }));
 }
 
 export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) => void }) {
@@ -86,7 +83,7 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
     // Handle Autocomplete
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        if (query.trim().length < 2 || isPremium) {
+        if (query.trim().length < 1 || isPremium) {
             setSuggestions([]);
             setShowSuggestions(false);
             return;
