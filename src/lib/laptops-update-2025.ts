@@ -13,7 +13,24 @@ export const NEW_LAPTOPS_2025_DATABASE: Record<string, ComputerModelFamily[]> = 
                 { "name": "ThinkPad X13 Gen 6 SKU-109", "screenSize": ["13.3\""], "cpu": ["Intel Core Ultra 7 258V"], "ram": ["32GB LPDDR5x"], "storage": ["1TB NVMe"], "gpu": ["Intel Arc Graphics"], "release_year": "2025", "notes": "ניידות מקסימלית למנהלים" },
                 { "name": "ThinkPad X1 Carbon Gen 13 SKU-175", "screenSize": ["14\""], "cpu": ["Intel Core Ultra 5 226V"], "ram": ["16GB LPDDR5x"], "storage": ["512GB NVMe"], "gpu": ["Intel Arc Graphics"], "release_year": "2025", "notes": "גרסת כניסה למנהלים" },
                 { "name": "ThinkPad Z13 Gen 3 SKU-236", "screenSize": ["13.3\""], "cpu": ["AMD Ryzen AI 9 HX 370"], "ram": ["32GB LPDDR5x"], "storage": ["1TB NVMe"], "gpu": ["AMD Radeon 890M"], "release_year": "2025", "notes": "עיצוב פרימיום AMD" },
-                { "name": "ThinkPad X1 Carbon Gen 14 SKU-249", "screenSize": ["14\""], "cpu": ["Intel Core Ultra 9 285H"], "ram": ["32GB LPDDR5x"], "storage": ["1TB NVMe"], "gpu": ["Intel Arc Graphics"], "release_year": "2026", "notes": "דגם העלית של 2026" }
+                { "name": "ThinkPad X1 Carbon Gen 14 SKU-249", "screenSize": ["14\""], "cpu": ["Intel Core Ultra 9 285H"], "ram": ["32GB LPDDR5x"], "storage": ["1TB NVMe"], "gpu": ["Intel Arc Graphics"], "release_year": "2026", "notes": "דגם העלית של 2026" },
+                { "name": "ThinkPad P1 Gen 8 SKU-92", "screenSize": ["16\""], "cpu": ["Intel Core Ultra 9 285H"], "ram": ["64GB LPDDR5x"], "storage": ["2TB NVMe"], "gpu": ["NVIDIA RTX 3000 Ada"], "release_year": "2025", "notes": "אלגנטי ועוצמתי" }
+            ]
+        },
+        {
+            "name": "ThinkBook", "type": "laptop", "subModels": [
+                { "name": "ThinkBook 16p Gen 6 SKU-50", "screenSize": ["16\""], "cpu": ["Intel Core Ultra 9 285H"], "ram": ["32GB DDR5"], "storage": ["1TB NVMe"], "gpu": ["NVIDIA RTX 5060 8GB"], "release_year": "2026", "notes": "מחשב יצירתי לעסקים" }
+            ]
+        },
+        {
+            "name": "IdeaPad", "type": "laptop", "subModels": [
+                { "name": "IdeaPad Pro 5i Gen 10 SKU-64", "screenSize": ["16\""], "cpu": ["Intel Core Ultra 9 285H"], "ram": ["32GB LPDDR5x"], "storage": ["1TB NVMe"], "gpu": ["NVIDIA RTX 5050 6GB"], "release_year": "2025", "notes": "ביצועים גבוהים במחיר נוח" },
+                { "name": "IdeaPad Slim 5 Gen 10 SKU-101", "screenSize": ["14\""], "cpu": ["Intel Core Ultra 5 226V"], "ram": ["16GB LPDDR5x"], "storage": ["512GB NVMe"], "gpu": ["Intel Arc Graphics"], "release_year": "2025", "notes": "עיצוב דק במחיר כניסה" }
+            ]
+        },
+        {
+            "name": "LOQ", "type": "laptop", "subModels": [
+                { "name": "LOQ 15 Gen 10 SKU-37", "screenSize": ["15.6\""], "cpu": ["Intel Core i5-14500HX"], "ram": ["16GB DDR5"], "storage": ["512GB NVMe"], "gpu": ["NVIDIA RTX 5050 6GB"], "release_year": "2025", "notes": "גיימינג כניסה משתלם" }
             ]
         },
         {
@@ -170,6 +187,17 @@ export const NEW_LAPTOPS_2025_DATABASE: Record<string, ComputerModelFamily[]> = 
             "name": "Framework", "type": "laptop", "subModels": [
                 { "name": "Framework Laptop 13 SKU-34", "screenSize": ["13.5\""], "cpu": ["Intel Core Ultra 7 258V"], "ram": ["32GB DDR5"], "storage": ["1TB NVMe"], "gpu": ["Intel Arc Graphics"], "release_year": "2025", "notes": "ניתן לתיקון ושדרוג עצמי" },
                 { "name": "Framework Laptop 16 SKU-62", "screenSize": ["16\""], "cpu": ["AMD Ryzen AI 9 HX 370"], "ram": ["32GB DDR5"], "storage": ["1TB NVMe"], "gpu": ["AMD Radeon 890M"], "release_year": "2025", "notes": "מודול גרפי נשלף" }
+            ]
+        }
+    ],
+    "Razer": [
+        {
+            "name": "Blade", "type": "laptop", "subModels": [
+                { "name": "Blade 14 (2025) SKU-9", "screenSize": ["14\""], "cpu": ["AMD Ryzen 9 8945HS"], "ram": ["32GB DDR5"], "storage": ["1TB NVMe"], "gpu": ["NVIDIA RTX 5070 8GB"], "release_year": "2025", "notes": "מפלצת גיימינג קטנה" },
+                { "name": "Blade 16 (2025) SKU-29", "screenSize": ["16\""], "cpu": ["Intel Core Ultra 9 285H"], "ram": ["32GB DDR5"], "storage": ["2TB NVMe"], "gpu": ["NVIDIA RTX 5080 12GB"], "release_year": "2025", "notes": "מסך Mini-LED 240Hz" },
+                { "name": "Blade 18 (2025) SKU-47", "screenSize": ["18\""], "cpu": ["Intel Core i9-14900HX"], "ram": ["64GB DDR5"], "storage": ["4TB NVMe"], "gpu": ["NVIDIA RTX 5090 16GB"], "release_year": "2025", "notes": "מסך 4K 200Hz" },
+                { "name": "Blade 14 (2026) SKU-80", "screenSize": ["14\""], "cpu": ["AMD Ryzen 9 9945HS"], "ram": ["32GB DDR5"], "storage": ["1TB NVMe"], "gpu": ["NVIDIA RTX 5070 8GB"], "release_year": "2026", "notes": "דור עתידי מטורף" },
+                { "name": "Blade 16 (2026) SKU-100", "screenSize": ["16\""], "cpu": ["Intel Core Ultra 9 295H"], "ram": ["64GB DDR5"], "storage": ["2TB NVMe"], "gpu": ["NVIDIA RTX 5090 16GB"], "release_year": "2026", "notes": "גיימינג ללא פשרות" }
             ]
         }
     ]
