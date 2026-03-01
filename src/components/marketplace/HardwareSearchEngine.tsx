@@ -107,20 +107,28 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
             if (category === "Phones") {
                 ALL_PHONES.forEach(p => {
                     let score = 0;
-                    const modelLower = p.model.toLowerCase();
                     const brandLower = p.brand.toLowerCase();
+                    const modelLower = p.model.toLowerCase();
                     const fullName = `${brandLower} ${modelLower}`;
 
-                    if (fullName === q || modelLower === q) score += 100;
-                    else if (fullName.startsWith(q) || modelLower.startsWith(q)) score += 50;
-                    else if (terms.every(t => fullName.includes(t))) score += 20;
+                    // TIER 1: Exact matches
+                    if (brandLower === q || modelLower === q || fullName === q) score = 1000;
+                    // TIER 2: Starts with query
+                    else if (fullName.startsWith(q) || modelLower.startsWith(q)) score = 800;
+                    // TIER 3: Brand name starts with query
+                    else if (brandLower.startsWith(q)) score = 600;
+                    // TIER 4: Any word starts with query
+                    else if (fullName.split(/\s+/).some(word => word.startsWith(q))) score = 400;
+                    // TIER 5: Contains query
+                    else if (fullName.includes(q)) score = 200;
 
+                    // Hebrew ALiases Boost
                     if (p.hebrewAliases) {
                         for (const alias of p.hebrewAliases) {
                             const a = alias.toLowerCase();
-                            if (a === q) score += 90;
-                            else if (a.startsWith(q)) score += 40;
-                            else if (terms.every(t => a.includes(t))) score += 15;
+                            if (a === q) score = Math.max(score, 900);
+                            else if (a.startsWith(q)) score = Math.max(score, 700);
+                            else if (a.includes(q)) score = Math.max(score, 150);
                         }
                     }
 
@@ -131,20 +139,30 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
             } else if (category === "Computers") {
                 for (const brand in COMPUTER_DATABASE) {
                     const brandLower = brand.toLowerCase();
+                    const brandStartsWith = brandLower.startsWith(q);
+                    const brandContains = brandLower.includes(q);
+
                     for (const family of COMPUTER_DATABASE[brand]) {
-                        const familyLower = family.name.toLowerCase();
                         for (const sub of family.subModels) {
                             let score = 0;
                             const modelLower = sub.name.toLowerCase();
                             const fullName = `${brandLower} ${modelLower}`;
 
-                            if (fullName === q || modelLower === q) score += 100;
-                            else if (fullName.startsWith(q) || modelLower.startsWith(q)) score += 50;
-                            else if (terms.every(t => fullName.includes(t))) score += 20;
+                            // TIER 1: Brand/FullName/Model Exact Match
+                            if (brandLower === q || fullName === q || modelLower === q) score = 1000;
+                            // TIER 2: Brand or Name Starts with Query
+                            else if (fullName.startsWith(q) || modelLower.startsWith(q)) score = 800;
+                            // TIER 3: Brand Starts with Query
+                            else if (brandStartsWith) score = 600;
+                            // TIER 4: Any word in model starts with query
+                            else if (sub.name.split(/\s+/).some(word => word.toLowerCase().startsWith(q))) score = 400;
+                            // TIER 5: Brand contains or model contains
+                            else if (brandContains || fullName.includes(q)) score = 200;
 
                             if (sub.skus) {
                                 for (const sku of sub.skus) {
-                                    if (sku.id && sku.id.toLowerCase().includes(q)) score += 30;
+                                    if (sku.id && sku.id.toLowerCase().startsWith(q)) score = Math.max(score, 750);
+                                    else if (sku.id && sku.id.toLowerCase().includes(q)) score = Math.max(score, 300);
                                 }
                             }
 
@@ -156,8 +174,12 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                 }
             }
 
-            // Sort by score (descending), get unique texts, and take top 5
-            scoredMatches.sort((a, b) => b.score - a.score);
+            // Sort by score (descending) THEN alphabetically (ascending)
+            scoredMatches.sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return a.text.localeCompare(b.text);
+            });
+
             const seen = new Set<string>();
             const uniqueResults: string[] = [];
             for (const m of scoredMatches) {
@@ -165,7 +187,7 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                     seen.add(m.text);
                     uniqueResults.push(m.text);
                 }
-                if (uniqueResults.length >= 6) break;
+                if (uniqueResults.length >= 10) break; // Increased to 10 for better variety
             }
             return uniqueResults;
         };
