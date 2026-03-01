@@ -233,7 +233,7 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
                             onClick={doSearch} disabled={loading || !query.trim()}
                             style={{
                                 padding: "0 20px", borderRadius: 10, border: "none",
-                                background: loading ? "#1e3a5f" : "linear-gradient(135deg,#f59e0b,#ea580c)",
+                                background: loading ? "#1e3a5f" : "linear-gradient(135deg,#0ea5e9,#6366f1)",
                                 color: "white", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", whiteSpace: "nowrap"
                             }}
                         >{loading ? "מחפש..." : "חפש"}</button>
