@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Search, ChevronDown, Check, Zap, Sparkles, X, ChevronRight, Smartphone } from "lucide-react";
-import { ALL_PHONES, PhoneModel } from "@/lib/phone-data";
+import { ALL_PHONE_MODELS, PhoneModel } from "@/lib/phone-data";
 
 export const MOBILE_SEARCH_FIELDS = [
     { key: "model_name", label: "שם הדגם", icon: "🏷️", locked: true },
@@ -26,7 +26,7 @@ function searchPhoneDB(q: string, limit = 20): { label: string; data: PhoneModel
     const queryStr = q.toLowerCase().trim();
     const results: { label: string; score: number; data: PhoneModel }[] = [];
     
-    for (const p of ALL_PHONES) {
+    for (const p of ALL_PHONE_MODELS) {
         const brandLower = p.brand.toLowerCase();
         const modelLower = p.model.toLowerCase();
         const fullName = modelLower.includes(brandLower) ? p.model.toLowerCase() : `${brandLower} ${p.model.toLowerCase()}`;

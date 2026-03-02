@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createListing, updateListing, getMyListings, parseLinkMetadata, updateUserPhone, getAiKnowledge, getMyPhone } from "@/app/actions/marketplace";
 import { analyzeListingText } from "@/lib/listing-ai";
 import { CAR_MODELS } from "@/lib/car-data";
-import { CUSTOM_BUILD_CATEGORIES, DESKTOP_SUB_CATEGORIES, MONITOR_OPTIONS } from "@/lib/computer-data";
+import { CUSTOM_BUILD_CATEGORIES, DESKTOP_SUB_CATEGORIES } from "@/lib/computer-data";
 import { HardwareSearchEngine } from "./HardwareSearchEngine";
 import { Loader2, Plus, Image as ImageIcon, X, Sparkles, Link as LinkIcon, Edit3, Trash2, Mic, MicOff } from "lucide-react";
 import Link from "next/link";
@@ -1442,7 +1442,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 <>
                                     {/* Custom Build Component Fields with dropdown selectors */}
                                     {CUSTOM_BUILD_FIELDS.map(field => {
-                                        const options = CUSTOM_BUILD_CATEGORIES[field.dataKey]?.options || [];
+                                        const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
                                         return (
                                             <div className="space-y-2" key={field.key}>
                                                 <Label className="text-amber-300 text-sm">{field.label}</Label>
@@ -1472,7 +1472,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
 
                                     {/* Monitor fields */}
                                     {MONITOR_FIELDS.map(field => {
-                                        const options = CUSTOM_BUILD_CATEGORIES[field.dataKey]?.options || [];
+                                        const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
                                         return (
                                             <div className="space-y-2" key={field.key}>
                                                 <Label className="text-blue-300 text-sm">{field.label}</Label>
@@ -1529,7 +1529,7 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                                 </h4>
                                             </div>
                                             {MONITOR_FIELDS.map(field => {
-                                                const options = CUSTOM_BUILD_CATEGORIES[field.dataKey]?.options || [];
+                                                const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
                                                 return (
                                                     <div className="space-y-2" key={field.key}>
                                                         <Label className="text-blue-300 text-sm">{field.label}</Label>
