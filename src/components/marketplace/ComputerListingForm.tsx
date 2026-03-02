@@ -339,13 +339,12 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         images: initialData?.images || [],
     });
 
-    // Auto-fill phone from DB (Onboarding) or Clerk profile
     useEffect(() => {
         if (details.contactPhone) return; // already filled
         getMyPhone().then(res => {
             if (res.phone) setDetails(d => ({ ...d, contactPhone: res.phone }));
         });
-    }, []);
+    }, [details.contactPhone]);
 
     const removeUncertain = (field: string) => {
         setUncertainFields(prev => prev.filter(f => f !== field));

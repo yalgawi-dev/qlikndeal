@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { createListing, updateListing, getMyListings, getMyPhone } from "@/app/actions/marketplace";
 import { Loader2, Plus, Image as ImageIcon, X, Sparkles, Smartphone, Cpu, MemoryStick, HardDrive, Battery, Camera, Search, Check, ChevronDown } from "lucide-react";
 import { MobileSearchUI } from "@/components/marketplace/MobileSearchUI";
-import { ALL_PHONES } from "@/lib/phone-data";
+import { ALL_PHONE_MODELS } from "@/lib/phone-data";
 
 export const MOBILE_CONDITION_OPTIONS = ["חדש (בקופסה)", "כמו חדש (ללא שריטות)", "משומש (מצב טוב)", "משומש (עם סימני שימוש)", "מחודש", "לא תקין / לחלקים"];
 
@@ -202,23 +202,22 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
         images: initialData?.images || [],
     });
 
-    const BRANDS = useMemo(() => Array.from(new Set(ALL_PHONES.map(p => p.brand))).sort(), []);
+    const BRANDS = useMemo(() => Array.from(new Set(ALL_PHONE_MODELS.map(p => p.brand))).sort(), []);
     const MODELS_FOR_BRAND = useMemo(() => {
         if (!spec.brand) return [];
         return Array.from(new Set(
-            ALL_PHONES
+            ALL_PHONE_MODELS
                 .filter(p => p.brand === spec.brand)
                 .map(p => p.model)
         )).sort();
     }, [spec.brand]);
 
-    // Auto-fill phone from DB (Onboarding) or Clerk profile
     useEffect(() => {
         if (details.contactPhone) return; // already filled
         getMyPhone().then(res => {
             if (res.phone) setDetails(d => ({ ...d, contactPhone: res.phone }));
         });
-    }, []);
+    }, [details.contactPhone]);
 
     const handleApplySearchEngineSpecs = (result: any) => {
         const assumedBrand = result.model_name?.split(" ")[0] || "אחר";
@@ -391,7 +390,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                                         setSpec(s => {
                                             const newSpec = { ...s, model: val };
                                             // Auto-fill lookup
-                                            const phone = ALL_PHONES.find(p => p.brand === s.brand && p.model === val);
+                                            const phone = ALL_PHONE_MODELS.find(p => p.brand === s.brand && p.model === val);
                                             if (phone) {
                                                 if (phone.screen) newSpec.screen = `${phone.screen}"`;
                                                 if (phone.storages && phone.storages.length > 0) newSpec.storage = `${phone.storages[0]}GB`;

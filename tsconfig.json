@@ -38,7 +38,9 @@
     "exclude": [
         "node_modules",
         "backup_today",
+        "scripts",
         "test_*.ts",
-        "test_*.tsx"
+        "test_*.tsx",
+        "*.js"
     ]
 }

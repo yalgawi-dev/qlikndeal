@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { LAPTOP_DATABASE, BRAND_DESKTOP_DATABASE, ALL_IN_ONE_DATABASE } from '../src/lib/computer-data';
-import { ALL_PHONES } from '../src/lib/phone-data';
+import { ALL_PHONE_MODELS } from '../src/lib/phone-data';
 
 const prisma = new PrismaClient();
 
@@ -107,7 +107,7 @@ async function migrate() {
 
     // 4. Migrate Mobile
     let mobileCount = 0;
-    for (const phone of ALL_PHONES) {
+    for (const phone of ALL_PHONE_MODELS) {
         const sku = `LEGACY-MOBILE-${phone.brand}-${phone.model}`.replace(/\s+/g, '-');
         await prisma.mobileCatalog.upsert({
             where: { id: sku }, // Use as ID for simplicity if needed, but schema has @id default(uuid)
