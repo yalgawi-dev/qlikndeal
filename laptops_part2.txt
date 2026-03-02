@@ -1,0 +1,98 @@
+Lenovo	ThinkPad L	ThinkPad L13 Gen 4	נייד	13.3"	Intel Core i5-1335U	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: עסקי קומפקטי
+Lenovo	ThinkPad L	ThinkPad L13 Yoga Gen 4	נייד	13.3"	Intel Core i7-1355U	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: הפיך עסקי משתלם
+Lenovo	ThinkPad L	ThinkPad L14 Gen 3	נייד	14"	Intel Core i5-1235U	16GB DDR4	512GB SSD	Intel UHD Graphics	2022	שוחזר: עמיד ופרקטי
+Lenovo	ThinkPad L	ThinkPad L15 Gen 3	נייד	15.6"	Intel Core i7-1255U	16GB DDR4	512GB SSD	Intel UHD Graphics	2022	שוחזר: מסך גדול לעסק
+Lenovo	ThinkBook	ThinkBook 14 Gen 6	נייד	14"	Intel Core i7-13700H	16GB DDR5	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: עיצוב מודרני
+Lenovo	ThinkBook	ThinkBook 15 Gen 5	נייד	15.6"	Intel Core i5-1335U	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: אלומיניום משולב
+Lenovo	ThinkBook	ThinkBook 16 Gen 6	נייד	16"	Intel Core i7-1355U	16GB DDR5	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: פרודוקטיביות גבוהה
+Lenovo	V Series	Lenovo V15 G4	נייד	15.6"	Intel Core i5-1335U	8GB / 16GB	256GB / 512GB SSD	Intel UHD Graphics	2023	שוחזר: דגם תקציבי אמין
+Lenovo	V Series	Lenovo V14 G4	נייד	14"	Intel Core i3-1315U	8GB DDR4	256GB SSD	Intel UHD Graphics	2023	שוחזר: בסיסי לעבודה
+Dell	Vostro	Vostro 3520	נייד	15.6"	Intel Core i5-1235U	8GB / 16GB	512GB SSD	Intel UHD Graphics	2022	שוחזר: סדרת כניסה עסקית
+Dell	Vostro	Vostro 3420	נייד	14"	Intel Core i5-1235U	8GB DDR4	256GB SSD	Intel UHD Graphics	2022	שוחזר: קומפקטי וזול
+Dell	Latitude	Latitude 5340	נייד	13.3"	Intel Core i5-1335U	16GB DDR5	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: ניידות עסקית
+Dell	Latitude	Latitude 5540	נייד	15.6"	Intel Core i7-1355U	16GB DDR5	1TB SSD	Intel Iris Xe Graphics	2023	שוחזר: תחליף שולחני
+Dell	Precision	Precision 3580	תחנת עבודה	15.6"	Intel Core i7-1360P	16GB DDR5	512GB SSD	NVIDIA RTX A500	2023	שוחזר: תחנת עבודה בסיסית
+Dell	Inspiron	Inspiron 16 5630	נייד	16"	Intel Core i7-1360P	16GB LPDDR5	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: מולטימדיה ביתית
+HP	Pavilion	Pavilion 15-eg3000	נייד	15.6"	Intel Core i7-1355U	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: מחשב פופולרי לבית
+HP	Pavilion	Pavilion x360 14	2-in-1	14"	Intel Core i5-1335U	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: מסך מגע וציר 360
+HP	Envy	Envy 17 (2023)	נייד	17.3"	Intel Core i7-13700H	32GB DDR5	1TB SSD	NVIDIA RTX 3050	2023	שוחזר: מסך ענק ליוצרים
+HP	ProBook	ProBook 445 G10	נייד	14"	AMD Ryzen 7 7730U	16GB DDR4	512GB SSD	AMD Radeon Graphics	2023	שוחזר: גרסת AMD עסקית
+HP	ProBook	ProBook 455 G10	נייד	15.6"	AMD Ryzen 5 7530U	16GB DDR4	512GB SSD	AMD Radeon Graphics	2023	שוחזר: אמין ומשתלם
+Apple	MacBook Pro	MacBook Pro 14 (M2 Pro)	אולטרה-בוק	14.2"	Apple M2 Pro	16GB Unified	512GB SSD	Apple GPU 16-core	2023	שוחזר: עוצמה מקצועית M2
+Apple	MacBook Pro	MacBook Pro 16 (M2 Max)	אולטרה-בוק	16.2"	Apple M2 Max	32GB Unified	1TB SSD	Apple GPU 30-core	2023	שוחזר: לגרפיקה כבדה
+Apple	MacBook Air	MacBook Air 13 (M3)	אולטרה-בוק	13.6"	Apple M3	16GB Unified	512GB SSD	Apple GPU 10-core	2024	שוחזר: הדגם החדש ביותר
+Apple	MacBook Air	MacBook Air 15 (M3)	אולטרה-בוק	15.3"	Apple M3	16GB Unified	512GB SSD	Apple GPU 10-core	2024	שוחזר: מסך גדול וקל
+ASUS	Zenbook	Zenbook 15 OLED (UM3504)	אולטרה-בוק	15.6"	AMD Ryzen 7 7735U	16GB LPDDR5	512GB SSD	AMD Radeon 680M	2023	שוחזר: OLED דק במיוחד
+ASUS	Vivobook	Vivobook 16 (X1605)	נייד	16"	Intel Core i7-1255U	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2022	שוחזר: מסך גדול ליומיום
+ASUS	ROG	ROG Strix G16 (2023)	גיימינג	16"	Intel Core i7-13650HX	16GB DDR5	1TB SSD	NVIDIA RTX 4060	2023	שוחזר: עיצוב גיימינג מודרני
+ASUS	TUF	TUF Gaming F15 (2023)	גיימינג	15.6"	Intel Core i7-13620H	16GB DDR5	512GB SSD	NVIDIA RTX 4050	2023	שוחזר: עמידות צבאית
+MSI	Modern	Modern 15 (B13M)	נייד	15.6"	Intel Core i7-1355U	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: סטייל לעבודה
+MSI	Katana	Katana 15 (B13V)	גיימינג	15.6"	Intel Core i7-13620H	16GB DDR5	1TB SSD	NVIDIA RTX 4060	2023	שוחזר: גיימינג עוצמתי
+Acer	Swift	Swift Go 16	אולטרה-בוק	16"	Intel Core i7-13700H	16GB LPDDR5	512GB SSD	Intel Iris Xe Graphics	2023	שוחזר: מסך OLED 120Hz
+Acer	Aspire	Aspire 3 (2023)	נייד	15.6"	AMD Ryzen 5 7520U	8GB LPDDR5	512GB SSD	AMD Radeon Graphics	2023	שוחזר: בסיסי וטוב
+Microsoft	Surface	Surface Pro 10 (Business)	2-in-1	13"	Intel Core Ultra 7 165U	16GB LPDDR5x	512GB SSD	Intel Arc Graphics	2024	שוחזר: הטאבלט החדש
+Microsoft	Surface	Surface Laptop 6	אולטרה-בוק	13.5"	Intel Core Ultra 5 135U	16GB LPDDR5x	256GB SSD	Intel Arc Graphics	2024	שוחזר: עיצוב מינימליסטי
+Samsung	Galaxy Book	Galaxy Book3 Ultra	אולטרה-בוק	16"	Intel Core i9-13900H	32GB LPDDR5	1TB SSD	NVIDIA RTX 4070	2023	שוחזר: מחשב העל של סמסונג
+Lenovo	ThinkPad X1	ThinkPad X1 Carbon Gen 7	נייד	14"	Intel Core i7-8565U	16GB DDR3	512GB SSD	Intel UHD Graphics 620	2019	שוחזר: דגם קלאסי דק
+Lenovo	ThinkPad T	ThinkPad T480s	נייד	14"	Intel Core i7-8650U	16GB DDR4	512GB SSD	Intel UHD Graphics 620	2018	שוחזר: קל משקל ועמיד
+Dell	Latitude	Latitude 7490	נייד	14"	Intel Core i5-8350U	8GB / 16GB	256GB / 512GB SSD	Intel UHD Graphics 620	2018	שוחזר: אמינות דל של פעם
+HP	EliteBook	EliteBook 840 G5	נייד	14"	Intel Core i7-8550U	16GB DDR4	512GB SSD	Intel UHD Graphics 620	2018	שוחזר: עיצוב מתכת יוקרתי
+Lenovo	ThinkPad X1	ThinkPad X1 Extreme Gen 3	תחנת עבודה	15.6"	Intel Core i7-10750H	16GB DDR4	512GB SSD	NVIDIA GTX 1650 Ti	2020	שוחזר: עוצמה וניידות
+Lenovo	ThinkPad P	ThinkPad P15 Gen 1	תחנת עבודה	15.6"	Intel Core i7-10850H	32GB DDR4	1TB SSD	NVIDIA Quadro T1000	2020	שוחזר: תחנה מקצועית
+Dell	Precision	Precision 7550	תחנת עבודה	15.6"	Intel Core i7-10850H	32GB DDR4	512GB SSD	NVIDIA Quadro RTX 3000	2020	שוחזר: ביצועי הנדסה
+HP	ZBook	ZBook Power G8	תחנת עבודה	15.6"	Intel Core i7-11800H	16GB DDR4	512GB SSD	NVIDIA RTX A2000	2021	שוחזר: כוח וסטייל
+Apple	MacBook Pro	MacBook Pro 13 (M1, 2020)	אולטרה-בוק	13.3"	Apple M1	8GB / 16GB	256GB / 512GB SSD	Apple GPU 8-core	2020	שוחזר: מהפכת M1
+Apple	MacBook Air	MacBook Air 13 (Intel, 2020)	אולטרה-בוק	13.3"	Intel Core i5-1030NG7	8GB LPDDR4x	256GB / 512GB SSD	Intel Iris Plus Graphics	2020	שוחזר: ה-Air האחרון עם אינטל
+Lenovo	Yoga	Yoga C940-14	אולטרה-בוק	14"	Intel Core i7-1065G7	16GB LPDDR4x	512GB SSD	Intel Iris Plus Graphics	2019	שוחזר: ציר סאונד ייחודי
+Lenovo	IdeaPad	IdeaPad 5 14IAL7	נייד	14"	Intel Core i5-1235U	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2022	שוחזר: תמורה למחיר
+Dell	Vostro	Vostro 5410	נייד	14"	Intel Core i7-11370H	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2021	שוחזר: עסקי דק
+Dell	Latitude	Latitude 5420	נייד	14"	Intel Core i5-1135G7	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2021	שוחזר: דגם עבודה נפוץ
+HP	ProBook	ProBook 450 G8	נייד	15.6"	Intel Core i7-1165G7	16GB DDR4	512GB SSD	Intel Iris Xe Graphics	2021	שוחזר: קלאסיקה עסקית
+Lenovo	ThinkPad X1	ThinkPad X1 Carbon Gen 6	נייד	14"	Intel Core i7-8550U	16GB DDR3	512GB SSD	Intel UHD Graphics 620	2018	שוחזר: אהוב על מתכנתים
+Lenovo	ThinkPad T	ThinkPad T470	נייד	14"	Intel Core i5-7200U	8GB / 16GB	256GB SSD	Intel HD Graphics 620	2017	שוחזר: דגם ותיק וחזק
+Dell	Latitude	Latitude 7480	נייד	14"	Intel Core i7-7600U	16GB DDR4	256GB SSD	Intel HD Graphics 620	2017	שוחזר: עיצוב דק של פעם
+HP	EliteBook	EliteBook 840 G4	נייד	14"	Intel Core i5-7200U	8GB DDR4	256GB SSD	Intel HD Graphics 620	2017	שוחזר: דור 4 אמין
+Lenovo	ThinkPad X280	ThinkPad X280	נייד	12.5"	Intel Core i5-8250U	8GB DDR4	256GB SSD	Intel UHD Graphics 620	2018	שוחזר: קומפקטי במיוחד
+Dell	Latitude	Latitude 7290	נייד	12.5"	Intel Core i7-8650U	8GB DDR4	256GB SSD	Intel UHD Graphics 620	2018	שוחזר: ניידות גבוהה
+Apple	MacBook	MacBook 12-inch (2017)	אולטרה-בוק	12"	Intel Core m3-7Y32	8GB LPDDR3	256GB SSD	Intel HD Graphics 615	2017	שוחזר: המקבוק הקטן ביותר
+Apple	MacBook Air	MacBook Air 13-inch (2017)	אולטרה-בוק	13.3"	Intel Core i5-5350U	8GB LPDDR3	128GB / 256GB SSD	Intel HD Graphics 6000	2017	שוחזר: עיצוב אייקוני ותיק
+Lenovo	ThinkPad X1	ThinkPad X1 Extreme Gen 2	תחנת עבודה	15.6"	Intel Core i7-9750H	32GB DDR4	1TB SSD	NVIDIA GTX 1650 Max-Q	2019	שוחזר: עוצמה דקה
+Lenovo	ThinkPad P	ThinkPad P1 Gen 2	תחנת עבודה	15.6"	Intel Core i7-9850H	32GB DDR4	512GB SSD	NVIDIA Quadro T1000	2019	שוחזר: תחנת עבודה פרימיום
+Dell	Precision	Precision 5540	תחנת עבודה	15.6"	Intel Core i9-9980HK	32GB DDR4	1TB SSD	NVIDIA Quadro T2000	2019	שוחזר: עיצוב XPS בכוח תחנה
+HP	ZBook	ZBook Studio G5	תחנת עבודה	15.6"	Intel Core i7-8750H	16GB DDR4	512GB SSD	NVIDIA Quadro P1000	2018	שוחזר: סטודיו יצירתי
+Lenovo	Yoga	Yoga 730-13	אולטרה-בוק	13.3"	Intel Core i5-8250U	8GB DDR4	256GB SSD	Intel UHD Graphics 620	2018	שוחזר: גמיש ונוח
+Lenovo	IdeaPad	IdeaPad S540-14	נייד	14"	Intel Core i7-10510U	12GB DDR4	512GB SSD	NVIDIA MX250	2020	שוחזר: ביצועים ביתיים
+Dell	Inspiron	Inspiron 13 5310	נייד	13.3"	Intel Core i7-11370H	16GB LPDDR4x	512GB SSD	Intel Iris Xe Graphics	2021	שוחזר: קומפקטי וחזק
+HP	Envy	Envy 13 (2020)	אולטרה-בוק	13.3"	Intel Core i5-1035G1	8GB LPDDR4	256GB SSD	Intel UHD Graphics	2020	שוחזר: דק ואלגנטי
+ASUS	Zenbook	Zenbook 13 (UX333)	אולטרה-בוק	13.3"	Intel Core i7-8565U	16GB LPDDR3	512GB SSD	Intel UHD Graphics 620	2018	שוחזר: דק עם Numpad במגע
+ASUS	Vivobook	Vivobook S15 (S530)	נייד	15.6"	Intel Core i5-8250U	8GB DDR4	256GB SSD	Intel UHD Graphics 620	2018	שוחזר: צבעוני ונוח
+Acer	Swift	Swift 5 (2018)	אולטרה-בוק	14"	Intel Core i7-8565U	16GB LPDDR3	512GB SSD	Intel UHD Graphics 620	2018	שוחזר: פחות מ-1 קילו
+MSI	PS42	PS42 Modern	נייד	14"	Intel Core i7-8550U	16GB DDR4	512GB SSD	NVIDIA MX150	2018	שוחזר: עיצוב כסוף דק
+Microsoft	Surface	Surface Pro 6	2-in-1	12.3"	Intel Core i5-8250U	8GB LPDDR3	256GB SSD	Intel UHD Graphics 620	2018	שוחזר: טאבלט קלאסי
+Samsung	Notebook	Notebook 9 Pen	אולטרה-בוק	13.3"	Intel Core i7-8550U	16GB DDR4	512GB SSD	Intel UHD Graphics 620	2018	שוחזר: עם עט S-Pen
+Razer	Blade Stealth	Blade Stealth 13 (2019)	אולטרה-בוק	13.3"	Intel Core i7-1065G7	16GB LPDDR4x	512GB SSD	NVIDIA GTX 1650 Ti	2019	שוחזר: אולטרה-בוק גיימינג
+Lenovo	ThinkPad X1	ThinkPad X1 Tablet Gen 3	2-in-1	13"	Intel Core i7-8650U	16GB LPDDR3	512GB SSD	Intel UHD Graphics 620	2018	שוחזר: טאבלט עסקי
+Lenovo	ThinkPad T	ThinkPad T590	נייד	15.6"	Intel Core i7-8565U	16GB DDR4	512GB SSD	Intel UHD Graphics 620	2019	שוחזר: סוס עבודה 15 אינץ'
+Dell	Latitude	Latitude 5400	נייד	14"	Intel Core i5-8265U	8GB / 16GB	256GB SSD	Intel UHD Graphics 620	2019	שוחזר: עמיד לארגונים
+HP	EliteBook	EliteBook 850 G6	נייד	15.6"	Intel Core i7-8565U	16GB DDR4	512GB SSD	Intel UHD Graphics 620	2019	שוחזר: יוקרה עסקית גדולה
+Lenovo	ThinkPad X1	ThinkPad X1 Carbon Gen 5	נייד	14"	Intel Core i7-7500U	16GB LPDDR3	256GB SSD	Intel HD Graphics 620	2017	שוחזר: דגם קלאסי
+Lenovo	ThinkPad T	ThinkPad T460s	נייד	14"	Intel Core i5-6300U	8GB / 12GB	256GB SSD	Intel HD Graphics 520	2016	שוחזר: סוס עבודה ותיק
+Dell	Latitude	Latitude 7470	נייד	14"	Intel Core i7-6600U	8GB / 16GB	256GB SSD	Intel HD Graphics 520	2016	שוחזר: עיצוב פרימיום ותיק
+HP	EliteBook	EliteBook 840 G3	נייד	14"	Intel Core i5-6200U	8GB DDR4	256GB SSD	Intel HD Graphics 520	2016	שוחזר: אמין מאוד
+Lenovo	ThinkPad X1	ThinkPad X1 Extreme Gen 1	תחנת עבודה	15.6"	Intel Core i7-8750H	16GB DDR4	512GB SSD	NVIDIA GTX 1050 Ti	2018	שוחזר: תחילת סדרת Extreme
+Lenovo	ThinkPad P	ThinkPad P53	תחנת עבודה	15.6"	Intel Core i7-9750H	32GB DDR4	512GB SSD	NVIDIA Quadro T1000	2019	שוחזר: תחנת עבודה חזקה
+Dell	Precision	Precision 7540	תחנת עבודה	15.6"	Intel Core i7-9850H	32GB DDR4	1TB SSD	NVIDIA Quadro T2000	2019	שוחזר: הנדסה מקצועית
+HP	ZBook	ZBook 15 G6	תחנת עבודה	15.6"	Intel Core i7-9750H	16GB DDR4	512GB SSD	NVIDIA Quadro T1000	2019	שוחזר: סדרה מקצועית HP
+Apple	MacBook Pro	MacBook Pro 15 (2018)	אולטרה-בוק	15.4"	Intel Core i7-8750H	16GB DDR4	512GB SSD	AMD Radeon Pro 555X	2018	שוחזר: מסך רטינה ועוצמה
+Apple	MacBook Air	MacBook Air 13-inch (2018)	אולטרה-בוק	13.3"	Intel Core i5-8210Y	8GB LPDDR3	128GB / 256GB SSD	Intel UHD Graphics 617	2018	שוחזר: ה-Air הראשון עם רטינה
+Lenovo	Yoga	Yoga 920	אולטרה-בוק	13.9"	Intel Core i7-8550U	16GB DDR4	512GB SSD	Intel UHD Graphics 620	2017	שוחזר: עיצוב "רצועת שעון"
+Lenovo	IdeaPad	IdeaPad 720S-13	נייד	13.3"	Intel Core i5-8250U	8GB DDR4	256GB SSD	Intel UHD Graphics 620	2017	שוחזר: דק ואלגנטי
+Dell	Inspiron	Inspiron 15 7000 (7570)	נייד	15.6"	Intel Core i7-8550U	16GB DDR4	512GB SSD	NVIDIA 940MX	2017	שוחזר: פרימיום ביתי
+HP	Envy	Envy 13 (2017)	אולטרה-בוק	13.3"	Intel Core i5-7200U	8GB LPDDR3	256GB SSD	Intel HD Graphics 620	2017	שוחזר: קומפקטי ומעוצב
+ASUS	Zenbook	Zenbook UX430	אולטרה-בוק	14"	Intel Core i7-7500U	8GB / 16GB	512GB SSD	Intel HD Graphics 620	2017	שוחזר: מסך 14 במארז 13
+ASUS	Vivobook	Vivobook Pro 15 (N580)	נייד	15.6"	Intel Core i7-7700HQ	16GB DDR4	512GB SSD	NVIDIA GTX 1050	2017	שוחזר: ביצועים גבוהים
+Acer	Swift	Swift 3 (2017)	אולטרה-בוק	14"	Intel Core i5-7200U	8GB DDR4	256GB SSD	Intel HD Graphics 620	2017	שוחזר: אלומיניום משתלם
+MSI	GS63VR	GS63VR Stealth Pro	גיימינג	15.6"	Intel Core i7-7700HQ	16GB DDR4	512GB SSD	NVIDIA GTX 1060	2017	שוחזר: גיימינג דק במיוחד
+Microsoft	Surface	Surface Laptop (1st Gen)	אולטרה-בוק	13.5"	Intel Core i5-7200U	8GB LPDDR3	256GB SSD	Intel HD Graphics 620	2017	שוחזר: הראשון בסדרה
+Samsung	Notebook	Notebook 9 Always	אולטרה-בוק	13.3"	Intel Core i7-7500U	16GB DDR4	512GB SSD	Intel HD Graphics 620	2017	שוחזר: משקל נוצה
+Razer	Blade	Blade 14 (2017)	גיימינג	14"	Intel Core i7-7700HQ	16GB DDR4	512GB SSD	NVIDIA GTX 1060	2017	שוחזר: מכונת גיימינג שחורה

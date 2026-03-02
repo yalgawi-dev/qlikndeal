@@ -1,0 +1,299 @@
+﻿Lenovo	ThinkPad	ThinkPad X1 Carbon Gen 13 SKU-1	אולטרה-בוק	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	דגם דגל עסקי AI
+Dell	XPS	XPS 14 9450 SKU-2	אולטרה-בוק	14.5"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 5050 6GB	2025	עיצוב פרימיום חדש
+Apple	MacBook	MacBook Pro 14 M4 SKU-3	אולטרה-בוק	14.2"	Apple M4	16GB Unified	512GB SSD	Apple GPU 10-core	2025	דגם בסיס מקצועי
+ASUS	Zenbook	Zenbook S 16 SKU-4	אולטרה-בוק	16"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	AMD Radeon 890M	2025	דק במיוחד עם ביצועי AI
+Samsung	Galaxy Book	Galaxy Book 5 Ultra SKU-5	אולטרה-בוק	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5060 8GB	2025	מסך AMOLED 120Hz
+HP	Spectre	Spectre x360 14 (2025) SKU-6	2-in-1	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	מסך מגע מתהפך
+MSI	Stealth	Stealth 16 AI Studio SKU-7	גיימינג	16"	Intel Core Ultra 9 285H	64GB DDR5	2TB NVMe	NVIDIA RTX 5080 12GB	2025	גיימינג ועיצוב דק
+Microsoft	Surface	Surface Laptop 7 SKU-8	אולטרה-בוק	13.8"	Snapdragon X Elite	16GB LPDDR5x	512GB NVMe	Adreno GPU	2025	מעבד ARM סוללה ל-20 שעות
+Razer	Blade	Blade 14 (2025) SKU-9	גיימינג	14"	AMD Ryzen 9 8945HS	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	מפלצת גיימינג קטנה
+Apple	MacBook	MacBook Air 13 M4 SKU-10	אולטרה-בוק	13.6"	Apple M4	16GB Unified	256GB SSD	Apple GPU 10-core	2025	הכי נמכר בעולם
+Lenovo	Legion	Legion 7i Gen 10 SKU-11	גיימינג	16"	Intel Core i9-14900HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	קירור מתקדם
+Dell	Latitude	Latitude 7460 SKU-12	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2026	עסקי עמיד
+HP	EliteBook	EliteBook 840 G12 SKU-13	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	סטנדרט ארגוני גבוה
+Apple	MacBook	MacBook Pro 16 M4 Max SKU-14	אולטרה-בוק	16.2"	Apple M4 Max	64GB Unified	2TB SSD	Apple GPU 40-core	2025	עריכת וידאו 8K
+ASUS	ROG	ROG Zephyrus G16 SKU-15	גיימינג	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 5090 16GB	2025	מסך OLED מדהים
+Acer	Swift	Swift Go 14 SKU-16	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	תמורה מעולה למחיר
+Samsung	Galaxy Book	Galaxy Book 6 Edge SKU-17	אולטרה-בוק	14"	Snapdragon X Elite	32GB LPDDR5x	1TB NVMe	Adreno GPU	2026	דור חדש של מחשבי AI
+Lenovo	ThinkPad	ThinkPad P16 Gen 3 SKU-18	תחנת עבודה	16"	Intel Core Ultra 9 285H	64GB ECC	2TB NVMe	NVIDIA RTX 3500 Ada	2025	מיועד ל-CAD ותלת מימד
+Dell	Precision	Precision 5490 SKU-19	תחנת עבודה	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 1000 Ada	2025	תחנת עבודה קומפקטית
+HP	ZBook	ZBook Studio G12 SKU-20	תחנת עבודה	16"	Intel Core Ultra 9 285H	64GB DDR5	2TB NVMe	NVIDIA RTX 5070 8GB	2026	עיצוב גרפי מקצועי
+MSI	Prestige	Prestige 16 AI Evo SKU-21	נייד	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	אידיאלי לעבודה מרחוק
+ASUS	Vivobook	Vivobook S 15 S5507 SKU-22	נייד	15.6"	Snapdragon X Elite	32GB LPDDR5x	512GB NVMe	Adreno GPU	2025	דגם ה-AI של אסוס
+Apple	MacBook	MacBook Pro 14 M4 Pro SKU-23	אולטרה-בוק	14.2"	Apple M4 Pro	32GB Unified	1TB SSD	Apple GPU 16-core	2025	ביצועי ביניים מקצועיים
+Lenovo	ThinkPad	ThinkPad T14s Gen 6 SKU-24	נייד	14"	Snapdragon X Elite	32GB LPDDR5x	1TB NVMe	Adreno GPU	2025	ה-T14 הראשון עם ARM
+Dell	XPS	XPS 13 9360 SKU-25	אולטרה-בוק	13.4"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2026	קומפקטי ללא פשרות
+HP	Envy	Envy x360 15 (2025) SKU-26	2-in-1	15.6"	AMD Ryzen 7 8840HS	16GB LPDDR5x	1TB NVMe	AMD Radeon 780M	2025	מחשב רב-תכליתי לסטודנטים
+Acer	Predator	Predator Helios Neo 16 SKU-27	גיימינג	16"	Intel Core i7-14700HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2025	גיימינג עוצמתי
+LG	gram	gram Pro 16 (2025) SKU-28	נייד	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	משקל נוצה מתחת ל-1.2 ק"ג
+Razer	Blade	Blade 16 (2025) SKU-29	גיימינג	16"	Intel Core Ultra 9 285H	32GB DDR5	2TB NVMe	NVIDIA RTX 5080 12GB	2025	מסך Mini-LED 240Hz
+Samsung	Galaxy Book	Galaxy Book 5 Pro 14 SKU-30	אולטרה-בוק	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	דק וקל במיוחד
+Lenovo	Yoga	Yoga Pro 9i Gen 10 SKU-31	אולטרה-בוק	16"	Intel Core Ultra 9 285H	64GB LPDDR5x	2TB NVMe	NVIDIA RTX 5070 8GB	2025	מסך Mini-LED ליוצרי תוכן
+Apple	MacBook	MacBook Air 15 M4 SKU-32	אולטרה-בוק	15.3"	Apple M4	16GB Unified	512GB SSD	Apple GPU 10-core	2025	מסך גדול משקל קטן
+Gigabyte	AORUS	AORUS 17X (2025) SKU-33	גיימינג	17.3"	Intel Core i9-14900HX	64GB DDR5	4TB NVMe	NVIDIA RTX 5090 16GB	2025	תחליף למחשב נייח
+Framework	Framework	Framework Laptop 13 SKU-34	נייד	13.5"	Intel Core Ultra 7 258V	32GB DDR5	1TB NVMe	Intel Arc Graphics	2025	ניתן לתיקון ושדרוג עצמי
+ASUS	ProArt	ProArt P16 SKU-35	תחנת עבודה	16"	AMD Ryzen AI 9 HX 370	64GB LPDDR5x	2TB NVMe	NVIDIA RTX 5080 12GB	2025	עריכת וידאו מקצועית
+MSI	Raider	Raider GE78 SKU-36	גיימינג	17"	Intel Core i9-14900HX	32GB DDR5	2TB NVMe	NVIDIA RTX 5080 12GB	2025	תאורת RGB מסיבית
+Lenovo	LOQ	LOQ 15 Gen 10 SKU-37	גיימינג	15.6"	Intel Core i5-14500HX	16GB DDR5	512GB NVMe	NVIDIA RTX 5050 6GB	2025	גיימינג כניסה משתלם
+Dell	Inspiron	Inspiron 16 Plus SKU-38	נייד	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5050 6GB	2025	מחשב משפחתי חזק
+HP	OMEN	OMEN Transcend 14 SKU-39	גיימינג	14"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5060 8GB	2025	גיימינג נייד במיוחד
+Apple	MacBook	MacBook Air 13 M5 SKU-40	אולטרה-בוק	13.6"	Apple M5 Series	16GB Unified	256GB SSD	Apple GPU (Internal)	2026	דור עתידי מתוכנן
+Lenovo	ThinkPad	ThinkPad Z13 Gen 3 SKU-41	אולטרה-בוק	13.3"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	AMD Radeon 890M	2025	עיצוב מודרני מחומרים ממוחזרים
+Microsoft	Surface	Surface Pro 12 SKU-42	2-in-1	13"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	הטאבלט החזק בעולם
+ASUS	ExpertBook	ExpertBook B5 SKU-43	נייד	14"	Intel Core Ultra 7 258V	32GB DDR5	1TB NVMe	Intel Arc Graphics	2025	עמיד בתקן צבאי
+Samsung	Galaxy Book	Galaxy Book 6 Pro 16 SKU-44	אולטרה-בוק	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	שילוב מושלם עם סמארטפון
+MSI	Summit	Summit E16 AI SKU-45	נייד	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	עסקי עם מסך מגע
+Acer	Swift	Swift X 14 SKU-46	נייד	14.5"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5050 6GB	2025	ליוצרי תוכן בדרכים
+Razer	Blade	Blade 18 (2025) SKU-47	גיימינג	18"	Intel Core i9-14900HX	64GB DDR5	4TB NVMe	NVIDIA RTX 5090 16GB	2025	מסך 4K 200Hz
+HP	Victus	Victus 16 (2025) SKU-48	גיימינג	16"	AMD Ryzen 7 8845HS	16GB DDR5	512GB NVMe	NVIDIA RTX 5050 6GB	2025	תמורה מעולה לגיימרים
+Dell	Vostro	Vostro 16 5650 SKU-49	נייד	16"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	פתרון לעסקים קטנים
+Lenovo	ThinkBook	ThinkBook 16p Gen 6 SKU-50	נייד	16"	Intel Core Ultra 9 285H	32GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2026	מחשב יצירתי לעסקים
+Apple	MacBook	MacBook Pro 16 M5 Pro SKU-51	אולטרה-בוק	16.2"	Apple M5 Series	48GB Unified	1TB SSD	Apple GPU (Internal)	2026	ביצועי קצה עתידיים
+Lenovo	ThinkPad	ThinkPad X1 Carbon Gen 14 SKU-52	אולטרה-בוק	14"	Intel Core Ultra 7 258V	64GB LPDDR5x	2TB NVMe	Intel Arc Graphics	2026	מחשב המנהלים של 2026
+Dell	XPS	XPS 16 9650 SKU-53	אולטרה-בוק	16"	Intel Core Ultra 9 285H	64GB LPDDR5x	2TB NVMe	NVIDIA RTX 5070 8GB	2025	תצוגת InfinityEdge מדהימה
+HP	EliteBook	EliteBook 1040 G12 SKU-54	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	מיועד לאבטחה מוגברת
+ASUS	TUF	TUF Gaming A15 SKU-55	גיימינג	15.6"	AMD Ryzen 9 8945HS	32GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2025	קשוח ועוצמתי
+Apple	MacBook	MacBook Pro 14 M5 Max SKU-56	אולטרה-בוק	14.2"	Apple M5 Series	64GB Unified	2TB SSD	Apple GPU (Internal)	2026	מפלצת ביצועים קטנה
+Samsung	Galaxy Book	Galaxy Book 5 Pro 360 SKU-57	2-in-1	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	עם עט S-Pen כלול
+MSI	Cyborg	Cyborg 15 (2025) SKU-58	גיימינג	15.6"	Intel Core i7-14650HX	16GB DDR5	512GB NVMe	NVIDIA RTX 5050 6GB	2025	עיצוב עתידני שקוף למחצה
+Acer	Nitro	Nitro V 15 (2025) SKU-59	גיימינג	15.6"	Intel Core i5-14450HX	16GB DDR5	512GB NVMe	NVIDIA RTX 5050 6GB	2025	הכי נמכר בקטגוריה
+LG	gram	gram 14 (2025) SKU-60	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	קלות ללא פשרות
+Gigabyte	AERO	AERO 16 OLED (2025) SKU-61	תחנת עבודה	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 5070 8GB	2025	דיוק צבע מירבי
+Framework	Framework	Framework Laptop 16 SKU-62	נייד	16"	AMD Ryzen AI 9 HX 370	32GB DDR5	1TB NVMe	AMD Radeon 890M	2025	מודול גרפי נשלף
+ASUS	Vivobook	Vivobook S 14 OLED SKU-63	נייד	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	מסך OLED מהיר
+Lenovo	IdeaPad	IdeaPad Pro 5i Gen 10 SKU-64	נייד	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5050 6GB	2025	ביצועים גבוהים במחיר נוח
+Dell	Latitude	Latitude 9460 SKU-65	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	דגם פרימיום עסקי
+HP	ZBook	ZBook Power G12 SKU-66	תחנת עבודה	15.6"	Intel Core Ultra 7 258V	64GB DDR5	2TB NVMe	NVIDIA RTX 2000 Ada	2025	ביצועים מאושרים ISV
+Apple	MacBook	MacBook Air 15 M5 SKU-67	אולטרה-בוק	15.3"	Apple M5 Series	24GB Unified	1TB SSD	Apple GPU (Internal)	2026	דגם פופולרי עתידי
+MSI	Vector	Vector 16 HX SKU-68	גיימינג	16"	Intel Core i9-14900HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5080 12GB	2025	אופטימיזציה לגיימרים כבדים
+Acer	TravelMate	TravelMate P6 SKU-69	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	לנסיעות עסקים ארוכות
+Samsung	Galaxy Book	Galaxy Book 6 Edge 16 SKU-70	אולטרה-בוק	16"	Snapdragon X Elite	32GB LPDDR5x	1TB NVMe	Adreno GPU	2026	AI משולב עמוק
+Lenovo	Yoga	Yoga Slim 7x SKU-71	אולטרה-בוק	14.5"	Snapdragon X Elite	32GB LPDDR5x	1TB NVMe	Adreno GPU	2025	דק, שקט וחזק
+Dell	Precision	Precision 7690 SKU-72	תחנת עבודה	16"	Intel Core Ultra 9 285H	128GB DDR5	4TB NVMe Gen5	NVIDIA RTX 5000 Ada	2025	תחנת עבודה אולטימטיבית
+HP	Pavilion	Pavilion Plus 14 (2025) SKU-73	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	מבנה אלומיניום מלא
+ASUS	ROG	ROG Strix SCAR 18 SKU-74	גיימינג	18"	Intel Core i9-14900HX	64GB DDR5	2TB NVMe	NVIDIA RTX 5090 16GB	2025	תצוגת Nebula HDR
+Apple	MacBook	MacBook Pro 14 M5 SKU-75	אולטרה-בוק	14.2"	Apple M5 Series	16GB Unified	512GB SSD	Apple GPU (Internal)	2026	סטנדרט מקצועי חדש
+MSI	Stealth	Stealth 14 AI SKU-76	גיימינג	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5060 8GB	2025	גיימינג נייד אמיתי
+Acer	Swift	Swift Go 14 SFG14-74 SKU-77	נייד	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	דגם 2025 משודרג
+Samsung	Galaxy Book	Galaxy Book 5 Pro 16 SKU-78	אולטרה-בוק	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	מסך גדול משקל קטן
+LG	gram	gram Pro 17 (2025) SKU-79	נייד	17.3"	Intel Core Ultra 7 258V	32GB LPDDR5x	2TB NVMe	Intel Arc Graphics	2025	הכי גדול והכי קל
+Razer	Blade	Blade 14 (2026) SKU-80	גיימינג	14"	AMD Ryzen 9 9945HS	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2026	דור עתידי מטורף
+Lenovo	ThinkPad	ThinkPad T16 Gen 4 SKU-81	נייד	16"	Intel Core Ultra 7 258V	32GB DDR5	1TB NVMe	Intel Arc Graphics	2026	סוס עבודה למשרד
+Dell	Alienware	Alienware x14 R3 SKU-82	גיימינג	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5060 8GB	2025	מחשב גיימינג דק במיוחד
+HP	EliteBook	EliteBook 860 G12 SKU-83	נייד	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	גרסת 16 אינץ' עסקית
+ASUS	Zenbook	Zenbook 14 OLED UX3405 SKU-84	אולטרה-בוק	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	אידיאלי לנסיעות
+Apple	MacBook	MacBook Pro 16 M5 Max SKU-85	אולטרה-בוק	16.2"	Apple M5 Series	96GB Unified	4TB SSD	Apple GPU (Internal)	2026	השיא של אפל ל-2026
+MSI	Katana	Katana 17 B13V SKU-86	גיימינג	17"	Intel Core i7-14650HX	16GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2025	גיימינג במחיר הוגן
+Acer	Predator	Predator Triton Neo 16 SKU-87	גיימינג	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 5070 8GB	2025	ביצועי פרימיום דקים
+Samsung	Galaxy Book	Galaxy Book 5 360 SKU-88	2-in-1	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	טאבלט/מחשב משולב
+Gigabyte	AORUS	AORUS 16X SKU-89	גיימינג	16"	Intel Core i7-14700HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	אופטימיזציה ל-AI
+Framework	Framework	Framework Laptop 13 Ryzen SKU-90	נייד	13.5"	AMD Ryzen 9 8945HS	32GB DDR5	512GB NVMe	AMD Radeon 780M	2025	מחשב ירוק ובר-קיימא
+ASUS	ProArt	ProArt PX13 SKU-91	2-in-1	13.3"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5050 6GB	2025	סטודיו נייד מתהפך
+Lenovo	ThinkPad	ThinkPad P1 Gen 8 SKU-92	תחנת עבודה	16"	Intel Core Ultra 9 285H	64GB LPDDR5x	2TB NVMe	NVIDIA RTX 3000 Ada	2025	אלגנטי ועוצמתי
+Dell	XPS	XPS 13 9350 SKU-93	אולטרה-בוק	13.4"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	ה-XPS הקלאסי המשודרג
+HP	ZBook	ZBook Power G12 SKU-94	תחנת עבודה	15.6"	Intel Core Ultra 9 285H	64GB DDR5	2TB NVMe	NVIDIA RTX 3000 Ada	2026	עוצמה גרפית עתידית
+Apple	MacBook	MacBook Air 13 M4 Pro SKU-95	אולטרה-בוק	13.6"	Apple M4 Pro	24GB Unified	512GB SSD	Apple GPU (Internal)	2025	גרסת Air חזקה במיוחד
+MSI	Prestige	Prestige 14 AI SKU-96	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	מחשב AI קומפקטי
+Acer	Aspire	Aspire 5 A515-58 SKU-97	נייד	15.6"	Intel Core i5-14350H	16GB DDR4	512GB NVMe	Intel Graphics	2025	מחשב ביתי אמין
+Samsung	Galaxy Book	Galaxy Book 6 Edge 14 SKU-98	אולטרה-בוק	14"	Snapdragon X Elite	16GB LPDDR5x	512GB NVMe	Adreno GPU	2026	עתיד הניידות של סמסונג
+LG	gram	gram 15 (2025) SKU-99	נייד	15.6"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	הכי קל בקטגוריית 15 אינץ'
+Razer	Blade	Blade 16 (2026) SKU-100	גיימינג	16"	Intel Core Ultra 9 295H	64GB DDR5	2TB NVMe	NVIDIA RTX 5090 16GB	2026	גיימינג ללא פשרות
+Lenovo	IdeaPad	IdeaPad Slim 5 Gen 10 SKU-101	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	עיצוב דק במחיר כניסה
+Dell	Latitude	Latitude 5460 SKU-102	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	סוס עבודה ארגוני
+HP	Spectre	Spectre x360 16 (2025) SKU-103	2-in-1	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 5050 6GB	2025	המרכז הבידורי המושלם
+ASUS	ExpertBook	ExpertBook B5 B5404 SKU-104	נייד	14"	Intel Core Ultra 7 258V	32GB DDR5	1TB NVMe	Intel Arc Graphics	2025	מחשב עסקי קל
+Apple	MacBook	MacBook Pro 14 M4 Max SKU-105	אולטרה-בוק	14.2"	Apple M4 Max	48GB Unified	1TB SSD	Apple GPU 30-core	2025	ביצועי על במארז קטן
+MSI	Stealth	Stealth 16 AI SKU-106	גיימינג	16"	Intel Core Ultra 9 285H	32GB DDR5	2TB NVMe	NVIDIA RTX 5070 8GB	2025	גיימינג אלגנטי
+Acer	Nitro	Nitro V 16 SKU-107	גיימינג	16"	AMD Ryzen 7 8845HS	16GB DDR5	1TB NVMe	NVIDIA RTX 5050 6GB	2025	מסך 165Hz מהיר
+Samsung	Galaxy Book	Galaxy Book 6 Pro SKU-108	אולטרה-בוק	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	Intel Arc Graphics	2026	דגם הדגל של 2026
+Lenovo	ThinkPad	ThinkPad X13 Gen 6 SKU-109	נייד	13.3"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	ניידות מקסימלית למנהלים
+Dell	Precision	Precision 5690 SKU-110	תחנת עבודה	16"	Intel Core Ultra 9 285H	64GB LPDDR5x	2TB NVMe	NVIDIA RTX 3500 Ada	2025	מסך OLED מרהיב
+HP	EliteBook	EliteBook 840 G12 SKU-111	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	בחירה עסקית חכמה
+ASUS	ROG	ROG Zephyrus G14 SKU-112	גיימינג	14"	AMD Ryzen 9 8945HS	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5070 8GB	2025	מלך ה-14 אינץ'
+Apple	MacBook	MacBook Air 15 M4 Pro SKU-113	אולטרה-בוק	15.3"	Apple M4 Pro	24GB Unified	512GB SSD	Apple GPU (Internal)	2025	מחשב ה-Air החזק ביותר
+MSI	Titan	Titan 18 HX SKU-114	גיימינג	18"	Intel Core i9-14900HX	128GB DDR5	4TB NVMe	NVIDIA RTX 5090 16GB	2025	המחשב הכי חזק בעולם
+Acer	Swift	Swift Go 14 SKU-115	נייד	14"	AMD Ryzen 7 8845HS	16GB LPDDR5x	512GB NVMe	AMD Radeon 780M	2025	קל ומשתלם
+Samsung	Galaxy Book	Galaxy Book 5 Ultra SKU-116	אולטרה-בוק	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5050 6GB	2025	ביצועים דקים
+Lenovo	Legion	Legion 5i Gen 10 SKU-117	גיימינג	15.6"	Intel Core i7-14700HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2025	הגיימינג הפופולרי ביותר
+Dell	Alienware	Alienware m16 R3 SKU-118	גיימינג	16"	Intel Core i9-14900HX	32GB DDR5	2TB NVMe	NVIDIA RTX 5070 8GB	2025	ביצועים מהחלל החיצון
+HP	OMEN	OMEN 17 (2025) SKU-119	גיימינג	17.3"	Intel Core i9-14900HX	32GB DDR5	2TB NVMe	NVIDIA RTX 5080 12GB	2025	חוויית גיימינג סוחפת
+Microsoft	Surface	Surface Pro 11 Core Ultra SKU-120	2-in-1	13"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	דור ה-AI של סרפייס
+Lenovo	ThinkPad	ThinkPad Z16 Gen 3 SKU-121	אולטרה-בוק	16"	AMD Ryzen AI 9 HX 370	64GB LPDDR5x	2TB NVMe	AMD Radeon 890M	2025	תחנת עבודה מודרנית
+Dell	Latitude	Latitude 7460 SKU-122	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	עסקי אמין לשטח
+HP	Spectre	Spectre x360 14 (2026) SKU-123	2-in-1	14"	Intel Core Ultra 7 268V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	עתיד המחשבים ההפיכים
+ASUS	Zenbook	Zenbook S 16 SKU-124	אולטרה-בוק	16"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	2TB NVMe	AMD Radeon 890M	2025	עיצוב עוצר נשימה
+Apple	MacBook	MacBook Pro 16 M4 Pro SKU-125	אולטרה-בוק	16.2"	Apple M4 Pro	48GB Unified	1TB SSD	Apple GPU 20-core	2025	מקצועי עם מסך גדול
+MSI	Raider	Raider GE68 HX SKU-126	גיימינג	16"	Intel Core i9-14900HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	עוצמה צבעונית
+Acer	Predator	Predator Helios 16 SKU-127	גיימינג	16"	Intel Core i9-14900HX	32GB DDR5	2TB NVMe	NVIDIA RTX 5080 12GB	2025	קירור נוזלי מתקדם
+Samsung	Galaxy Book	Galaxy Book 6 Edge 16 SKU-128	אולטרה-בוק	16"	Snapdragon X Plus	16GB LPDDR5x	512GB NVMe	Adreno GPU	2026	גרסת כניסה AI
+Lenovo	Yoga	Yoga Slim 7i Gen 10 SKU-129	אולטרה-בוק	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	הכי דק בסדרת Yoga
+Dell	Precision	Precision 3591 SKU-130	תחנת עבודה	15.6"	Intel Core i7-14800H	32GB DDR5	1TB NVMe	NVIDIA RTX 2000 Ada	2025	תחנת עבודה משתלמת
+HP	EliteBook	EliteBook 840 G12 SKU-131	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	2TB NVMe	Intel Arc Graphics	2025	נפח אחסון גדול
+ASUS	ROG	ROG Strix SCAR 16 SKU-132	גיימינג	16"	Intel Core i9-14900HX	32GB DDR5	2TB NVMe	NVIDIA RTX 5080 12GB	2025	לגיימרים תחרותיים
+Apple	MacBook	MacBook Air 13 M5 Pro SKU-133	אולטרה-בוק	13.6"	Apple M5 Series	24GB Unified	512GB SSD	Apple GPU (Internal)	2026	ה-Air הכי חזק של 2026
+MSI	Prestige	Prestige 16 AI SKU-134	נייד	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 5050 6GB	2025	עבודה יצירתית חלקה
+Acer	Swift	Swift X 14 SKU-135	נייד	14.5"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5060 8GB	2025	ליוצרי וידאו ניידים
+Samsung	Galaxy Book	Galaxy Book 5 Pro 14 SKU-136	אולטרה-בוק	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	אלגנטיות בלבן
+Lenovo	ThinkPad	ThinkPad P1 Gen 8 SKU-137	תחנת עבודה	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 2000 Ada	2025	תחנת עבודה דקה
+Dell	XPS	XPS 14 9460 SKU-138	אולטרה-בוק	14.5"	Intel Core Ultra 7 268V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5050 6GB	2026	עיצוב העתיד של דל
+HP	ZBook	ZBook Studio G12 SKU-139	תחנת עבודה	16"	Intel Core Ultra 7 258V	32GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2026	מקצועיות בדרכים
+ASUS	Vivobook	Vivobook S 15 SKU-140	נייד	15.6"	Snapdragon X Plus	16GB LPDDR5x	512GB NVMe	Adreno GPU	2025	מחשב ה-AI הנגיש
+Lenovo	Legion	Legion Slim 7 Gen 10 SKU-141	גיימינג	16"	Intel Core Ultra 9 285H	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	גיימינג חזק במארז דק
+Dell	Inspiron	Inspiron 14 Plus 7450 SKU-142	נייד	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	מחשב פלוס לכל משימה
+HP	Victus	Victus 16 (2025) SKU-143	גיימינג	16"	Intel Core i7-14700HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2025	ביצועי גיימינג מאוזנים
+Microsoft	Surface	Surface Pro 12 SKU-144	2-in-1	13"	Intel Core Ultra 5 226V	16GB LPDDR5x	256GB NVMe	Intel Arc Graphics	2026	סרפייס כניסה עתידי
+Lenovo	ThinkPad	ThinkPad Z13 Gen 3 SKU-145	אולטרה-בוק	13.3"	AMD Ryzen AI 7 350	16GB LPDDR5x	512GB NVMe	AMD Radeon 880M	2025	מחשב עסקי קטן וחדש
+Dell	Latitude	Latitude 7460 SKU-146	נייד	14"	Intel Core Ultra 5 226V	32GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2026	מותאם לעבודה היברידית
+HP	EliteBook	EliteBook 1040 G12 SKU-147	נייד	14"	Intel Core Ultra 9 285H	64GB LPDDR5x	2TB NVMe	Intel Arc Graphics	2025	מחשב המנהלים הבכירים
+ASUS	Zenbook	Zenbook 14 OLED SKU-148	אולטרה-בוק	14"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	AMD Radeon 890M	2025	מסך OLED מדהים
+Apple	MacBook	MacBook Air 13 M4 SKU-149	אולטרה-בוק	13.6"	Apple M4	24GB Unified	512GB SSD	Apple GPU 10-core	2025	גרסת RAM משודרגת
+MSI	Stealth	Stealth 14 AI SKU-150	גיימינג	14"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5070 8GB	2025	הכי חזק בקטגוריה שלו
+Acer	Swift	Swift Edge 16 SKU-151	אולטרה-בוק	16"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	AMD Radeon 890M	2025	תצוגת 4K מרהיבה
+Samsung	Galaxy Book	Galaxy Book 5 Ultra SKU-152	אולטרה-בוק	16"	Intel Core Ultra 9 285H	64GB LPDDR5x	2TB NVMe	NVIDIA RTX 5070 8GB	2025	הדגם הכי חזק של סמסונג
+LG	gram	gram Pro 16 SKU-153	נייד	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 3050 Laptop	2025	קל ועם כרטיס מסך ייעודי
+Razer	Blade	Blade 14 SKU-154	גיימינג	14"	AMD Ryzen 9 8945HS	64GB DDR5	2TB NVMe	NVIDIA RTX 5080 12GB	2025	קומפקטיות ללא פשרות
+Lenovo	Yoga	Yoga 9i Gen 10 SKU-155	אולטרה-בוק	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	חוויית סאונד פרימיום
+Dell	Precision	Precision 5490 SKU-156	תחנת עבודה	14"	Intel Core Ultra 9 285H	64GB LPDDR5x	2TB NVMe	NVIDIA RTX 2000 Ada	2025	תחנת עבודה בכיס
+HP	EliteBook	EliteBook 860 G12 SKU-157	נייד	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	נוחות עבודה מקסימלית
+ASUS	ROG	ROG Zephyrus G16 SKU-158	גיימינג	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5070 8GB	2025	דגם ה-OLED החדש
+Apple	MacBook	MacBook Pro 16 M4 Max SKU-159	אולטרה-בוק	16.2"	Apple M4 Max	128GB Unified	8TB SSD	Apple GPU 40-core	2025	גרסת ה"קצה" האולטימטיבית
+MSI	Prestige	Prestige 16 AI SKU-160	נייד	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	יעילות אנרגטית מקסימלית
+Acer	Nitro	Nitro V 16 SKU-161	גיימינג	16"	AMD Ryzen 9 8945HS	32GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2025	ביצועי AMD מעולים
+Samsung	Galaxy Book	Galaxy Book 6 Pro SKU-162	אולטרה-בוק	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2026	המחשב הנייד של 2026
+Lenovo	ThinkPad	ThinkPad P16 Gen 3 SKU-163	תחנת עבודה	16"	Intel Core Ultra 7 258V	32GB ECC	1TB NVMe	NVIDIA RTX 1000 Ada	2025	אמינות בדרגת שרת
+Dell	XPS	XPS 16 9660 SKU-164	אולטרה-בוק	16"	Intel Core Ultra 9 285H	64GB LPDDR5x	4TB NVMe	NVIDIA RTX 5080 12GB	2026	ספינת הדגל של דל ל-2026
+HP	Spectre	Spectre x360 14 SKU-165	2-in-1	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	איכות בנייה מרהיבה
+ASUS	ProArt	ProArt P16 SKU-166	תחנת עבודה	16"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5070 8GB	2025	כלי עבודה לאמנים
+Apple	MacBook	MacBook Pro 14 M5 Pro SKU-167	אולטרה-בוק	14.2"	Apple M5 Series	32GB Unified	1TB SSD	Apple GPU (Internal)	2026	הדור הבא של ה-Pro 14
+MSI	Summit	Summit E13 AI SKU-168	נייד	13.3"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	עסקי קטן וחכם
+Acer	Swift	Swift Go 14 SKU-169	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	מחשב ה-OLED המשתלם
+Samsung	Galaxy Book	Galaxy Book 6 Edge SKU-170	אולטרה-בוק	16"	Snapdragon X Elite	32GB LPDDR5x	2TB NVMe	Adreno GPU	2026	ניידות AI עתידית
+Lenovo	Legion	Legion 7i Gen 10 SKU-171	גיימינג	16"	Intel Core i7-14700HX	16GB DDR5	512GB NVMe	NVIDIA RTX 5060 8GB	2025	גיימינג מאוזן
+Dell	Inspiron	Inspiron 16 Plus SKU-172	נייד	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5060 8GB	2025	מולטימדיה ביתית חזקה
+HP	ZBook	ZBook Power G12 SKU-173	תחנת עבודה	15.6"	Intel Core Ultra 7 258V	32GB DDR5	512GB NVMe	NVIDIA RTX 1000 Ada	2025	תחנת עבודה מוסמכת
+Microsoft	Surface	Surface Laptop 8 SKU-174	אולטרה-בוק	15"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	מסך ה-15 אינץ' החדש
+Lenovo	ThinkPad	ThinkPad X1 Carbon Gen 13 SKU-175	אולטרה-בוק	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	גרסת כניסה למנהלים
+Dell	Precision	Precision 3591 SKU-176	תחנת עבודה	15.6"	Intel Core i5-14500H	16GB DDR5	512GB NVMe	NVIDIA RTX 500 Ada	2025	תחנת עבודה בסיסית
+HP	EliteBook	EliteBook 840 G12 SKU-177	נייד	14"	AMD Ryzen AI 7 350	16GB LPDDR5x	512GB NVMe	AMD Radeon 880M	2025	גרסת ה-AMD העסקית
+ASUS	ROG	ROG Strix SCAR 18 SKU-178	גיימינג	18"	Intel Core i9-14900HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5080 12GB	2025	מפלצת גיימינג גדולה
+Apple	MacBook	MacBook Air 15 M4 SKU-179	אולטרה-בוק	15.3"	Apple M4	24GB Unified	1TB SSD	Apple GPU 10-core	2025	ה-Air הגדול והחזק
+MSI	Raider	Raider GE78 SKU-180	גיימינג	17"	Intel Core i7-14700HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	אורות וביצועים
+Acer	Swift	Swift Go 14 SKU-181	נייד	14"	Snapdragon X Plus	16GB LPDDR5x	512GB NVMe	Adreno GPU	2025	ה-Snapdragon של אייסר
+Samsung	Galaxy Book	Galaxy Book 5 Pro SKU-182	אולטרה-בוק	16"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	דגם ה-Pro המאוזן
+LG	gram	gram Pro 16 SKU-183	נייד	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	ה-Pro הכי קל
+Razer	Blade	Blade 14 SKU-184	גיימינג	14"	AMD Ryzen 9 8945HS	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	ביצועים קטנים וקטלניים
+Lenovo	ThinkBook	ThinkBook 14 Gen 8 SKU-185	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	עיצוב עסקי מודרני
+Dell	Alienware	Alienware m16 R4 SKU-186	גיימינג	16"	Intel Core i9-14900HX	64GB DDR5	2TB NVMe	NVIDIA RTX 5090 16GB	2025	פסגת הגיימינג של דל
+HP	OMEN	OMEN Transcend 14 SKU-187	גיימינג	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	NVIDIA RTX 5050 6GB	2025	גיימינג דק וקל
+Microsoft	Surface	Surface Pro 11 Core Ultra SKU-188	2-in-1	13"	Intel Core Ultra 5 226V	16GB LPDDR5x	256GB NVMe	Intel Arc Graphics	2025	סרפייס AI בסיסי
+ASUS	Zenbook	Zenbook S 16 SKU-189	אולטרה-בוק	16"	AMD Ryzen AI 7 350	16GB LPDDR5x	512GB NVMe	AMD Radeon 880M	2025	יופי של 16 אינץ'
+Apple	MacBook	MacBook Pro 14 M5 SKU-190	אולטרה-בוק	14.2"	Apple M5 Series	24GB Unified	1TB SSD	Apple GPU (Internal)	2026	הסטנדרט של מחר
+Lenovo	Yoga	Yoga Slim 7x SKU-191	אולטרה-בוק	14.5"	Snapdragon X Plus	16GB LPDDR5x	512GB NVMe	Adreno GPU	2025	מחשב ARM רב עוצמה
+Dell	XPS	XPS 13 9360 SKU-192	אולטרה-בוק	13.4"	Intel Core Ultra 7 268V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	ניידות מקסימלית 2026
+HP	Spectre	Spectre x360 16 SKU-193	2-in-1	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	מסך ענק ומתהפך
+ASUS	Vivobook	Vivobook S 14 SKU-194	נייד	14"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	AMD Radeon 890M	2025	ביצועי AMD בשילוב OLED
+Apple	MacBook	MacBook Pro 16 M4 SKU-195	אולטרה-בוק	16.2"	Apple M4	24GB Unified	512GB SSD	Apple GPU 10-core	2025	ה-Pro הגדול והבסיסי
+MSI	Prestige	Prestige 13 AI SKU-196	אולטרה-בוק	13.3"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	פחות מ-1 קילו
+Acer	Swift	Swift Edge 16 SKU-197	אולטרה-בוק	16"	AMD Ryzen AI 7 350	16GB LPDDR5x	512GB NVMe	AMD Radeon 880M	2025	קל משקל ומסך גדול
+Samsung	Galaxy Book	Galaxy Book 5 Pro SKU-198	אולטרה-בוק	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	הבחירה המושלמת לניידות
+LG	gram	gram 16 (2025) SKU-199	נייד	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	הכי קל ב-16 אינץ'
+Razer	Blade	Blade 18 SKU-200	גיימינג	18"	Intel Core i7-14700HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5080 12GB	2025	מסך ענק לגיימרים
+Lenovo	ThinkPad	ThinkPad P16 Gen 3 SKU-201	תחנת עבודה	16"	Intel Core Ultra 9 285H	64GB ECC	2TB NVMe	NVIDIA RTX 2000 Ada	2025	מיועד להנדסה כבדה
+Dell	Precision	Precision 5690 SKU-202	תחנת עבודה	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 1000 Ada	2025	תחנת עבודה דקה ויפה
+HP	EliteBook	EliteBook 1040 G12 SKU-203	נייד	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	עסקי פרימיום דק
+ASUS	ROG	ROG Zephyrus G16 SKU-204	גיימינג	16"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 5070 8GB	2025	שילוב AMD ו-NVIDIA
+Apple	MacBook	MacBook Air 13 M5 SKU-205	אולטרה-בוק	13.6"	Apple M5 Series	24GB Unified	512GB SSD	Apple GPU (Internal)	2026	עתיד ה-Air ב-2026
+MSI	Stealth	Stealth 16 AI SKU-207	גיימינג	16"	Intel Core Ultra 7 258V	32GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2025	גיימינג עסקי
+Acer	Nitro	Nitro V 16 SKU-208	גיימינג	16"	AMD Ryzen 7 8845HS	32GB DDR5	1TB NVMe	NVIDIA RTX 5050 6GB	2025	גיימינג תקציבי רחב
+Samsung	Galaxy Book	Galaxy Book 6 Edge 14 SKU-209	אולטרה-בוק	14"	Snapdragon X Plus	16GB LPDDR5x	256GB NVMe	Adreno GPU	2026	ה-AI הנייד של 2026
+Lenovo	ThinkPad	ThinkPad X13 Gen 6 SKU-210	נייד	13.3"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	מחשב דרכים אולטימטיבי
+Dell	Latitude	Latitude 5460 SKU-211	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	עמידות עסקית גבוהה
+HP	ZBook	ZBook Studio G12 SKU-212	תחנת עבודה	16"	Intel Core Ultra 9 285H	32GB DDR5	1TB NVMe	NVIDIA RTX 5050 6GB	2026	סטודיו נייד עתידי
+ASUS	ExpertBook	ExpertBook B5 SKU-213	נייד	14"	Intel Core Ultra 5 226V	16GB DDR5	512GB NVMe	Intel Arc Graphics	2025	קל משקל לעסקים
+Apple	MacBook	MacBook Pro 14 M4 SKU-214	אולטרה-בוק	14.2"	Apple M4	24GB Unified	1TB SSD	Apple GPU 10-core	2025	דגם 2025 משודרג
+MSI	Prestige	Prestige 16 AI SKU-215	נייד	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5050 6GB	2025	מחשב יצירה דק
+Acer	Swift	Swift X 14 SKU-216	נייד	14.5"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	NVIDIA RTX 5050 6GB	2025	ליוצרי תוכן מתחילים
+Samsung	Galaxy Book	Galaxy Book 5 Ultra SKU-217	אולטרה-בוק	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	NVIDIA RTX 5050 6GB	2025	גרסת ה-Ultra הבסיסית
+Lenovo	Yoga	Yoga Pro 9i Gen 10 SKU-218	אולטרה-בוק	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5060 8GB	2025	מסך מגע יצירתי
+Dell	XPS	XPS 14 9450 SKU-219	אולטרה-בוק	14.5"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	ה-XPS 14 החדש
+HP	EliteBook	EliteBook 860 G12 SKU-220	נייד	16"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2026	עסקי גדול ויעיל
+ASUS	Zenbook	Zenbook 14 OLED SKU-221	אולטרה-בוק	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	ה-OLED המשתלם של אסוס
+Apple	MacBook	MacBook Pro 16 M4 Pro SKU-222	אולטרה-בוק	16.2"	Apple M4 Pro	32GB Unified	512GB SSD	Apple GPU 20-core	2025	ביצועים מקצועיים 16 אינץ'
+MSI	Katana	Katana 15 SKU-223	גיימינג	15.6"	Intel Core i7-14650HX	16GB DDR5	512GB NVMe	NVIDIA RTX 5050 6GB	2025	גיימינג קומפקטי
+Acer	Predator	Predator Helios Neo 16 SKU-224	גיימינג	16"	Intel Core i5-14500HX	16GB DDR5	512GB NVMe	NVIDIA RTX 5050 6GB	2025	הליוס תקציבי
+Samsung	Galaxy Book	Galaxy Book 5 Pro 16 SKU-225	אולטרה-בוק	16"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	מחשב פרימיום גדול וקל
+Lenovo	IdeaPad	IdeaPad Pro 5i Gen 10 SKU-226	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5050 6GB	2025	פרו קומפקטי
+Dell	Precision	Precision 5490 SKU-227	תחנת עבודה	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 500 Ada	2025	תחנת עבודה ניידת קלה
+HP	Spectre	Spectre x360 14 SKU-228	2-in-1	14"	Intel Core Ultra 7 268V	32GB LPDDR5x	2TB NVMe	Intel Arc Graphics	2025	מסך מגע 2.8K OLED
+ASUS	TUF	TUF Gaming F17 SKU-229	גיימינג	17.3"	Intel Core i7-14700HX	16GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2025	גיימינג גדול ועמיד
+Apple	MacBook	MacBook Air 15 M5 Pro SKU-230	אולטרה-בוק	15.3"	Apple M5 Series	32GB Unified	1TB SSD	Apple GPU (Internal)	2026	ה-Air הכי חזק של מחר
+MSI	Cyborg	Cyborg 14 SKU-231	גיימינג	14"	Intel Core i7-13620H	16GB DDR5	512GB NVMe	NVIDIA RTX 4060 Laptop	2025	גיימינג 14 אינץ' זול
+Acer	Swift	Swift Go 14 SKU-232	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	256GB NVMe	Intel Arc Graphics	2025	מחשב סטודנטים מושלם
+Samsung	Galaxy Book	Galaxy Book 6 Edge SKU-233	אולטרה-בוק	14"	Snapdragon X Plus	32GB LPDDR5x	512GB NVMe	Adreno GPU	2026	דור חדש של סמסונג AI
+LG	gram	gram 17 (2025) SKU-234	נייד	17.3"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	הכי גדול והכי קל בשוק
+Razer	Blade	Blade 16 SKU-235	גיימינג	16"	Intel Core i9-14900HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	מסך OLED מהיר
+Lenovo	ThinkPad	ThinkPad Z13 Gen 3 SKU-236	אולטרה-בוק	13.3"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	AMD Radeon 890M	2025	עיצוב פרימיום AMD
+Dell	Latitude	Latitude 7460 SKU-237	נייד	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	הסטנדרט העסקי של דל
+HP	OMEN	OMEN 16 (2025) SKU-238	גיימינג	16"	Intel Core i7-14700HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	גיימינג ביתי חזק
+ASUS	ROG	ROG Strix SCAR 16 SKU-239	גיימינג	16"	Intel Core i9-14900HX	64GB DDR5	2TB NVMe	NVIDIA RTX 5090 16GB	2025	מחשב הגיימינג האולטימטיבי
+Apple	MacBook	MacBook Pro 14 M5 Pro SKU-240	אולטרה-בוק	14.2"	Apple M5 Series	48GB Unified	2TB SSD	Apple GPU (Internal)	2026	פרו 14 אינץ' של 2026
+MSI	Prestige	Prestige 14 AI SKU-241	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	יעיל ומהיר
+Acer	Swift	Swift Edge 16 SKU-242	אולטרה-בוק	16"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	2TB NVMe	AMD Radeon 890M	2025	דק במיוחד ומסך OLED
+Samsung	Galaxy Book	Galaxy Book 5 Pro 360 SKU-243	2-in-1	16"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	מחשב יצירתי מתהפך
+Lenovo	Legion	Legion 5i Gen 10 SKU-244	גיימינג	15.6"	Intel Core i5-14500HX	16GB DDR5	1TB NVMe	NVIDIA RTX 5050 6GB	2025	הגיימינג הכי משתלם
+Dell	Inspiron	Inspiron 14 Plus SKU-245	נייד	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	מחשב נייד יומיומי חזק
+HP	Victus	Victus 15 (2025) SKU-246	גיימינג	15.6"	AMD Ryzen 5 8645HS	16GB DDR5	512GB NVMe	NVIDIA RTX 5050 6GB	2025	גיימינג תקציבי מעולה
+Microsoft	Surface	Surface Pro 12 SKU-247	2-in-1	13"	Intel Core Ultra 7 268V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	טאבלט ה-AI העתידי
+ASUS	Vivobook	Vivobook S 15 SKU-248	נייד	15.6"	Snapdragon X Elite	32GB LPDDR5x	1TB NVMe	Adreno GPU	2025	ה-Vivobook הכי חזק
+Lenovo	ThinkPad	ThinkPad X1 Carbon Gen 14 SKU-249	אולטרה-בוק	14"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	דגם העלית של 2026
+Dell	Precision	Precision 3591 SKU-250	תחנת עבודה	15.6"	Intel Core i9-14900H	64GB DDR5	2TB NVMe	NVIDIA RTX 2000 Ada	2025	תחנת עבודה חזקה
+HP	EliteBook	EliteBook 1040 G12 SKU-251	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	עסקי קל ויוקרתי
+ASUS	Zenbook	Zenbook S 16 SKU-252	אולטרה-בוק	16"	AMD Ryzen AI 9 HX 370	64GB LPDDR5x	2TB NVMe	AMD Radeon 890M	2025	ספינת הדגל של אסוס
+Apple	MacBook	MacBook Pro 16 M5 Pro SKU-253	אולטרה-בוק	16.2"	Apple M5 Series	64GB Unified	2TB SSD	Apple GPU (Internal)	2026	מקצועי מהיר ב-2026
+MSI	Raider	Raider GE68 SKU-254	גיימינג	16"	Intel Core i9-14900HX	64GB DDR5	2TB NVMe	NVIDIA RTX 5080 12GB	2025	חוויית גיימינג פרימיום
+Acer	Predator	Predator Helios 16 SKU-255	גיימינג	16"	Intel Core i7-14700HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	מקרר בטכנולוגיית AeroBlade
+Samsung	Galaxy Book	Galaxy Book 5 Pro 14 SKU-256	אולטרה-בוק	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	דק, קל וחזק
+Lenovo	ThinkPad	ThinkPad P16 Gen 3 SKU-257	תחנת עבודה	16"	Intel Core Ultra 9 285H	128GB ECC	4TB NVMe	NVIDIA RTX 5000 Ada	2025	תחנת עבודה אולטימטיבית
+Dell	XPS	XPS 13 9360 SKU-258	אולטרה-בוק	13.4"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2026	הניידות של 2026
+HP	ZBook	ZBook Studio G12 SKU-259	תחנת עבודה	16"	Intel Core Ultra 7 258V	64GB DDR5	1TB NVMe	NVIDIA RTX 5060 8GB	2026	הסטודיו של מחר
+ASUS	ROG	ROG Zephyrus G14 SKU-260	גיימינג	14"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5070 8GB	2025	גיימינג קומפקטי מהדור הבא
+Apple	MacBook	MacBook Air 15 M4 SKU-261	אולטרה-בוק	15.3"	Apple M4	16GB Unified	256GB SSD	Apple GPU 10-core	2025	ה-15 אינץ' המשתלם
+MSI	Stealth	Stealth 16 AI SKU-262	גיימינג	16"	Intel Core Ultra 9 285H	32GB DDR5	1TB NVMe	NVIDIA RTX 5080 12GB	2025	דק, קל וחזק מאוד
+Acer	Swift	Swift Go 14 SKU-263	נייד	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	מחשב OLED יומיומי
+Samsung	Galaxy Book	Galaxy Book 6 Edge 16 SKU-264	אולטרה-בוק	16"	Snapdragon X Elite	32GB LPDDR5x	1TB NVMe	Adreno GPU	2026	עתיד המחשוב של סמסונג
+LG	gram	gram Pro 16 SKU-265	נייד	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	פרו משקל נוצה
+Razer	Blade	Blade 14 SKU-266	גיימינג	14"	AMD Ryzen 9 8945HS	32GB DDR5	1TB NVMe	NVIDIA RTX 5070 8GB	2025	גיימינג בדרכים
+Lenovo	Yoga	Yoga 9i Gen 10 SKU-267	אולטרה-בוק	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	עיצוב פרימיום מתהפך
+Dell	Precision	Precision 5490 SKU-268	תחנת עבודה	14"	Intel Core Ultra 9 285H	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 1000 Ada	2025	תחנת עבודה מיניאטורית
+HP	EliteBook	EliteBook 840 G12 SKU-269	נייד	14"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	עסקי חכם ומהיר
+ASUS	ExpertBook	ExpertBook B5 SKU-270	נייד	14"	Intel Core Ultra 7 258V	32GB DDR5	1TB NVMe	Intel Arc Graphics	2025	עמידות עסקית ב-2025
+Apple	MacBook	MacBook Pro 14 M4 SKU-271	אולטרה-בוק	14.2"	Apple M4	16GB Unified	512GB SSD	Apple GPU 10-core	2025	פרו בסיסי חדש
+MSI	Prestige	Prestige 16 AI SKU-272	נייד	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	מסך 16 אינץ' עסקי
+Acer	Nitro	Nitro V 15 SKU-273	גיימינג	15.6"	Intel Core i7-14650HX	16GB DDR5	1TB NVMe	NVIDIA RTX 5050 6GB	2025	גיימרים מתחילים 2025
+Samsung	Galaxy Book	Galaxy Book 5 Pro 16 SKU-274	אולטרה-בוק	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	ה-Pro הגדול והחזק
+Lenovo	IdeaPad	IdeaPad Pro 5i Gen 10 SKU-275	נייד	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	NVIDIA RTX 5050 6GB	2025	פרו לעבודה ביתית
+Dell	Latitude	Latitude 9460 SKU-276	נייד	14"	Intel Core Ultra 7 268V	32GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2026	עסקי עתידי בכיר
+HP	Spectre	Spectre x360 14 SKU-277	2-in-1	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	יפה וחכם
+ASUS	ROG	ROG Strix SCAR 18 SKU-278	גיימינג	18"	Intel Core i9-14900HX	64GB DDR5	2TB NVMe	NVIDIA RTX 5090 16GB	2025	הגיימינג הכי גדול
+Apple	MacBook	MacBook Air 13 M4 SKU-279	אולטרה-בוק	13.6"	Apple M4	16GB Unified	512GB SSD	Apple GPU 10-core	2025	ה-Air של 2025
+MSI	Titan	Titan 18 HX SKU-280	גיימינג	18"	Intel Core i9-14900HX	128GB DDR5	2TB NVMe	NVIDIA RTX 5090 16GB	2025	כוח ללא גבולות
+Acer	Swift	Swift Go 14 SKU-281	נייד	14"	AMD Ryzen 7 8845HS	16GB LPDDR5x	512GB NVMe	AMD Radeon 780M	2025	הבחירה הכלכלית
+Samsung	Galaxy Book	Galaxy Book 5 Ultra SKU-282	אולטרה-בוק	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 5060 8GB	2025	אולטרה ביצועים
+Lenovo	ThinkPad	ThinkPad T14s Gen 6 SKU-283	נייד	14"	Snapdragon X Elite	32GB LPDDR5x	512GB NVMe	Adreno GPU	2025	עסקי מבוסס ARM
+Dell	XPS	XPS 16 9650 SKU-284	אולטרה-בוק	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 5060 8GB	2025	ה-16 אינץ' החדש
+HP	ZBook	ZBook Studio G12 SKU-285	תחנת עבודה	16"	Intel Core Ultra 9 285H	64GB DDR5	2TB NVMe	NVIDIA RTX 5070 8GB	2026	יצירתיות עתידית
+ASUS	Zenbook	Zenbook S 16 SKU-286	אולטרה-בוק	16"	AMD Ryzen AI 9 HX 370	32GB LPDDR5x	1TB NVMe	AMD Radeon 890M	2025	פלא טכנולוגי דק
+Apple	MacBook	MacBook Pro 16 M5 SKU-287	אולטרה-בוק	16.2"	Apple M5 Series	32GB Unified	1TB SSD	Apple GPU (Internal)	2026	מקבוק פרו של 2026
+MSI	Raider	Raider GE78 SKU-288	גיימינג	17"	Intel Core i9-14900HX	32GB DDR5	1TB NVMe	NVIDIA RTX 5080 12GB	2025	גיימינג ברמה גבוהה
+Acer	Predator	Predator Helios Neo 16 SKU-289	גיימינג	16"	Intel Core i7-14700HX	16GB DDR5	512GB NVMe	NVIDIA RTX 5060 8GB	2025	הליוס המשתלם
+Samsung	Galaxy Book	Galaxy Book 5 Pro 14 SKU-290	אולטרה-בוק	14"	Intel Core Ultra 5 226V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	ניידות פרימיום
+Lenovo	ThinkPad	ThinkPad P1 Gen 8 SKU-291	תחנת עבודה	16"	Intel Core Ultra 7 258V	32GB LPDDR5x	1TB NVMe	NVIDIA RTX 1000 Ada	2025	תחנת עבודה דקה 2025
+Dell	Precision	Precision 5690 SKU-292	תחנת עבודה	16"	Intel Core Ultra 9 285H	64GB LPDDR5x	2TB NVMe	NVIDIA RTX 2000 Ada	2025	מסך מגע OLED
+HP	EliteBook	EliteBook 840 G12 SKU-293	נייד	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	Intel Arc Graphics	2025	עסקי מאוזן
+ASUS	ROG	ROG Zephyrus G16 SKU-294	גיימינג	16"	Intel Core Ultra 9 285H	32GB LPDDR5x	2TB NVMe	NVIDIA RTX 5080 12GB	2025	מלך הסטייל והכוח
+Apple	MacBook	MacBook Air 15 M4 SKU-295	אולטרה-בוק	15.3"	Apple M4	24GB Unified	512GB SSD	Apple GPU 10-core	2025	מסך גדול לעבודה
+MSI	Stealth	Stealth 14 AI SKU-296	גיימינג	14"	Intel Core Ultra 7 258V	16GB LPDDR5x	512GB NVMe	NVIDIA RTX 5050 6GB	2025	קומפקטי וחזק
+Acer	Swift	Swift Edge 16 SKU-297	אולטרה-בוק	16"	AMD Ryzen AI 7 350	16GB LPDDR5x	512GB NVMe	AMD Radeon 880M	2025	מסך גדול משקל קטן
+Samsung	Galaxy Book	Galaxy Book 6 Edge 14 SKU-298	אולטרה-בוק	14"	Snapdragon X Elite	32GB LPDDR5x	1TB NVMe	Adreno GPU	2026	מחשב ה-AI של מחר
+LG	gram	gram Pro 16 SKU-299	נייד	16"	Intel Core Ultra 7 258V	16GB LPDDR5x	1TB NVMe	Intel Arc Graphics	2025	הכי קל שיש
+Razer	Blade	Blade 16 SKU-300	גיימינג	16"	Intel Core Ultra 9 285H	64GB DDR5	2TB NVMe	NVIDIA RTX 5090 16GB	2025	פסגת הטכנולוגיה

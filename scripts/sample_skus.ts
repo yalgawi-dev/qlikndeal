@@ -1,12 +1,14 @@
+
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
+
 async function main() {
-    const logs = await prisma.parserLog.findMany({
-        orderBy: {
-            createdAt: 'desc'
-        },
-        take: 5
+    const laptops = await prisma.laptopCatalog.findMany({
+        take: 10,
+        select: { modelName: true, sku: true }
     });
-    console.log(JSON.stringify(logs, null, 2));
+    console.log(JSON.stringify(laptops, null, 2));
 }
+
 main().catch(console.error).finally(() => prisma.$disconnect());

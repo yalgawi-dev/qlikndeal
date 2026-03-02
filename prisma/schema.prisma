@@ -314,27 +314,141 @@ model ParserLog {
 // ─────────────────────────────────────────────────────────────
 
 model AdminTask {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   title       String
   description String?
-  completed   Boolean  @default(false)
-  notes       String?  // Shared comments on this task
-  
+  completed   Boolean @default(false)
+  notes       String? // Shared comments on this task
+
   createdById String?
-  createdBy   User?    @relation("CreatedTasks", fields: [createdById], references: [id])
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model AdminNote {
-  id        String   @id @default(uuid())
-  title     String?  // Optional title for the note
-  content   String   // Markdown or plain text
-  
-  authorId  String?
-  author    User?    @relation("WrittenNotes", fields: [authorId], references: [id])
+  createdBy   User?   @relation("CreatedTasks", fields: [createdById], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model AdminNote {
+  id      String  @id @default(uuid())
+  title   String? // Optional title for the note
+  content String // Markdown or plain text
+
+  authorId String?
+  author   User?   @relation("WrittenNotes", fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+// Computer & Mobile Catalog - Separate Tables for each Category
+// ─────────────────────────────────────────────────────────────
+
+model LaptopCatalog {
+  id          String   @id @default(uuid())
+  brand       String
+  series      String
+  modelName   String
+  type        String?
+  screenSize  String[] // Array of options or single value
+  cpu         String[]
+  gpu         String[]
+  ram         String[]
+  storage     String[]
+  os          String[]
+  releaseYear String?
+  notes       String?
+  sku         String?  @unique
+  weight      String?
+  ports       String?
+  display     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([brand])
+  @@index([series])
+}
+
+model BrandDesktopCatalog {
+  id          String   @id @default(uuid())
+  brand       String
+  series      String
+  modelName   String
+  cpu         String[]
+  gpu         String[]
+  ram         String[]
+  storage     String[]
+  os          String[]
+  releaseYear String?
+  notes       String?
+  sku         String?  @unique
+  ports       String?
+  weight      String?
+  isMini      Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([brand])
+}
+
+model CustomBuildCatalog {
+  id          String  @id @default(uuid())
+  category    String // Gaming, Office, Workstation
+  subCategory String?
+  typicalCpu  String?
+  typicalGpu  String?
+  typicalRam  String?
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AioCatalog {
+  id          String   @id @default(uuid())
+  brand       String
+  series      String
+  modelName   String
+  screenSize  String[]
+  cpu         String[]
+  gpu         String[]
+  ram         String[]
+  storage     String[]
+  os          String[]
+  releaseYear String?
+  notes       String?
+  sku         String?  @unique
+  display     String?
+  ports       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([brand])
+}
+
+model MobileCatalog {
+  id               String   @id @default(uuid())
+  brand            String
+  series           String
+  modelName        String
+  hebrewAliases    String[]
+  storages         Int[]
+  screenSize       Float?
+  releaseYear      Int?
+  cpu              String?
+  ramG             Int?
+  os               String?
+  battery          String?
+  rearCamera       String?
+  frontCamera      String?
+  weight           String?
+  nfc              Boolean  @default(false)
+  wirelessCharging Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([brand])
 }
