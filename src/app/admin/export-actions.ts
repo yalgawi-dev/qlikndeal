@@ -32,12 +32,16 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
     </thead>
     <tbody>`;
 
-    const laptops = (type === "laptop" || type === "all") ? await prisma.laptopCatalog.findMany({ orderBy: { brand: "asc" } }) : [];
+    // Precise counting for diagnostics
+    const laptops_all = (type === "laptop" || type === "all") ? await prisma.laptopCatalog.findMany({ orderBy: { brand: "asc" } }) : [];
+    const laptops_new = laptops_all.filter(l => l.sku?.includes('SKU-')).length;
+    const laptops_old = laptops_all.length - laptops_new;
+
     const desktops = (type === "desktop" || type === "all") ? await prisma.brandDesktopCatalog.findMany({ orderBy: { brand: "asc" } }) : [];
     const aios = (type === "desktop" || type === "aio" || type === "all") ? await prisma.aioCatalog.findMany({ orderBy: { brand: "asc" } }) : [];
 
     // Laptops
-    for (const l of laptops) {
+    for (const l of laptops_all) {
         html += `
         <tr>
             <td>נייד</td>
@@ -99,8 +103,11 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
     // Debug Footer
     html += `
     <tr>
-        <td colspan="13" style="background-color: #fff3cd; text-align: center; font-weight: bold;">
-            DEBUG: סה"כ רשומות בטבלת ניידים: ${count} | שרת: ${dbHost} | זמן הפקה: ${new Date().toLocaleTimeString('he-IL')}
+        <td colspan="13" style="background-color: #fff3cd; text-align: center; font-weight: bold; font-size: 14px; padding: 10px;">
+            DIAGNOSTICS (V2.6):<br/>
+            סה"כ ב-DB: ${count} | חדשים (SKU): ${laptops_new} | ישנים: ${laptops_old}<br/>
+            שרת: ${dbHost} | זמן הפקה: ${new Date().toLocaleString('he-IL')}<br/>
+            אם המספר אינו 616, ייתכן ש-Vercel מחובר למסד נתונים אחר.
         </td>
     </tr>`;
 
