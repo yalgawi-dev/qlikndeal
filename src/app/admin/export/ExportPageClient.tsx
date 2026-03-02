@@ -50,7 +50,7 @@ export default function ExportPageClient() {
     return (
         <div className="p-6 max-w-4xl mx-auto">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-2">ייצוא מאגרי נתונים (V2.5)</h1>
+                <h1 className="text-3xl font-bold mb-2">ייצוא מאגרי נתונים (V2.6)</h1>
                 <p className="text-slate-500">הורד את רשימות המכשירים המלאות לקובץ אקסל תקני (XLS)</p>
             </div>
 
