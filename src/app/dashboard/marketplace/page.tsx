@@ -72,8 +72,27 @@ export default function MarketplacePage() {
 
     // Initial load
     useEffect(() => {
-        fetchSmartSearch();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        let isMounted = true;
+        const fetchInitial = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch("/api/marketplace/smart-search", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: "", lat: null, lng: null, radiusKm: null })
+                });
+                const data = await res.json();
+                if (data.success && isMounted) {
+                    setListings(data.results || []);
+                }
+            } catch (error) {
+                console.error("Initial search failed:", error);
+            }
+            if (isMounted) setLoading(false);
+        };
+
+        fetchInitial();
+        return () => { isMounted = false; };
     }, []);
 
     const handleSearch = (e?: React.FormEvent) => {
