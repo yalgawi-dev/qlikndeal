@@ -56,7 +56,7 @@ export default function MarketplacePage() {
                     query: searchInput,
                     lat: currentLat,
                     lng: currentLng,
-                    radiusKm: currentLat && currentLng ? radiusKm : null
+                    radiusKm: currentLat && currentLng ? (radiusKm === 155 ? null : radiusKm) : null
                 })
             });
             const data = await res.json();
@@ -245,6 +245,7 @@ export default function MarketplacePage() {
                                     <Input 
                                         placeholder="הזן עיר או לחץ על הכפתור..." 
                                         value={locationName}
+                                        list="cities"
                                         onChange={e => {
                                             setLocationName(e.target.value);
                                             // Reset coords when manual typing
@@ -253,6 +254,42 @@ export default function MarketplacePage() {
                                         }}
                                         className="bg-gray-900 border-gray-700 rounded-xl"
                                     />
+                                    <datalist id="cities">
+                                        {/* רשימה חלקית של ערים מרכזיות בישראל להשלמה אוטומטית */}
+                                        <option value="תל אביב" />
+                                        <option value="ירושלים" />
+                                        <option value="חיפה" />
+                                        <option value="ראשון לציון" />
+                                        <option value="פתח תקווה" />
+                                        <option value="אשדוד" />
+                                        <option value="נתניה" />
+                                        <option value="באר שבע" />
+                                        <option value="בני ברק" />
+                                        <option value="חולון" />
+                                        <option value="רמת גן" />
+                                        <option value="אשקלון" />
+                                        <option value="רחובות" />
+                                        <option value="בת ים" />
+                                        <option value="כפר סבא" />
+                                        <option value="הרצליה" />
+                                        <option value="חדרה" />
+                                        <option value="מודיעין" />
+                                        <option value="רעננה" />
+                                        <option value="לוד" />
+                                        <option value="רמלה" />
+                                        <option value="מודיעין עילית" />
+                                        <option value="רמת השרון" />
+                                        <option value="בית שמש" />
+                                        <option value="קרית אתא" />
+                                        <option value="קרית גת" />
+                                        <option value="אילת" />
+                                        <option value="עפולה" />
+                                        <option value="נהריה" />
+                                        <option value="טבריה" />
+                                        <option value="אריאל" />
+                                        <option value="כרמיאל" />
+                                    </datalist>
+
                                     <Button 
                                         type="button"
                                         variant="secondary" 
@@ -271,13 +308,13 @@ export default function MarketplacePage() {
                                 <label className="text-sm font-semibold text-gray-300 flex justify-between items-center">
                                     <span>מרחק חיפוש מקסימלי</span>
                                     <span className="text-purple-400 font-bold bg-purple-500/10 px-2 py-0.5 rounded-md">
-                                        {radiusKm} ק"מ
+                                        {radiusKm === 155 ? "ללא הגבלה" : `${radiusKm} ק"מ`}
                                     </span>
                                 </label>
                                 <input 
                                     type="range" 
                                     min="5" 
-                                    max="150" 
+                                    max="155" 
                                     step="5"
                                     value={radiusKm} 
                                     onChange={(e) => setRadiusKm(parseInt(e.target.value))}
