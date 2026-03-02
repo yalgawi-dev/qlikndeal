@@ -1,9 +1,9 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
+import prismadb from "@/lib/prismadb";
 import { unstable_noStore as noStore } from "next/cache";
 
-const prisma = new PrismaClient();
+const prisma = prismadb;
 
 /**
  * מנקה טקסט כדי שלא ישבור את ה-CSV
