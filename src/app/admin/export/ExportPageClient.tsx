@@ -32,7 +32,9 @@ export default function ExportPageClient() {
                 fileName = `phone_database_${new Date().toLocaleDateString()}.xls`;
             } else {
                 content = await exportComputersToCSV(type);
-                fileName = `${type}_database_${new Date().toLocaleDateString()}.xls`;
+                const now = new Date();
+                const timeStr = `${now.getHours()}_${now.getMinutes()}`;
+                fileName = `${type}_database_${now.toLocaleDateString()}_${timeStr}.xls`;
             }
 
             downloadFile(content, fileName);

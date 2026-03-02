@@ -17,8 +17,9 @@ function clean(text: any) {
 export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | "all") {
     noStore();
     const count = await prisma.laptopCatalog.count();
-    console.log(`DEBUG: Total Laptops in DB for Export: ${count}`);
-    console.log(`DEBUG: DATABASE_URL format: ${process.env.DATABASE_URL?.split('@')[1]?.split('/')[0]}`);
+    const dbHost = process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || "unknown";
+    console.log(`DEBUG: Total Laptops in DB for Export: ${count} on host ${dbHost}`);
+    
     let html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
     <head><meta charset="utf-8" /><style>td { mso-number-format:"\\@"; } th { background-color: #f4f4f4; }</style></head>
@@ -94,6 +95,14 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
             <td>${clean(a.notes)}</td>
         </tr>`;
     }
+
+    // Debug Footer
+    html += `
+    <tr>
+        <td colspan="13" style="background-color: #fff3cd; text-align: center; font-weight: bold;">
+            DEBUG: סה"כ רשומות בטבלת ניידים: ${count} | שרת: ${dbHost} | זמן הפקה: ${new Date().toLocaleTimeString('he-IL')}
+        </td>
+    </tr>`;
 
     html += `</tbody></table></body></html>`;
     return html;
