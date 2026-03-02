@@ -276,7 +276,24 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     const [uploading, setUploading] = useState(false);
     const [uploadingVideo, setUploadingVideo] = useState(false);
     const [imageUrlInput, setImageUrlInput] = useState("");
-    const [videoUrl, setVideoUrl] = useState(initialData?.extraData?.["סרטון"] || "");
+
+    // Normalize extraData: DB stores it as array [{key,value}], form expects object {key: value}
+    const normalizeExtraData = (raw: any): Record<string, string> => {
+        if (!raw) return {};
+        if (Array.isArray(raw)) {
+            const obj: Record<string, string> = {};
+            raw.forEach((item: any) => { if (item?.key) obj[item.key] = item?.value || ""; });
+            return obj;
+        }
+        if (typeof raw === "string") {
+            try { return normalizeExtraData(JSON.parse(raw)); } catch { return {}; }
+        }
+        if (typeof raw === "object") return raw as Record<string, string>;
+        return {};
+    };
+    const extraDataObj = normalizeExtraData(initialData?.extraData);
+
+    const [videoUrl, setVideoUrl] = useState(extraDataObj["סרטון"] || "");
 
     // Tracking uncertain auto-filled fields
     const [uncertainFields, setUncertainFields] = useState<string[]>([]);
@@ -286,33 +303,38 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     const [showGlobalResults, setShowGlobalResults] = useState(false);
 
     const [spec, setSpec] = useState<ComputerSpec>({
-        brand: initialData?.extraData?.יצרן || "",
-        family: initialData?.extraData?.סדרה || "",
-        subModel: initialData?.extraData?.דגם || "",
-        ram: initialData?.extraData?.RAM || "",
-        storage: initialData?.extraData?.["נפח אחסון"] || "",
-        screen: initialData?.extraData?.["גודל מסך"] || "",
-        cpu: initialData?.extraData?.מעבד || "",
-        gpu: initialData?.extraData?.["כרטיס מסך"] || "",
-        os: initialData?.extraData?.["מערכת הפעלה"] || "",
+        brand: extraDataObj["יצרן"] || "",
+        family: extraDataObj["סדרה"] || "",
+        subModel: extraDataObj["דגם"] || "",
+        ram: extraDataObj["RAM"] || "",
+        storage: extraDataObj["נפח אחסון"] || "",
+        screen: extraDataObj["גודל מסך"] || "",
+        cpu: extraDataObj["מעבד"] || "",
+        gpu: extraDataObj["כרטיס מסך"] || "",
+        os: extraDataObj["מערכת הפעלה"] || "",
         condition: initialData?.condition || "",
-        extras: initialData?.extraData?.["החרגות / נזקים"] || initialData?.extraData?.החרגות || "",
-        sku: initialData?.extraData?.["מספר דגם / SKU"] || "",
-        battery: initialData?.extraData?.סוללה || "",
-        batteryHealth: initialData?.extraData?.["תקינות סוללה"] || "",
-        batteryPercent: (initialData?.extraData?.["אחוזי סוללה"] || "").replace("%", ""),
-        ports: initialData?.extraData?.חיבורים || "",
-        weight: initialData?.extraData?.משקל || "",
-        release_year: initialData?.extraData?.["שנת ייצור"] || "",
+        extras: extraDataObj["החרגות / נזקים"] || extraDataObj["החרגות"] || "",
+        sku: extraDataObj["מספר דגם / SKU"] || "",
+        battery: extraDataObj["סוללה"] || "",
+        batteryHealth: extraDataObj["תקינות סוללה"] || "",
+        batteryPercent: (extraDataObj["אחוזי סוללה"] || "").replace("%", ""),
+        ports: extraDataObj["חיבורים"] || "",
+        weight: extraDataObj["משקל"] || "",
+        release_year: extraDataObj["שנת ייצור"] || "",
     });
 
-    const [mainCategory, setMainCategory] = useState<"laptop" | "desktop" | null>(
-        initialData ? (initialData?.extraData?.["סוג המחשב"]?.includes("נייד") || initialData?.extraData?.["סוג המחשב"] === "laptop" ? "laptop" : "desktop") : (preSelectedCategory || null)
-    );
+    const [mainCategory, setMainCategory] = useState<"laptop" | "desktop" | null>(() => {
+        if (isEditing && initialData) {
+            const sug = extraDataObj["סוג המחשב"] || "";
+            if (sug.includes("נייד") || sug === "laptop") return "laptop";
+            return "laptop"; // Default to laptop when editing (user already chose)
+        }
+        return preSelectedCategory || null;
+    });
 
     const [computerTypeMode, setComputerTypeMode] = useState<"brand_desktop" | "all_in_one" | "custom_build" | null>(() => {
-        const type = initialData?.extraData?.["סוג המחשב"];
-        if (!type) return preSelectedCategory === "desktop" ? null : null;
+        const type = extraDataObj["סוג המחשב"] || "";
+        if (!type) return isEditing ? "brand_desktop" : (preSelectedCategory === "desktop" ? null : null);
         if (type.includes("בנייה עצמית")) return "custom_build";
         if (type.includes("All-in-One")) return "all_in_one";
         if (type.includes("מותג")) return "brand_desktop";
@@ -320,13 +342,13 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     });
 
     const [cbSpec, setCbSpec] = useState<Record<string, string>>(() => {
-        if (!initialData?.extraData) return {};
+        if (!extraDataObj) return {};
         const initialCb: Record<string, string> = {};
         CUSTOM_BUILD_FIELDS.forEach(f => {
-            if (initialData.extraData[f.key]) initialCb[f.key] = initialData.extraData[f.key];
+            if (extraDataObj[f.key]) initialCb[f.key] = extraDataObj[f.key];
         });
         MONITOR_FIELDS.forEach(f => {
-            if (initialData.extraData[f.key]) initialCb[f.key] = initialData.extraData[f.key];
+            if (extraDataObj[f.key]) initialCb[f.key] = extraDataObj[f.key];
         });
         return initialCb;
     });
