@@ -8,7 +8,7 @@ import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/n
 import { Settings } from "lucide-react";
 
 // Admin emails — users who see the Admin panel link
-const ADMIN_EMAILS = ["yalgawi@gmail.com", "darohadd@walla.com", "itay@qlikndeal.com", "dpccomp@gmail.com"];
+const ADMIN_EMAILS = ["yalgawi@gmail.com", "darohadd@walla.com", "itay@qlikndeal.com", "dpccomp@gmail.com", "soferfamily41@gmail.com"];
 
 export function Navbar() {
     return (
