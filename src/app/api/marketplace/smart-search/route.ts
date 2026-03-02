@@ -88,14 +88,14 @@ export async function POST(req: Request) {
         });
 
         // 5. Precise Distance Calculation & Sorting (for items within the bounding box)
-        let finalResults = listings;
+        let finalResults: any[] = listings;
         
         if (typeof lat === "number" && typeof lng === "number" && typeof radiusKm === "number" && radiusKm > 0) {
             // Haversine formula
             const toRad = (value: number) => value * Math.PI / 180;
             const R = 6371; // Earth's radius in km
             
-            const resultsWithDistance = listings.map(l => {
+            const resultsWithDistance = listings.map((l: any) => {
                 let distance = null;
                 if (l.latitude && l.longitude) {
                     const dLat = toRad(l.latitude - lat);
@@ -111,8 +111,8 @@ export async function POST(req: Request) {
 
             // Filter out exact radius (since bounding box is a square) and sort by closest
             finalResults = resultsWithDistance
-                .filter(l => l.distanceKm === null || l.distanceKm <= radiusKm)
-                .sort((a, b) => {
+                .filter((l: any) => l.distanceKm === null || l.distanceKm <= radiusKm)
+                .sort((a: any, b: any) => {
                     if (a.distanceKm === null) return 1;
                     if (b.distanceKm === null) return -1;
                     return a.distanceKm - b.distanceKm;
