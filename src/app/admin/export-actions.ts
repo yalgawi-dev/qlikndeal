@@ -46,6 +46,9 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
     const desktops = (type === "desktop" || type === "all") ? await prisma.brandDesktopCatalog.findMany({ orderBy: { brand: "asc" } }) : [];
     const aios = (type === "aio" || type === "all") ? await prisma.aioCatalog.findMany({ orderBy: { brand: "asc" } }) : [];
 
+    // Correct count for diagnostics based on type
+    const totalCount = type === "aio" ? aios.length : (type === "desktop" ? desktops.length : count);
+
     // Laptops
     for (const l of laptops_all) {
         html += `

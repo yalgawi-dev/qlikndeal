@@ -47,7 +47,7 @@ export default function ExportPageClient() {
             if (type === "phone") {
                 content = await exportPhonesToCSV();
                 fileName = `phone_database_${dateStr}.xls`;
-            } else if (type === "laptop" || type === "desktop") {
+            } else if (type === "laptop" || type === "desktop" || type === "aio") {
                 content = await exportComputersToCSV(type as any);
                 fileName = `${type}_database_${dateStr}_${timeStr}.xls`;
             } else if (type === "vehicle") {
