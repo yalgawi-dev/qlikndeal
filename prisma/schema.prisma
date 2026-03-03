@@ -124,6 +124,11 @@ model MarketplaceListing {
   category    String?
   extraData   String?
 
+  // Location for search & distance
+  latitude     Float?
+  longitude    Float?
+  locationName String?
+
   status ListingStatus @default(ACTIVE)
 
   // Relations
@@ -451,4 +456,79 @@ model MobileCatalog {
   updatedAt DateTime @updatedAt
 
   @@index([brand])
+}
+
+model VehicleCatalog {
+  id           String  @id @default(uuid())
+  make         String
+  model        String
+  year         Int?
+  type         String? // Sedan, SUV, etc.
+  fuelType     String?
+  transmission String?
+  engineSize   String?
+  hp           Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([make])
+  @@index([model])
+}
+
+model ElectronicsCatalog {
+  id            String   @id @default(uuid())
+  brand         String
+  category      String // Smartwatch, TV, Headphones, etc.
+  modelName     String
+  hebrewAliases String[]
+  releaseYear   Int?
+  specs         String? // JSON string for varied specs
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([brand])
+  @@index([category])
+  @@index([modelName])
+}
+
+model ApplianceCatalog {
+  id            String   @id @default(uuid())
+  brand         String
+  category      String // Refrigerator, Washing Machine, AC, etc.
+  modelName     String
+  hebrewAliases String[]
+  capacity      String? // Liters, KG, BTU
+  energyRating  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([brand])
+  @@index([category])
+  @@index([modelName])
+}
+
+model MotherboardCatalog {
+  id          String  @id @default(uuid())
+  brand       String
+  model       String
+  chipset     String?
+  socket      String?
+  formFactor  String?
+  ramType     String?
+  maxRam      String?
+  pcie        String?
+  m2          String?
+  lan         String?
+  wifi        String?
+  releaseYear String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([brand, model])
+  @@index([brand])
+  @@index([model])
 }

@@ -135,6 +135,99 @@ export async function searchMobile(query: string) {
     }));
 }
 
+export async function searchVehicles(query: string) {
+    const q = query.trim();
+    if (!q) return [];
+  
+    const results = await prisma.vehicleCatalog.findMany({
+      where: {
+        OR: [
+          { make: { contains: q, mode: 'insensitive' } },
+          { model: { contains: q, mode: 'insensitive' } },
+        ]
+      },
+      take: 20
+    });
+  
+    return results.map(r => ({
+      make: r.make,
+      model: r.model,
+      year: r.year?.toString() || "",
+      type: r.type || "",
+      fuel: r.fuelType || "",
+      transmission: r.transmission || "",
+      engineSize: r.engineSize || "",
+      hp: r.hp?.toString() || ""
+    }));
+}
+
+export async function searchElectronics(query: string) {
+    const q = query.trim();
+    if (!q) return [];
+  
+    const results = await prisma.electronicsCatalog.findMany({
+      where: {
+        OR: [
+          { brand: { contains: q, mode: 'insensitive' } },
+          { modelName: { contains: q, mode: 'insensitive' } },
+          { hebrewAliases: { has: q } }
+        ]
+      },
+      take: 20
+    });
+  
+    return results.map(r => ({
+      brand: r.brand,
+      model: r.modelName,
+      category: r.category,
+      year: r.releaseYear?.toString() || "",
+      specs: r.specs ? JSON.parse(r.specs) : {}
+    }));
+}
+
+export async function searchAppliances(query: string) {
+    const q = query.trim();
+    if (!q) return [];
+  
+    const results = await prisma.applianceCatalog.findMany({
+      where: {
+        OR: [
+          { brand: { contains: q, mode: 'insensitive' } },
+          { modelName: { contains: q, mode: 'insensitive' } },
+          { hebrewAliases: { has: q } }
+        ]
+      },
+      take: 20
+    });
+  
+    return results.map(r => ({
+      brand: r.brand,
+      model: r.modelName,
+      category: r.category,
+      capacity: r.capacity || "",
+      energyRating: r.energyRating || ""
+    }));
+}
+
+export async function searchMotherboards(query: string) {
+    const q = query.trim();
+    if (!q) return [];
+  
+    const results = await prisma.motherboardCatalog.findMany({
+      where: {
+        OR: [
+          { brand: { contains: q, mode: 'insensitive' } },
+          { model: { contains: q, mode: 'insensitive' } },
+          { chipset: { contains: q, mode: 'insensitive' } },
+          { socket: { contains: q, mode: 'insensitive' } },
+        ]
+      },
+      take: 20
+    });
+  
+    return results;
+}
+
 export async function getAutocomplete(query: string, category: string) {
     const q = query.trim();
     if (!q) return [];
@@ -183,11 +276,47 @@ export async function getAutocomplete(query: string, category: string) {
               OR: [
                 { brand: { contains: q, mode: 'insensitive' } },
                 { modelName: { contains: q, mode: 'insensitive' } },
+                { hebrewAliases: { has: q } }
               ]
             },
             take: 10
         });
         results = mobiles.map(m => m.modelName.toLowerCase().includes(m.brand.toLowerCase()) ? m.modelName : `${m.brand} ${m.modelName}`);
+    } else if (category === "Vehicles") {
+        const vehicles = await prisma.vehicleCatalog.findMany({
+            where: {
+              OR: [
+                { make: { contains: q, mode: 'insensitive' } },
+                { model: { contains: q, mode: 'insensitive' } },
+              ]
+            },
+            take: 10
+        });
+        results = vehicles.map(v => `${v.make} ${v.model}`);
+    } else if (category === "Electronics") {
+        const items = await prisma.electronicsCatalog.findMany({
+            where: {
+              OR: [
+                { brand: { contains: q, mode: 'insensitive' } },
+                { modelName: { contains: q, mode: 'insensitive' } },
+                { hebrewAliases: { has: q } }
+              ]
+            },
+            take: 10
+        });
+        results = items.map(i => i.modelName.toLowerCase().includes(i.brand.toLowerCase()) ? i.modelName : `${i.brand} ${i.modelName}`);
+    } else if (category === "Appliances") {
+        const items = await prisma.applianceCatalog.findMany({
+            where: {
+              OR: [
+                { brand: { contains: q, mode: 'insensitive' } },
+                { modelName: { contains: q, mode: 'insensitive' } },
+                { hebrewAliases: { has: q } }
+              ]
+            },
+            take: 10
+        });
+        results = items.map(i => i.modelName.toLowerCase().includes(i.brand.toLowerCase()) ? i.modelName : `${i.brand} ${i.modelName}`);
     }
     
     return Array.from(new Set(results)).slice(0, 10);

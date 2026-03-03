@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { searchLaptops, searchBrandDesktops, searchAio, searchMobile, getAutocomplete } from "@/app/actions/hardware-search";
+import { searchLaptops, searchBrandDesktops, searchAio, searchMobile, getAutocomplete, searchVehicles, searchElectronics, searchAppliances } from "@/app/actions/hardware-search";
 
 interface HardwareSearchEngineProps {
     category: string;
@@ -42,6 +42,51 @@ Return ONLY a valid JSON object using EXACTLY these keys matching Hebrew labels 
   "שנת השקה": "release year"
 }
 Return ONLY JSON, no markdown formatting blocks.`
+        };
+    } else if (category === "Vehicles") {
+        return {
+            autocomplete: `You are a vehicle model autocomplete engine. Given a partial make/model, return ONLY a JSON array of up to 5 matching real vehicle suggestions. Format: "Make Model". Return ONLY the JSON array.`,
+            search: `You are an automotive expert. Identify the exact vehicle from the query.
+Return ONLY a valid JSON object using EXACTLY these keys matching Hebrew labels:
+{
+  "יצרן": "make",
+  "דגם": "model",
+  "שנת ייצור": "year",
+  "סוג רכב": "Sedan/SUV/etc",
+  "סוג מנוע": "Gasoline/Electric/Hybrid",
+  "תיבת הילוכים": "Automatic/Manual",
+  "נפח מנוע": "Engine size in cc",
+  "כוחות סוס": "HP"
+}
+Return ONLY JSON.`
+        };
+    } else if (category === "Electronics") {
+        return {
+            autocomplete: `You are an electronics model autocomplete engine. Return ONLY a JSON array of up to 5 matching suggestions.`,
+            search: `You are an electronics expert. Identify the exact product.
+Return ONLY a valid JSON object using EXACTLY these keys matching Hebrew labels:
+{
+  "יצרן": "brand",
+  "דגם": "model",
+  "קטגוריה": "Smartwatch/TV/Headphones/etc",
+  "שנת השקה": "release year",
+  "מפרט": "detailed specs as string"
+}
+Return ONLY JSON.`
+        };
+    } else if (category === "Appliances") {
+        return {
+            autocomplete: `You are a home appliance autocomplete engine. Return ONLY a JSON array of up to 5 matching suggestions.`,
+            search: `You are an appliance expert. Identify the exact product.
+Return ONLY a valid JSON object using EXACTLY these keys matching Hebrew labels:
+{
+  "יצרן": "brand",
+  "דגם": "model",
+  "קטגוריה": "Refrigerator/Washer/etc",
+  "קיבולת": "capacity (L/KG/BTU)",
+  "דירוג אנרגטי": "energy rating"
+}
+Return ONLY JSON.`
         };
     } else {
         return {
@@ -209,6 +254,51 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                         "RAM": best.ram,
                         "מפרט סוללה": best.battery,
                         "מצלמות": best.cameras
+                    });
+                    setLoading(false);
+                    return;
+                }
+            } else if (category === "Vehicles") {
+                const results = await searchVehicles(q);
+                if (results.length > 0) {
+                    const best = results[0];
+                    onSelect({
+                        "יצרן": best.make,
+                        "דגם": best.model,
+                        "שנת ייצור": best.year,
+                        "סוג רכב": best.type,
+                        "סוג מנוע": best.fuel,
+                        "תיבת הילוכים": best.transmission,
+                        "נפח מנוע": best.engineSize,
+                        "כוחות סוס": best.hp
+                    });
+                    setLoading(false);
+                    return;
+                }
+            } else if (category === "Electronics") {
+                const results = await searchElectronics(q);
+                if (results.length > 0) {
+                    const best = results[0];
+                    onSelect({
+                        "יצרן": best.brand,
+                        "דגם": best.model,
+                        "קטגוריה": best.category,
+                        "שנת השקה": best.year,
+                        "מפרט": JSON.stringify(best.specs)
+                    });
+                    setLoading(false);
+                    return;
+                }
+            } else if (category === "Appliances") {
+                const results = await searchAppliances(q);
+                if (results.length > 0) {
+                    const best = results[0];
+                    onSelect({
+                        "יצרן": best.brand,
+                        "דגם": best.model,
+                        "קטגוריה": best.category,
+                        "קיבולת": best.capacity,
+                        "דירוג אנרגטי": best.energyRating
                     });
                     setLoading(false);
                     return;

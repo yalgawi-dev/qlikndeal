@@ -1410,8 +1410,8 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                     </div>
                 )}
 
-                {/* Specific Fields for Phones & Computers */}
-                {["Phones", "Computers"].includes(formData.category) && (
+                {/* Specific Fields for Phones, Computers, Vehicles, Electronics, Appliances */}
+                {["Phones", "Computers", "Vehicles", "Electronics", "Appliances"].includes(formData.category) && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-3">
                         {/* Hardware Search - hide for custom build since user picks components individually */}
                         {getExtraVal("סוג המחשב") !== "בנייה עצמית" && (
@@ -1420,17 +1420,18 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 onSelect={(hardwareData) => {
                                     let newExtra = [...formData.extraData];
                                     Object.keys(hardwareData).forEach(aiKey => {
-                                        if (hardwareData[aiKey] && typeof hardwareData[aiKey] === 'string' && aiKey !== "notes") {
+                                        if (hardwareData[aiKey] && (typeof hardwareData[aiKey] === 'string' || typeof hardwareData[aiKey] === 'number') && aiKey !== "notes") {
                                             const idx = newExtra.findIndex(e => e.key === aiKey);
                                             if (idx >= 0) {
-                                                newExtra[idx].value = hardwareData[aiKey];
+                                                newExtra[idx].value = String(hardwareData[aiKey]);
                                             } else {
-                                                newExtra.push({ key: aiKey, value: hardwareData[aiKey] });
+                                                newExtra.push({ key: aiKey, value: String(hardwareData[aiKey]) });
                                             }
                                         }
                                     });
-                                    if (hardwareData["יצרן"]) handleChange("make", hardwareData["יצרן"]);
-                                    if (hardwareData["דגם"]) handleChange("model", hardwareData["דגם"]);
+                                    if (hardwareData["יצרן"]) handleChange("make", String(hardwareData["יצרן"]));
+                                    if (hardwareData["דגם"]) handleChange("model", String(hardwareData["דגם"]));
+                                    if (hardwareData["שנת ייצור"]) handleChange("year", String(hardwareData["שנת ייצור"]));
                                     setFormData(prev => ({ ...prev, extraData: newExtra }));
                                 }}
                             />
