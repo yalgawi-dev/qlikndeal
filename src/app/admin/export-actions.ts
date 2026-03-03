@@ -7,6 +7,7 @@ import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { CAR_MODELS } from "@/lib/car-data";
 import { ALL_ELECTRONICS } from "@/lib/electronics-data";
 import { MOTHERBOARD_DATABASE } from "@/lib/motherboard-database";
+import { BRAND_DESKTOPS_DATABASE, AIO_DATABASE } from "@/lib/desktops-aio-data";
 
 const prisma = prismadb;
 
@@ -43,7 +44,7 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
     const laptops_old = laptops_all.length - laptops_new;
 
     const desktops = (type === "desktop" || type === "all") ? await prisma.brandDesktopCatalog.findMany({ orderBy: { brand: "asc" } }) : [];
-    const aios = (type === "desktop" || type === "aio" || type === "all") ? await prisma.aioCatalog.findMany({ orderBy: { brand: "asc" } }) : [];
+    const aios = (type === "aio" || type === "all") ? await prisma.aioCatalog.findMany({ orderBy: { brand: "asc" } }) : [];
 
     // Laptops
     for (const l of laptops_all) {
@@ -460,6 +461,85 @@ export async function deleteAllVehicles() {
         return { success: true, message: `כל הנתונים בטבלת הרכבים (${count.count}) נמחקו בהצלחה.` };
     } catch (error: any) {
         console.error("Delete Vehicles Error:", error);
+        return { success: false, error: error.message };
+    }
+}
+export async function syncBrandDesktops() {
+    noStore();
+    try {
+        console.log("Starting Brand Desktop Sync...");
+        await prisma.brandDesktopCatalog.deleteMany({});
+        
+        let count = 0;
+        for (const [brand, families] of Object.entries(BRAND_DESKTOPS_DATABASE)) {
+            for (const family of families) {
+                for (const sub of family.subModels) {
+                    await prisma.brandDesktopCatalog.create({
+                        data: {
+                            brand,
+                            series: family.name,
+                            modelName: sub.name,
+                            cpu: sub.cpu || [],
+                            ram: sub.ram || [],
+                            storage: sub.storage || [],
+                            gpu: sub.gpu || [],
+                            os: sub.os || [],
+                            releaseYear: sub.release_year,
+                            sku: sub.sku,
+                            ports: sub.ports,
+                            weight: sub.weight,
+                            isMini: sub.type === "mini" || family.type === "mini"
+                        }
+                    });
+                    count++;
+                }
+            }
+        }
+        console.log(`Synced ${count} brand desktops.`);
+        revalidatePath("/admin/export");
+        return { success: true, count };
+    } catch (error: any) {
+        console.error("Sync Brand Desktops Error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function syncAio() {
+    noStore();
+    try {
+        console.log("Starting AIO Sync...");
+        await prisma.aioCatalog.deleteMany({});
+        
+        let count = 0;
+        for (const [brand, families] of Object.entries(AIO_DATABASE)) {
+            for (const family of families) {
+                for (const sub of family.subModels) {
+                    await prisma.aioCatalog.create({
+                        data: {
+                            brand,
+                            series: family.name,
+                            modelName: sub.name,
+                            screenSize: sub.screenSize || [],
+                            cpu: sub.cpu || [],
+                            ram: sub.ram || [],
+                            storage: sub.storage || [],
+                            gpu: sub.gpu || [],
+                            os: sub.os || [],
+                            releaseYear: sub.release_year,
+                            sku: sub.sku,
+                            display: Array.isArray(sub.display) ? sub.display.join(" / ") : sub.display,
+                            ports: sub.ports
+                        }
+                    });
+                    count++;
+                }
+            }
+        }
+        console.log(`Synced ${count} AIO computers.`);
+        revalidatePath("/admin/export");
+        return { success: true, count };
+    } catch (error: any) {
+        console.error("Sync AIO Error:", error);
         return { success: false, error: error.message };
     }
 }

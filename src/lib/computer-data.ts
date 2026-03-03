@@ -2,6 +2,7 @@
 //  COMPUTER DATA - TYPES AND CONSTANTS ONLY (SHELL)
 //  Required for build stability until all components migrate to DB
 // =============================================================
+import { BRAND_DESKTOPS_DATABASE as BDD, AIO_DATABASE as AD } from "./desktops-aio-data";
 
 export type ComputerSubModel = {
     name: string;
@@ -17,7 +18,8 @@ export type ComputerSubModel = {
     weight?: string;
     release_year?: string;
     notes?: string;
-    display?: string;
+    display?: string | string[];
+    sku?: string;
     skus?: {
         id: string;
         screenSize?: string[];
@@ -65,10 +67,10 @@ export const DESKTOP_SUB_CATEGORIES = [
     { value: "custom_build", label: "בנייה עצמית / גיימינג", description: "בחירת רכיבים מפורטת" }
 ];
 
-// ---- EMPTY DATABASES (MIGRATED TO PG) ----
+// ---- DATABASES (Synced to PG) ----
 export const LAPTOP_DATABASE: Record<string, ComputerModelFamily[]> = {};
-export const BRAND_DESKTOP_DATABASE: Record<string, ComputerModelFamily[]> = {};
-export const ALL_IN_ONE_DATABASE: Record<string, ComputerModelFamily[]> = {};
+export const BRAND_DESKTOP_DATABASE: Record<string, ComputerModelFamily[]> = BDD;
+export const ALL_IN_ONE_DATABASE: Record<string, ComputerModelFamily[]> = AD;
 export const COMPUTER_DATABASE: Record<string, ComputerModelFamily[]> = {};
 export const COMPUTER_MODELS: Record<string, string[]> = {};
 

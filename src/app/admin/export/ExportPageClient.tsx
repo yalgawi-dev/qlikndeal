@@ -14,7 +14,8 @@ import {
     syncVehicles,
     syncElectronicsAndAppliances,
     syncMotherboards,
-    deleteAllVehicles
+    syncBrandDesktops,
+    syncAio
 } from "../export-actions";
 import { toast } from "sonner";
 
@@ -78,7 +79,6 @@ export default function ExportPageClient() {
 
     const handleSync = async (schema: string) => {
         let confirmMsg = "פעולה זו תמחק את כל הנתונים הקיימים בקטגוריה זו ותחליף אותם בנתוני המערכת. להמשיך?";
-        if (schema === "delete_vehicles") confirmMsg = "האם אתה בטוח שברצונך למחוק את כל מאגר הרכבים לצמיתות?";
         
         if (!confirm(confirmMsg)) return;
         
@@ -86,9 +86,10 @@ export default function ExportPageClient() {
         try {
             let result: any;
             if (schema === "vehicle") result = await syncVehicles();
-            if (schema === "delete_vehicles") result = await deleteAllVehicles();
             if (schema === "electronics") result = await syncElectronicsAndAppliances();
             if (schema === "motherboard") result = await syncMotherboards();
+            if (schema === "desktop") result = await syncBrandDesktops();
+            if (schema === "aio") result = await syncAio();
 
             if (result && result.success) {
                 toast.success(result.message || `הפעולה הושלמה בהצלחה!`);
@@ -128,13 +129,13 @@ export default function ExportPageClient() {
                     </Button>
                 </div>
 
-                {/* Desktops */}
+                {/* Brand Desktops */}
                 <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all border-green-200">
                     <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mb-4 text-green-600">
                         <Monitor size={28} />
                     </div>
-                    <h2 className="text-xl font-semibold mb-2">מחשבים נייחים</h2>
-                    <p className="text-sm text-slate-500 mb-6">מחשבי מותג ו-All-in-One</p>
+                    <h2 className="text-xl font-semibold mb-2">מחשבי מותג</h2>
+                    <p className="text-sm text-slate-500 mb-6">Dell Optiplex, HP EliteDesk וכו'</p>
                     <Button 
                         onClick={() => handleExport("desktop")} 
                         disabled={!!loading}
@@ -142,7 +143,25 @@ export default function ExportPageClient() {
                         className="w-full flex items-center gap-2 border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
                     >
                         {loading === "desktop" ? <Loader2 className="animate-spin" size={18} /> : <FileSpreadsheet size={18} />}
-                        ייצוא לאקסל
+                        ייצוא מחשבי מותג
+                    </Button>
+                </div>
+
+                {/* All-in-One */}
+                <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all border-cyan-200">
+                    <div className="w-12 h-12 bg-cyan-50 rounded-xl flex items-center justify-center mb-4 text-cyan-600">
+                        <Monitor size={28} />
+                    </div>
+                    <h2 className="text-xl font-semibold mb-2">All-in-One (AIO)</h2>
+                    <p className="text-sm text-slate-500 mb-6">iMac, HP Pavilion AIO, Yoga AIO</p>
+                    <Button 
+                        onClick={() => handleExport("aio")} 
+                        disabled={!!loading}
+                        variant="secondary"
+                        className="w-full flex items-center gap-2 border-cyan-200 bg-cyan-50 text-cyan-700 hover:bg-cyan-100"
+                    >
+                        {loading === "aio" ? <Loader2 className="animate-spin" size={18} /> : <FileSpreadsheet size={18} />}
+                        ייצוא AIO
                     </Button>
                 </div>
 
@@ -247,45 +266,60 @@ export default function ExportPageClient() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Delete Vehicles */}
-                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-red-900/30">
-                        <h3 className="font-semibold text-white mb-2 text-red-400">מחיקת מאגר רכבים</h3>
-                        <p className="text-xs text-slate-400 mb-4">מוחק את כל הנתונים בטבלת הרכבים לצמיתות. פעולה זו בלתי הפיכה.</p>
+                    {/* Sync Brand Desktops */}
+                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                        <h3 className="font-semibold text-white mb-2">סינכרון מחשבים נייחים</h3>
+                        <p className="text-xs text-slate-400 mb-4">עדכון מאגר המחשבים הנייחים (Brand Desktops) לפי רשימות המותג.</p>
                         <Button 
-                            onClick={() => handleSync("delete_vehicles")} 
+                            onClick={() => handleSync("desktop")} 
                             disabled={!!syncing}
-                            className="w-full gap-2 bg-red-600 hover:bg-red-500"
+                            className="w-full gap-2 bg-indigo-600 hover:bg-indigo-700"
                         >
-                            {syncing === "delete_vehicles" ? <Loader2 className="animate-spin" size={16} /> : <Car size={16} />}
-                            מחק מאגר רכבים לצמיתות
+                            {syncing === "desktop" ? <Loader2 className="animate-spin" size={16} /> : <Monitor size={16} />}
+                            סינכרון מחשבי מותג
                         </Button>
                     </div>
 
+                    {/* Sync AIO */}
+                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                        <h3 className="font-semibold text-white mb-2">סינכרון All-in-One</h3>
+                        <p className="text-xs text-slate-400 mb-4">עדכון מאגר ה-All-in-One (iMac, HP AIO) עם נתוני מסך וחומרה.</p>
+                        <Button 
+                            onClick={() => handleSync("aio")} 
+                            disabled={!!syncing}
+                            className="w-full gap-2 bg-cyan-600 hover:bg-cyan-700"
+                        >
+                            {syncing === "aio" ? <Loader2 className="animate-spin" size={16} /> : <Laptop size={16} />}
+                            סינכרון AIO
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                     {/* Sync Electronics */}
                     <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
                         <h3 className="font-semibold text-white mb-2">סינכרון אלקטרוניקה וחשמל</h3>
-                        <p className="text-xs text-slate-400 mb-4">עדכון מאגרי ה-TV, שעונים, מקררים ומכונות כביסה לפי המפרטים החדשים.</p>
+                        <p className="text-xs text-slate-400 mb-4">עדכון מאגרי ה-TV, שעונים, מקררים ומכונות כביסה.</p>
                         <Button 
                             onClick={() => handleSync("electronics")} 
                             disabled={!!syncing}
                             className="w-full gap-2 bg-amber-600 hover:bg-amber-700"
                         >
                             {syncing === "electronics" ? <Loader2 className="animate-spin" size={16} /> : <Settings size={16} />}
-                            סינכרון אלקטרוניקה וחשמל
+                            סינכרון אלקטרוניקה
                         </Button>
                     </div>
 
                     {/* Sync Motherboards */}
                     <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
                         <h3 className="font-semibold text-white mb-2">סינכרון לוחות אם</h3>
-                        <p className="text-xs text-slate-400 mb-4">עדכון מאגר לוחות האם (Chipsets, Sockets) למניעת טעויות ובלבול.</p>
+                        <p className="text-xs text-slate-400 mb-4">עדכון מאגר לוחות האם (Chipsets, Sockets) למניעת טעויות.</p>
                         <Button 
                             onClick={() => handleSync("motherboard")} 
                             disabled={!!syncing}
-                            variant="secondary"
-                            className="w-full gap-2"
+                            className="w-full gap-2 bg-slate-700 hover:bg-slate-600"
                         >
-                            {syncing === "motherboard" ? <Loader2 className="animate-spin" size={16} /> : <Settings size={16} />}
+                            {syncing === "motherboard" ? <Loader2 className="animate-spin" size={16} /> : <Cpu size={16} />}
                             סינכרון לוחות אם
                         </Button>
                     </div>
