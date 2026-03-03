@@ -435,7 +435,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
             setFetchingBrands(true);
             const typeMap: any = { "laptop": "laptop", "all_in_one": "aio", "brand_desktop": "desktop" };
-            const type = mainCategory === "laptop" ? "laptop" : typeMap[computerTypeMode];
+            const type = mainCategory === "laptop" ? "laptop" : (computerTypeMode ? typeMap[computerTypeMode] : null);
             
             if (type) {
                 const res = await getUniqueBrands(type);

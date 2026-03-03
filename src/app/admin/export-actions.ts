@@ -28,7 +28,7 @@ export async function getDatabaseStats() {
         const stats: Record<string, { count: number; lastUpdate: Date | null }> = {};
 
         for (const m of models) {
-            const count = await m.prisma.count();
+            const count = await (m.prisma as any).count();
             const lastRecord = await (m.prisma as any).findFirst({
                 orderBy: { updatedAt: "desc" },
                 select: { updatedAt: true }
