@@ -265,7 +265,7 @@ export default function ExportPageClient() {
                         <Button 
                             onClick={() => handleSync("vehicle")} 
                             disabled={!!syncing}
-                            variant="destructive"
+                            variant="default"
                             className="w-full gap-2 bg-red-900/40 hover:bg-red-900/60 border border-red-500/30"
                         >
                             {syncing === "vehicle" ? <Loader2 className="animate-spin" size={16} /> : <Settings size={16} />}
