@@ -1,7 +1,12 @@
 "use server";
 
 import prismadb from "@/lib/prismadb";
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_noStore as noStore, revalidatePath } from "next/cache";
+
+// Import data sources
+import { CAR_MODELS } from "@/lib/car-data";
+import { ALL_ELECTRONICS } from "@/lib/electronics-data";
+import { MOTHERBOARD_DATABASE } from "@/lib/motherboard-database";
 
 const prisma = prismadb;
 
@@ -333,4 +338,114 @@ export async function exportMotherboardsToCSV() {
 
     html += `</tbody></table></body></html>`;
     return html;
+}
+
+// ─────────────────────────────────────────────────────────────
+// SYNC ACTIONS (Build Database from Code)
+// ─────────────────────────────────────────────────────────────
+
+export async function syncVehicles() {
+    noStore();
+    try {
+        console.log("Starting Vehicle Sync...");
+        await prisma.vehicleCatalog.deleteMany({});
+        
+        let count = 0;
+        for (const [make, models] of Object.entries(CAR_MODELS)) {
+            for (const model of models) {
+                await prisma.vehicleCatalog.create({
+                    data: { make, model }
+                });
+                count++;
+            }
+        }
+        console.log(`Synced ${count} vehicles.`);
+        revalidatePath("/admin/export");
+        return { success: true, count };
+    } catch (error: any) {
+        console.error("Sync Vehicles Error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function syncElectronicsAndAppliances() {
+    noStore();
+    try {
+        console.log("Starting Electronics/Appliances Sync...");
+        await prisma.electronicsCatalog.deleteMany({});
+        await prisma.applianceCatalog.deleteMany({});
+        
+        let eCount = 0;
+        let aCount = 0;
+        
+        for (const item of ALL_ELECTRONICS) {
+            const isAppliance = ["מקרר", "מכונת כביסה", "מזגן", "מדיח"].includes(item.category);
+            if (isAppliance) {
+                await prisma.applianceCatalog.create({
+                    data: {
+                        brand: item.brand,
+                        category: item.category,
+                        modelName: item.model,
+                        hebrewAliases: item.hebrewAliases || [],
+                        capacity: item.validSizes ? item.validSizes.join("/") : null
+                    }
+                });
+                aCount++;
+            } else {
+                await prisma.electronicsCatalog.create({
+                    data: {
+                        brand: item.brand,
+                        category: item.category,
+                        modelName: item.model,
+                        hebrewAliases: item.hebrewAliases || [],
+                        releaseYear: item.releaseYear,
+                        specs: item.specs ? JSON.stringify(item.specs) : null
+                    }
+                });
+                eCount++;
+            }
+        }
+        console.log(`Synced ${eCount} electronics and ${aCount} appliances.`);
+        revalidatePath("/admin/export");
+        return { success: true, electronics: eCount, appliances: aCount };
+    } catch (error: any) {
+        console.error("Sync Electronics Error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function syncMotherboards() {
+    noStore();
+    try {
+        console.log(`Starting Motherboard Sync (${MOTHERBOARD_DATABASE.length} items)...`);
+        // Use deleteMany + createMany for performance if available, or just delete + loop
+        await prisma.motherboardCatalog.deleteMany({});
+        
+        let count = 0;
+        for (const mb of MOTHERBOARD_DATABASE) {
+            await prisma.motherboardCatalog.create({
+                data: {
+                    brand: mb.brand,
+                    model: mb.model,
+                    chipset: mb.chipset,
+                    socket: mb.socket,
+                    formFactor: mb.formFactor,
+                    ramType: mb.ramType,
+                    maxRam: mb.maxRam,
+                    pcie: mb.pcie,
+                    m2: mb.m2,
+                    lan: mb.lan,
+                    wifi: mb.wifi,
+                    releaseYear: mb.releaseYear
+                }
+            });
+            count++;
+        }
+        console.log(`Synced ${count} motherboards.`);
+        revalidatePath("/admin/export");
+        return { success: true, count };
+    } catch (error: any) {
+        console.error("Sync Motherboards Error:", error);
+        return { success: false, error: error.message };
+    }
 }

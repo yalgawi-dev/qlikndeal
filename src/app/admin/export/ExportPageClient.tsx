@@ -10,12 +10,16 @@ import {
     exportCustomBuildsToCSV,
     exportElectronicsToCSV,
     exportAppliancesToCSV,
-    exportMotherboardsToCSV
+    exportMotherboardsToCSV,
+    syncVehicles,
+    syncElectronicsAndAppliances,
+    syncMotherboards
 } from "../export-actions";
 import { toast } from "sonner";
 
 export default function ExportPageClient() {
     const [loading, setLoading] = useState<string | null>(null);
+    const [syncing, setSyncing] = useState<string | null>(null);
 
     const downloadFile = (content: string, fileName: string) => {
         const blob = new Blob([content], { type: 'application/vnd.ms-excel;charset=utf-8;' });
@@ -68,6 +72,29 @@ export default function ExportPageClient() {
             toast.error("ייצוא הקובץ נכשל");
         } finally {
             setLoading(null);
+        }
+    };
+
+    const handleSync = async (schema: string) => {
+        if (!confirm("פעולה זו תמחק את כל הנתונים הקיימים בקטגוריה זו ותחליף אותם בנתוני המערכת. להמשיך?")) return;
+        
+        setSyncing(schema);
+        try {
+            let result: any;
+            if (schema === "vehicle") result = await syncVehicles();
+            if (schema === "electronics") result = await syncElectronicsAndAppliances();
+            if (schema === "motherboard") result = await syncMotherboards();
+
+            if (result && result.success) {
+                toast.success(`הסנכרון הושלם! עודכנו ${result.count || (result.electronics + result.appliances)} פריטים.`);
+            } else {
+                toast.error("הסנכרון נכשל: " + (result?.error || "שגיאה לא ידועה"));
+            }
+        } catch (error) {
+            console.error("Sync failed:", error);
+            toast.error("שגיאה בסנכרון");
+        } finally {
+            setSyncing(null);
         }
     };
 
@@ -215,6 +242,65 @@ export default function ExportPageClient() {
                         {loading === "motherboard" ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
                         ייצוא לאקסל
                     </Button>
+                </div>
+            </div>
+
+            {/* Database Sync Section */}
+            <div className="mt-12 bg-slate-900 rounded-3xl p-8 border border-slate-800 text-right" dir="rtl">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center text-amber-500">
+                        <Settings size={24} />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-white">תחזוקת מסד נתונים (סינכרון)</h2>
+                        <p className="text-slate-400">בצע "איפוס וסינכרון" כדי לוודא שכל הקטגוריות מעודכנות ומסודרות לפי הקוד</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Sync Vehicles */}
+                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                        <h3 className="font-semibold text-white mb-2">סינכרון רכבים</h3>
+                        <p className="text-xs text-slate-400 mb-4">מוחק את טבלת הרכבים ובונה אותה מחדש לפי מאגר הדגמים העדכני בקוד.</p>
+                        <Button 
+                            onClick={() => handleSync("vehicle")} 
+                            disabled={!!syncing}
+                            variant="destructive"
+                            className="w-full gap-2 bg-red-900/40 hover:bg-red-900/60 border border-red-500/30"
+                        >
+                            {syncing === "vehicle" ? <Loader2 className="animate-spin" size={16} /> : <Settings size={16} />}
+                            איפוס וסינכרון רכבים
+                        </Button>
+                    </div>
+
+                    {/* Sync Electronics */}
+                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                        <h3 className="font-semibold text-white mb-2">סינכרון אלקטרוניקה וחשמל</h3>
+                        <p className="text-xs text-slate-400 mb-4">עדכון מאגרי ה-TV, שעונים, מקררים ומכונות כביסה לפי המפרטים החדשים.</p>
+                        <Button 
+                            onClick={() => handleSync("electronics")} 
+                            disabled={!!syncing}
+                            className="w-full gap-2 bg-amber-600 hover:bg-amber-700"
+                        >
+                            {syncing === "electronics" ? <Loader2 className="animate-spin" size={16} /> : <Settings size={16} />}
+                            סינכרון אלקטרוניקה וחשמל
+                        </Button>
+                    </div>
+
+                    {/* Sync Motherboards */}
+                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                        <h3 className="font-semibold text-white mb-2">סינכרון לוחות אם</h3>
+                        <p className="text-xs text-slate-400 mb-4">עדכון מאגר לוחות האם (Chipsets, Sockets) למניעת טעויות ובלבול.</p>
+                        <Button 
+                            onClick={() => handleSync("motherboard")} 
+                            disabled={!!syncing}
+                            variant="secondary"
+                            className="w-full gap-2"
+                        >
+                            {syncing === "motherboard" ? <Loader2 className="animate-spin" size={16} /> : <Settings size={16} />}
+                            סינכרון לוחות אם
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
