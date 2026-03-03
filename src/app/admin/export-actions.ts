@@ -449,3 +449,17 @@ export async function syncMotherboards() {
         return { success: false, error: error.message };
     }
 }
+
+export async function deleteAllVehicles() {
+    noStore();
+    try {
+        console.log("Deleting all vehicles from DB...");
+        const count = await prisma.vehicleCatalog.deleteMany({});
+        console.log(`Deleted ${count.count} vehicles.`);
+        revalidatePath("/admin/export");
+        return { success: true, message: `כל הנתונים בטבלת הרכבים (${count.count}) נמחקו בהצלחה.` };
+    } catch (error: any) {
+        console.error("Delete Vehicles Error:", error);
+        return { success: false, error: error.message };
+    }
+}

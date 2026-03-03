@@ -13,7 +13,8 @@ import {
     exportMotherboardsToCSV,
     syncVehicles,
     syncElectronicsAndAppliances,
-    syncMotherboards
+    syncMotherboards,
+    deleteAllVehicles
 } from "../export-actions";
 import { toast } from "sonner";
 
@@ -76,23 +77,27 @@ export default function ExportPageClient() {
     };
 
     const handleSync = async (schema: string) => {
-        if (!confirm("פעולה זו תמחק את כל הנתונים הקיימים בקטגוריה זו ותחליף אותם בנתוני המערכת. להמשיך?")) return;
+        let confirmMsg = "פעולה זו תמחק את כל הנתונים הקיימים בקטגוריה זו ותחליף אותם בנתוני המערכת. להמשיך?";
+        if (schema === "delete_vehicles") confirmMsg = "האם אתה בטוח שברצונך למחוק את כל מאגר הרכבים לצמיתות?";
+        
+        if (!confirm(confirmMsg)) return;
         
         setSyncing(schema);
         try {
             let result: any;
             if (schema === "vehicle") result = await syncVehicles();
+            if (schema === "delete_vehicles") result = await deleteAllVehicles();
             if (schema === "electronics") result = await syncElectronicsAndAppliances();
             if (schema === "motherboard") result = await syncMotherboards();
 
             if (result && result.success) {
-                toast.success(`הסנכרון הושלם! עודכנו ${result.count || (result.electronics + result.appliances)} פריטים.`);
+                toast.success(result.message || `הפעולה הושלמה בהצלחה!`);
             } else {
-                toast.error("הסנכרון נכשל: " + (result?.error || "שגיאה לא ידועה"));
+                toast.error("הפעולה נכשלה: " + (result?.error || "שגיאה לא ידועה"));
             }
         } catch (error) {
-            console.error("Sync failed:", error);
-            toast.error("שגיאה בסנכרון");
+            console.error("Action failed:", error);
+            toast.error("שגיאה בביצוע הפעולה");
         } finally {
             setSyncing(null);
         }
@@ -111,15 +116,15 @@ export default function ExportPageClient() {
                     <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-4 text-blue-600">
                         <Laptop size={28} />
                     </div>
-                    <h2 className="text-xl font-semibold mb-2">מחשבים ניידים</h2>
-                    <p className="text-sm text-slate-500 mb-6">רשימת מותגים, סדרות ומפרטים</p>
+                    <h2 className="text-xl font-semibold mb-2">מחשבים ניידים בלבד</h2>
+                    <p className="text-sm text-slate-500 mb-6">ייצוא מאגר מחשבים ניידים (Laptops) מעודכן</p>
                     <Button 
                         onClick={() => handleExport("laptop")} 
                         disabled={!!loading}
                         className="w-full flex items-center gap-2"
                     >
                         {loading === "laptop" ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
-                        ייצוא לאקסל
+                        ייצוא מחשבים ניידים
                     </Button>
                 </div>
 
@@ -175,23 +180,7 @@ export default function ExportPageClient() {
                     </Button>
                 </div>
 
-                {/* Vehicles */}
-                <div className="bg-white p-6 rounded-2xl border-2 border-red-200 shadow-sm hover:shadow-md transition-all">
-                    <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mb-4 text-red-600">
-                        <Car size={28} />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2 text-red-700">רכבים - בדיקה</h2>
-                    <p className="text-sm text-slate-500 mb-6">בדוק אם נתונים השתרבבו לכאן בטעות</p>
-                    <Button 
-                        onClick={() => handleExport("vehicle")} 
-                        disabled={!!loading}
-                        variant="default"
-                        className="w-full flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white border-none"
-                    >
-                        {loading === "vehicle" ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
-                        ייצוא לבדיקה
-                    </Button>
-                </div>
+
 
                 {/* Electronics */}
                 <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all">
@@ -258,18 +247,17 @@ export default function ExportPageClient() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Sync Vehicles */}
-                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                        <h3 className="font-semibold text-white mb-2">סינכרון רכבים</h3>
-                        <p className="text-xs text-slate-400 mb-4">מוחק את טבלת הרכבים ובונה אותה מחדש לפי מאגר הדגמים העדכני בקוד.</p>
+                    {/* Delete Vehicles */}
+                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-red-900/30">
+                        <h3 className="font-semibold text-white mb-2 text-red-400">מחיקת מאגר רכבים</h3>
+                        <p className="text-xs text-slate-400 mb-4">מוחק את כל הנתונים בטבלת הרכבים לצמיתות. פעולה זו בלתי הפיכה.</p>
                         <Button 
-                            onClick={() => handleSync("vehicle")} 
+                            onClick={() => handleSync("delete_vehicles")} 
                             disabled={!!syncing}
-                            variant="default"
-                            className="w-full gap-2 bg-red-900/40 hover:bg-red-900/60 border border-red-500/30"
+                            className="w-full gap-2 bg-red-600 hover:bg-red-500"
                         >
-                            {syncing === "vehicle" ? <Loader2 className="animate-spin" size={16} /> : <Settings size={16} />}
-                            איפוס וסינכרון רכבים
+                            {syncing === "delete_vehicles" ? <Loader2 className="animate-spin" size={16} /> : <Car size={16} />}
+                            מחק מאגר רכבים לצמיתות
                         </Button>
                     </div>
 
