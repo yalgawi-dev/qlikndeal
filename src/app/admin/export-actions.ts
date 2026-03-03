@@ -497,7 +497,7 @@ export async function syncBrandDesktops() {
         }
         console.log(`Synced ${count} brand desktops.`);
         revalidatePath("/admin/export");
-        return { success: true, count };
+        return { success: true, count, message: `סונכרנו ${count} מחשבי מותג בהצלחה.` };
     } catch (error: any) {
         console.error("Sync Brand Desktops Error:", error);
         return { success: false, error: error.message };
@@ -537,7 +537,7 @@ export async function syncAio() {
         }
         console.log(`Synced ${count} AIO computers.`);
         revalidatePath("/admin/export");
-        return { success: true, count };
+        return { success: true, count, message: `סונכרנו ${count} מחשבי All-in-One בהצלחה.` };
     } catch (error: any) {
         console.error("Sync AIO Error:", error);
         return { success: false, error: error.message };
