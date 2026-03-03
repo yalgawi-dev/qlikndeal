@@ -78,12 +78,17 @@ export default function ExportPageClient() {
     };
 
     const handleSync = async (schema: string) => {
+        console.log("DEBUG: Sync initiated for:", schema);
         let confirmMsg = "פעולה זו תמחק את כל הנתונים הקיימים בקטגוריה זו ותחליף אותם בנתוני המערכת. להמשיך?";
         
-        if (!confirm(confirmMsg)) return;
+        if (!confirm(confirmMsg)) {
+            console.log("DEBUG: Sync cancelled by user");
+            return;
+        }
         
         setSyncing(schema);
         try {
+            console.log("DEBUG: Calling server action sync...");
             let result: any;
             if (schema === "vehicle") result = await syncVehicles();
             if (schema === "electronics") result = await syncElectronicsAndAppliances();
@@ -91,13 +96,19 @@ export default function ExportPageClient() {
             if (schema === "desktop") result = await syncBrandDesktops();
             if (schema === "aio") result = await syncAio();
 
+            console.log("DEBUG: Sync result received:", result);
+
             if (result && result.success) {
-                toast.success(result.message || `הפעולה הושלמה בהצלחה!`);
+                const msg = result.message || `הפעולה הושלמה בהצלחה!`;
+                toast.success(msg);
+                alert(msg); // Hard alert for visibility
             } else {
-                toast.error("הפעולה נכשלה: " + (result?.error || "שגיאה לא ידועה"));
+                const errorMsg = "הפעולה נכשלה: " + (result?.error || "שגיאה לא ידועה");
+                console.error("DEBUG: Sync error:", result?.error);
+                toast.error(errorMsg);
             }
         } catch (error) {
-            console.error("Action failed:", error);
+            console.error("DEBUG: Fatal sync error:", error);
             toast.error("שגיאה בביצוע הפעולה");
         } finally {
             setSyncing(null);
