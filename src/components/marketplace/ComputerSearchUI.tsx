@@ -122,7 +122,16 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
                 // Try fetching from DB
                 const dbNames = await getAutocomplete(q, "Computers");
                 if (dbNames.length > 0) {
-                    setSuggestions(dbNames.map(name => ({
+                    // Final client-side sort to be absolutely sure
+                    const sortedDbNames = [...dbNames].sort((a, b) => {
+                        const aStarts = a.toLowerCase().startsWith(q.toLowerCase());
+                        const bStarts = b.toLowerCase().startsWith(q.toLowerCase());
+                        if (aStarts && !bStarts) return -1;
+                        if (!aStarts && bStarts) return 1;
+                        return a.localeCompare(b, 'en', { sensitivity: 'base' });
+                    });
+
+                    setSuggestions(sortedDbNames.map(name => ({
                         label: name,
                         data: { name, isFromDb: true }
                     })));

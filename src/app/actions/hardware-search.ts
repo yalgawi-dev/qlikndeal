@@ -234,33 +234,55 @@ export async function getAutocomplete(query: string, category: string) {
 
     let results: string[] = [];
     if (category === "Computers") {
-        const laptops = await prisma.laptopCatalog.findMany({
+        // 1. Try to get exact prefix matches first for better sorting
+        const laptopMatches = await prisma.laptopCatalog.findMany({
             where: {
-              OR: [
-                { brand: { contains: q, mode: 'insensitive' } },
-                { modelName: { contains: q, mode: 'insensitive' } },
-                { sku: { contains: q, mode: 'insensitive' } },
-              ]
+                OR: [
+                    { brand: { startsWith: q, mode: 'insensitive' } },
+                    { modelName: { startsWith: q, mode: 'insensitive' } },
+                    { sku: { startsWith: q, mode: 'insensitive' } },
+                ]
             },
-            take: 10
+            take: 15,
+            select: { brand: true, modelName: true }
         });
+
+        // 2. If not enough, fill with "contains" matches
+        let laptops = [...laptopMatches];
+        if (laptops.length < 15) {
+            const moreLaptops = await prisma.laptopCatalog.findMany({
+                where: {
+                    AND: [
+                        { OR: [
+                            { brand: { contains: q, mode: 'insensitive' } },
+                            { modelName: { contains: q, mode: 'insensitive' } },
+                            { sku: { contains: q, mode: 'insensitive' } },
+                        ]},
+                        { NOT: { id: { in: laptops.map(l => (l as any).id).filter(Boolean) } } }
+                    ]
+                },
+                take: 15 - laptops.length,
+                select: { brand: true, modelName: true, id: true }
+            });
+            laptops = [...laptops, ...moreLaptops];
+        }
 
         const desktops = await prisma.brandDesktopCatalog.findMany({
             where: {
-              OR: [
-                { brand: { contains: q, mode: 'insensitive' } },
-                { modelName: { contains: q, mode: 'insensitive' } },
-              ]
+                OR: [
+                    { brand: { contains: q, mode: 'insensitive' } },
+                    { modelName: { contains: q, mode: 'insensitive' } },
+                ]
             },
             take: 5
         });
 
         const aios = await prisma.aioCatalog.findMany({
             where: {
-              OR: [
-                { brand: { contains: q, mode: 'insensitive' } },
-                { modelName: { contains: q, mode: 'insensitive' } },
-              ]
+                OR: [
+                    { brand: { contains: q, mode: 'insensitive' } },
+                    { modelName: { contains: q, mode: 'insensitive' } },
+                ]
             },
             take: 5
         });
@@ -318,6 +340,16 @@ export async function getAutocomplete(query: string, category: string) {
         });
         results = items.map(i => i.modelName.toLowerCase().includes(i.brand.toLowerCase()) ? i.modelName : `${i.brand} ${i.modelName}`);
     }
+    // Final Sort: Prioritize results starting with the query, then alphabetical
+    const sortedResults = Array.from(new Set(results)).sort((a, b) => {
+        const aStarts = a.toLowerCase().startsWith(q.toLowerCase());
+        const bStarts = b.toLowerCase().startsWith(q.toLowerCase());
+        
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+        
+        return a.localeCompare(b, 'en', { sensitivity: 'base' });
+    });
     
-    return Array.from(new Set(results)).slice(0, 10);
+    return sortedResults.slice(0, 15);
 }
