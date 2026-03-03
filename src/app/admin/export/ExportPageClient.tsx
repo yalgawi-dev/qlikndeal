@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Laptop, Monitor, Tablet, Download, FileSpreadsheet, Loader2, Car, Settings, Tv, Package, Cpu } from "lucide-react";
+import { Laptop, Monitor, Tablet, Download, FileSpreadsheet, Loader2, Car, Settings, Tv, Package, Cpu, Database, RefreshCw, Clock } from "lucide-react";
 import { 
     exportComputersToCSV, 
     exportPhonesToCSV, 
@@ -15,13 +15,34 @@ import {
     syncElectronicsAndAppliances,
     syncMotherboards,
     syncBrandDesktops,
-    syncAio
+    syncAio,
+    getDatabaseStats
 } from "../export-actions";
 import { toast } from "sonner";
+
+interface CatalogStats {
+    count: number;
+    lastUpdate: Date | null;
+}
 
 export default function ExportPageClient() {
     const [loading, setLoading] = useState<string | null>(null);
     const [syncing, setSyncing] = useState<string | null>(null);
+    const [stats, setStats] = useState<Record<string, CatalogStats>>({});
+    const [statsLoading, setStatsLoading] = useState(true);
+
+    const fetchStats = async () => {
+        setStatsLoading(true);
+        const res = await getDatabaseStats();
+        if (res.success && res.stats) {
+            setStats(res.stats as any);
+        }
+        setStatsLoading(false);
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
 
     const downloadFile = (content: string, fileName: string) => {
         const blob = new Blob([content], { type: 'application/vnd.ms-excel;charset=utf-8;' });
@@ -102,6 +123,7 @@ export default function ExportPageClient() {
                 const msg = result.message || `הפעולה הושלמה בהצלחה!`;
                 toast.success(msg);
                 alert(msg); // Hard alert for visibility
+                fetchStats(); // Update stats
             } else {
                 const errorMsg = "הפעולה נכשלה: " + (result?.error || "שגיאה לא ידועה");
                 console.error("DEBUG: Sync error:", result?.error);
@@ -115,227 +137,184 @@ export default function ExportPageClient() {
         }
     };
 
+    const formatDate = (date: Date | null) => {
+        if (!date) return "מעולם לא";
+        return new Intl.DateTimeFormat('he-IL', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        }).format(new Date(date));
+    };
+
+    const CatalogCard = ({ 
+        id, title, desc, icon: Icon, color, neonColor, statsKey 
+    }: { 
+        id: string, title: string, desc: string, icon: any, color: string, neonColor: string, statsKey: string 
+    }) => {
+        const itemStats = stats[statsKey] || { count: 0, lastUpdate: null };
+        
+        return (
+            <div className={`relative group overflow-hidden bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 transition-all duration-500 hover:border-${neonColor}-500/50 hover:shadow-[0_0_30px_rgba(0,0,0,0.4)]`}>
+                <div className={`absolute -right-12 -top-12 w-32 h-32 bg-${neonColor}-500/10 blur-3xl rounded-full group-hover:bg-${neonColor}-500/20 transition-all duration-700`} />
+                
+                <div className="relative flex flex-col h-full">
+                    <div className="flex items-start justify-between mb-4">
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-${neonColor}-500/20 text-${neonColor}-400 shadow-[0_0_15px_rgba(0,0,0,0.2)]`}>
+                            <Icon size={24} />
+                        </div>
+                        <div className="text-left">
+                            <span className={`text-2xl font-black text-${neonColor}-400/80`}>
+                                {statsLoading ? "..." : itemStats.count.toLocaleString()}
+                            </span>
+                            <div className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">רשומות</div>
+                        </div>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l group-hover:from-white group-hover:to-slate-400 transition-all">{title}</h3>
+                    <p className="text-sm text-slate-400 mb-6 flex-grow">{desc}</p>
+
+                    <div className="mt-auto space-y-4">
+                        <div className="flex items-center gap-2 text-[11px] text-slate-500 bg-black/30 p-2 rounded-lg border border-white/5">
+                            <Clock size={12} className={`text-${neonColor}-500/60`} />
+                            <span>עדכון אחרון: {statsLoading ? "טוען..." : formatDate(itemStats.lastUpdate)}</span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button 
+                                onClick={() => handleExport(id)} 
+                                disabled={!!loading}
+                                className={`w-full h-11 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-white/5 text-xs font-bold gap-2`}
+                            >
+                                {loading === id ? <Loader2 className="animate-spin" size={14} /> : <Download size={14} />}
+                                ייצוא
+                            </Button>
+                            
+                            {["desktop", "aio", "motherboard", "electronics", "vehicle"].includes(id) && (
+                                <Button 
+                                    onClick={() => handleSync(id)} 
+                                    disabled={!!syncing}
+                                    className={`w-full h-11 bg-${neonColor}-600/20 hover:bg-${neonColor}-600/40 text-${neonColor}-400 rounded-xl border border-${neonColor}-500/30 text-xs font-bold gap-2`}
+                                >
+                                    {syncing === id ? <Loader2 className="animate-spin" size={14} /> : <RefreshCw size={14} />}
+                                    סנכרון
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
-        <div className="p-6 max-w-6xl mx-auto">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-2">ייצוא מאגרי נתונים (V2.7)</h1>
-                <p className="text-slate-500">הורד את רשימות המכשירים והמוצרים המלאות לקובץ אקסל (XLS) לצורך בקרה</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* Laptops */}
-                <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all">
-                    <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-4 text-blue-600">
-                        <Laptop size={28} />
+        <div className="min-h-screen bg-[#050508] text-right" dir="rtl">
+            <div className="p-6 lg:p-12 max-w-7xl mx-auto">
+                
+                {/* Header Section */}
+                <div className="relative mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="absolute -left-20 -top-20 w-64 h-64 bg-purple-600/10 blur-[100px] rounded-full" />
+                    <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full" />
+                    
+                    <div className="relative">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold mb-4 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+                            <Database size={14} />
+                            מרכז ניהול מאגרי נתונים V2.9
+                        </div>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight mb-4">
+                            ניהול <span className="text-transparent bg-clip-text bg-gradient-to-l from-indigo-400 via-blue-400 to-cyan-400">קטלוגים</span>
+                        </h1>
+                        <p className="text-slate-400 max-w-xl text-lg font-medium leading-relaxed">
+                            בקרה ועדכון של כלל מאגרי המידע במערכת. ייצוא קבצי אקסל לבדיקה וביצוע סנכרון חכם מול מקורות הקוד.
+                        </p>
                     </div>
-                    <h2 className="text-xl font-semibold mb-2">מחשבים ניידים בלבד</h2>
-                    <p className="text-sm text-slate-500 mb-6">ייצוא מאגר מחשבים ניידים (Laptops) מעודכן</p>
-                    <Button 
-                        onClick={() => handleExport("laptop")} 
-                        disabled={!!loading}
-                        className="w-full flex items-center gap-2"
-                    >
-                        {loading === "laptop" ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
-                        ייצוא מחשבים ניידים
-                    </Button>
+
+                    <div className="relative flex gap-3">
+                        <Button 
+                            variant="outline" 
+                            onClick={fetchStats}
+                            disabled={statsLoading}
+                            className="bg-white/5 border-white/10 text-white hover:bg-white/10 rounded-2xl px-6 h-14 font-bold"
+                        >
+                            {statsLoading ? <Loader2 className="animate-spin ml-2" /> : <RefreshCw className="ml-2" />}
+                            רענן נתונים
+                        </Button>
+                    </div>
                 </div>
 
-                {/* Brand Desktops */}
-                <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all border-green-200">
-                    <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mb-4 text-green-600">
-                        <Monitor size={28} />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2">מחשבי מותג</h2>
-                    <p className="text-sm text-slate-500 mb-6">Dell Optiplex, HP EliteDesk וכו'</p>
-                    <Button 
-                        onClick={() => handleExport("desktop")} 
-                        disabled={!!loading}
-                        variant="secondary"
-                        className="w-full flex items-center gap-2 border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
-                    >
-                        {loading === "desktop" ? <Loader2 className="animate-spin" size={18} /> : <FileSpreadsheet size={18} />}
-                        ייצוא מחשבי מותג
-                    </Button>
+                {/* Grid Grid - Premium Neon Style */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <CatalogCard 
+                        id="laptop" title="מחשבים ניידים" desc="מאגר Laptops מקיף הכולל מותגים וסדרות 2024-2025."
+                        icon={Laptop} color="blue" neonColor="blue" statsKey="laptop"
+                    />
+                    <CatalogCard 
+                        id="desktop" title="מחשבי מותג" desc="נייחים מסדרות Dell Optiplex, HP Elite/Pro ומרכזי עבודה."
+                        icon={Monitor} color="indigo" neonColor="indigo" statsKey="desktop"
+                    />
+                    <CatalogCard 
+                        id="aio" title="All-in-One" desc="מחשבי iMac, HP Pavilion AIO, Lenovo Yoga AIO ועוד."
+                        icon={Monitor} color="cyan" neonColor="cyan" statsKey="aio"
+                    />
+                    <CatalogCard 
+                        id="motherboard" title="לוחות אם" desc="מאגר לוחות אם (PC) לשימוש במנוע החיפוש החכם לבנייה."
+                        icon={Cpu} color="slate" neonColor="slate" statsKey="motherboard"
+                    />
+                    <CatalogCard 
+                        id="phone" title="סלולריים" desc="סדרות iPhone, Samsung Galaxy, Xiaomi ו-Google Pixel."
+                        icon={Tablet} color="purple" neonColor="purple" statsKey="mobile"
+                    />
+                    <CatalogCard 
+                        id="vehicle" title="רכבים" desc="מאגר יצרני ודגמי רכבים יד שנייה וחדשים."
+                        icon={Car} color="rose" neonColor="rose" statsKey="vehicle"
+                    />
+                    <CatalogCard 
+                        id="electronics" title="אלקטרוניקה" desc="טלוויזיות, שעונים חכמים, אוזניות וגאדג'טים."
+                        icon={Tv} color="amber" neonColor="amber" statsKey="electronics"
+                    />
+                    <CatalogCard 
+                        id="appliance" title="מוצרי חשמל" desc="מקררים, מכונות כביסה, מזגנים ומדיחי כלים."
+                        icon={Package} color="emerald" neonColor="emerald" statsKey="appliance"
+                    />
                 </div>
 
-                {/* All-in-One */}
-                <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all border-cyan-200">
-                    <div className="w-12 h-12 bg-cyan-50 rounded-xl flex items-center justify-center mb-4 text-cyan-600">
-                        <Monitor size={28} />
+                {/* Footer Insight */}
+                <div className="mt-16 bg-gradient-to-l from-indigo-900/20 to-transparent p-1 rounded-3xl">
+                    <div className="bg-[#080810] rounded-[22px] p-8 flex flex-col md:flex-row items-center justify-between gap-8 border border-white/5">
+                        <div className="flex items-center gap-6">
+                            <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400 border border-indigo-500/20">
+                                <Settings size={32} className="animate-spin-slow" />
+                            </div>
+                            <div>
+                                <h4 className="text-xl font-bold text-white mb-1">הערות תחזוקה</h4>
+                                <p className="text-slate-500 text-sm max-w-md">כל פעולת סנכרון מבצעת "איפוס חכם" של הטבלה - מוחקת נתונים קיימים ומזריקה את הרשימות המעודכנות ביותר למניעת כפילויות.</p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                             <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-xs font-mono">
+                                System Status: ONLINE
+                             </div>
+                             <div className="px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold">
+                                All Services Active
+                             </div>
+                        </div>
                     </div>
-                    <h2 className="text-xl font-semibold mb-2">All-in-One (AIO)</h2>
-                    <p className="text-sm text-slate-500 mb-6">iMac, HP Pavilion AIO, Yoga AIO</p>
-                    <Button 
-                        onClick={() => handleExport("aio")} 
-                        disabled={!!loading}
-                        variant="secondary"
-                        className="w-full flex items-center gap-2 border-cyan-200 bg-cyan-50 text-cyan-700 hover:bg-cyan-100"
-                    >
-                        {loading === "aio" ? <Loader2 className="animate-spin" size={18} /> : <FileSpreadsheet size={18} />}
-                        ייצוא AIO
-                    </Button>
-                </div>
-
-                {/* Custom Builds */}
-                <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all border-orange-200">
-                    <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mb-4 text-orange-600">
-                        <Settings size={28} />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2">מפרטי מחשב (AI)</h2>
-                    <p className="text-sm text-slate-500 mb-6">קטגוריות של מחשבים בהרכבה אישית</p>
-                    <Button 
-                        onClick={() => handleExport("custom")} 
-                        disabled={!!loading}
-                        className="w-full bg-orange-600 hover:bg-orange-700 flex items-center gap-2 text-white"
-                    >
-                        {loading === "custom" ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
-                        ייצוא לאקסל
-                    </Button>
-                </div>
-
-                {/* Phones */}
-                <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all">
-                    <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mb-4 text-purple-600">
-                        <Tablet size={28} />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2">סלולריים</h2>
-                    <p className="text-sm text-slate-500 mb-6">סמסונג, אפל, שיאומי וגוגל</p>
-                    <Button 
-                        onClick={() => handleExport("phone")} 
-                        disabled={!!loading}
-                        className="w-full bg-purple-600 hover:bg-purple-700 flex items-center gap-2 text-white"
-                    >
-                        {loading === "phone" ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
-                        ייצוא לאקסל
-                    </Button>
-                </div>
-
-
-
-                {/* Electronics */}
-                <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all">
-                    <div className="w-12 h-12 bg-cyan-50 rounded-xl flex items-center justify-center mb-4 text-cyan-600">
-                        <Tv size={28} />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2">אלקטרוניקה</h2>
-                    <p className="text-sm text-slate-500 mb-6">טלוויזיות, שעונים, אוזניות ועוד</p>
-                    <Button 
-                        onClick={() => handleExport("electronics")} 
-                        disabled={!!loading}
-                        className="w-full bg-cyan-600 hover:bg-cyan-700 flex items-center gap-2 text-white"
-                    >
-                        {loading === "electronics" ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
-                        ייצוא לאקסל
-                    </Button>
-                </div>
-
-                {/* Appliances */}
-                <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all">
-                    <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mb-4 text-indigo-600">
-                        <Package size={28} />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2">מוצרי חשמל</h2>
-                    <p className="text-sm text-slate-500 mb-6">מקררים, מכונות כביסה, מזגנים</p>
-                    <Button 
-                        onClick={() => handleExport("appliance")} 
-                        disabled={!!loading}
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2 text-white"
-                    >
-                        {loading === "appliance" ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
-                        ייצוא לאקסל
-                    </Button>
-                </div>
-
-                {/* Motherboards */}
-                <div className="bg-white p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all">
-                    <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center mb-4 text-slate-600">
-                        <Cpu size={28} />
-                    </div>
-                    <h2 className="text-xl font-semibold mb-2">לוחות אם</h2>
-                    <p className="text-sm text-slate-500 mb-6">מאגר לוחות אם (PC)</p>
-                    <Button 
-                        onClick={() => handleExport("motherboard")} 
-                        disabled={!!loading}
-                        className="w-full bg-slate-800 hover:bg-slate-900 flex items-center gap-2 text-white"
-                    >
-                        {loading === "motherboard" ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
-                        ייצוא לאקסל
-                    </Button>
                 </div>
             </div>
 
-            {/* Database Sync Section */}
-            <div className="mt-12 bg-slate-900 rounded-3xl p-8 border border-slate-800 text-right" dir="rtl">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center text-amber-500">
-                        <Settings size={24} />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-white">תחזוקת מסד נתונים (סינכרון)</h2>
-                        <p className="text-slate-400">בצע "איפוס וסינכרון" כדי לוודא שכל הקטגוריות מעודכנות ומסודרות לפי הקוד</p>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Sync Brand Desktops */}
-                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                        <h3 className="font-semibold text-white mb-2">סינכרון מחשבים נייחים</h3>
-                        <p className="text-xs text-slate-400 mb-4">עדכון מאגר המחשבים הנייחים (Brand Desktops) לפי רשימות המותג.</p>
-                        <Button 
-                            onClick={() => handleSync("desktop")} 
-                            disabled={!!syncing}
-                            className="w-full gap-2 bg-indigo-600 hover:bg-indigo-700"
-                        >
-                            {syncing === "desktop" ? <Loader2 className="animate-spin" size={16} /> : <Monitor size={16} />}
-                            סינכרון מחשבי מותג
-                        </Button>
-                    </div>
-
-                    {/* Sync AIO */}
-                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                        <h3 className="font-semibold text-white mb-2">סינכרון All-in-One</h3>
-                        <p className="text-xs text-slate-400 mb-4">עדכון מאגר ה-All-in-One (iMac, HP AIO) עם נתוני מסך וחומרה.</p>
-                        <Button 
-                            onClick={() => handleSync("aio")} 
-                            disabled={!!syncing}
-                            className="w-full gap-2 bg-cyan-600 hover:bg-cyan-700"
-                        >
-                            {syncing === "aio" ? <Loader2 className="animate-spin" size={16} /> : <Laptop size={16} />}
-                            סינכרון AIO
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                    {/* Sync Electronics */}
-                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                        <h3 className="font-semibold text-white mb-2">סינכרון אלקטרוניקה וחשמל</h3>
-                        <p className="text-xs text-slate-400 mb-4">עדכון מאגרי ה-TV, שעונים, מקררים ומכונות כביסה.</p>
-                        <Button 
-                            onClick={() => handleSync("electronics")} 
-                            disabled={!!syncing}
-                            className="w-full gap-2 bg-amber-600 hover:bg-amber-700"
-                        >
-                            {syncing === "electronics" ? <Loader2 className="animate-spin" size={16} /> : <Settings size={16} />}
-                            סינכרון אלקטרוניקה
-                        </Button>
-                    </div>
-
-                    {/* Sync Motherboards */}
-                    <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                        <h3 className="font-semibold text-white mb-2">סינכרון לוחות אם</h3>
-                        <p className="text-xs text-slate-400 mb-4">עדכון מאגר לוחות האם (Chipsets, Sockets) למניעת טעויות.</p>
-                        <Button 
-                            onClick={() => handleSync("motherboard")} 
-                            disabled={!!syncing}
-                            className="w-full gap-2 bg-slate-700 hover:bg-slate-600"
-                        >
-                            {syncing === "motherboard" ? <Loader2 className="animate-spin" size={16} /> : <Cpu size={16} />}
-                            סינכרון לוחות אם
-                        </Button>
-                    </div>
-                </div>
-            </div>
+            <style jsx global>{`
+                @keyframes spin-slow {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                .animate-spin-slow {
+                    animation: spin-slow 12s linear infinite;
+                }
+                
+                /* Selection colors to match neon vibes */
+                ::selection {
+                    background: rgba(99, 102, 241, 0.3);
+                    color: white;
+                }
+            `}</style>
         </div>
     );
 }

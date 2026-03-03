@@ -11,6 +11,75 @@ import { BRAND_DESKTOPS_DATABASE, AIO_DATABASE } from "@/lib/desktops-aio-data";
 
 const prisma = prismadb;
 
+export async function getDatabaseStats() {
+    noStore();
+    try {
+        const models = [
+            { key: "laptop", prisma: prisma.laptopCatalog },
+            { key: "desktop", prisma: prisma.brandDesktopCatalog },
+            { key: "aio", prisma: prisma.aioCatalog },
+            { key: "vehicle", prisma: prisma.vehicleCatalog },
+            { key: "mobile", prisma: prisma.mobileCatalog },
+            { key: "motherboard", prisma: prisma.motherboardCatalog },
+            { key: "electronics", prisma: prisma.electronicsCatalog },
+            { key: "appliance", prisma: prisma.applianceCatalog },
+        ];
+
+        const stats: Record<string, { count: number; lastUpdate: Date | null }> = {};
+
+        for (const m of models) {
+            const count = await m.prisma.count();
+            const lastRecord = await (m.prisma as any).findFirst({
+                orderBy: { updatedAt: "desc" },
+                select: { updatedAt: true }
+            });
+            stats[m.key] = {
+                count,
+                lastUpdate: lastRecord?.updatedAt || null
+            };
+        }
+
+        return { success: true, stats };
+    } catch (error: any) {
+        console.error("Get Database Stats Error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+export async function getUniqueBrands(type: "laptop" | "desktop" | "aio" | "mobile" | "motherboard" | "electronics" | "appliance") {
+    noStore();
+    try {
+        let brands: string[] = [];
+        if (type === "laptop") {
+            const raw = await prisma.laptopCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
+            brands = raw.map(r => r.brand);
+        } else if (type === "desktop") {
+            const raw = await prisma.brandDesktopCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
+            brands = raw.map(r => r.brand);
+        } else if (type === "aio") {
+            const raw = await prisma.aioCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
+            brands = raw.map(r => r.brand);
+        } else if (type === "mobile") {
+            const raw = await prisma.mobileCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
+            brands = raw.map(r => r.brand);
+        } else if (type === "motherboard") {
+            const raw = await prisma.motherboardCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
+            brands = raw.map(r => r.brand);
+        } else if (type === "electronics") {
+            const raw = await prisma.electronicsCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
+            brands = raw.map(r => r.brand);
+        } else if (type === "appliance") {
+            const raw = await prisma.applianceCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
+            brands = raw.map(r => r.brand);
+        }
+
+        return { success: true, brands: brands.sort() };
+    } catch (error: any) {
+        console.error("Get Unique Brands Error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
 /**
  * מנקה טקסט כדי שלא ישבור את ה-CSV
  */

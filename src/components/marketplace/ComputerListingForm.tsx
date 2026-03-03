@@ -27,6 +27,8 @@ import {
     CUSTOM_BUILD_CATEGORIES,
     DESKTOP_SUB_CATEGORIES
 } from "@/lib/computer-data";
+import { getMyPhone, getMyListings, createListing, updateListing } from "@/app/actions/user";
+import { getUniqueBrands } from "@/app/admin/export-actions";
 import { MOTHERBOARD_DATABASE } from "@/lib/motherboard-database";
 import { ComputerSearchUI } from "@/components/marketplace/ComputerSearchUI";
 
@@ -273,6 +275,8 @@ function SpecSelector({
 export function ComputerListingForm({ onComplete, onCancel, initialData, isEditing, listingId, preSelectedCategory }: ComputerListingFormProps) {
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
+    const [dbBrands, setDbBrands] = useState<string[]>([]);
+    const [fetchingBrands, setFetchingBrands] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [uploadingVideo, setUploadingVideo] = useState(false);
     const [imageUrlInput, setImageUrlInput] = useState("");
@@ -421,6 +425,29 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         if (computerTypeMode === "all_in_one") return ALL_IN_ONE_DATABASE;
         return BRAND_DESKTOP_DATABASE;
     }, [mainCategory, computerTypeMode]);
+
+    // Fetch Brands from DB if local is empty
+    useEffect(() => {
+        const fetchDbBrands = async () => {
+            if (Object.keys(activeDb).length > 0) {
+                setDbBrands(Object.keys(activeDb).sort());
+                return;
+            }
+
+            setFetchingBrands(true);
+            const typeMap: any = { "laptop": "laptop", "all_in_one": "aio", "brand_desktop": "desktop" };
+            const type = mainCategory === "laptop" ? "laptop" : typeMap[computerTypeMode];
+            
+            if (type) {
+                const res = await getUniqueBrands(type);
+                if (res.success && res.brands) {
+                    setDbBrands(res.brands);
+                }
+            }
+            setFetchingBrands(false);
+        };
+        fetchDbBrands();
+    }, [activeDb, mainCategory, computerTypeMode]);
 
     // Flat list of all available submodels for the fast global search
     const allModelsFlat = useMemo(() => {
@@ -903,10 +930,13 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                     <SpecSelector
                                                         label="יצרן"
-                                                        options={availableBrands}
+                                                        disabled={fetchingBrands}
+                                                        placeholder={fetchingBrands ? "טוען מותגים..." : "בחר יצרן..."}
+                                                        options={dbBrands}
                                                         value={spec.brand}
                                                         onChange={v => {
-                                                            setSpec(s => ({ ...s, brand: v }));
+                                                            setSpec(s => ({ ...s, brand: v, family: "", subModel: "", sku: "" }));
+                                                            setUncertainFields([]);
                                                         }}
                                                     />
                                                     <SpecSelector

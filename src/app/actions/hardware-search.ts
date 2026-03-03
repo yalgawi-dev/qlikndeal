@@ -1,8 +1,8 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
+import prismadb from "@/lib/prismadb";
 
-const prisma = new PrismaClient();
+const prisma = prismadb;
 
 export async function searchLaptops(query: string) {
   const q = query.trim();

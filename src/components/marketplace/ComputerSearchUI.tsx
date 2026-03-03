@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Sparkles, ChevronRight, Check, Edit2 } from "lucide-react";
 import { COMPUTER_DATABASE } from "@/lib/computer-data";
+import { getAutocomplete, searchLaptops, searchBrandDesktops, searchAio } from "@/app/actions/hardware-search";
 
 // ─── Constants ────────────────────────────────────────────────────
 const PORT_OPTIONS = [
@@ -108,11 +109,29 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
     // Autocomplete
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
-        if (query.trim().length < 1) { setSuggestions([]); setShowSug(false); return; }
-        debounceRef.current = setTimeout(() => {
-            const sug = searchLocalDB(activeDb, query, 20);
-            setSuggestions(sug);
-            setShowSug(sug.length > 0);
+        const q = query.trim();
+        if (q.length < 1) { setSuggestions([]); setShowSug(false); return; }
+        
+        debounceRef.current = setTimeout(async () => {
+            const localResults = searchLocalDB(activeDb, q, 20);
+            
+            if (localResults.length > 0) {
+                setSuggestions(localResults);
+                setShowSug(true);
+            } else {
+                // Try fetching from DB
+                const dbNames = await getAutocomplete(q, "Computers");
+                if (dbNames.length > 0) {
+                    setSuggestions(dbNames.map(name => ({
+                        label: name,
+                        data: { name, isFromDb: true }
+                    })));
+                    setShowSug(true);
+                } else {
+                    setSuggestions([]);
+                    setShowSug(false);
+                }
+            }
         }, 150);
     }, [query, activeDb]);
 
@@ -123,10 +142,38 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
         return () => document.removeEventListener("mousedown", h);
     }, []);
 
-    const loadSpec = (data: any) => {
-        const s = buildSpec(data);
-        // Map the db fields to standard names correctly and pass raw directly to the parent
-        onApplySpecs({ ...s, battery: (s as any).battery_info || s.battery, ports: (s as any).ports_info || s.ports, notes: s.notes });
+    const loadSpec = async (data: any) => {
+        if (data.isFromDb) {
+            setLoading(true);
+            const q = data.name;
+            const laptops = await searchLaptops(q);
+            const desktops = await searchBrandDesktops(q);
+            const aios = await searchAio(q);
+            const allResults = [...laptops, ...desktops, ...aios];
+            
+            if (allResults.length > 0) {
+                const best = allResults[0];
+                onApplySpecs({
+                    brand: best.brand,
+                    family: best.series,
+                    subModel: best.model,
+                    sku: best.sku,
+                    type: best.type || "",
+                    ram: best.ram,
+                    storage: best.storage,
+                    screen: best.screen,
+                    cpu: best.cpu,
+                    gpu: best.gpu,
+                    os: best.os,
+                    release_year: best.year,
+                    ports: best.notes // using notes for extra info if ports null
+                });
+            }
+            setLoading(false);
+        } else {
+            const s = buildSpec(data);
+            onApplySpecs({ ...s, battery: (s as any).battery_info || s.battery, ports: (s as any).ports_info || s.ports, notes: s.notes });
+        }
         setShowSug(false);
     };
 
@@ -155,16 +202,40 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
                 setError(e.message);
             } finally { setLoading(false); }
         } else {
-            const top = searchLocalDB(activeDb, q, 1);
-            if (top.length > 0) {
-                loadSpec(top[0].data);
+            const local = searchLocalDB(activeDb, q, 1);
+            if (local.length > 0) {
+                loadSpec(local[0].data);
             } else {
-                // Check if it exists in the main DB to give a better error message
-                const inMainDb = searchLocalDB(COMPUTER_DATABASE, q, 1);
-                if (inMainDb.length > 0) {
-                    setError(`"${q}" נמצא במערכת אך שייך לקטגוריה אחרת (נייח/נייד) - אנא חזור שלב אחורה ובחר בקטגוריה המתאימה.`);
+                // Try database
+                const laptops = await searchLaptops(q);
+                const desktops = await searchBrandDesktops(q);
+                const aios = await searchAio(q);
+                const allResults = [...laptops, ...desktops, ...aios];
+
+                if (allResults.length > 0) {
+                    const best = allResults[0];
+                     onApplySpecs({
+                        brand: best.brand,
+                        family: best.series,
+                        subModel: best.model,
+                        sku: best.sku,
+                        type: best.type || "",
+                        ram: best.ram,
+                        storage: best.storage,
+                        screen: best.screen,
+                        cpu: best.cpu,
+                        gpu: best.gpu,
+                        os: best.os,
+                        release_year: best.year,
+                        ports: best.notes
+                    });
                 } else {
-                    setError(`"${q}" לא נמצא במאגר. נסה חיפוש פרימיום (לחצן ירוק) או שנה את ניסוח החיפוש.`);
+                    const inMainDbLocal = searchLocalDB(COMPUTER_DATABASE, q, 1);
+                    if (inMainDbLocal.length > 0) {
+                        setError(`"${q}" נמצא במערכת אך שייך לקטגוריה אחרת - אנא חזור שלב אחורה ובחר בקטגוריה המתאימה.`);
+                    } else {
+                        setError(`"${q}" לא נמצא במאגר. נסה חיפוש פרימיום AI (לחצן למעלה) או וודא שכתבת נכון.`);
+                    }
                 }
             }
             setLoading(false);
