@@ -182,24 +182,55 @@ export default function ExportPageClient() {
 
     const tryParseImport = (text: string) => {
         try {
+            const trimmed = text.trim();
+            if (!trimmed) {
+                setImportPreview([]);
+                return;
+            }
+
             // ניסיון ראשון: JSON
-            if (text.trim().startsWith("[") || text.trim().startsWith("{")) {
-                const parsed = JSON.parse(text);
+            if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+                const parsed = JSON.parse(trimmed);
                 setImportPreview(Array.isArray(parsed) ? parsed : [parsed]);
                 return;
             }
 
-            // ניסיון שני: CSV פשוט
-            const lines = text.trim().split("\n");
+            // ניסיון שני: CSV או TSV (אקסל)
+            const lines = trimmed.split("\n");
             if (lines.length < 2) return;
             
-            const headers = lines[0].split(",").map(h => h.trim());
-            const rows = lines.slice(1).map(line => {
-                const values = line.split(",").map(v => v.trim());
+            // זיהוי מפריד: אם יש טאבים, זה כנראה מאקסל. אם לא, פסיק.
+            const firstLine = lines[0];
+            const delimiter = firstLine.includes("\t") ? "\t" : ",";
+
+            const rawHeaders = firstLine.split(delimiter).map(h => h.trim());
+            
+            // מיפוי עברית לאנגלית
+            const mapping: Record<string, string> = {
+                "יצרן": "brand", "מותג": "brand", "Make": "brand",
+                "סדרה": "series",
+                "דגם": "modelName", "Model": "modelName",
+                "סוג": "type",
+                "מסך": "screenSize", "גודל מסך": "screenSize",
+                "מעבד": "cpu", "CPU": "cpu",
+                "זיכרון RAM": "ram", "זיכרון": "ram", "RAM": "ram",
+                "אחסון": "storage", "Storage": "storage",
+                "מאיץ גרפי": "gpu", "כרטיס מסך": "gpu", "GPU": "gpu",
+                "שנה": "releaseYear", "Year": "releaseYear",
+                "הערות": "notes",
+                "מק\"ט": "sku", "SKU": "sku",
+                "משקל": "weight",
+                "חיבורים": "ports",
+                "תצוגה": "display"
+            };
+
+            const headers = rawHeaders.map(h => mapping[h] || h);
+
+            const rows = lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = line.split(delimiter).map(v => v.trim());
                 const obj: any = {};
                 headers.forEach((header, i) => {
                     let val: any = values[i];
-                    // המרת מערכים (אם מופרדים ב-/)
                     if (val && val.includes("/")) {
                         val = val.split("/").map((v: string) => v.trim());
                     }
@@ -557,8 +588,12 @@ export default function ExportPageClient() {
                                     {importPreview.length > 0 ? (
                                         importPreview.slice(0, 20).map((p, i) => (
                                             <div key={i} className="text-[10px] p-2 bg-white/5 rounded border border-white/5 flex justify-between">
-                                                <span className="font-bold text-slate-300">{p.brand} {p.modelName}</span>
-                                                <span className="text-slate-500">{Array.isArray(p.cpu) ? p.cpu[0] : p.cpu}</span>
+                                                <span className="font-bold text-slate-300">
+                                                    {p.brand || Object.values(p)[0] || ""} {p.modelName || Object.values(p)[2] || ""}
+                                                </span>
+                                                <span className="text-slate-500">
+                                                    {Array.isArray(p.cpu) ? p.cpu[0] : (p.cpu || Object.values(p)[5] || "")}
+                                                </span>
                                             </div>
                                         ))
                                     ) : (
