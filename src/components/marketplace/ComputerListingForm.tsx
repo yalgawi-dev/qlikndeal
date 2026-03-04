@@ -596,10 +596,10 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         }
 
         // ── Rich fields – single values ──
-        newSpec.battery = sub.battery || "";
-        newSpec.ports = sub.ports || "";
-        newSpec.weight = sub.weight || "";
-        newSpec.release_year = sub.release_year || "";
+        newSpec.battery = sub.battery || (sub as any).battery_info || "";
+        newSpec.ports = sub.ports || sub.notes || (sub as any).ports_info || "";
+        newSpec.weight = sub.weight || (sub as any).weights || "";
+        newSpec.release_year = sub.release_year || (sub as any).releaseYear || (sub as any).year || "";
 
         // SKU persistence
         if (sku?.id || sku?.sku) {
@@ -757,7 +757,13 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         // We handle multiple potential field names because mapping can vary between local search, DB search, and AI search
         
         // Helper to get first item if array, or the value if string
-        const f = (val: any) => Array.isArray(val) ? val[0] : val;
+        const f = (val: any) => Array.isArray(val) ? (val.length > 0 ? val[0] : "") : (val || "");
+
+        // Normalize storage - ensure it has GB/TB/SSD etc if missing
+        let storageVal = f(result.storage || result.storages);
+        if (storageVal && !isNaN(Number(storageVal))) {
+            storageVal = Number(storageVal) >= 128 ? `${storageVal}GB SSD` : `${storageVal}TB SSD`;
+        }
 
         // When applying a search result, we want to OVERWRITE the current state, 
         // not merge it, to avoid "ghosting" from previous selections.
@@ -768,20 +774,20 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             subModel: result.model_name || result.subModel || result.model || result.name || "",
             sku: result.model_number || result.sku || "",
             ram: f(result.ram) || "",
-            storage: f(result.storage) || "",
-            screen: f(result.display || result.screen || result.screenSize) || "",
+            storage: storageVal || "",
+            screen: f(result.display || result.screenSize || result.screen) || "",
             cpu: f(result.cpu) || "",
             gpu: f(result.gpu) || "",
             os: f(result.os) || "",
-            battery: result.battery || "",
-            ports: result.ports || "",
-            weight: result.weight || "",
+            battery: result.battery || f(result.battery_info) || "",
+            ports: result.ports || f(result.ports_info) || "",
+            weight: result.weight || result.weights || "",
             release_year: result.release_year || result.releaseYear || result.year || "",
         }));
 
         setDetails(d => ({
             ...d,
-            title: result.model_name || result.subModel || result.model || d.title,
+            title: result.model_name || result.subModel || result.model || result.name || d.title,
         }));
 
         setUncertainFields([]);

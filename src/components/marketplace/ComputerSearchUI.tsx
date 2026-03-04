@@ -148,20 +148,22 @@ export function ComputerSearchUI({ activeDb, onApplySpecs, subCategory }: { acti
             // It already contains ALL the fields we need.
             const d = data.details;
             onApplySpecs({
+                ...d,
                 brand: d.brand || "",
                 family: d.series || "",
                 subModel: d.modelName || "",
                 sku: d.sku || "",
                 type: d.dbType || d.type || "",
                 ram: d.ram || "",
-                storage: d.storage || "",
+                storage: d.storage || d.storages || "",
                 screen: d.display || d.screenSize || "",
                 cpu: d.cpu || "",
                 gpu: d.gpu || "",
                 os: d.os || "",
                 release_year: d.release_year || d.releaseYear || "",
                 ports: d.ports || d.notes || "",
-                weight: d.weight || ""
+                weight: d.weight || "",
+                battery: d.battery || d.battery_info || ""
             });
         } else if (data.isFromDb) {
             // Fallback for older data format
