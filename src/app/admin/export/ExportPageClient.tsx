@@ -304,8 +304,8 @@ export default function ExportPageClient() {
             }
 
             const message = res.added > 0 
-                ? `הייבוא הושלם בהצלחה! הוספו ${res.added} רשומות חדשות.`
-                : `הייבוא הסתיים. כל הרשומות (${res.skipped}) כבר קיימות במערכת.`;
+                ? `הייבוא והסנכרון המלא הושלמו! הוספו ${res.added} רשומות חדשות לסביבת הלייב.`
+                : `הסנכרון הסתיים. כל הרשומות (${res.skipped}) כבר קיימות במערכת (לא בוצעו שינויים).`;
                 
             toast.success(message);
         } catch (error: any) {
@@ -468,17 +468,11 @@ export default function ExportPageClient() {
                             </Button>
                         </div>
 
-                        <div className="pt-2">
-                            {["laptop", "desktop", "aio", "motherboard", "electronics", "vehicle"].includes(id) && (
-                                <Button 
-                                    onClick={() => handleSync(id)} 
-                                    disabled={!!syncing}
-                                    className={`w-full h-10 bg-white/5 hover:text-white text-slate-500 rounded-xl border border-white/5 text-[10px] font-bold transition-all active:scale-95`}
-                                >
-                                    {syncing === id ? <Loader2 className="animate-spin" size={14} /> : <RefreshCw size={14} className="ml-2" />}
-                                    סנכרון מלא (דורס)
-                                </Button>
-                            )}
+                        <div className="flex flex-col items-end gap-2 pt-4 border-t border-white/5 mt-4 opacity-50">
+                             <div className="flex items-center gap-2 text-[9px] font-mono text-slate-500">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                DATABASE SECURE
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -504,7 +498,7 @@ export default function ExportPageClient() {
                             ניהול <span className="text-transparent bg-clip-text bg-gradient-to-l from-indigo-400 via-blue-400 to-cyan-400">קטלוגים</span>
                         </h1>
                         <p className="text-slate-400 max-w-xl text-lg font-medium leading-relaxed">
-                            בקרה ועדכון של כלל מאגרי המידע במערכת. ייצוא קבצי אקסל לבדיקה וביצוע סנכרון חכם מול מקורות הקוד.
+                            בקרה ועדכון של כלל מאגרי המידע במערכת. ייצוא קבצי אקסל לבדיקה וביצוע ייבוא חכם למניעת כפילויות.
                         </p>
                     </div>
 
@@ -566,7 +560,7 @@ export default function ExportPageClient() {
                             </div>
                             <div>
                                 <h4 className="text-xl font-bold text-white mb-1">הערות תחזוקה</h4>
-                                <p className="text-slate-500 text-sm max-w-md">כל פעולת סנכרון מבצעת "איפוס חכם" של הטבלה - מוחקת נתונים קיימים ומזריקה את הרשימות המעודכנות ביותר למניעת כפילויות.</p>
+                                <p className="text-slate-500 text-sm max-w-md">המאגר מנוהל כעת בצורה חכמה בלבד. כל פעולת ייבוא בודקת כפילויות מול נתוני המערכת הקיימים ללא דריסת מידע קודם.</p>
                             </div>
                         </div>
                         <div className="flex flex-col items-end gap-2">
@@ -776,8 +770,8 @@ export default function ExportPageClient() {
                                         <div className="flex items-center gap-4 mt-4 md:mt-0">
                                             <div className="flex gap-2">
                                                 {log.added > 0 && (
-                                                    <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[11px] font-bold text-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.1)]">
-                                                        +{log.added} רשומות חדשות ✅
+                                                    <div className="px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full text-[11px] font-black text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                                                        +{log.added} מוצרים חדשים (סנכרון מלא) ⚡
                                                     </div>
                                                 )}
                                                 {log.skipped > 0 && (

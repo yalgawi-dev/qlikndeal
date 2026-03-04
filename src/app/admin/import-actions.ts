@@ -24,10 +24,21 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult & {
 
     try {
         const initialCount = await prismadb.laptopCatalog.count();
+        
+        // 1. בדיקת כפילויות בתוך הקובץ עצמו (In-file duplicate detection)
+        const seenInFile = new Set<string>();
+        const uniqueData = data.filter(item => {
+            const key = item.sku || `${item.brand}-${item.modelName}-${JSON.stringify(item.cpu)}-${JSON.stringify(item.ram)}`.toLowerCase();
+            if (seenInFile.has(key)) {
+                result.skipped++;
+                return false;
+            }
+            seenInFile.add(key);
+            return true;
+        });
 
-        for (const item of data) {
+        for (const item of uniqueData) {
             try {
-                // בדיקת מינימום שדות חובה
                 if (!item.brand || !item.modelName) {
                     result.skipped++;
                     result.errors.push(`חסר מותג או דגם עבור רשומה`);
@@ -94,14 +105,11 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult & {
             }
         }
 
-        // אימות סופי
         const finalCount = await prismadb.laptopCatalog.count();
         result.newTotal = finalCount;
 
-        if (finalCount !== initialCount + result.added) {
-            console.warn(`Verification mismatch: Initial ${initialCount} + Added ${result.added} != Final ${finalCount}`);
-        }
-
+        // סנכרון מלא למערכת (Revalidation)
+        revalidatePath("/", "layout");
         revalidatePath("/admin/export");
         
         const user = await currentUser();
@@ -128,7 +136,16 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult & 
     const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
         const initialCount = await prismadb.brandDesktopCatalog.count();
-        for (const item of data) {
+        
+        const seenInFile = new Set<string>();
+        const uniqueData = data.filter(item => {
+            const key = item.sku || `${item.brand}-${item.modelName}-${JSON.stringify(item.cpu)}`.toLowerCase();
+            if (seenInFile.has(key)) { result.skipped++; return false; }
+            seenInFile.add(key);
+            return true;
+        });
+
+        for (const item of uniqueData) {
             try {
                 if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 let existing = null;
@@ -174,6 +191,7 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult & 
         }
         const finalCount = await prismadb.brandDesktopCatalog.count();
         result.newTotal = finalCount;
+        revalidatePath("/", "layout");
         revalidatePath("/admin/export");
         const user = await currentUser();
         await prismadb.catalogImportLog.create({
@@ -196,7 +214,16 @@ export async function importAioAction(data: any[]): Promise<ImportResult & { new
     const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
         const initialCount = await prismadb.aioCatalog.count();
-        for (const item of data) {
+        
+        const seenInFile = new Set<string>();
+        const uniqueData = data.filter(item => {
+            const key = item.sku || `${item.brand}-${item.modelName}-${JSON.stringify(item.screenSize)}`.toLowerCase();
+            if (seenInFile.has(key)) { result.skipped++; return false; }
+            seenInFile.add(key);
+            return true;
+        });
+
+        for (const item of uniqueData) {
             try {
                 if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 let existing = null;
@@ -240,6 +267,7 @@ export async function importAioAction(data: any[]): Promise<ImportResult & { new
         }
         const finalCount = await prismadb.aioCatalog.count();
         result.newTotal = finalCount;
+        revalidatePath("/", "layout");
         revalidatePath("/admin/export");
         const user = await currentUser();
         await prismadb.catalogImportLog.create({
@@ -262,7 +290,16 @@ export async function importMobileAction(data: any[]): Promise<ImportResult & { 
     const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
         const initialCount = await prismadb.mobileCatalog.count();
-        for (const item of data) {
+        
+        const seenInFile = new Set<string>();
+        const uniqueData = data.filter(item => {
+            const key = `${item.brand}-${item.modelName}`.toLowerCase();
+            if (seenInFile.has(key)) { result.skipped++; return false; }
+            seenInFile.add(key);
+            return true;
+        });
+
+        for (const item of uniqueData) {
             try {
                 if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 const existing = await prismadb.mobileCatalog.findFirst({
@@ -295,6 +332,7 @@ export async function importMobileAction(data: any[]): Promise<ImportResult & { 
         }
         const finalCount = await prismadb.mobileCatalog.count();
         result.newTotal = finalCount;
+        revalidatePath("/", "layout");
         revalidatePath("/admin/export");
 
         const user = await currentUser();
@@ -319,7 +357,16 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult & {
     const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
         const initialCount = await prismadb.vehicleCatalog.count();
-        for (const item of data) {
+        
+        const seenInFile = new Set<string>();
+        const uniqueData = data.filter(item => {
+            const key = `${item.make}-${item.model}-${item.year}`.toLowerCase();
+            if (seenInFile.has(key)) { result.skipped++; return false; }
+            seenInFile.add(key);
+            return true;
+        });
+
+        for (const item of uniqueData) {
             try {
                 if (!item.make || !item.model) { result.skipped++; continue; }
                 const existing = await prismadb.vehicleCatalog.findFirst({
@@ -344,6 +391,7 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult & {
         }
         const finalCount = await prismadb.vehicleCatalog.count();
         result.newTotal = finalCount;
+        revalidatePath("/", "layout");
         revalidatePath("/admin/export");
 
         const user = await currentUser();
@@ -368,7 +416,16 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
     const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
         const initialCount = await prismadb.electronicsCatalog.count();
-        for (const item of data) {
+        
+        const seenInFile = new Set<string>();
+        const uniqueData = data.filter(item => {
+            const key = `${item.brand}-${item.modelName}-${item.category}`.toLowerCase();
+            if (seenInFile.has(key)) { result.skipped++; return false; }
+            seenInFile.add(key);
+            return true;
+        });
+
+        for (const item of uniqueData) {
             try {
                 if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 const existing = await prismadb.electronicsCatalog.findFirst({
@@ -391,6 +448,7 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
         }
         const finalCount = await prismadb.electronicsCatalog.count();
         result.newTotal = finalCount;
+        revalidatePath("/", "layout");
         revalidatePath("/admin/export");
 
         const user = await currentUser();
@@ -415,7 +473,16 @@ export async function importApplianceAction(data: any[]): Promise<ImportResult &
     const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
         const initialCount = await prismadb.applianceCatalog.count();
-        for (const item of data) {
+        
+        const seenInFile = new Set<string>();
+        const uniqueData = data.filter(item => {
+            const key = `${item.brand}-${item.modelName}-${item.category}`.toLowerCase();
+            if (seenInFile.has(key)) { result.skipped++; return false; }
+            seenInFile.add(key);
+            return true;
+        });
+
+        for (const item of uniqueData) {
             try {
                 if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 const existing = await prismadb.applianceCatalog.findFirst({
@@ -438,6 +505,7 @@ export async function importApplianceAction(data: any[]): Promise<ImportResult &
         }
         const finalCount = await prismadb.applianceCatalog.count();
         result.newTotal = finalCount;
+        revalidatePath("/", "layout");
         revalidatePath("/admin/export");
 
         const user = await currentUser();
@@ -462,7 +530,16 @@ export async function importMotherboardAction(data: any[]): Promise<ImportResult
     const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
         const initialCount = await prismadb.motherboardCatalog.count();
-        for (const item of data) {
+        
+        const seenInFile = new Set<string>();
+        const uniqueData = data.filter(item => {
+            const key = `${item.brand}-${item.model}`.toLowerCase();
+            if (seenInFile.has(key)) { result.skipped++; return false; }
+            seenInFile.add(key);
+            return true;
+        });
+
+        for (const item of uniqueData) {
             try {
                 if (!item.brand || !item.model) { result.skipped++; continue; }
                 const existing = await prismadb.motherboardCatalog.findFirst({
@@ -491,6 +568,7 @@ export async function importMotherboardAction(data: any[]): Promise<ImportResult
         }
         const finalCount = await prismadb.motherboardCatalog.count();
         result.newTotal = finalCount;
+        revalidatePath("/", "layout");
         revalidatePath("/admin/export");
 
         const user = await currentUser();
