@@ -338,7 +338,10 @@ export default function ExportPageClient() {
         id: string, title: string, desc: string, icon: any, color: string, neonColor: string, statsKey: string 
     }) => {
         const itemStats = stats[statsKey] || { count: 0, lastUpdate: null };
-        const isRecentlyUpdated = itemStats.lastUpdate && (new Date().getTime() - new Date(itemStats.lastUpdate).getTime()) < 1000 * 60 * 60 * 12; // 12 שעות
+        
+        // We only show the "Updated Now" badge if there's a MANUAL import log in the last 12 hours for this category
+        const lastManualLog = recentLogs.find((l: any) => l.category === id);
+        const isRecentlyUpdated = lastManualLog && (new Date().getTime() - new Date(lastManualLog.createdAt).getTime()) < 1000 * 60 * 60 * 12;
 
         // Define neon glow classes based on color
         const glowClass = {
@@ -651,14 +654,29 @@ export default function ExportPageClient() {
                                 הורד תבנית CSV
                             </Button>
                         </div>
-                        <Button 
-                            onClick={executeImport}
-                            disabled={importPreview.length === 0 || importLoading}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 font-bold"
-                        >
-                            {importLoading ? <Loader2 className="animate-spin ml-2" /> : <Package className="ml-2" />}
-                            בצע ייבוא רשומות
-                        </Button>
+                        {importResult ? (
+                            <Button 
+                                onClick={() => {
+                                    setImportModalOpen(false);
+                                    setImportResult(null);
+                                    setImportData("");
+                                    fetchStats();
+                                }}
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 font-bold"
+                            >
+                                <Check size={14} className="ml-2" />
+                                סגור וסיים
+                            </Button>
+                        ) : (
+                            <Button 
+                                onClick={executeImport}
+                                disabled={importPreview.length === 0 || importLoading}
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 font-bold"
+                            >
+                                {importLoading ? <Loader2 className="animate-spin ml-2" /> : <Package className="ml-2" />}
+                                בצע ייבוא רשומות
+                            </Button>
+                        )}
                     </div>
                 </DialogContent>
             </Dialog>

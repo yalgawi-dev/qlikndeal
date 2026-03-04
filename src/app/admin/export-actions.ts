@@ -570,13 +570,27 @@ export async function syncMotherboards() {
     noStore();
     try {
         console.log(`Starting Motherboard Sync (${MOTHERBOARD_DATABASE.length} items)...`);
-        // Use deleteMany + createMany for performance if available, or just delete + loop
-        await prisma.motherboardCatalog.deleteMany({});
         
         let count = 0;
         for (const mb of MOTHERBOARD_DATABASE) {
-            await prisma.motherboardCatalog.create({
-                data: {
+            // Use brand + model as unique key for motherboards
+            await prisma.motherboardCatalog.upsert({
+                where: { 
+                    brand_model: { brand: mb.brand, model: mb.model } 
+                },
+                update: {
+                    chipset: mb.chipset,
+                    socket: mb.socket,
+                    formFactor: mb.formFactor,
+                    ramType: mb.ramType,
+                    maxRam: mb.maxRam,
+                    pcie: mb.pcie,
+                    m2: mb.m2,
+                    lan: mb.lan,
+                    wifi: mb.wifi,
+                    releaseYear: mb.releaseYear
+                },
+                create: {
                     brand: mb.brand,
                     model: mb.model,
                     chipset: mb.chipset,
@@ -619,29 +633,44 @@ export async function syncBrandDesktops() {
     noStore();
     try {
         console.log("Starting Brand Desktop Sync...");
-        await prisma.brandDesktopCatalog.deleteMany({});
         
         let count = 0;
         for (const [brand, families] of Object.entries(BRAND_DESKTOPS_DATABASE)) {
             for (const family of families) {
                 for (const sub of family.subModels) {
-                    await prisma.brandDesktopCatalog.create({
-                        data: {
-                            brand,
-                            series: family.name,
-                            modelName: sub.name,
-                            cpu: sub.cpu || [],
-                            ram: sub.ram || [],
-                            storage: sub.storage || [],
-                            gpu: sub.gpu || [],
-                            os: sub.os || [],
-                            releaseYear: sub.release_year,
-                            sku: sub.sku,
-                            ports: sub.ports,
-                            weight: sub.weight,
-                            isMini: sub.type === "mini" || family.type === "mini"
+                    const data = {
+                        brand,
+                        series: family.name,
+                        modelName: sub.name,
+                        cpu: sub.cpu || [],
+                        ram: sub.ram || [],
+                        storage: sub.storage || [],
+                        gpu: sub.gpu || [],
+                        os: sub.os || [],
+                        releaseYear: sub.release_year,
+                        sku: sub.sku,
+                        ports: sub.ports,
+                        weight: sub.weight,
+                        isMini: sub.type === "mini" || family.type === "mini"
+                    };
+
+                    if (sub.sku) {
+                        await prisma.brandDesktopCatalog.upsert({
+                            where: { sku: sub.sku },
+                            update: data,
+                            create: data
+                        });
+                    } else {
+                        // Fallback logic for unique identification
+                        const existing = await prisma.brandDesktopCatalog.findFirst({
+                            where: { brand, modelName: sub.name }
+                        });
+                        if (existing) {
+                            await prisma.brandDesktopCatalog.update({ where: { id: existing.id }, data });
+                        } else {
+                            await prisma.brandDesktopCatalog.create({ data });
                         }
-                    });
+                    }
                     count++;
                 }
             }
@@ -659,29 +688,43 @@ export async function syncAio() {
     noStore();
     try {
         console.log("Starting AIO Sync...");
-        await prisma.aioCatalog.deleteMany({});
         
         let count = 0;
         for (const [brand, families] of Object.entries(AIO_DATABASE)) {
             for (const family of families) {
                 for (const sub of family.subModels) {
-                    await prisma.aioCatalog.create({
-                        data: {
-                            brand,
-                            series: family.name,
-                            modelName: sub.name,
-                            screenSize: sub.screenSize || [],
-                            cpu: sub.cpu || [],
-                            ram: sub.ram || [],
-                            storage: sub.storage || [],
-                            gpu: sub.gpu || [],
-                            os: sub.os || [],
-                            releaseYear: sub.release_year,
-                            sku: sub.sku,
-                            display: Array.isArray(sub.display) ? sub.display.join(" / ") : sub.display,
-                            ports: sub.ports
+                    const data = {
+                        brand,
+                        series: family.name,
+                        modelName: sub.name,
+                        screenSize: sub.screenSize || [],
+                        cpu: sub.cpu || [],
+                        ram: sub.ram || [],
+                        storage: sub.storage || [],
+                        gpu: sub.gpu || [],
+                        os: sub.os || [],
+                        releaseYear: sub.release_year,
+                        sku: sub.sku,
+                        display: Array.isArray(sub.display) ? sub.display.join(" / ") : sub.display,
+                        ports: sub.ports
+                    };
+
+                    if (sub.sku) {
+                        await prisma.aioCatalog.upsert({
+                            where: { sku: sub.sku },
+                            update: data,
+                            create: data
+                        });
+                    } else {
+                        const existing = await prisma.aioCatalog.findFirst({
+                            where: { brand, modelName: sub.name }
+                        });
+                        if (existing) {
+                            await prisma.aioCatalog.update({ where: { id: existing.id }, data });
+                        } else {
+                            await prisma.aioCatalog.create({ data });
                         }
-                    });
+                    }
                     count++;
                 }
             }
