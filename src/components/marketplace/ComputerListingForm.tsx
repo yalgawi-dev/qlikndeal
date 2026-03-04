@@ -611,53 +611,34 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     }, [spec.brand, spec.family, spec.subModel]);
 
     // "Smart Pick" Logic
-    const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSubModel, sku?: any) => {
-        // We start with a BASE SPEC because we want to CLEAR old values
+const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSubModel, sku?: any) => {
+    console.log("DEBUG: applySmartModelPick called with:", { brand, familyName, sub, sku });
+    
+    setSpec(prev => {
         const newSpec = { 
-            ...spec, 
+            ...prev, 
             brand: brand || "", 
             family: familyName || "", 
             subModel: sub.name || "",
             // Reset spec fields to empty strings first to avoid ghosting
             cpu: "", ram: "", storage: "", screen: "", gpu: "", os: "", battery: "", ports: "", weight: "", release_year: "", sku: ""
         };
-        const newUncertain: string[] = [];
 
-        // Choose source data: specific SKU if provided, else general submodel
-        const sourceData = sku || sub;
+        // Helper to get first item from array or the string itself
+        const getVal = (field: keyof ComputerSubModel) => {
+            const val = (sku && sku[field]) ? sku[field] : sub[field];
+            if (Array.isArray(val)) return val.length > 0 ? val[0] : "";
+            return val || "";
+        };
 
-        // ── Spec fields (may have multiple options → mark uncertain) ──
-        if (sourceData.screenSize?.length > 0) {
-            newSpec.screen = sourceData.screenSize[0];
-            if (sourceData.screenSize.length > 1) newUncertain.push('screen');
-        }
+        newSpec.screen = getVal("screenSize") || getVal("display") || getVal("screen");
+        newSpec.cpu = getVal("cpu");
+        newSpec.gpu = getVal("gpu");
+        newSpec.ram = getVal("ram");
+        newSpec.storage = getVal("storage");
+        newSpec.os = getVal("os");
 
-        if (sourceData.cpu?.length > 0) {
-            newSpec.cpu = sourceData.cpu[0];
-            if (sourceData.cpu.length > 1) newUncertain.push('cpu');
-        }
-
-        if (sourceData.gpu?.length > 0) {
-            newSpec.gpu = sourceData.gpu[0];
-            if (sourceData.gpu.length > 1) newUncertain.push('gpu');
-        }
-
-        if (sourceData.ram?.length > 0) {
-            newSpec.ram = sourceData.ram[0];
-            if (sourceData.ram.length > 1) newUncertain.push('ram');
-        }
-
-        if (sourceData.storage?.length > 0) {
-            newSpec.storage = sourceData.storage[0];
-            if (sourceData.storage.length > 1) newUncertain.push('storage');
-        }
-
-        if (sourceData.os?.length > 0) {
-            newSpec.os = sourceData.os[0];
-            if (sourceData.os.length > 1) newUncertain.push('os');
-        }
-
-        // ── Rich fields – single values ──
+        // Rich fields – single values
         newSpec.battery = sub.battery || (sub as any).battery_info || "";
         newSpec.ports = sub.ports || sub.notes || (sub as any).ports_info || "";
         newSpec.weight = sub.weight || (sub as any).weights || "";
@@ -672,11 +653,28 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
             newSpec.sku = sub.sku;
         }
 
-        setSpec(newSpec);
-        setUncertainFields(newUncertain);
-        setGlobalSearch("");
-        setShowGlobalResults(false);
+        console.log("DEBUG: newSpec calculated:", newSpec);
+        return newSpec;
+    });
+
+    // Helper to check if field is uncertain (multiple options)
+    const checkUncertain = (field: keyof ComputerSubModel) => {
+        const val = (sku && sku[field]) ? sku[field] : sub[field];
+        return Array.isArray(val) && val.length > 1;
     };
+
+    const newUncertain: string[] = [];
+    if (checkUncertain("screenSize") || checkUncertain("display")) newUncertain.push('screen');
+    if (checkUncertain("cpu")) newUncertain.push('cpu');
+    if (checkUncertain("gpu")) newUncertain.push('gpu');
+    if (checkUncertain("ram")) newUncertain.push('ram');
+    if (checkUncertain("storage")) newUncertain.push('storage');
+    if (checkUncertain("os")) newUncertain.push('os');
+
+    setUncertainFields(newUncertain);
+    setGlobalSearch("");
+    setShowGlobalResults(false);
+};
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value.replace(/,/g, "").replace(/\D/g, "");

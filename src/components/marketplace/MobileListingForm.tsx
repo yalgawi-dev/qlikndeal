@@ -238,7 +238,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
     }, [spec.brand, spec.series]);
 
     const MODELS_FOR_LIST = useMemo(() => {
-        return dynamicModels.map(m => m.name).sort();
+        return [...dynamicModels.map(m => m.name).sort(), "אחר / לא ברשימה"];
     }, [dynamicModels]);
 
     useEffect(() => {
@@ -423,40 +423,50 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                                     options={MODELS_FOR_LIST}
                                     value={spec.model}
                                     onChange={async val => {
+                                        console.log("DEBUG: Mobile model selected:", val);
                                         let modelObj = dynamicModels.find(m => m.name === val);
                                         
-                                        if (!modelObj && val) {
-                                            // Direct lookup for mobile
+                                        if (!modelObj && val && val !== "אחר / לא ברשימה") {
+                                            console.log("DEBUG: Model not in dynamicModels, performing direct lookup for:", val);
                                             setFetchingDynamic(true);
                                             const res = await getAutocomplete(val, "Phones");
                                             if (res && res.length > 0) {
                                                 const match = res.find((r: any) => r.label === val) || res[0];
-                                                if (match.details) modelObj = { ...match.details, name: match.label };
+                                                if (match.details) {
+                                                    modelObj = { ...match.details, name: match.label };
+                                                    console.log("DEBUG: Direct lookup found match:", modelObj);
+                                                }
                                             }
                                             setFetchingDynamic(false);
                                         }
 
                                         if (modelObj) {
-                                            setSpec(s => ({
-                                                ...s,
-                                                brand: modelObj.brand || s.brand,
-                                                series: modelObj.series || s.series,
-                                                model: modelObj.modelName || modelObj.name || val,
-                                                ram: modelObj.ram || (modelObj.ramG ? modelObj.ramG + "GB" : "") || s.ram,
-                                                storage: modelObj.storage || (modelObj.storages ? modelObj.storages.join(" / ") : "") || s.storage,
-                                                screen: modelObj.screenSize || modelObj.screen || s.screen,
-                                                cpu: modelObj.cpu || s.cpu,
-                                                os: modelObj.os || s.os,
-                                                battery: modelObj.battery || s.battery,
-                                                rear_camera: modelObj.rear_camera || modelObj.rearCamera || s.rear_camera,
-                                                front_camera: modelObj.front_camera || modelObj.frontCamera || s.front_camera,
-                                                weight: modelObj.weight || s.weight,
-                                                thickness: modelObj.thickness || s.thickness,
-                                                dimensions: modelObj.dimensions || s.dimensions,
-                                                usb_type: modelObj.usb_type || modelObj.usbType || s.usb_type,
-                                                network: modelObj.network || s.network,
-                                            }));
+                                            console.log("DEBUG: Applying specs from modelObj:", modelObj);
+                                            setSpec(s => {
+                                                const ns = {
+                                                    ...s,
+                                                    brand: modelObj.brand || s.brand,
+                                                    series: modelObj.series || s.series,
+                                                    model: modelObj.modelName || modelObj.name || val,
+                                                    ram: modelObj.ram || (modelObj.ramG ? modelObj.ramG + "GB" : "") || s.ram,
+                                                    storage: modelObj.storage || (modelObj.storages ? modelObj.storages.join(" / ") : "") || s.storage,
+                                                    screen: modelObj.screenSize || modelObj.screen || s.screen,
+                                                    cpu: modelObj.cpu || s.cpu,
+                                                    os: modelObj.os || s.os,
+                                                    battery: modelObj.battery || s.battery,
+                                                    rear_camera: modelObj.rear_camera || modelObj.rearCamera || s.rear_camera,
+                                                    front_camera: modelObj.front_camera || modelObj.frontCamera || s.front_camera,
+                                                    weight: modelObj.weight || s.weight,
+                                                    thickness: modelObj.thickness || s.thickness,
+                                                    dimensions: modelObj.dimensions || s.dimensions,
+                                                    usb_type: modelObj.usb_type || modelObj.usbType || s.usb_type,
+                                                    network: modelObj.network || s.network,
+                                                };
+                                                console.log("DEBUG: Final state to be set:", ns);
+                                                return ns;
+                                            });
                                         } else {
+                                            console.log("DEBUG: No modelObj found, setting model name only:", val);
                                             setSpec(s => ({ ...s, model: val }));
                                         }
                                     }}
