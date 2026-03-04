@@ -275,7 +275,7 @@ export default function ExportPageClient() {
                 res = await importDesktopsAction(importPreview);
             } else if (type === "aio") {
                 res = await importAioAction(importPreview);
-            } else if (type === "phone") {
+            } else if (type === "mobile" || type === "phone") {
                 res = await importMobileAction(importPreview);
             } else if (type === "vehicle") {
                 res = await importVehicleAction(importPreview);
@@ -328,7 +328,7 @@ export default function ExportPageClient() {
         } else if (id === "aio") {
             headers = "brand,series,modelName,screenSize,cpu,gpu,ram,storage,os,releaseYear,sku,display,ports";
             example = "HP,Pavilion,27-ca,27,i7-13700T,RTX 3050,16GB,1TB,Windows 11,2023,HP-AIO-27,QHD IPS,4x USB-A/1x USB-C";
-        } else if (id === "phone") {
+        } else if (id === "mobile" || id === "phone") {
             headers = "brand,series,modelName,hebrewAliases,storages,screenSize,releaseYear,cpu,ramG,os,battery,rearCamera,frontCamera,weight,nfc,wirelessCharging";
             example = "Samsung,S24,Galaxy S24,סמסונג S24/גלקסי 24,128/256/512,6.2,2024,Exynos 2400,8,Android 14,4000mAh,50MP,12MP,167g,true,true";
         } else if (id === "vehicle") {
@@ -536,10 +536,6 @@ export default function ExportPageClient() {
                     <CatalogCard 
                         id="mobile" title="סלולריים" desc="סדרות iPhone, Samsung Galaxy, Xiaomi ו-Google Pixel."
                         icon={Tablet} color="purple" neonColor="purple" statsKey="mobile"
-                    />
-                    <CatalogCard 
-                        id="vehicle" title="רכבים" desc="מאגר יצרני ודגמי רכבים יד שנייה וחדשים."
-                        icon={Car} color="rose" neonColor="rose" statsKey="vehicle"
                     />
                     <CatalogCard 
                         id="electronics" title="אלקטרוניקה" desc="טלוויזיות, שעונים חכמים, אוזניות וגאדג'טים."

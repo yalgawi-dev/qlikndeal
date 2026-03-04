@@ -18,7 +18,6 @@ export async function getDatabaseStats() {
             { key: "laptop", prisma: prisma.laptopCatalog },
             { key: "desktop", prisma: prisma.brandDesktopCatalog },
             { key: "aio", prisma: prisma.aioCatalog },
-            { key: "vehicle", prisma: prisma.vehicleCatalog },
             { key: "mobile", prisma: prisma.mobileCatalog },
             { key: "motherboard", prisma: prisma.motherboardCatalog },
             { key: "electronics", prisma: prisma.electronicsCatalog },
