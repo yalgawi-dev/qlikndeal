@@ -304,8 +304,8 @@ export default function ExportPageClient() {
             }
 
             const message = res.added > 0 
-                ? `הייבוא והסנכרון המלא הושלמו! הוספו ${res.added} רשומות חדשות לסביבת הלייב.`
-                : `הסנכרון הסתיים. כל הרשומות (${res.skipped}) כבר קיימות במערכת (לא בוצעו שינויים).`;
+                ? `✅ ייבוא הושלם! נוספו ${res.added} מוצרים חדשים. ${res.duplicatesInFile > 0 ? `(${res.duplicatesInFile} כפולים בקובץ סוננו)` : ''}`
+                : `הסנכרון הסתיים. כל הרשומות כבר קיימות במערכת (${res.duplicatesInFile} כפולים בקובץ, ${res.skipped} קיימים ב-DB).`;
                 
             toast.success(message);
         } catch (error: any) {
@@ -645,14 +645,47 @@ export default function ExportPageClient() {
                                 </div>
 
                                 {importResult && (
-                                    <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl space-y-2">
-                                        <h5 className="text-xs font-bold text-emerald-400">תוצאות הייבוא:</h5>
-                                        <div className="grid grid-cols-2 gap-2 text-[10px]">
-                                            <div className="flex justify-between"><span>סה"כ:</span> <b>{importResult.total}</b></div>
-                                            <div className="flex justify-between"><span>נוספו:</span> <b className="text-emerald-400">{importResult.added}</b></div>
-                                            <div className="flex justify-between"><span>דולגו (כפילויות):</span> <b className="text-amber-400">{importResult.skipped}</b></div>
-                                            <div className="flex justify-between"><span>שגיאות:</span> <b className="text-red-400">{importResult.errors.length}</b></div>
+                                    <div className="p-4 bg-slate-800/60 border border-white/10 rounded-xl space-y-2">
+                                        <h5 className="text-xs font-black text-white mb-2 flex items-center gap-2">
+                                            ✅ תוצאות הייבוא
+                                        </h5>
+                                        <div className="grid grid-cols-2 gap-2 text-[11px]">
+                                            <div className="flex justify-between px-2 py-1 bg-white/5 rounded-lg">
+                                                <span className="text-slate-400">בקובץ:</span>
+                                                <b className="text-white">{importResult.total}</b>
+                                            </div>
+                                            <div className="flex justify-between px-2 py-1 bg-red-500/10 rounded-lg border border-red-500/20">
+                                                <span className="text-slate-400">נוספו:</span>
+                                                <b className="text-red-400">+{importResult.added}</b>
+                                            </div>
+                                            <div className="flex justify-between px-2 py-1 bg-orange-500/10 rounded-lg">
+                                                <span className="text-slate-400">כפולים בקובץ:</span>
+                                                <b className="text-orange-400">{importResult.duplicatesInFile}</b>
+                                            </div>
+                                            <div className="flex justify-between px-2 py-1 bg-amber-500/10 rounded-lg">
+                                                <span className="text-slate-400">קיימים ב-DB:</span>
+                                                <b className="text-amber-400">{importResult.skipped}</b>
+                                            </div>
+                                            {importResult.errors.length > 0 && (
+                                                <div className="col-span-2 flex justify-between px-2 py-1 bg-red-900/20 rounded-lg border border-red-800/20">
+                                                    <span className="text-slate-400">שגיאות:</span>
+                                                    <b className="text-red-500">{importResult.errors.length}</b>
+                                                </div>
+                                            )}
+                                            {importResult.newTotal && (
+                                                <div className="col-span-2 flex justify-between px-2 py-1 bg-white/5 rounded-lg">
+                                                    <span className="text-slate-400">סה"כ במאגר עכשיו:</span>
+                                                    <b className="text-white">{importResult.newTotal.toLocaleString()}</b>
+                                                </div>
+                                            )}
                                         </div>
+                                        {importResult.errors.length > 0 && (
+                                            <div className="mt-2 max-h-24 overflow-y-auto space-y-1">
+                                                {importResult.errors.slice(0, 5).map((err, i) => (
+                                                    <div key={i} className="text-[10px] font-mono text-red-400 bg-red-950/30 px-2 py-1 rounded">{err}</div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

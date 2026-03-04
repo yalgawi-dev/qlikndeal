@@ -548,13 +548,18 @@ model MotherboardCatalog {
 }
 
 model CatalogImportLog {
-  id        String   @id @default(uuid())
-  category  String
-  added     Int
-  skipped   Int
-  errors    Int
-  adminName String?
-  createdAt DateTime @default(now())
+  id               String   @id @default(uuid())
+  category         String
+  totalInFile      Int      @default(0)
+  added            Int
+  skipped          Int
+  duplicatesInFile Int      @default(0)
+  errors           Int
+  errorDetails     String[] @default([])
+  newTotal         Int      @default(0)
+  adminName        String?
+  createdAt        DateTime @default(now())
 
   @@index([category])
+  @@index([createdAt])
 }

@@ -41,7 +41,20 @@ export async function getDatabaseStats() {
 
         const recentLogs = await prisma.catalogImportLog.findMany({
             orderBy: { createdAt: "desc" },
-            take: 10
+            take: 20,
+            select: {
+                id: true,
+                category: true,
+                totalInFile: true,
+                added: true,
+                skipped: true,
+                duplicatesInFile: true,
+                errors: true,
+                errorDetails: true,
+                newTotal: true,
+                adminName: true,
+                createdAt: true
+            }
         });
 
         return { success: true, stats, recentLogs };
