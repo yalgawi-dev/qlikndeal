@@ -167,9 +167,13 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                 const aiRaw: string[] = JSON.parse(textContent);
 
                 if (Array.isArray(aiRaw)) {
-                    const combined = Array.from(new Set([...dbResults, ...aiRaw])).slice(0, 10);
+                    const dbLabels = dbResults.map((r: any) => typeof r === 'string' ? r : r.label);
+                    const combined = Array.from(new Set([...dbLabels, ...aiRaw])).slice(0, 10);
                     setSuggestions(combined);
                     setShowSuggestions(combined.length > 0);
+                } else {
+                    const dbLabels = dbResults.map((r: any) => typeof r === 'string' ? r : r.label);
+                    setSuggestions(dbLabels);
                 }
             }
         } catch (e) {
@@ -374,10 +378,10 @@ export function HardwareSearchEngine({ category, onSelect }: HardwareSearchEngin
                             <button
                                 key={i}
                                 type="button"
-                                onMouseDown={(e) => { e.preventDefault(); doSearch(s); }}
+                                onMouseDown={(e) => { e.preventDefault(); doSearch(typeof s === 'string' ? s : s.label); }}
                                 className="w-full text-right px-4 py-2 hover:bg-cyan-900/40 text-sm text-gray-200 border-b border-gray-800 last:border-0 transition-colors"
                             >
-                                {s}
+                                {typeof s === 'string' ? s : s.label}
                             </button>
                         ))}
                     </div>

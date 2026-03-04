@@ -232,7 +232,7 @@ export async function getAutocomplete(query: string, category: string, subCatego
     const q = query.trim();
     if (!q) return [];
 
-    let results: string[] = [];
+    let results: any[] = [];
     if (category === "Computers") {
         const fetchLimit = 20;
         
