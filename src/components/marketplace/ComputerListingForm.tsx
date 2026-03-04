@@ -550,7 +550,15 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
     // "Smart Pick" Logic
     const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSubModel, sku?: any) => {
-        const newSpec = { ...spec, brand, family: familyName, subModel: sub.name };
+        // We start with a BASE SPEC because we want to CLEAR old values
+        const newSpec = { 
+            ...spec, 
+            brand: brand || "", 
+            family: familyName || "", 
+            subModel: sub.name || "",
+            // Reset spec fields to empty strings first to avoid ghosting
+            cpu: "", ram: "", storage: "", screen: "", gpu: "", os: "", battery: "", ports: "", weight: "", release_year: "", sku: ""
+        };
         const newUncertain: string[] = [];
 
         // Choose source data: specific SKU if provided, else general submodel
@@ -558,46 +566,48 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
         // ── Spec fields (may have multiple options → mark uncertain) ──
         if (sourceData.screenSize?.length > 0) {
-            newSpec.screen = sourceData.screenSize.length === 1 ? sourceData.screenSize[0] : "לא ידוע";
+            newSpec.screen = sourceData.screenSize[0];
             if (sourceData.screenSize.length > 1) newUncertain.push('screen');
-        } else { newSpec.screen = "לא ידוע"; }
+        }
 
         if (sourceData.cpu?.length > 0) {
-            newSpec.cpu = sourceData.cpu.length === 1 ? sourceData.cpu[0] : "לא ידוע";
+            newSpec.cpu = sourceData.cpu[0];
             if (sourceData.cpu.length > 1) newUncertain.push('cpu');
-        } else { newSpec.cpu = "לא ידוע"; }
+        }
 
         if (sourceData.gpu?.length > 0) {
-            newSpec.gpu = sourceData.gpu.length === 1 ? sourceData.gpu[0] : "לא ידוע";
+            newSpec.gpu = sourceData.gpu[0];
             if (sourceData.gpu.length > 1) newUncertain.push('gpu');
-        } else { newSpec.gpu = "לא ידוע"; }
+        }
 
         if (sourceData.ram?.length > 0) {
-            newSpec.ram = sourceData.ram.length === 1 ? sourceData.ram[0] : "לא ידוע";
+            newSpec.ram = sourceData.ram[0];
             if (sourceData.ram.length > 1) newUncertain.push('ram');
-        } else { newSpec.ram = "לא ידוע"; }
+        }
 
         if (sourceData.storage?.length > 0) {
-            newSpec.storage = sourceData.storage.length === 1 ? sourceData.storage[0] : "לא ידוע";
+            newSpec.storage = sourceData.storage[0];
             if (sourceData.storage.length > 1) newUncertain.push('storage');
-        } else { newSpec.storage = "לא ידוע"; }
+        }
 
         if (sourceData.os?.length > 0) {
-            newSpec.os = sourceData.os.length === 1 ? sourceData.os[0] : "לא ידוע";
+            newSpec.os = sourceData.os[0];
             if (sourceData.os.length > 1) newUncertain.push('os');
-        } else { newSpec.os = "לא ידוע"; }
+        }
 
-        // ── Rich fields – single values, always fill from sub (not sku) ──
-        if (sub.battery) newSpec.battery = sub.battery;
-        if (sub.ports) newSpec.ports = sub.ports;
-        if (sub.weight) newSpec.weight = sub.weight;
-        if (sub.release_year) newSpec.release_year = sub.release_year;
-        // SKU: prefer the specific SKU id if user picked a SKU row;
-        // otherwise auto-fill if the submodel has exactly one SKU
-        if (sku?.id) {
-            newSpec.sku = sku.id;
+        // ── Rich fields – single values ──
+        newSpec.battery = sub.battery || "";
+        newSpec.ports = sub.ports || "";
+        newSpec.weight = sub.weight || "";
+        newSpec.release_year = sub.release_year || "";
+
+        // SKU persistence
+        if (sku?.id || sku?.sku) {
+            newSpec.sku = sku.id || sku.sku;
         } else if (sub.skus && sub.skus.length === 1) {
             newSpec.sku = sub.skus[0].id || "";
+        } else if (sub.sku) {
+            newSpec.sku = sub.sku;
         }
 
         setSpec(newSpec);
@@ -745,22 +755,25 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     const handleApplySearchEngineSpecs = (result: any) => {
         // The search engine result contains full specs - apply them all to the form
         // We handle multiple potential field names because mapping can vary between local search, DB search, and AI search
+        
+        // When applying a search result, we want to OVERWRITE the current state, 
+        // not merge it, to avoid "ghosting" from previous selections.
         setSpec(s => ({
             ...s,
-            brand: result.brand || result.make || s.brand,
-            family: result.family || result.series || s.family,
-            subModel: result.model_name || result.subModel || result.model || s.subModel,
-            sku: result.model_number || result.sku || s.sku,
-            ram: result.ram || s.ram,
-            storage: result.storage || s.storage,
-            screen: result.display || result.screen || result.screenSize || s.screen,
-            cpu: result.cpu || s.cpu,
-            gpu: result.gpu || s.gpu,
-            os: result.os || s.os,
-            battery: result.battery || s.battery,
-            ports: result.ports || s.ports,
-            weight: result.weight || s.weight,
-            release_year: result.release_year || result.year || s.release_year,
+            brand: result.brand || result.make || "",
+            family: result.family || result.series || "",
+            subModel: result.model_name || result.subModel || result.model || "",
+            sku: result.model_number || result.sku || "",
+            ram: result.ram || "",
+            storage: result.storage || "",
+            screen: result.display || result.screen || result.screenSize || "",
+            cpu: result.cpu || "",
+            gpu: result.gpu || "",
+            os: result.os || "",
+            battery: result.battery || "",
+            ports: result.ports || "",
+            weight: result.weight || "",
+            release_year: result.release_year || result.year || "",
         }));
 
         setDetails(d => ({
@@ -977,7 +990,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                                         options={dbBrands}
                                                         value={spec.brand}
                                                         onChange={v => {
-                                                            setSpec(s => ({ ...s, brand: v }));
+                                                            // Clear family and submodel when brand changes to prevent invalid state
+                                                            setSpec(s => ({ ...s, brand: v, family: "", subModel: "", sku: "" }));
                                                         }}
                                                     />
                                                     <SpecSelector
@@ -987,7 +1001,8 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                                         disabled={fetchingDynamic}
                                                         placeholder={fetchingDynamic ? "טוען סדרות..." : "בחר סדרה..."}
                                                         onChange={v => {
-                                                            setSpec(s => ({ ...s, family: v }));
+                                                            // Clear submodel when family changes
+                                                            setSpec(s => ({ ...s, family: v, subModel: "", sku: "" }));
                                                             // If we chose a family that has a known brand, and brand is empty, fill it
                                                             if (!spec.brand) {
                                                                 const knownModel = dynamicModels.find(m => m.series === v);
