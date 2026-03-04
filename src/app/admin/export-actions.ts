@@ -144,7 +144,7 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
 
     // Laptops
     for (const l of laptops_all) {
-        const isNew = l.createdAt && (new Date().getTime() - new Date(l.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const isNew = l.createdAt && (new Date().getTime() - new Date(l.createdAt).getTime()) < 1000 * 60 * 60;
         const rowClass = isNew ? 'class="new-row"' : '';
         
         html += `
@@ -172,7 +172,7 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
 
     // Desktops
     for (const d of desktops) {
-        const isNew = d.createdAt && (new Date().getTime() - new Date(d.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const isNew = d.createdAt && (new Date().getTime() - new Date(d.createdAt).getTime()) < 1000 * 60 * 60;
         const rowClass = isNew ? 'class="new-row"' : '';
         
         html += `
@@ -200,7 +200,7 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
 
     // AIOs
     for (const a of aios) {
-        const isNew = a.createdAt && (new Date().getTime() - new Date(a.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const isNew = a.createdAt && (new Date().getTime() - new Date(a.createdAt).getTime()) < 1000 * 60 * 60;
         const rowClass = isNew ? 'class="new-row"' : '';
 
         html += `
@@ -264,7 +264,7 @@ export async function exportPhonesToCSV() {
     const mobiles = await prisma.mobileCatalog.findMany({ orderBy: { brand: "asc" } });
 
     for (const phone of mobiles) {
-        const isNew = phone.createdAt && (new Date().getTime() - new Date(phone.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const isNew = phone.createdAt && (new Date().getTime() - new Date(phone.createdAt).getTime()) < 1000 * 60 * 60;
         const rowClass = isNew ? 'class="new-row"' : '';
 
         html += `
@@ -437,7 +437,7 @@ export async function exportAppliancesToCSV() {
     const appliances = await prisma.applianceCatalog.findMany({ orderBy: { brand: "asc" } });
 
     for (const a of appliances) {
-        const isNew = a.createdAt && (new Date().getTime() - new Date(a.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const isNew = a.createdAt && (new Date().getTime() - new Date(a.createdAt).getTime()) < 1000 * 60 * 60;
         const rowClass = isNew ? 'class="new-row"' : '';
 
         html += `

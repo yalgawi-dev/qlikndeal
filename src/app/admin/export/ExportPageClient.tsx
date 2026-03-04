@@ -191,6 +191,9 @@ export default function ExportPageClient() {
                 return;
             }
 
+            let rawHeaders: string[] = [];
+            let rowsRaw: string[][] = [];
+
             // ניסיון ראשון: JSON
             if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
                 const parsed = JSON.parse(trimmed);
@@ -198,22 +201,46 @@ export default function ExportPageClient() {
                 return;
             }
 
-            // ניסיון שני: CSV או TSV (אקסל)
-            const lines = trimmed.split("\n");
-            if (lines.length < 2) return;
-            
-            // זיהוי מפריד: אם יש טאבים, זה כנראה מאקסל. אם לא, פסיק.
-            const firstLine = lines[0];
-            const delimiter = firstLine.includes("\t") ? "\t" : ",";
+            // ניסיון שני: HTML Table (הפורמט שהמערכת שלנו מייצאת תחת סיומת XLS)
+            if (trimmed.toLowerCase().includes("<table")) {
+                const theadMatch = trimmed.match(/<thead[^>]*>([\s\S]*?)<\/thead>/i);
+                if (theadMatch) {
+                    const thMatches = [...theadMatch[1].matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)];
+                    rawHeaders = thMatches.map(m => m[1].replace(/<[^>]+>/g, "").trim());
+                }
 
-            const columns = firstLine.split(delimiter).map(h => h.trim());
-            if (columns.length < 2) {
-                toast.error("מבנה הקובץ לא נראה תקין (פחות מ-2 עמודות)");
+                const tbodyMatch = trimmed.match(/<tbody[^>]*>([\s\S]*?)<\/tbody>/i) || trimmed.match(/<table[^>]*>([\s\S]*?)<\/table>/i);
+                if (tbodyMatch && rawHeaders.length > 0) {
+                    const trMatches = [...tbodyMatch[1].matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
+                    for (const tr of trMatches) {
+                        const tdMatches = [...tr[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)];
+                        if (tdMatches.length > 0) {
+                            rowsRaw.push(tdMatches.map(m => m[1].replace(/<[^>]+>/g, "").trim()));
+                        }
+                    }
+                }
+            } 
+            // ניסיון שלישי: CSV או TSV
+            else {
+                const lines = trimmed.split("\n");
+                if (lines.length >= 2) {
+                    const firstLine = lines[0];
+                    const delimiter = firstLine.includes("\t") ? "\t" : ",";
+                    rawHeaders = firstLine.split(delimiter).map(h => h.trim());
+                    
+                    for (let i = 1; i < lines.length; i++) {
+                        if (lines[i].trim()) {
+                            rowsRaw.push(lines[i].split(delimiter).map(v => v.trim()));
+                        }
+                    }
+                }
+            }
+
+            if (rawHeaders.length < 2) {
+                toast.error("מבנה הקובץ לא נראה תקין (חסרות עמודות מזוהות)");
                 return;
             }
 
-            const rawHeaders = columns;
-            
             // מיפוי עברית לאנגלית
             const mapping: Record<string, string> = {
                 "יצרן": "brand", "מותג": "brand", "Make": "brand",
@@ -222,26 +249,31 @@ export default function ExportPageClient() {
                 "סוג": "type",
                 "מסך": "screenSize", "גודל מסך": "screenSize",
                 "מעבד": "cpu", "CPU": "cpu",
-                "זיכרון RAM": "ram", "זיכרון": "ram", "RAM": "ram",
-                "אחסון": "storage", "Storage": "storage",
+                "זיכרון RAM": "ram", "זיכרון": "ram", "RAM": "ram", "ramG": "ramG",
+                "אחסון": "storage", "Storage": "storage", "אחסון (GB)": "storages", "storages": "storages",
                 "מאיץ גרפי": "gpu", "כרטיס מסך": "gpu", "GPU": "gpu",
                 "שנה": "releaseYear", "Year": "releaseYear",
                 "הערות": "notes",
                 "מק\"ט": "sku", "SKU": "sku",
                 "משקל": "weight",
                 "חיבורים": "ports",
-                "תצוגה": "display"
+                "תצוגה": "display",
+                "כינויים (HE)": "hebrewAliases", "סוללה": "battery",
+                "מצלמה אחורית": "rearCamera", "מצלמה קדמית": "frontCamera",
+                "NFC": "nfc", "טעינה אלחוטית": "wirelessCharging"
             };
 
             const headers = rawHeaders.map(h => mapping[h] || h);
 
-            const rows = lines.slice(1).filter(l => l.trim()).map(line => {
-                const values = line.split(delimiter).map(v => v.trim());
+            const rows = rowsRaw.map((values) => {
                 const obj: any = {};
                 headers.forEach((header, i) => {
-                    let val: any = values[i];
-                    if (val && val.includes("/")) {
+                    let val: any = values[i] || "";
+                    if (val && typeof val === 'string' && val.includes("/")) {
                         val = val.split("/").map((v: string) => v.trim());
+                    }
+                    if (header === "nfc" || header === "wirelessCharging") {
+                        val = val === "V" || val === "v" || val === "true";
                     }
                     obj[header] = val;
                 });

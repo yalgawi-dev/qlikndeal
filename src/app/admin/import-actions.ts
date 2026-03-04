@@ -83,11 +83,25 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
                         where: { brand: item.brand, modelName: item.modelName },
                         select: { cpu: true, ram: true, storage: true }
                     });
-                    if (matches.some(m =>
-                        JSON.stringify(m.cpu || []) === JSON.stringify(item.cpu || []) &&
-                        JSON.stringify(m.ram || []) === JSON.stringify(item.ram || []) &&
-                        JSON.stringify(m.storage || []) === JSON.stringify(item.storage || [])
-                    )) existing = true;
+                    if (matches.length > 0) {
+                        // Check if exact variant exists
+                        if (matches.some(m =>
+                            JSON.stringify(m.cpu || []) === JSON.stringify(item.cpu || []) &&
+                            JSON.stringify(m.ram || []) === JSON.stringify(item.ram || []) &&
+                            JSON.stringify(m.storage || []) === JSON.stringify(item.storage || [])
+                        )) {
+                            existing = true;
+                        } else {
+                            // Variant differs, but let's check if they meant the same model
+                            // Often spreadsheets have slight formatting differences causing array matches to fail.
+                            // To be safer against duplicating the same model/cpu combinations, we'll mark existing if model matches closely.
+                            // If they already imported 300 laptops, we probably don't want any duplicates if the brand and model exactly match unless it's a completely different SKU.
+                            if (!item.sku) {
+                                // Fallback: if no SKU, assume existing if brand+modelName match to avoid duplicate records.
+                                existing = true;
+                            }
+                        }
+                    }
                 }
                 if (existing) { result.skipped++; continue; }
 
@@ -152,10 +166,12 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
                 if (item.sku) existing = await prismadb.brandDesktopCatalog.findUnique({ where: { sku: item.sku } });
                 if (!existing) {
                     const matches = await prismadb.brandDesktopCatalog.findMany({ where: { brand: item.brand, modelName: item.modelName } });
-                    if (matches.some(m =>
+                    if (matches.length > 0 && !item.sku) {
+                        existing = true;
+                    } else if (matches.some(m =>
                         JSON.stringify(m.cpu || []) === JSON.stringify(item.cpu || []) &&
                         JSON.stringify(m.ram || []) === JSON.stringify(item.ram || [])
-                    )) existing = true;
+                    )) { existing = true; }
                 }
                 if (existing) { result.skipped++; continue; }
 
@@ -202,10 +218,12 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
                 if (item.sku) existing = await prismadb.aioCatalog.findUnique({ where: { sku: item.sku } });
                 if (!existing) {
                     const matches = await prismadb.aioCatalog.findMany({ where: { brand: item.brand, modelName: item.modelName } });
-                    if (matches.some(m =>
+                    if (matches.length > 0 && !item.sku) {
+                        existing = true;
+                    } else if (matches.some(m =>
                         JSON.stringify(m.cpu || []) === JSON.stringify(item.cpu || []) &&
                         JSON.stringify(m.ram || []) === JSON.stringify(item.ram || [])
-                    )) existing = true;
+                    )) { existing = true; }
                 }
                 if (existing) { result.skipped++; continue; }
 
