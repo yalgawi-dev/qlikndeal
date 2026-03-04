@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, MessageSquare, Send, User, Clock, CheckCircle2 } from "lucide-react";
+import { Loader2, Plus, Trash2, MessageSquare, Send, User, Clock, CheckCircle2, Zap } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { he } from "date-fns/locale";
 
@@ -74,229 +74,248 @@ export default function AdminTasksClient({ initialTasks }: AdminTasksClientProps
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-10" dir="rtl">
-            {/* New Task Entry Card */}
-            <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-xl overflow-hidden ring-1 ring-black/5">
-                <CardHeader className="pb-4 bg-gradient-to-r from-indigo-50/50 to-white/50 border-b border-indigo-100/30">
-                    <CardTitle className="text-2xl font-black text-slate-800 flex items-center gap-3">
-                        <div className="p-2 bg-indigo-500 rounded-xl shadow-lg shadow-indigo-200">
-                            <Plus className="h-6 w-6 text-white" />
-                        </div>
-                        משימה חדשה
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-8 px-6 md:px-10 pb-10">
-                    <form onSubmit={handleAddTask} className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-black text-slate-500 mr-1">כותרת המשימה</label>
-                            <Input
-                                placeholder="מה צריך לעשות?"
-                                value={newTaskTitle}
-                                onChange={(e) => setNewTaskTitle(e.target.value)}
-                                className="text-xl font-bold border-slate-200 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 py-7 rounded-2xl bg-slate-50/50 transition-all"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-black text-slate-500 mr-1">תוכן המשימה (פירוט)</label>
-                            <Textarea
-                                placeholder="כאן אפשר למלא את כל הפרטים..."
-                                value={newTaskDesc}
-                                onChange={(e) => setNewTaskDesc(e.target.value)}
-                                className="min-h-[120px] text-lg font-medium border-slate-200 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 py-4 rounded-2xl bg-slate-50/50 resize-none transition-all"
-                            />
-                        </div>
-                        <div className="flex justify-start">
-                            <Button 
-                                type="submit" 
-                                disabled={isAdding} 
-                                className="w-full md:w-auto px-10 py-8 bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-black rounded-3xl shadow-xl shadow-indigo-200 transition-all hover:scale-105 active:scale-95 flex items-center gap-3"
-                            >
-                                {isAdding ? <Loader2 className="h-6 w-6 animate-spin" /> : <Send className="h-6 w-6 transform rotate-180" />}
-                                צור משימה עכשיו
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
+        <div className="max-w-4xl mx-auto space-y-12 pb-20 px-4" dir="rtl">
+            {/* New Task Entry Card - Cyber Neon Style */}
+            <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <Card className="relative border-none bg-slate-900/90 backdrop-blur-2xl overflow-hidden rounded-[2.2rem] ring-1 ring-white/10 shadow-[0_0_50px_-12px_rgba(79,70,229,0.3)]">
+                    <CardHeader className="pb-4 border-b border-white/5 bg-white/[0.02]">
+                        <CardTitle className="text-2xl font-black text-white flex items-center gap-3">
+                            <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-[0_0_20px_rgba(79,70,229,0.5)]">
+                                <Plus className="h-6 w-6 text-white" />
+                            </div>
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">צור משימה חדשה</span>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-8 md:px-12 pb-12">
+                        <form onSubmit={handleAddTask} className="space-y-8">
+                            <div className="space-y-3">
+                                <label className="text-sm font-black text-indigo-400 uppercase tracking-widest mr-2 flex items-center gap-2">
+                                    <Zap className="h-3 w-3" /> כותרת המשימה
+                                </label>
+                                <Input
+                                    placeholder="מה היעד הבא שלנו?"
+                                    value={newTaskTitle}
+                                    onChange={(e) => setNewTaskTitle(e.target.value)}
+                                    className="text-xl font-bold bg-white/[0.03] border-white/10 text-white placeholder:text-slate-600 focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 py-7 rounded-2xl transition-all shadow-inner"
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-sm font-black text-purple-400 uppercase tracking-widest mr-2">תוכן המשימה והנחיות</label>
+                                <Textarea
+                                    placeholder="פרט כאן את כל מה שצריך לדעת..."
+                                    value={newTaskDesc}
+                                    onChange={(e) => setNewTaskDesc(e.target.value)}
+                                    className="min-h-[140px] text-lg font-medium bg-white/[0.03] border-white/10 text-slate-200 placeholder:text-slate-600 focus:border-purple-500/50 focus:ring-4 focus:ring-purple-500/10 py-5 rounded-2xl resize-none transition-all shadow-inner"
+                                />
+                            </div>
+                            <div className="flex justify-start pt-4">
+                                <Button 
+                                    type="submit" 
+                                    disabled={isAdding} 
+                                    className="w-full md:w-auto px-12 py-8 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xl font-black rounded-3xl shadow-[0_10px_30px_-5px_rgba(79,70,229,0.4)] transition-all hover:scale-[1.03] active:scale-95 flex items-center gap-4"
+                                >
+                                    {isAdding ? <Loader2 className="h-6 w-6 animate-spin" /> : <Send className="h-6 w-6 transform rotate-180" />}
+                                    צאי לדרך!
+                                </Button>
+                            </div>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
 
             {/* Tasks Feed Header */}
-            <div className="flex items-center justify-between px-4">
-                <h2 className="text-2xl font-black text-white flex items-center gap-4">
-                    <div className="h-2 w-10 bg-indigo-500 rounded-full"></div>
-                    משימות פעילות
-                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-black backdrop-blur-md">
-                        {tasks.filter(t => !t.completed).length}
+            <div className="flex items-center justify-between px-6">
+                <h2 className="text-3xl font-black text-white flex items-center gap-5">
+                    <div className="h-3 w-12 bg-gradient-to-r from-indigo-500 to-transparent rounded-full"></div>
+                    דופק הפרויקט
+                    <span className="bg-indigo-500/20 text-indigo-400 px-4 py-1 rounded-full text-sm font-black ring-1 ring-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                        {tasks.filter(t => !t.completed).length} פעילות
                     </span>
                 </h2>
-                <div className="h-px flex-1 bg-white/10 mx-6 hidden md:block"></div>
+                <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent mx-8 hidden md:block"></div>
             </div>
 
             {/* Task Cards Grid */}
-            <div className="grid gap-8">
+            <div className="grid gap-10">
                 {tasks.length === 0 && (
-                    <div className="bg-white/5 backdrop-blur-md border-2 border-dashed border-white/10 rounded-[3rem] py-32 flex flex-col items-center justify-center text-slate-400">
-                        <CheckCircle2 className="h-20 w-20 mb-6 opacity-10 text-emerald-400" />
-                        <p className="text-2xl font-black opacity-30">הכל נקי! אין משימות פתוחות</p>
+                    <div className="bg-white/[0.02] border-2 border-dashed border-white/5 rounded-[3rem] py-40 flex flex-col items-center justify-center text-slate-500">
+                        <CheckCircle2 className="h-24 w-24 mb-6 opacity-5 text-indigo-500" />
+                        <p className="text-2xl font-black opacity-20 italic">הכל רגוע כרגע...</p>
                     </div>
                 )}
 
                 {tasks.map((task) => (
-                    <Card key={task.id} className={`group border-none shadow-2xl transition-all duration-700 hover:translate-y-[-4px] overflow-hidden ${task.completed ? 'opacity-40 grayscale blur-[0.5px] scale-[0.98]' : 'bg-white/95 backdrop-blur-xl ring-1 ring-black/5'}`}>
-                        <CardHeader className="pb-4 pt-10 px-8 md:px-12 relative">
-                            {task.completed && (
-                                <div className="absolute top-8 left-12 px-4 py-1.5 bg-emerald-500/10 text-emerald-600 text-[10px] font-black rounded-full border border-emerald-500/20 uppercase tracking-widest flex items-center gap-2">
-                                    <CheckCircle2 className="h-3 w-3" />
-                                    המשימה בוצעה
-                                </div>
-                            )}
-                            <div className="flex items-start justify-between gap-8">
-                                <div className="flex items-start gap-6 flex-1 text-right">
-                                    <div className="pt-2 shrink-0">
-                                        <Checkbox
-                                            checked={task.completed}
-                                            onCheckedChange={() => handleToggle(task.id, task.completed)}
-                                            className="h-9 w-9 rounded-2xl border-2 border-slate-200 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-transparent transition-all shadow-lg shadow-emerald-100"
-                                        />
-                                    </div>
-                                    <div className="space-y-4 flex-1">
-                                        <CardTitle className={`text-3xl font-black tracking-tight leading-[1.1] transition-all duration-700 ${task.completed ? 'line-through text-slate-400' : 'text-slate-900 group-hover:text-indigo-600'}`}>
-                                            {task.title}
-                                        </CardTitle>
-                                        
-                                        {task.description && (
-                                            <div className="relative group/desc">
-                                                <div className="absolute -right-4 top-2 bottom-2 w-1.5 bg-indigo-500/20 rounded-full group-hover/desc:bg-indigo-500/40 transition-all"></div>
-                                                <p className={`text-xl text-slate-600 font-medium leading-relaxed whitespace-pre-wrap pr-2 ${task.completed ? 'italic' : ''}`}>
-                                                    {task.description}
-                                                </p>
-                                            </div>
-                                        )}
-
-                                        <div className="flex flex-wrap items-center gap-5 mt-6 pt-6 border-t border-slate-100/50">
-                                            <div className="flex items-center gap-3 bg-indigo-50 px-4 py-2 rounded-2xl border border-indigo-100 shadow-sm text-indigo-700">
-                                                <div className="p-1 bg-white rounded-lg shadow-sm">
-                                                    <User className="h-4 w-4" />
-                                                </div>
-                                                <span className="text-[12px] font-black">נוצר ע"י: {task.createdBy?.firstName || "אדמין"}</span>
-                                            </div>
-                                            <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100 shadow-sm text-slate-500">
-                                                <Clock className="h-4 w-4" />
-                                                <span className="text-[12px] font-black uppercase">{formatDistanceToNow(new Date(task.createdAt), { addSuffix: true, locale: he })}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    onClick={() => handleDelete(task.id)} 
-                                    className="text-slate-200 hover:text-rose-500 hover:bg-rose-50 transition-all shrink-0 group-hover:opacity-100 opacity-0 md:h-12 md:w-12 rounded-2xl"
-                                >
-                                    <Trash2 className="h-7 w-7" />
-                                </Button>
-                            </div>
-                        </CardHeader>
-
-                        <CardContent className="px-8 md:px-12 pb-12 pt-4">
-                            {/* Chat Section */}
-                            <div className="mt-8 pt-10 border-t-2 border-slate-50 space-y-8">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="p-2.5 bg-indigo-500 rounded-2xl shadow-lg shadow-indigo-100">
-                                            <MessageSquare className="h-5 w-5 text-white" />
-                                        </div>
-                                        <span className="text-lg font-black text-slate-800 tracking-tight">עדכונים וצ'אט צוות ({task.comments?.length || 0})</span>
-                                    </div>
-                                    {!task.completed && (
-                                        <span className="text-[10px] font-black text-indigo-500 animate-pulse uppercase tracking-[0.2em]">Live Channel</span>
-                                    )}
-                                </div>
-
-                                {/* Comments list */}
-                                <div className="space-y-6 max-h-[500px] overflow-y-auto pr-4 pl-2 -mr-4 custom-scrollbar">
-                                    {task.comments?.map((comment: any) => {
-                                        const name = comment.author?.firstName || "אדמין";
-                                        const hash = name.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-                                        const themeColors = [
-                                            { main: "text-indigo-700", bg: "bg-indigo-50/70", border: "border-indigo-100", dot: "bg-indigo-500" },
-                                            { main: "text-emerald-700", bg: "bg-emerald-50/70", border: "border-emerald-100", dot: "bg-emerald-500" },
-                                            { main: "text-rose-700", bg: "bg-rose-50/70", border: "border-rose-100", dot: "bg-rose-500" },
-                                            { main: "text-amber-700", bg: "bg-amber-50/70", border: "border-amber-100", dot: "bg-amber-500" },
-                                            { main: "text-violet-700", bg: "bg-violet-50/70", border: "border-violet-100", dot: "bg-violet-500" }
-                                        ];
-                                        const theme = themeColors[Math.abs(hash) % themeColors.length];
-
-                                        return (
-                                            <div key={comment.id} className="flex flex-col gap-3 group/comment items-start animate-in fade-in slide-in-from-right-4 duration-500">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`h-2.5 w-2.5 rounded-full ${theme.dot} shadow-[0_0_10px_rgba(0,0,0,0.1)] group-hover/comment:scale-125 transition-transform`}></div>
-                                                    <span className={`text-xs font-black uppercase tracking-wider ${theme.main}`}>
-                                                        {name}
-                                                    </span>
-                                                    <span className="text-[10px] text-slate-300 font-bold">
-                                                        {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true, locale: he })}
-                                                    </span>
-                                                </div>
-                                                <div className={`relative ${theme.bg} ${theme.border} border-2 rounded-[2rem] rounded-tr-none px-7 py-4 shadow-sm group-hover/comment:shadow-md group-hover/comment:translate-x-[-2px] transition-all duration-300`}>
-                                                    <p className={`text-base font-bold leading-relaxed ${theme.main}`}>
-                                                        {comment.content}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                    
-                                    {(!task.comments || task.comments.length === 0) && (
-                                        <div className="py-12 bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-100 text-center">
-                                            <p className="text-slate-400 font-black italic">אין עדכונים עדיין. צריך לדבר על זה?</p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Add comment form */}
-                                {!task.completed && (
-                                    <div className="flex gap-4 mt-10 p-3 bg-white rounded-[2.5rem] shadow-2xl shadow-indigo-500/10 border-2 border-indigo-50 transition-all focus-within:border-indigo-500/20 group/input">
-                                        <Input
-                                            placeholder="כתוב כאן תגובה או שאלה..."
-                                            value={commentTexts[task.id] || ""}
-                                            onChange={(e) => setCommentTexts(prev => ({ ...prev, [task.id]: e.target.value }))}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' && !e.shiftKey) {
-                                                    e.preventDefault();
-                                                    handleAddComment(task.id);
-                                                }
-                                            }}
-                                            className="flex-1 bg-transparent border-none py-8 text-lg font-black text-slate-800 placeholder:text-slate-300 focus-visible:ring-0"
-                                        />
-                                        <Button 
-                                            size="icon" 
-                                            onClick={() => handleAddComment(task.id)}
-                                            disabled={!commentTexts[task.id]?.trim()}
-                                            className="shrink-0 h-16 w-16 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.8rem] shadow-xl shadow-indigo-200 transition-all hover:scale-110 active:scale-95 group-hover/input:scale-105"
-                                        >
-                                            <Send className="h-7 w-7 transform rotate-180" />
-                                        </Button>
+                    <div key={task.id} className="relative group">
+                        {/* Task Neon Glow when active */}
+                        {!task.completed && (
+                            <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
+                        )}
+                        
+                        <Card className={`relative border-none transition-all duration-700 overflow-hidden rounded-[2.5rem] ${task.completed ? 'bg-slate-900/40 opacity-50 grayscale scale-[0.97]' : 'bg-slate-900/80 ring-1 ring-white/10 shadow-2xl shadow-black/50'}`}>
+                            <CardHeader className="pb-4 pt-12 px-10 md:px-14 relative">
+                                {task.completed && (
+                                    <div className="absolute top-8 left-14 px-5 py-2 bg-emerald-500/10 text-emerald-400 text-[11px] font-black rounded-full border border-emerald-500/20 uppercase tracking-widest flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                                        <CheckCircle2 className="h-4 w-4" />
+                                        המשימה הושלמה
                                     </div>
                                 )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                <div className="flex items-start justify-between gap-10">
+                                    <div className="flex items-start gap-8 flex-1 text-right">
+                                        <div className="pt-2 shrink-0">
+                                            <Checkbox
+                                                checked={task.completed}
+                                                onCheckedChange={() => handleToggle(task.id, task.completed)}
+                                                className="h-10 w-10 rounded-2xl border-2 border-slate-700 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-transparent transition-all shadow-[0_0_20px_rgba(0,0,0,0.3)] data-[state=checked]:shadow-emerald-500/30"
+                                            />
+                                        </div>
+                                        <div className="space-y-5 flex-1">
+                                            <CardTitle className={`text-3xl font-black tracking-tight leading-[1.2] transition-all duration-700 ${task.completed ? 'line-through text-slate-500' : 'text-white drop-shadow-sm group-hover:text-indigo-400'}`}>
+                                                {task.title}
+                                            </CardTitle>
+                                            
+                                            {task.description && (
+                                                <div className="relative pl-2">
+                                                    <div className="absolute -right-5 top-1 bottom-1 w-1.5 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-full opacity-30 group-hover:opacity-100 transition-all"></div>
+                                                    <p className={`text-xl text-slate-300 font-medium leading-relaxed whitespace-pre-wrap ${task.completed ? 'text-slate-500' : ''}`}>
+                                                        {task.description}
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            <div className="flex flex-wrap items-center gap-6 mt-8 pt-8 border-t border-white/5">
+                                                <div className="flex items-center gap-3 bg-white/[0.03] px-5 py-2.5 rounded-2xl border border-white/5 shadow-inner text-indigo-400">
+                                                    <User className="h-4 w-4" />
+                                                    <span className="text-[13px] font-black tracking-wide">נוצר ע"י: <span className="text-white">{task.createdBy?.firstName || "אדמין"}</span></span>
+                                                </div>
+                                                <div className="flex items-center gap-3 bg-white/[0.03] px-5 py-2.5 rounded-2xl border border-white/5 shadow-inner text-slate-400">
+                                                    <Clock className="h-4 w-4" />
+                                                    <span className="text-[13px] font-black uppercase tracking-tight">{formatDistanceToNow(new Date(task.createdAt), { addSuffix: true, locale: he })}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        onClick={() => handleDelete(task.id)} 
+                                        className="text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 group-hover:opacity-100 opacity-0 md:h-14 md:w-14 rounded-2xl"
+                                    >
+                                        <Trash2 className="h-8 w-8" />
+                                    </Button>
+                                </div>
+                            </CardHeader>
+
+                            <CardContent className="px-10 md:px-14 pb-14 pt-6">
+                                {/* Chat Section - Floating Neon Box */}
+                                <div className="mt-10 pt-12 border-t-2 border-white/5 space-y-10">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-5">
+                                            <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl shadow-[0_0_20px_rgba(99,102,241,0.1)]">
+                                                <MessageSquare className="h-6 w-6 text-indigo-400" />
+                                            </div>
+                                            <span className="text-xl font-black text-white tracking-tight">שיח צוות פתוח (<span className="text-indigo-400">{task.comments?.length || 0}</span>)</span>
+                                        </div>
+                                        {!task.completed && (
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-2 w-2 rounded-full bg-indigo-500 animate-ping"></div>
+                                                <span className="text-[11px] font-black text-indigo-500 uppercase tracking-[0.2em]">לייב</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Comments list */}
+                                    <div className="space-y-8 max-h-[550px] overflow-y-auto pr-6 pl-2 -mr-6 custom-scrollbar scroll-smooth">
+                                        {task.comments?.map((comment: any) => {
+                                            const name = comment.author?.firstName || "אדמין";
+                                            const hash = name.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+                                            const themes = [
+                                                { text: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", glow: "shadow-indigo-500/5" },
+                                                { text: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", glow: "shadow-purple-500/5" },
+                                                { text: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20", glow: "shadow-cyan-500/5" },
+                                                { text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", glow: "shadow-rose-500/5" },
+                                                { text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", glow: "shadow-amber-500/5" }
+                                            ];
+                                            const theme = themes[Math.abs(hash) % themes.length];
+
+                                            return (
+                                                <div key={comment.id} className="flex flex-col gap-4 group/comment items-start animate-in fade-in slide-in-from-right-6 duration-700">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className={`h-3 w-3 rounded-full bg-current ${theme.text} shadow-[0_0_15px_currentColor]`}></div>
+                                                        <span className={`text-[12px] font-black uppercase tracking-widest ${theme.text}`}>
+                                                            {name}
+                                                        </span>
+                                                        <div className="h-1 w-1 rounded-full bg-white/10"></div>
+                                                        <span className="text-[11px] text-slate-500 font-bold">
+                                                            {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true, locale: he })}
+                                                        </span>
+                                                    </div>
+                                                    <div className={`relative ${theme.bg} ${theme.border} border rounded-[2.2rem] rounded-tr-none px-8 py-5 shadow-2xl ${theme.glow} group-hover/comment:translate-x-[-4px] transition-all duration-500`}>
+                                                        <p className="text-lg font-bold leading-relaxed text-slate-200">
+                                                            {comment.content}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        
+                                        {(!task.comments || task.comments.length === 0) && (
+                                            <div className="py-16 bg-white/[0.01] rounded-[3rem] border border-white/5 text-center shadow-inner">
+                                                <p className="text-slate-600 font-black italic tracking-wide">זה המקום להתכתב על המשימה. תהיו הראשונים!</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Add comment form - Cyber Input */}
+                                    {!task.completed && (
+                                        <div className="relative mt-12 p-1.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-[2.8rem] shadow-2xl focus-within:shadow-indigo-500/10 transition-all border border-white/10 group/input-box overflow-hidden">
+                                            <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 group-focus-within/input-box:opacity-100 transition-opacity"></div>
+                                            <div className="bg-slate-900 rounded-[2.5rem] flex gap-4 p-2">
+                                                <Input
+                                                    placeholder="כתוב כאן תובנה, שאלה או עדכון..."
+                                                    value={commentTexts[task.id] || ""}
+                                                    onChange={(e) => setCommentTexts(prev => ({ ...prev, [task.id]: e.target.value }))}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                                            e.preventDefault();
+                                                            handleAddComment(task.id);
+                                                        }
+                                                    }}
+                                                    className="flex-1 bg-transparent border-none py-9 px-8 text-xl font-black text-white placeholder:text-slate-600 focus-visible:ring-0"
+                                                />
+                                                <Button 
+                                                    size="icon" 
+                                                    onClick={() => handleAddComment(task.id)}
+                                                    disabled={!commentTexts[task.id]?.trim()}
+                                                    className="shrink-0 h-16 w-20 bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-[2rem] shadow-xl transition-all hover:scale-110 active:scale-90 flex items-center justify-center"
+                                                >
+                                                    <Send className="h-8 w-8 transform rotate-180" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                 ))}
             </div>
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
+                    width: 8px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
+                    background: rgba(255, 255, 255, 0.02);
+                    border-radius: 20px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #e2e8f0;
-                    border-radius: 10px;
+                    background: rgba(99, 102, 241, 0.2);
+                    border-radius: 20px;
+                    border: 2px solid rgba(15, 23, 42, 0.9);
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #cbd5e1;
+                    background: rgba(99, 102, 241, 0.4);
                 }
             `}</style>
         </div>
