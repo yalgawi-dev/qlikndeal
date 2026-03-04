@@ -119,21 +119,12 @@ export function ComputerSearchUI({ activeDb, onApplySpecs, subCategory }: { acti
                 setSuggestions(localResults);
                 setShowSug(true);
             } else {
-                // Try fetching from DB
-                const dbNames = await getAutocomplete(q, "Computers", subCategory);
-                if (dbNames.length > 0) {
-                    // Final client-side sort to be absolutely sure
-                    const sortedDbNames = [...dbNames].sort((a, b) => {
-                        const aStarts = a.toLowerCase().startsWith(q.toLowerCase());
-                        const bStarts = b.toLowerCase().startsWith(q.toLowerCase());
-                        if (aStarts && !bStarts) return -1;
-                        if (!aStarts && bStarts) return 1;
-                        return a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' });
-                    });
-
-                    setSuggestions(sortedDbNames.map(name => ({
-                        label: name,
-                        data: { name, isFromDb: true }
+                // Fetching from DB
+                const dbResults = await getAutocomplete(q, "Computers", subCategory) as any[];
+                if (dbResults.length > 0) {
+                    setSuggestions(dbResults.map(item => ({
+                        label: item.label,
+                        data: { details: item.details, isFromDb: true }
                     })));
                     setShowSug(true);
                 } else {
@@ -152,23 +143,38 @@ export function ComputerSearchUI({ activeDb, onApplySpecs, subCategory }: { acti
     }, []);
 
     const loadSpec = async (data: any) => {
-        if (data.isFromDb) {
+        if (data.details) {
+            // This is a result from the Prisma DB (getAutocomplete)
+            // It already contains ALL the fields we need.
+            const d = data.details;
+            onApplySpecs({
+                brand: d.brand || "",
+                family: d.series || "",
+                subModel: d.modelName || "",
+                sku: d.sku || "",
+                type: d.dbType || d.type || "",
+                ram: d.ram || "",
+                storage: d.storage || "",
+                screen: d.display || d.screenSize || "",
+                cpu: d.cpu || "",
+                gpu: d.gpu || "",
+                os: d.os || "",
+                release_year: d.release_year || d.releaseYear || "",
+                ports: d.ports || d.notes || "",
+                weight: d.weight || ""
+            });
+        } else if (data.isFromDb) {
+            // Fallback for older data format
             setLoading(true);
             const q = data.name;
-            
-            // Restrict search based on subCategory to avoid cross-category pollution
             let laptops: any[] = [];
             let desktops: any[] = [];
             let aios: any[] = [];
-
             if (!subCategory || subCategory === 'laptop') laptops = await searchLaptops(q);
             if (!subCategory || subCategory === 'desktop') desktops = await searchBrandDesktops(q);
             if (!subCategory || subCategory === 'aio') aios = await searchAio(q);
-            
             const allResults = [...laptops, ...desktops, ...aios];
-            
             if (allResults.length > 0) {
-                // Find exact match if possible, otherwise use first
                 const exact = allResults.find(r => r.model === q || `${r.brand} ${r.model}` === q) || allResults[0];
                 onApplySpecs({
                     brand: exact.brand,
@@ -186,12 +192,11 @@ export function ComputerSearchUI({ activeDb, onApplySpecs, subCategory }: { acti
                     ports: exact.notes
                 });
             } else {
-                // FALLBACK: If search by name failed, something is wrong with the index but we know it's in the DB.
-                // Just pass the name and let the user fill manually or try AI.
                 onApplySpecs({ subModel: q });
             }
             setLoading(false);
         } else {
+            // Local DB (JSON) result
             const s = buildSpec(data);
             onApplySpecs({ ...s, battery: (s as any).battery_info || s.battery, ports: (s as any).ports_info || s.ports, notes: s.notes });
         }

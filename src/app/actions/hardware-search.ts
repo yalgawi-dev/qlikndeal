@@ -241,39 +241,44 @@ export async function getAutocomplete(query: string, category: string, subCatego
             ? [subCategory] 
             : ["laptop", "desktop", "aio"];
 
+        const selectFields = {
+            id: true,
+            brand: true,
+            series: true,
+            modelName: true,
+            cpu: true,
+            ram: true,
+            storage: true,
+            screenSize: true,
+            gpu: true,
+            os: true,
+            releaseYear: true,
+            notes: true,
+            sku: true,
+            weight: true,
+            ports: true,
+            display: true,
+            type: true
+        };
+
         if (typesToSearch.includes("laptop")) {
             const laptopMatches = await prisma.laptopCatalog.findMany({
                 where: {
                     OR: [
-                        { brand: { startsWith: q, mode: 'insensitive' } },
-                        { modelName: { startsWith: q, mode: 'insensitive' } },
-                        { sku: { startsWith: q, mode: 'insensitive' } },
+                        { brand: { contains: q, mode: 'insensitive' } },
+                        { modelName: { contains: q, mode: 'insensitive' } },
+                        { series: { contains: q, mode: 'insensitive' } },
+                        { sku: { contains: q, mode: 'insensitive' } },
                     ]
                 },
-                take: fetchLimit,
-                select: { brand: true, modelName: true }
+                take: 15,
+                // @ts-ignore
+                select: selectFields
             });
-            
-            let currentLaptops = [...laptopMatches];
-            if (currentLaptops.length < fetchLimit) {
-                const more = await prisma.laptopCatalog.findMany({
-                    where: {
-                        AND: [
-                            { OR: [
-                                { brand: { contains: q, mode: 'insensitive' } },
-                                { modelName: { contains: q, mode: 'insensitive' } },
-                                { sku: { contains: q, mode: 'insensitive' } },
-                            ]},
-                            { NOT: { brand: { startsWith: q, mode: 'insensitive' } } },
-                            { NOT: { modelName: { startsWith: q, mode: 'insensitive' } } }
-                        ]
-                    },
-                    take: fetchLimit - currentLaptops.length,
-                    select: { brand: true, modelName: true }
-                });
-                currentLaptops = [...currentLaptops, ...more];
-            }
-            results.push(...currentLaptops.map(l => l.modelName.toLowerCase().includes(l.brand.toLowerCase()) ? l.modelName : `${l.brand} ${l.modelName}`));
+            results.push(...laptopMatches.map(l => ({
+                label: l.modelName.toLowerCase().includes(l.brand.toLowerCase()) ? l.modelName : `${l.brand} ${l.modelName}`,
+                details: { ...l, dbType: 'laptop' }
+            })));
         }
 
         if (typesToSearch.includes("desktop")) {
@@ -282,11 +287,18 @@ export async function getAutocomplete(query: string, category: string, subCatego
                     OR: [
                         { brand: { contains: q, mode: 'insensitive' } },
                         { modelName: { contains: q, mode: 'insensitive' } },
+                        { series: { contains: q, mode: 'insensitive' } },
+                        { sku: { contains: q, mode: 'insensitive' } },
                     ]
                 },
-                take: 10
+                take: 10,
+                // @ts-ignore
+                select: selectFields
             });
-            results.push(...desktopMatches.map(d => d.modelName.toLowerCase().includes(d.brand.toLowerCase()) ? d.modelName : `${d.brand} ${d.modelName}`));
+            results.push(...desktopMatches.map(d => ({
+                label: d.modelName.toLowerCase().includes(d.brand.toLowerCase()) ? d.modelName : `${d.brand} ${d.modelName}`,
+                details: { ...d, dbType: 'desktop' }
+            })));
         }
 
         if (typesToSearch.includes("aio")) {
@@ -295,11 +307,18 @@ export async function getAutocomplete(query: string, category: string, subCatego
                     OR: [
                         { brand: { contains: q, mode: 'insensitive' } },
                         { modelName: { contains: q, mode: 'insensitive' } },
+                        { series: { contains: q, mode: 'insensitive' } },
+                        { sku: { contains: q, mode: 'insensitive' } },
                     ]
                 },
-                take: 10
+                take: 10,
+                // @ts-ignore
+                select: selectFields
             });
-            results.push(...aioMatches.map(a => a.modelName.toLowerCase().includes(a.brand.toLowerCase()) ? a.modelName : `${a.brand} ${a.modelName}`));
+            results.push(...aioMatches.map(a => ({
+                label: a.modelName.toLowerCase().includes(a.brand.toLowerCase()) ? a.modelName : `${a.brand} ${a.modelName}`,
+                details: { ...a, dbType: 'aio' }
+            })));
         }
     } else if (category === "Phones") {
         const mobiles = await prisma.mobileCatalog.findMany({
@@ -312,7 +331,10 @@ export async function getAutocomplete(query: string, category: string, subCatego
             },
             take: 15
         });
-        results = mobiles.map(m => m.modelName.toLowerCase().includes(m.brand.toLowerCase()) ? m.modelName : `${m.brand} ${m.modelName}`);
+        results = mobiles.map(m => ({
+            label: m.modelName.toLowerCase().includes(m.brand.toLowerCase()) ? m.modelName : `${m.brand} ${m.modelName}`,
+            details: { ...m, dbType: 'mobile' }
+        }));
     } else if (category === "Vehicles") {
         const vehicles = await prisma.vehicleCatalog.findMany({
             where: {
@@ -323,7 +345,10 @@ export async function getAutocomplete(query: string, category: string, subCatego
             },
             take: 15
         });
-        results = vehicles.map(v => `${v.make} ${v.model}`);
+        results = vehicles.map(v => ({
+            label: `${v.make} ${v.model}`,
+            details: { ...v, dbType: 'vehicle' }
+        }));
     } else if (category === "Electronics") {
         const items = await prisma.electronicsCatalog.findMany({
             where: {
@@ -335,7 +360,10 @@ export async function getAutocomplete(query: string, category: string, subCatego
             },
             take: 15
         });
-        results = items.map(i => i.modelName.toLowerCase().includes(i.brand.toLowerCase()) ? i.modelName : `${i.brand} ${i.modelName}`);
+        results = items.map(i => ({
+            label: i.modelName.toLowerCase().includes(i.brand.toLowerCase()) ? i.modelName : `${i.brand} ${i.modelName}`,
+            details: { ...i, dbType: 'electronics' }
+        }));
     } else if (category === "Appliances") {
         const items = await prisma.applianceCatalog.findMany({
             where: {
@@ -347,13 +375,21 @@ export async function getAutocomplete(query: string, category: string, subCatego
             },
             take: 15
         });
-        results = items.map(i => i.modelName.toLowerCase().includes(i.brand.toLowerCase()) ? i.modelName : `${i.brand} ${i.modelName}`);
+        results = items.map(i => ({
+            label: i.modelName.toLowerCase().includes(i.brand.toLowerCase()) ? i.modelName : `${i.brand} ${i.modelName}`,
+            details: { ...i, dbType: 'appliance' }
+        }));
     }
 
     // Final Sort: Prioritize results starting with the query, then alphabetical
-    const sortedResults = Array.from(new Set(results)).sort((a, b) => {
-        const aLower = a.toLowerCase();
-        const bLower = b.toLowerCase();
+    const uniqueMap = new Map();
+    results.forEach((r: any) => {
+        if (!uniqueMap.has(r.label)) uniqueMap.set(r.label, r);
+    });
+
+    const sortedResults = Array.from(uniqueMap.values()).sort((a: any, b: any) => {
+        const aLower = a.label.toLowerCase();
+        const bLower = b.label.toLowerCase();
         const qLower = q.toLowerCase();
         
         const aStarts = aLower.startsWith(qLower);
@@ -362,8 +398,7 @@ export async function getAutocomplete(query: string, category: string, subCatego
         if (aStarts && !bStarts) return -1;
         if (!aStarts && bStarts) return 1;
         
-        // Special case for numbers in strings (e.g., iPhone 13 vs iPhone 14)
-        return a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' });
+        return a.label.localeCompare(b.label, 'en', { numeric: true, sensitivity: 'base' });
     });
     
     return sortedResults.slice(0, 15);

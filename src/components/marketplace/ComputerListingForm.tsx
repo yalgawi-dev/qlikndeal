@@ -756,24 +756,27 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         // The search engine result contains full specs - apply them all to the form
         // We handle multiple potential field names because mapping can vary between local search, DB search, and AI search
         
+        // Helper to get first item if array, or the value if string
+        const f = (val: any) => Array.isArray(val) ? val[0] : val;
+
         // When applying a search result, we want to OVERWRITE the current state, 
         // not merge it, to avoid "ghosting" from previous selections.
         setSpec(s => ({
             ...s,
             brand: result.brand || result.make || "",
             family: result.family || result.series || "",
-            subModel: result.model_name || result.subModel || result.model || "",
+            subModel: result.model_name || result.subModel || result.model || result.name || "",
             sku: result.model_number || result.sku || "",
-            ram: result.ram || "",
-            storage: result.storage || "",
-            screen: result.display || result.screen || result.screenSize || "",
-            cpu: result.cpu || "",
-            gpu: result.gpu || "",
-            os: result.os || "",
+            ram: f(result.ram) || "",
+            storage: f(result.storage) || "",
+            screen: f(result.display || result.screen || result.screenSize) || "",
+            cpu: f(result.cpu) || "",
+            gpu: f(result.gpu) || "",
+            os: f(result.os) || "",
             battery: result.battery || "",
             ports: result.ports || "",
             weight: result.weight || "",
-            release_year: result.release_year || result.year || "",
+            release_year: result.release_year || result.releaseYear || result.year || "",
         }));
 
         setDetails(d => ({
