@@ -74,9 +74,11 @@ function searchPhoneDB(q: string, limit = 20): { label: string; data: PhoneModel
     return results.slice(0, limit).map(r => ({ label: r.label, data: r.data }));
 }
 
+import { getAutocomplete, searchMobile } from "@/app/actions/hardware-search";
+
 export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) => void }) {
     const [query, setQuery] = useState("");
-    const [suggestions, setSuggestions] = useState<{ label: string; data: PhoneModel }[]>([]);
+    const [suggestions, setSuggestions] = useState<{ label: string; data: any }[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [result, setResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -87,7 +89,7 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
     const containerRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<any>(null);
 
-    // Handle Autocomplete (Trigger on 1 char, even in Premium mode)
+    // Handle Autocomplete
     useEffect(() => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         const trimmed = query.trim();
@@ -98,11 +100,31 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
             return;
         }
 
-        debounceRef.current = setTimeout(() => {
-            const results = searchPhoneDB(trimmed);
-            setSuggestions(results);
-            setShowSuggestions(results.length > 0);
-        }, 150);
+        debounceRef.current = setTimeout(async () => {
+            const trimmed = query.trim();
+            if (trimmed.length < 1) return;
+
+            // 1. Try local first for instant feel
+            const localResults = searchPhoneDB(trimmed, 10);
+            
+            if (localResults.length > 0) {
+                setSuggestions(localResults);
+                setShowSuggestions(true);
+            } else {
+                // 2. Fallback to DB
+                const dbResults = await getAutocomplete(trimmed, "Phones");
+                if (dbResults && dbResults.length > 0) {
+                    setSuggestions(dbResults.map((item: any) => ({
+                        label: item.label,
+                        data: { ...item.details, isFromDb: true }
+                    })));
+                    setShowSuggestions(true);
+                } else {
+                    setSuggestions([]);
+                    setShowSuggestions(false);
+                }
+            }
+        }, 300);
     }, [query]);
 
     // Close suggestions on click outside
@@ -116,10 +138,14 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const handleSelectPhone = (phone: PhoneModel) => {
-        setQuery(`${phone.brand} ${phone.model}`);
+    const handleSelectPhone = (data: any) => {
+        setQuery(data.label || `${data.brand} ${data.modelName || data.model}`);
         setShowSuggestions(false);
-        applyLocalPhone(phone);
+        if (data.isFromDb) {
+            applyDbPhone(data);
+        } else {
+            applyLocalPhone(data);
+        }
     };
 
     const applyLocalPhone = (phone: PhoneModel) => {
@@ -149,6 +175,36 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
             ram: localResult.ram,
             storage: localResult.storage,
             os: localResult.os
+        });
+    };
+
+    const applyDbPhone = (d: any) => {
+        const dbResult = {
+            model_name: d.modelName || d.model || "",
+            brand: d.brand || "",
+            model_number: d.sku || "",
+            type: "smartphone",
+            ram: d.ram || (d.ramG ? d.ramG + "GB" : ""),
+            storage: d.storage || (d.storages ? d.storages.join(" / ") : ""),
+            display: d.display || d.screenSize ? (d.screenSize.toString().includes('"') ? d.screenSize : d.screenSize + '"') : "",
+            os: d.os || "",
+            release_year: d.releaseYear?.toString() || "",
+            cpu: d.cpu || "",
+            battery: d.battery || "",
+            rear_camera: d.rear_camera || d.rearCamera || "",
+            front_camera: d.front_camera || d.frontCamera || "",
+            dimensions: d.dimensions || "",
+            weight: d.weight || "",
+            usb_type: d.usb_type || d.usbType || "",
+            nfc: d.nfc || "",
+            wireless_charging: d.wirelessCharging || d.wireless_charging || "",
+            notes: d.notes || ""
+        };
+        setResult(dbResult);
+        setEditableFields({
+            ram: dbResult.ram || "לא ידוע",
+            storage: dbResult.storage || "לא ידוע",
+            os: dbResult.os || "לא ידוע"
         });
     };
 
@@ -184,7 +240,13 @@ export function MobileSearchUI({ onApplySpecs }: { onApplySpecs: (specs: any) =>
                 if (localMatches.length > 0) {
                     applyLocalPhone(localMatches[0].data);
                 } else {
-                    throw new Error(`"${query}" לא נמצא במאגר המקומי. נסה להפעיל חיפוש פרימיום ברשת (לחצן כחול) לחיפוש מפורט.`);
+                    // Try DB search
+                    const dbResults = await searchMobile(query);
+                    if (dbResults && dbResults.length > 0) {
+                        applyDbPhone(dbResults[0]);
+                    } else {
+                        throw new Error(`"${query}" לא נמצא במאגר המקומי או במאגר הנתונים. נסה להפעיל חיפוש פרימיום ברשת (לחצן כחול).`);
+                    }
                 }
             }
         } catch (e: any) {

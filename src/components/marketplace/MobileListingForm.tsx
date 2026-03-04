@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { createListing, updateListing, getMyListings, getMyPhone } from "@/app/actions/marketplace";
 import { Loader2, Plus, Image as ImageIcon, X, Sparkles, Smartphone, Cpu, MemoryStick, HardDrive, Battery, Camera, Search, Check, ChevronDown } from "lucide-react";
 import { MobileSearchUI } from "@/components/marketplace/MobileSearchUI";
-import { ALL_PHONE_MODELS } from "@/lib/phone-data";
+import { getUniqueBrands } from "@/app/admin/export-actions";
+import { getUniqueFamilies, getModelsByFamily } from "@/app/actions/hardware-search";
 
 export const MOBILE_CONDITION_OPTIONS = ["חדש (בקופסה)", "כמו חדש (ללא שריטות)", "משומש (מצב טוב)", "משומש (עם סימני שימוש)", "מחודש", "לא תקין / לחלקים"];
 
@@ -17,6 +18,7 @@ export const MOBILE_CONDITION_OPTIONS = ["חדש (בקופסה)", "כמו חדש
 interface MobileSpec {
     brand: string;
     model: string;
+    series: string;
     ram: string;
     storage: string;
     screen: string;
@@ -165,10 +167,17 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [imageUrlInput, setImageUrlInput] = useState("");
+    
+    // DB Fetching State
+    const [dbBrands, setDbBrands] = useState<string[]>([]);
+    const [dynamicModels, setDynamicModels] = useState<any[]>([]);
+    const [fetchingBrands, setFetchingBrands] = useState(false);
+    const [fetchingDynamic, setFetchingDynamic] = useState(false);
 
     const [spec, setSpec] = useState<MobileSpec>({
         brand: initialData?.extraData?.יצרן || "",
         model: initialData?.extraData?.דגם || "",
+        series: initialData?.extraData?.סדרה || "",
         ram: initialData?.extraData?.RAM || "",
         storage: initialData?.extraData?.["נפח אחסון"] || "",
         screen: initialData?.extraData?.["גודל מסך"] || "",
@@ -202,15 +211,35 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
         images: initialData?.images || [],
     });
 
-    const BRANDS = useMemo(() => Array.from(new Set(ALL_PHONE_MODELS.map(p => p.brand))).sort(), []);
-    const MODELS_FOR_BRAND = useMemo(() => {
-        if (!spec.brand) return [];
-        return Array.from(new Set(
-            ALL_PHONE_MODELS
-                .filter(p => p.brand === spec.brand)
-                .map(p => p.model)
-        )).sort();
-    }, [spec.brand]);
+    // Fetch Brands from DB
+    useEffect(() => {
+        const fetchBrands = async () => {
+            setFetchingBrands(true);
+            const res = await getUniqueBrands("mobile");
+            if (res.success && res.brands) {
+                setDbBrands(res.brands);
+            }
+            setFetchingBrands(false);
+        };
+        fetchBrands();
+    }, []);
+
+    // Fetch Models (Dynamic based on Brand/Family OR all if none selected)
+    useEffect(() => {
+        const fetchModels = async () => {
+            setFetchingDynamic(true);
+            const res = await getModelsByFamily("mobile", spec.brand || undefined, spec.series || undefined);
+            if (res.success && res.models) {
+                setDynamicModels(res.models);
+            }
+            setFetchingDynamic(false);
+        };
+        fetchModels();
+    }, [spec.brand, spec.series]);
+
+    const MODELS_FOR_LIST = useMemo(() => {
+        return dynamicModels.map(m => m.name).sort();
+    }, [dynamicModels]);
 
     useEffect(() => {
         if (details.contactPhone) return; // already filled
@@ -219,18 +248,30 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
         });
     }, [details.contactPhone]);
 
-    const handleApplySearchEngineSpecs = (result: any) => {
-        const assumedBrand = result.model_name?.split(" ")[0] || "אחר";
-        const assumedModel = result.model_name?.split(" ").slice(1).join(" ") || result.model_name || "דגם לא ידוע";
+    // Auto-generate title logic
+    useEffect(() => {
+        if (spec.brand && spec.model) {
+            const parts = [
+                spec.brand,
+                spec.model,
+                spec.storage ? `${spec.storage}` : "",
+                spec.ram ? `${spec.ram} RAM` : "",
+            ].filter(Boolean);
+            const auto = parts.join(" ").substring(0, 80);
+            setDetails(d => ({ ...d, title: auto }));
+        }
+    }, [spec.brand, spec.model, spec.storage, spec.ram]);
 
+    const handleApplySearchEngineSpecs = (result: any) => {
+        // ... same as before but normalized
         setSpec(s => ({
             ...s,
-            brand: result.brand || assumedBrand,
-            model: result.model_number || assumedModel,
-            extras: result.model_name || "",
+            brand: result.brand || result.make || "",
+            series: result.series || "",
+            model: result.model_name || result.model || result.name || "",
             ram: result.ram || s.ram,
             storage: result.storage || s.storage,
-            screen: result.display || s.screen,
+            screen: result.display || result.screenSize || s.screen,
             cpu: result.cpu || s.cpu,
             os: result.os || s.os,
             battery: result.battery || s.battery,
@@ -249,20 +290,12 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
             headphone_jack: result.headphone_jack || s.headphone_jack,
         }));
 
-        let extractedPrice = "";
-        if (result.price) {
-            const num = result.price.replace(/[^\d]/g, "");
-            if (num) extractedPrice = num;
-        }
-
         setDetails(d => ({
             ...d,
-            title: result.model_name || d.title,
-            price: extractedPrice || d.price,
-            description: d.description + (d.description ? "\n" : "") + (result.notes ? `הערות מפרט: ${result.notes}` : ""),
+            price: result.price ? result.price.replace(/[^\d]/g, "") : d.price,
+            description: d.description + (result.notes ? `\nהערות: ${result.notes}` : ""),
         }));
 
-        // Scroll to specs section smoothly after applying
         setTimeout(() => {
             document.getElementById("manual-specs-section")?.scrollIntoView({ behavior: 'smooth' });
         }, 300);
@@ -289,7 +322,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!spec.brand || !spec.model) { alert("יש לחפש ולסנכרן מפרט ממנוע החיפוש תחילה או להזין דגם ידנית"); return; }
+        if (!spec.brand || !spec.model) { alert("נא לבחור יצרן ודגם"); return; }
         if (!details.contactPhone?.trim()) { alert("נא להזין מספר טלפון ליצירת קשר"); return; }
 
         if (!isEditing) {
@@ -307,6 +340,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
         try {
             const extraData: Record<string, string> = {
                 "יצרן": spec.brand,
+                "סדרה": spec.series,
                 "דגם": spec.model,
                 "מעבד": spec.cpu,
                 "RAM": spec.ram,
@@ -363,6 +397,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24">
                 <div className="mb-8">
+                    {/* @ts-ignore */}
                     <MobileSearchUI onApplySpecs={handleApplySearchEngineSpecs} />
                 </div>
 
@@ -375,50 +410,58 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                             <div className="space-y-1.5">
                                 <Label className="text-gray-300">יצרן / מותג</Label>
                                 <SearchableDropdown
-                                    options={BRANDS}
+                                    options={dbBrands}
                                     value={spec.brand}
-                                    onChange={val => setSpec(s => ({ ...s, brand: val, model: "" }))}
-                                    placeholder="בחר יצרן..."
+                                    onChange={val => setSpec(s => ({ ...s, brand: val }))}
+                                    placeholder={fetchingBrands ? "טוען מותגים..." : "בחר יצרן..."}
+                                    disabled={fetchingBrands}
                                 />
                             </div>
                             <div className="space-y-1.5">
                                 <Label className="text-gray-300">דגם מלא</Label>
                                 <SearchableDropdown
-                                    options={MODELS_FOR_BRAND}
+                                    options={MODELS_FOR_LIST}
                                     value={spec.model}
-                                    onChange={val => {
-                                        setSpec(s => {
-                                            const newSpec = { ...s, model: val };
-                                            // Auto-fill lookup
-                                            const phone = ALL_PHONE_MODELS.find(p => p.brand === s.brand && p.model === val);
-                                            if (phone) {
-                                                if (phone.screen) newSpec.screen = `${phone.screen}"`;
-                                                if (phone.storages && phone.storages.length > 0) newSpec.storage = `${phone.storages[0]}GB`;
-                                                if (phone.cpu) newSpec.cpu = phone.cpu;
-                                                if (phone.ram) newSpec.ram = `${phone.ram}GB`;
-                                                if (phone.os) newSpec.os = phone.os;
-                                                if (phone.battery) newSpec.battery = phone.battery;
-                                                if (phone.rear_camera) newSpec.rear_camera = phone.rear_camera;
-                                                if (phone.front_camera) newSpec.front_camera = phone.front_camera;
-                                                if (phone.dimensions) newSpec.dimensions = phone.dimensions;
-                                                if (phone.weight) newSpec.weight = phone.weight;
-                                                if (phone.usb_type) newSpec.usb_type = phone.usb_type;
-                                                if (phone.nfc !== undefined) newSpec.nfc = phone.nfc ? "כן" : "לא";
-                                                if (phone.wireless_charging !== undefined) newSpec.wireless_charging = phone.wireless_charging ? "כן" : "לא";
-                                                if (phone.network) newSpec.network = phone.network;
-                                                if (phone.esim !== undefined) newSpec.esim = phone.esim ? "כן" : "לא";
-                                                if (phone.wifi) newSpec.wifi = phone.wifi;
-                                                if (phone.headphone_jack !== undefined) newSpec.headphone_jack = phone.headphone_jack ? "כן" : "לא";
-                                                if (phone.thickness) newSpec.thickness = phone.thickness;
-                                                if (phone.expandable_storage) newSpec.expandable_storage = phone.expandable_storage;
+                                    onChange={async val => {
+                                        let modelObj = dynamicModels.find(m => m.name === val);
+                                        
+                                        if (!modelObj && val) {
+                                            // Direct lookup for mobile
+                                            setFetchingDynamic(true);
+                                            const res = await getAutocomplete(val, "Phones");
+                                            if (res && res.length > 0) {
+                                                const match = res.find((r: any) => r.label === val) || res[0];
+                                                if (match.details) modelObj = { ...match.details, name: match.label };
                                             }
-                                            return newSpec;
-                                        });
-                                        // Update title
-                                        setDetails(d => ({ ...d, title: `${spec.brand} ${val}` }));
+                                            setFetchingDynamic(false);
+                                        }
+
+                                        if (modelObj) {
+                                            setSpec(s => ({
+                                                ...s,
+                                                brand: modelObj.brand || s.brand,
+                                                series: modelObj.series || s.series,
+                                                model: modelObj.modelName || modelObj.name || val,
+                                                ram: modelObj.ram || (modelObj.ramG ? modelObj.ramG + "GB" : "") || s.ram,
+                                                storage: modelObj.storage || (modelObj.storages ? modelObj.storages.join(" / ") : "") || s.storage,
+                                                screen: modelObj.screenSize || modelObj.screen || s.screen,
+                                                cpu: modelObj.cpu || s.cpu,
+                                                os: modelObj.os || s.os,
+                                                battery: modelObj.battery || s.battery,
+                                                rear_camera: modelObj.rear_camera || modelObj.rearCamera || s.rear_camera,
+                                                front_camera: modelObj.front_camera || modelObj.frontCamera || s.front_camera,
+                                                weight: modelObj.weight || s.weight,
+                                                thickness: modelObj.thickness || s.thickness,
+                                                dimensions: modelObj.dimensions || s.dimensions,
+                                                usb_type: modelObj.usb_type || modelObj.usbType || s.usb_type,
+                                                network: modelObj.network || s.network,
+                                            }));
+                                        } else {
+                                            setSpec(s => ({ ...s, model: val }));
+                                        }
                                     }}
-                                    placeholder={spec.brand ? "בחר דגם..." : "בחר יצרן תחילה"}
-                                    disabled={!spec.brand}
+                                    placeholder={fetchingDynamic ? "טוען דגמים..." : "בחר דגם..."}
+                                    disabled={fetchingDynamic}
                                 />
                             </div>
                         </div>

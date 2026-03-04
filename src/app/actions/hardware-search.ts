@@ -404,7 +404,7 @@ export async function getAutocomplete(query: string, category: string, subCatego
     return sortedResults.slice(0, 15);
 }
 
-export async function getUniqueFamilies(type: "laptop" | "desktop" | "aio", brand?: string) {
+export async function getUniqueFamilies(type: "laptop" | "desktop" | "aio" | "mobile", brand?: string) {
     try {
         let families: string[] = [];
         const where: any = {};
@@ -431,14 +431,21 @@ export async function getUniqueFamilies(type: "laptop" | "desktop" | "aio", bran
                 distinct: ['series']
             });
             families = raw.map(r => r.series).filter(Boolean);
+        } else if (type === "mobile") {
+            const raw = await prisma.mobileCatalog.findMany({
+                where,
+                select: { series: true },
+                distinct: ['series']
+            });
+            families = raw.map(r => r.series).filter(Boolean);
         }
-        return { success: true, families: families.sort() };
+        return { success: true, families: Array.from(new Set(families.sort())) };
     } catch (error: any) {
         return { success: false, error: error.message };
     }
 }
 
-export async function getModelsByFamily(type: "laptop" | "desktop" | "aio", brand?: string, family?: string) {
+export async function getModelsByFamily(type: "laptop" | "desktop" | "aio" | "mobile", brand?: string, family?: string) {
     try {
         let models: any[] = [];
         const where: any = {};
@@ -448,17 +455,22 @@ export async function getModelsByFamily(type: "laptop" | "desktop" | "aio", bran
         if (type === "laptop") {
             models = await prisma.laptopCatalog.findMany({
                 where,
-                take: 50 // Limit when no filter to avoid huge payload
+                take: 100
             });
         } else if (type === "desktop") {
             models = await prisma.brandDesktopCatalog.findMany({
                 where,
-                take: 50
+                take: 100
             });
         } else if (type === "aio") {
             models = await prisma.aioCatalog.findMany({
                 where,
-                take: 50
+                take: 100
+            });
+        } else if (type === "mobile") {
+            models = await prisma.mobileCatalog.findMany({
+                where,
+                take: 200
             });
         }
         
@@ -469,17 +481,24 @@ export async function getModelsByFamily(type: "laptop" | "desktop" | "aio", bran
                 brand: m.brand,
                 series: m.series,
                 name: m.modelName,
-                sku: m.sku,
-                cpu: m.cpu,
-                ram: m.ram,
-                storage: m.storage,
-                screenSize: m.screenSize,
-                gpu: m.gpu,
-                os: m.os,
-                weight: m.weight,
-                ports: m.ports,
-                release_year: m.releaseYear,
-                display: m.display
+                sku: m.sku || "",
+                cpu: m.cpu || "",
+                ram: m.ramG ? `${m.ramG}GB` : (m.ram || ""),
+                storage: m.storages ? m.storages.join(" / ") : (m.storage || ""),
+                screenSize: m.screenSize ? `${m.screenSize}"` : (m.displaySize || ""),
+                gpu: m.gpu || "",
+                os: m.os || "",
+                weight: m.weight || "",
+                ports: m.ports || "",
+                release_year: m.releaseYear || "",
+                display: m.display || "",
+                battery: m.battery || "",
+                rear_camera: m.rearCamera || "",
+                front_camera: m.frontCamera || "",
+                dimensions: m.dimensions || "",
+                thickness: m.thickness || "",
+                usb_type: m.usbType || "",
+                network: m.network || ""
             }))
         };
     } catch (error: any) {

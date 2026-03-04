@@ -486,6 +486,68 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         fetchModels();
     }, [spec.brand, spec.family, mainCategory, computerTypeMode]);
 
+    // Auto-generate title
+    useEffect(() => {
+        if (spec.brand && (spec.subModel || spec.family)) {
+            const parts = [
+                spec.brand,
+                spec.family,
+                spec.subModel && spec.subModel !== "אחר / לא ברשימה" ? spec.subModel : "",
+                spec.cpu && !spec.subModel?.includes(spec.cpu) ? spec.cpu : "",
+                spec.ram && !spec.subModel?.includes(spec.ram) ? spec.ram : "",
+            ].filter(Boolean);
+            const auto = parts.join(" ").substring(0, 80);
+            setDetails(d => ({ ...d, title: auto }));
+        }
+    }, [spec.brand, spec.family, spec.subModel, spec.cpu, spec.ram]);
+
+    const handleSubModelPick = async (v: string) => {
+        if (v === "אחר / לא ברשימה") {
+            setSpec(s => ({ ...s, subModel: v }));
+            return;
+        }
+
+        let modelObj = dynamicModels.find(m => (m.sku ? `${m.name} (מק"ט: ${m.sku})` : m.name) === v);
+        
+        // If not in current 100 models, try a direct lookup
+        if (!modelObj && v) {
+            const typeMap: any = { "laptop": "laptop", "all_in_one": "aio", "brand_desktop": "desktop" };
+            const type = mainCategory === "laptop" ? "laptop" : (computerTypeMode ? typeMap[computerTypeMode] : "laptop");
+            const q = v.includes("(מק\"ט: ") ? v.split("(מק\"ט: ")[0].trim() : v;
+            
+            setFetchingDynamic(true);
+            const res = await getAutocomplete(q, "Computers", type);
+            if (res && res.length > 0) {
+                const match = res.find((r: any) => r.label === v) || res[0];
+                if (match.details) modelObj = match.details;
+            }
+            setFetchingDynamic(false);
+        }
+
+        if (modelObj) {
+            const newBrand = modelObj.brand || spec.brand;
+            const newFamily = modelObj.series || spec.family;
+            
+            const sub = {
+                name: modelObj.modelName || modelObj.name,
+                cpu: Array.isArray(modelObj.cpu) ? modelObj.cpu : [modelObj.cpu],
+                ram: Array.isArray(modelObj.ram) ? modelObj.ram : [modelObj.ram],
+                storage: Array.isArray(modelObj.storage) ? modelObj.storage : [modelObj.storage],
+                screenSize: Array.isArray(modelObj.screenSize) ? modelObj.screenSize : [modelObj.screenSize],
+                gpu: Array.isArray(modelObj.gpu) ? modelObj.gpu : [modelObj.gpu],
+                os: Array.isArray(modelObj.os) ? modelObj.os : [modelObj.os],
+                weight: modelObj.weight,
+                ports: modelObj.ports,
+                release_year: modelObj.release_year || modelObj.releaseYear,
+                display: modelObj.display,
+                sku: modelObj.sku
+            };
+            applySmartModelPick(newBrand, newFamily, sub as any, modelObj.sku ? { id: modelObj.sku } : null);
+        } else {
+            setSpec(s => ({ ...s, subModel: v }));
+        }
+    };
+
     // Flat list of all available submodels for the fast global search
     const allModelsFlat = useMemo(() => {
         const list: { brand: string; family: ComputerModelFamily; sub: ComputerSubModel; sku?: any; searchText: string; displayName: string }[] = [];
@@ -1028,35 +1090,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                                         value={spec.subModel}
                                                         disabled={fetchingDynamic}
                                                         placeholder={fetchingDynamic ? "טוען דגמים..." : "בחר דגם..."}
-                                                        onChange={v => {
-                                                            if (v !== "אחר / לא ברשימה") {
-                                                                const modelObj = dynamicModels.find(m => (m.sku ? `${m.name} (מק"ט: ${m.sku})` : m.name) === v);
-                                                                if (modelObj) {
-                                                                    // Update brand and family if they are empty
-                                                                    const newBrand = spec.brand || modelObj.brand;
-                                                                    const newFamily = spec.family || modelObj.series;
-                                                                    
-                                                                    // Map DB fields to form fields
-                                                                    const sub = {
-                                                                        name: modelObj.name,
-                                                                        cpu: Array.isArray(modelObj.cpu) ? modelObj.cpu : [modelObj.cpu],
-                                                                        ram: Array.isArray(modelObj.ram) ? modelObj.ram : [modelObj.ram],
-                                                                        storage: Array.isArray(modelObj.storage) ? modelObj.storage : [modelObj.storage],
-                                                                        screenSize: Array.isArray(modelObj.screenSize) ? modelObj.screenSize : [modelObj.screenSize],
-                                                                        gpu: Array.isArray(modelObj.gpu) ? modelObj.gpu : [modelObj.gpu],
-                                                                        os: Array.isArray(modelObj.os) ? modelObj.os : [modelObj.os],
-                                                                        weight: modelObj.weight,
-                                                                        ports: modelObj.ports,
-                                                                        release_year: modelObj.release_year,
-                                                                        display: modelObj.display,
-                                                                        sku: modelObj.sku
-                                                                    };
-                                                                    applySmartModelPick(newBrand, newFamily, sub as any, modelObj.sku ? { id: modelObj.sku } : null);
-                                                                }
-                                                            } else {
-                                                                setSpec(s => ({ ...s, subModel: v }));
-                                                            }
-                                                        }}
+                                                        onChange={handleSubModelPick}
                                                     />
                                                 </div>
                                                 {spec.subModel === "אחר / לא ברשימה" && (
