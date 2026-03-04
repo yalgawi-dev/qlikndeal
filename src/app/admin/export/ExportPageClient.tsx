@@ -98,9 +98,9 @@ export default function ExportPageClient() {
             const timeStr = `${now.getHours()}_${now.getMinutes()}`;
             const dateStr = now.toLocaleDateString().replace(/\//g, '_');
 
-            if (type === "phone") {
+            if (type === "mobile" || type === "phone") {
                 content = await exportPhonesToCSV();
-                fileName = `phone_database_${dateStr}.xls`;
+                fileName = `mobile_database_${dateStr}.xls`;
             } else if (type === "laptop" || type === "desktop" || type === "aio") {
                 content = await exportComputersToCSV(type as any);
                 fileName = `${type}_database_${dateStr}_${timeStr}.xls`;
@@ -534,7 +534,7 @@ export default function ExportPageClient() {
                         icon={Cpu} color="slate" neonColor="slate" statsKey="motherboard"
                     />
                     <CatalogCard 
-                        id="phone" title="סלולריים" desc="סדרות iPhone, Samsung Galaxy, Xiaomi ו-Google Pixel."
+                        id="mobile" title="סלולריים" desc="סדרות iPhone, Samsung Galaxy, Xiaomi ו-Google Pixel."
                         icon={Tablet} color="purple" neonColor="purple" statsKey="mobile"
                     />
                     <CatalogCard 

@@ -255,11 +255,12 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
                 await prismadb.mobileCatalog.create({
                     data: {
                         brand: item.brand, series: item.series || "", modelName: item.modelName,
-                        hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases : [],
-                        storages: Array.isArray(item.storages) ? item.storages.map(Number) : [],
-                        screenSize: item.screenSize ? parseFloat(item.screenSize) : null,
-                        releaseYear: item.releaseYear ? parseInt(item.releaseYear) : null,
-                        cpu: item.cpu || "", ramG: item.ramG ? parseInt(item.ramG) : null,
+                        hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases : (typeof item.hebrewAliases === 'string' ? item.hebrewAliases.split(",").map((s: string) => s.trim()) : []),
+                        storages: Array.isArray(item.storages) ? item.storages.map((s: any) => parseInt(String(s).replace(/[^0-9]/g, "")) || 0).filter(Boolean) : (typeof item.storages === 'string' ? item.storages.split(",").map((s: string) => parseInt(s.replace(/[^0-9]/g, "")) || 0).filter(Boolean) : []),
+                        screenSize: item.screenSize ? parseFloat(String(item.screenSize).replace(/[^0-9.]/g, "")) || null : null,
+                        releaseYear: item.releaseYear ? parseInt(String(item.releaseYear).replace(/[^0-9]/g, "")) || null : null,
+                        cpu: item.cpu || "", 
+                        ramG: item.ramG || item.ram ? parseInt(String(item.ramG || item.ram).replace(/[^0-9]/g, "")) || null : null,
                         os: item.os || "", battery: item.battery || "",
                         rearCamera: item.rearCamera || "", frontCamera: item.frontCamera || "",
                         weight: item.weight || "", nfc: !!item.nfc, wirelessCharging: !!item.wirelessCharging
