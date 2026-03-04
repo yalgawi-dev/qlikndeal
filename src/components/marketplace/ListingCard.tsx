@@ -36,20 +36,36 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
         }
     };
 
-    const images = listing.images ? JSON.parse(listing.images) : [];
-    const mainImage = images.length > 0 ? images[0] : null;
+    // If it's a catalog item, we don't buy it, we use it for reference
+    const isCatalog = listing.type === "catalog";
+    const isExternal = listing.type === "external";
+    const isInternalListing = listing.type === "internal";
 
-    const extraData = listing.extraData ? JSON.parse(listing.extraData) : {};
+    const images = listing.images ? (typeof listing.images === 'string' ? JSON.parse(listing.images) : listing.images) : [];
+    const mainImage = Array.isArray(images) && images.length > 0 ? images[0] : null;
+
+    const extraData = listing.extraData ? (typeof listing.extraData === 'string' ? JSON.parse(listing.extraData) : listing.extraData) : {};
     const highlights = extraData["דגשים"] ? extraData["דגשים"].split(", ") : [];
+
+    const handleExternalClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (listing.sourceUrl) window.open(listing.sourceUrl, "_blank");
+    };
 
     return (
         <Card
-            className="overflow-hidden border-gray-800 bg-gray-900/50 hover:bg-gray-900 transition-all duration-300 group shadow-lg shadow-purple-900/5 cursor-pointer flex flex-col h-full"
-            onClick={() => router.push(`/dashboard/marketplace/${listing.id}`)}
+            className={`overflow-hidden border-gray-800 bg-gray-900/50 hover:bg-gray-900 transition-all duration-300 group shadow-lg shadow-purple-900/5 cursor-pointer flex flex-col h-full ${isCatalog ? 'border-blue-500/30 ring-1 ring-blue-500/10' : ''}`}
+            onClick={() => {
+                if (isExternal) {
+                    if (listing.sourceUrl) window.open(listing.sourceUrl, "_blank");
+                } else if (!isCatalog) {
+                    router.push(`/dashboard/marketplace/${listing.id}`);
+                }
+            }}
         >
 
             {/* Image Area */}
-            <div className="aspect-video w-full bg-gray-800 relative overflow-hidden">
+            <div className={`aspect-video w-full bg-gray-800 relative overflow-hidden ${isCatalog ? 'bg-gradient-to-br from-blue-900/20 to-indigo-900/40' : ''}`}>
                 {mainImage ? (
                     <img
                         src={mainImage}
@@ -62,9 +78,14 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                     </div>
                 )}
                 <div className="absolute top-2 right-2 flex gap-1">
-                    <div className="bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-black/80 px-2 py-1 rounded text-xs font-bold">
-                        {listing.condition === "New" ? "חדש" : listing.condition === "Used" ? "משומש" : listing.condition}
+                    <div className={`bg-black/60 backdrop-blur-md border border-white/10 text-white px-2 py-1 rounded text-xs font-bold`}>
+                        {isCatalog ? "קטלוג 📚" : (listing.condition === "New" ? "חדש" : listing.condition === "Used" ? "משומש" : listing.condition)}
                     </div>
+                    {isExternal && (
+                        <div className="bg-blue-600/80 backdrop-blur-md border border-blue-400/30 text-white px-2 py-1 rounded text-xs">
+                           פייסבוק 🌐
+                        </div>
+                    )}
                     {listing.category && listing.category !== "General" && (
                         <div className="bg-purple-600/80 backdrop-blur-md border border-purple-400/30 text-white px-2 py-1 rounded text-xs">
                             {listing.category}
@@ -104,15 +125,17 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
 
             <CardHeader className="p-4 pb-2">
                 <div className="flex justify-between items-start">
-                    <div>
-                        <h3 className="font-bold text-lg text-white leading-tight mb-1 group-hover:text-blue-400 transition-colors">{listing.title}</h3>
+                    <div className="flex-1">
+                        <h3 className="font-bold text-lg text-white leading-tight mb-1 group-hover:text-blue-400 transition-colors line-clamp-2 min-h-[3rem]">{listing.title}</h3>
                         <div className="text-sm text-gray-400 flex items-center gap-1">
                             <User className="w-3 h-3" />
-                            {listing.seller?.firstName || "Unknown Seller"}
+                            {listing.seller?.firstName || "Unknown"} {listing.seller?.lastName || ""}
                         </div>
                     </div>
-                    <div className="text-right">
-                        <div className="font-bold text-xl text-green-400">₪{listing.price.toLocaleString()}</div>
+                    <div className="text-right ml-2">
+                        <div className="font-bold text-xl text-green-400">
+                            {listing.price > 0 ? `₪${listing.price.toLocaleString()}` : (isCatalog ? "קטלוג" : "צור קשר")}
+                        </div>
                     </div>
                 </div>
             </CardHeader>
@@ -125,25 +148,48 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                         ))}
                     </div>
                 )}
-                <p className="text-sm text-gray-400 line-clamp-2 min-h-[40px]">
+                <p className="text-sm text-gray-400 line-clamp-3 min-h-[60px]">
                     {listing.description}
                 </p>
             </CardContent>
 
             <CardFooter className="p-4 pt-2 flex gap-2 mt-auto">
-                <Button
-                    onClick={(e) => {
-                        e.stopPropagation(); // Prevent card click
-                        handleBuyNow();
-                    }}
-                    disabled={loading}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold border-0"
-                >
-                    {loading ? "יוצר לינק..." : "קנה בטוח 🛡️"}
-                </Button>
-                <Button variant="outline" size="icon" className="border-gray-700 hover:bg-gray-800 text-gray-300">
-                    <MessageCircle className="w-5 h-5" />
-                </Button>
+                {isCatalog ? (
+                    <Button
+                        variant="outline"
+                        className="flex-1 border-blue-500/30 text-blue-400 hover:bg-blue-500/10 font-bold"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/dashboard/marketplace/create?template=${listing.id}`);
+                        }}
+                    >
+                        מכור מוצר כזה ✨
+                    </Button>
+                ) : isExternal ? (
+                    <Button
+                        onClick={handleExternalClick}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold"
+                    >
+                        צפה בפייסבוק 🌐
+                    </Button>
+                ) : (
+                    <Button
+                        onClick={(e) => {
+                            e.stopPropagation(); 
+                            handleBuyNow();
+                        }}
+                        disabled={loading}
+                        className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold border-0"
+                    >
+                        {loading ? "יוצר לינק..." : "קנה בטוח 🛡️"}
+                    </Button>
+                )}
+                
+                {!isCatalog && (
+                    <Button variant="outline" size="icon" className="border-gray-700 hover:bg-gray-800 text-gray-300">
+                        <MessageCircle className="w-5 h-5" />
+                    </Button>
+                )}
             </CardFooter>
         </Card>
     );
