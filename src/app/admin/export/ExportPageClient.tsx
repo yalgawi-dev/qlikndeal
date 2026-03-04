@@ -18,7 +18,29 @@ import {
     syncAio,
     getDatabaseStats
 } from "../export-actions";
+import { 
+    importLaptopsAction, 
+    importDesktopsAction,
+    importAioAction,
+    importMobileAction,
+    importVehicleAction,
+    importElectronicsAction,
+    importApplianceAction,
+    importMotherboardAction,
+    ImportResult 
+} from "../import-actions";
 import { toast } from "sonner";
+import { 
+    Dialog, 
+    DialogContent, 
+    DialogHeader, 
+    DialogTitle, 
+    DialogTrigger,
+    DialogDescription
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 interface CatalogStats {
     count: number;
@@ -30,6 +52,14 @@ export default function ExportPageClient() {
     const [syncing, setSyncing] = useState<string | null>(null);
     const [stats, setStats] = useState<Record<string, CatalogStats>>({});
     const [statsLoading, setStatsLoading] = useState(true);
+
+    // Import State
+    const [importModalOpen, setImportModalOpen] = useState(false);
+    const [importType, setImportType] = useState<string | null>(null);
+    const [importData, setImportData] = useState<string>("");
+    const [importPreview, setImportPreview] = useState<any[]>([]);
+    const [importLoading, setImportLoading] = useState(false);
+    const [importResult, setImportResult] = useState<ImportResult | null>(null);
 
     const fetchStats = async () => {
         setStatsLoading(true);
@@ -137,6 +167,129 @@ export default function ExportPageClient() {
         }
     };
 
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const content = event.target?.result as string;
+            setImportData(content);
+            tryParseImport(content);
+        };
+        reader.readAsText(file);
+    };
+
+    const tryParseImport = (text: string) => {
+        try {
+            // ניסיון ראשון: JSON
+            if (text.trim().startsWith("[") || text.trim().startsWith("{")) {
+                const parsed = JSON.parse(text);
+                setImportPreview(Array.isArray(parsed) ? parsed : [parsed]);
+                return;
+            }
+
+            // ניסיון שני: CSV פשוט
+            const lines = text.trim().split("\n");
+            if (lines.length < 2) return;
+            
+            const headers = lines[0].split(",").map(h => h.trim());
+            const rows = lines.slice(1).map(line => {
+                const values = line.split(",").map(v => v.trim());
+                const obj: any = {};
+                headers.forEach((header, i) => {
+                    let val: any = values[i];
+                    // המרת מערכים (אם מופרדים ב-/)
+                    if (val && val.includes("/")) {
+                        val = val.split("/").map((v: string) => v.trim());
+                    }
+                    obj[header] = val;
+                });
+                return obj;
+            });
+            setImportPreview(rows);
+        } catch (err) {
+            console.error("Parse error:", err);
+            setImportPreview([]);
+        }
+    };
+
+    const executeImport = async () => {
+        if (importPreview.length === 0) return;
+        setImportLoading(true);
+        setImportResult(null);
+
+        try {
+            let res: ImportResult;
+            if (importType === "laptop") {
+                res = await importLaptopsAction(importPreview);
+            } else if (importType === "desktop") {
+                res = await importDesktopsAction(importPreview);
+            } else if (importType === "aio") {
+                res = await importAioAction(importPreview);
+            } else if (importType === "phone") {
+                res = await importMobileAction(importPreview);
+            } else if (importType === "vehicle") {
+                res = await importVehicleAction(importPreview);
+            } else if (importType === "electronics") {
+                res = await importElectronicsAction(importPreview);
+            } else if (importType === "appliance") {
+                res = await importApplianceAction(importPreview);
+            } else if (importType === "motherboard") {
+                res = await importMotherboardAction(importPreview);
+            } else {
+                toast.error("ייבוא לקטגוריה זו טרם נתמך");
+                return;
+            }
+
+            setImportResult(res);
+            if (res.added > 0) fetchStats();
+            toast.success(`ייבוא הושלם: ${res.added} נוספו, ${res.skipped} דולגו`);
+        } catch (error: any) {
+            toast.error("ייבוא נכשל: " + error.message);
+        } finally {
+            setImportLoading(false);
+        }
+    };
+
+    const downloadTemplate = (id: string) => {
+        let headers = "";
+        let example = "";
+        
+        if (id === "laptop") {
+            headers = "brand,series,modelName,type,screenSize,cpu,ram,storage,os,releaseYear,sku,weight,ports,display";
+            example = "Apple,MacBook Air,M3,Laptop,13.6/15,M3,8GB/16GB/24GB,256GB/512GB,macOS,2024,SKU123,1.24kg,2x Thunderbolt,Liquid Retina";
+        } else if (id === "desktop") {
+            headers = "brand,series,modelName,cpu,gpu,ram,storage,os,releaseYear,sku,ports,weight,isMini";
+            example = "Dell,OptiPlex,7010,i5-13500,UHD 770,16GB,512GB,Windows 11,2023,D-7010,4x USB 3.0,5kg,false";
+        } else if (id === "aio") {
+            headers = "brand,series,modelName,screenSize,cpu,gpu,ram,storage,os,releaseYear,sku,display,ports";
+            example = "HP,Pavilion,27-ca,27,i7-13700T,RTX 3050,16GB,1TB,Windows 11,2023,HP-AIO-27,QHD IPS,4x USB-A/1x USB-C";
+        } else if (id === "phone") {
+            headers = "brand,series,modelName,hebrewAliases,storages,screenSize,releaseYear,cpu,ramG,os,battery,rearCamera,frontCamera,weight,nfc,wirelessCharging";
+            example = "Samsung,S24,Galaxy S24,סמסונג S24/גלקסי 24,128/256/512,6.2,2024,Exynos 2400,8,Android 14,4000mAh,50MP,12MP,167g,true,true";
+        } else if (id === "vehicle") {
+            headers = "make,model,year,type,fuelType,transmission,engineSize,hp";
+            example = "Toyota,Corolla,2024,Sedan,Hybrid,Automatic,1.8,140";
+        } else if (id === "electronics") {
+            headers = "brand,category,modelName,hebrewAliases,releaseYear,specs";
+            example = 'Apple,Smartwatch,Series 9,אפל ווטש 9/Apple Watch 9,2023,"{""screen"": ""OLED"", ""gps"": true}"';
+        } else if (id === "appliance") {
+            headers = "brand,category,modelName,hebrewAliases,capacity,energyRating";
+            example = "Samsung,Refrigerator,RF28,סמסונג מקרר,700L,A";
+        } else if (id === "motherboard") {
+            headers = "brand,model,chipset,socket,formFactor,ramType,maxRam,pcie,m2,lan,wifi,releaseYear";
+            example = "ASUS,ROG STRIX Z790-E,Z790,LGA1700,ATX,DDR5,128GB,PCIe 5.0,5x M.2,2.5Gb,WiFi 6E,2023";
+        }
+
+        const content = `${headers}\n${example}`;
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${id}_template.csv`;
+        link.click();
+    };
+
     const formatDate = (date: Date | null) => {
         if (!date) return "מעולם לא";
         return new Intl.DateTimeFormat('he-IL', {
@@ -224,17 +377,33 @@ export default function ExportPageClient() {
                                 className={`w-full h-12 bg-white/5 hover:bg-white/10 text-white rounded-2xl border border-white/10 text-xs font-black transition-all active:scale-95`}
                             >
                                 {loading === id ? <Loader2 className="animate-spin" size={16} /> : <Download size={16} className="ml-2" />}
-                                ייצוא לקובץ
+                                ייצוא
                             </Button>
                             
+                            <Button 
+                                onClick={() => {
+                                    setImportType(id);
+                                    setImportModalOpen(true);
+                                    setImportData("");
+                                    setImportPreview([]);
+                                    setImportResult(null);
+                                }}
+                                className={`w-full h-12 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 rounded-2xl border border-indigo-500/30 text-xs font-black transition-all active:scale-95`}
+                            >
+                                <Package size={16} className="ml-2" />
+                                ייבוא חכם
+                            </Button>
+                        </div>
+
+                        <div className="pt-2">
                             {["laptop", "desktop", "aio", "motherboard", "electronics", "vehicle"].includes(id) && (
                                 <Button 
                                     onClick={() => handleSync(id)} 
                                     disabled={!!syncing}
-                                    className={`w-full h-12 ${bgColor} ${textColor} hover:brightness-125 rounded-2xl border ${glowClass.split(" ")[1]} text-xs font-black transition-all shadow-lg active:scale-95`}
+                                    className={`w-full h-10 bg-white/5 hover:text-white text-slate-500 rounded-xl border border-white/5 text-[10px] font-bold transition-all active:scale-95`}
                                 >
-                                    {syncing === id ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} className="ml-2" />}
-                                    סנכרון חכם
+                                    {syncing === id ? <Loader2 className="animate-spin" size={14} /> : <RefreshCw size={14} className="ml-2" />}
+                                    סנכרון מלא (דורס)
                                 </Button>
                             )}
                         </div>
@@ -338,6 +507,116 @@ export default function ExportPageClient() {
                     </div>
                 </div>
             </div>
+
+            {/* Import Modal */}
+            <Dialog open={importModalOpen} onOpenChange={setImportModalOpen}>
+                <DialogContent className="max-w-4xl bg-slate-900 border-white/10 text-white" dir="rtl">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black">ייבוא רשומות חדשות: {importType}</DialogTitle>
+                        <DialogDescription className="text-slate-400">
+                            העלה קובץ (CSV/JSON) או הדבק רשימת נתונים. המערכת תבצע מניעת כפילויות אוטומטית.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-6 py-4 px-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Input Column */}
+                            <div className="space-y-4">
+                                <label className="text-sm font-bold text-slate-300">הדבקת נתונים (JSON או CSV)</label>
+                                <Textarea 
+                                    className="h-64 bg-black/40 border-white/10 font-mono text-xs leading-relaxed"
+                                    placeholder='brand,modelName,cpu,ram,storage\nApple,MacBook Air,M3,16GB,512GB'
+                                    value={importData}
+                                    onChange={(e) => {
+                                        setImportData(e.target.value);
+                                        tryParseImport(e.target.value);
+                                    }}
+                                />
+                                <div className="flex items-center gap-4">
+                                    <div className="flex-1">
+                                        <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">או העלה קובץ</label>
+                                        <Input 
+                                            type="file" 
+                                            accept=".csv,.json,.txt"
+                                            onChange={handleFileUpload}
+                                            className="bg-white/5 border-white/10 cursor-pointer"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Preview Column */}
+                            <div className="space-y-4">
+                                <label className="text-sm font-bold text-slate-300 flex justify-between">
+                                    תצוגה מקדימה
+                                    <Badge variant="outline" className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
+                                        {importPreview.length} רשומות זוהו
+                                    </Badge>
+                                </label>
+                                <div className="h-64 overflow-y-auto bg-black/20 border border-white/5 rounded-xl p-4 space-y-2">
+                                    {importPreview.length > 0 ? (
+                                        importPreview.slice(0, 20).map((p, i) => (
+                                            <div key={i} className="text-[10px] p-2 bg-white/5 rounded border border-white/5 flex justify-between">
+                                                <span className="font-bold text-slate-300">{p.brand} {p.modelName}</span>
+                                                <span className="text-slate-500">{Array.isArray(p.cpu) ? p.cpu[0] : p.cpu}</span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="h-full flex flex-col items-center justify-center text-slate-500 text-xs italic">
+                                            הזן נתונים כדי לראות תצוגה מקדימה
+                                        </div>
+                                    )}
+                                    {importPreview.length > 20 && (
+                                        <div className="text-center text-[10px] text-slate-600 py-2">
+                                            ומעוד {importPreview.length - 20} רשומות...
+                                        </div>
+                                    )}
+                                </div>
+
+                                {importResult && (
+                                    <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl space-y-2">
+                                        <h5 className="text-xs font-bold text-emerald-400">תוצאות הייבוא:</h5>
+                                        <div className="grid grid-cols-2 gap-2 text-[10px]">
+                                            <div className="flex justify-between"><span>סה"כ:</span> <b>{importResult.total}</b></div>
+                                            <div className="flex justify-between"><span>נוספו:</span> <b className="text-emerald-400">{importResult.added}</b></div>
+                                            <div className="flex justify-between"><span>דולגו (כפילויות):</span> <b className="text-amber-400">{importResult.skipped}</b></div>
+                                            <div className="flex justify-between"><span>שגיאות:</span> <b className="text-red-400">{importResult.errors.length}</b></div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 p-6 border-t border-white/5">
+                        <div className="flex-1 space-x-2 space-x-reverse flex">
+                            <Button 
+                                variant="outline" 
+                                onClick={() => setImportModalOpen(false)}
+                                className="bg-white/5 border-white/10"
+                            >
+                                ביטול
+                            </Button>
+                            <Button 
+                                variant="outline"
+                                onClick={() => importType && downloadTemplate(importType)}
+                                className="bg-indigo-500/10 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20"
+                            >
+                                <Download size={14} className="ml-2" />
+                                הורד תבנית CSV
+                            </Button>
+                        </div>
+                        <Button 
+                            onClick={executeImport}
+                            disabled={importPreview.length === 0 || importLoading}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 font-bold"
+                        >
+                            {importLoading ? <Loader2 className="animate-spin ml-2" /> : <Package className="ml-2" />}
+                            בצע ייבוא רשומות
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             <style jsx global>{`
                 @keyframes spin-slow {
