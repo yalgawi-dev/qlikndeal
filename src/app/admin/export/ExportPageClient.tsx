@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Laptop, Monitor, Tablet, Download, FileSpreadsheet, Loader2, Car, Settings, Tv, Package, Cpu, Database, RefreshCw, Clock, Check } from "lucide-react";
+import { Laptop, Monitor, Tablet, Download, FileSpreadsheet, Loader2, Car, Settings, Tv, Package, Cpu, Database, RefreshCw, Clock, Check, User } from "lucide-react";
 import { 
     exportComputersToCSV, 
     exportPhonesToCSV, 
@@ -206,7 +206,13 @@ export default function ExportPageClient() {
             const firstLine = lines[0];
             const delimiter = firstLine.includes("\t") ? "\t" : ",";
 
-            const rawHeaders = firstLine.split(delimiter).map(h => h.trim());
+            const columns = firstLine.split(delimiter).map(h => h.trim());
+            if (columns.length < 2) {
+                toast.error("מבנה הקובץ לא נראה תקין (פחות מ-2 עמודות)");
+                return;
+            }
+
+            const rawHeaders = columns;
             
             // מיפוי עברית לאנגלית
             const mapping: Record<string, string> = {
@@ -241,10 +247,16 @@ export default function ExportPageClient() {
                 });
                 return obj;
             });
+            
+            if (rows.length === 0) {
+                toast.error("לא נמצאו נתונים לייבוא בקובץ");
+            }
+
             setImportPreview(rows);
         } catch (err) {
             console.error("Parse error:", err);
             setImportPreview([]);
+            toast.error("שגיאה בפענוח הקובץ. וודא שהוא בפורמט CSV או JSON תקין.");
         }
     };
 
@@ -254,22 +266,24 @@ export default function ExportPageClient() {
         setImportResult(null);
 
         try {
-            let res: ImportResult;
-            if (importType === "laptop") {
+            let res: ImportResult & { newTotal?: number };
+            const type = importType;
+
+            if (type === "laptop") {
                 res = await importLaptopsAction(importPreview);
-            } else if (importType === "desktop") {
+            } else if (type === "desktop") {
                 res = await importDesktopsAction(importPreview);
-            } else if (importType === "aio") {
+            } else if (type === "aio") {
                 res = await importAioAction(importPreview);
-            } else if (importType === "phone") {
+            } else if (type === "phone") {
                 res = await importMobileAction(importPreview);
-            } else if (importType === "vehicle") {
+            } else if (type === "vehicle") {
                 res = await importVehicleAction(importPreview);
-            } else if (importType === "electronics") {
+            } else if (type === "electronics") {
                 res = await importElectronicsAction(importPreview);
-            } else if (importType === "appliance") {
+            } else if (type === "appliance") {
                 res = await importApplianceAction(importPreview);
-            } else if (importType === "motherboard") {
+            } else if (type === "motherboard") {
                 res = await importMotherboardAction(importPreview);
             } else {
                 toast.error("ייבוא לקטגוריה זו טרם נתמך");
@@ -277,8 +291,23 @@ export default function ExportPageClient() {
             }
 
             setImportResult(res);
-            if (res.added > 0) fetchStats();
-            toast.success(`ייבוא הושלם: ${res.added} נוספו, ${res.skipped} דולגו`);
+            
+            if (res.added > 0) {
+                // Targeted refresh feel: update the specific stat locally first then fetch all
+                if (type && res.newTotal !== undefined) {
+                    setStats(prev => ({
+                        ...prev,
+                        [type]: { ...prev[type], count: res.newTotal!, lastUpdate: new Date() }
+                    }));
+                }
+                fetchStats();
+            }
+
+            const message = res.added > 0 
+                ? `הייבוא הושלם בהצלחה! הוספו ${res.added} רשומות חדשות.`
+                : `הייבוא הסתיים. כל הרשומות (${res.skipped}) כבר קיימות במערכת.`;
+                
+            toast.success(message);
         } catch (error: any) {
             toast.error("ייבוא נכשל: " + error.message);
         } finally {
@@ -697,50 +726,76 @@ export default function ExportPageClient() {
                 
                 <div className="space-y-4 relative z-10">
                     {recentLogs.length > 0 ? (
-                        recentLogs.map((log: any) => {
-                            const date = new Date(log.createdAt);
-                            const isNew = (new Date().getTime() - date.getTime()) < 1000 * 60 * 60 * 24;
-                            
-                            return (
-                                <div key={log.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/[0.08] hover:border-white/10 transition-all group/item">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`p-2.5 rounded-xl ${log.added > 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                                            <Database className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <div className="font-semibold text-slate-200 flex items-center gap-2">
-                                                ייבוא <span className="text-indigo-400 font-bold capitalize">{log.category}</span>
-                                                {isNew && <Badge className="bg-red-500/10 text-red-500 border-none text-[10px] py-0 h-4 px-1.5 animate-pulse">חדש</Badge>}
+                        (() => {
+                            // Group logs by day to handle colors
+                            const groupedByDay: Record<string, any[]> = {};
+                            recentLogs.forEach(log => {
+                                const dayKey = new Date(log.createdAt).toLocaleDateString();
+                                if (!groupedByDay[dayKey]) groupedByDay[dayKey] = [];
+                                groupedByDay[dayKey].push(log);
+                            });
+
+                            // Predefined premium colors for multiple updates same day
+                            const dailyColors = [
+                                "border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.2)]",
+                                "border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]",
+                                "border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]",
+                                "border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]",
+                                "border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.2)]",
+                                "border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                            ];
+
+                            return recentLogs.map((log: any) => {
+                                const date = new Date(log.createdAt);
+                                const dayKey = date.toLocaleDateString();
+                                const logsThatDay = groupedByDay[dayKey] || [];
+                                // Determine index of this log within its day group (youngest first)
+                                const logDayIndex = logsThatDay.findIndex(l => l.id === log.id);
+                                const colorClass = logsThatDay.length > 1 ? dailyColors[logDayIndex % dailyColors.length] : "border-white/5";
+                                
+                                const isNew = (new Date().getTime() - date.getTime()) < 1000 * 60 * 60 * 24;
+                                
+                                return (
+                                    <div key={log.id} className={`flex flex-col md:flex-row md:items-center justify-between p-4 bg-white/5 rounded-2xl border ${colorClass} hover:bg-white/[0.08] transition-all group/item mb-4`}>
+                                        <div className="flex items-center gap-4">
+                                            <div className={`p-2.5 rounded-xl ${log.added > 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                                                <Database className="w-5 h-5" />
                                             </div>
-                                            <div className="text-xs text-slate-500 flex flex-wrap gap-x-4 gap-y-1 mt-1 font-medium">
-                                                <span className="flex items-center gap-1"><RefreshCw size={12} /> {log.adminName || "מנהל מערכת"}</span>
-                                                <span className="flex items-center gap-1"><Clock size={12} /> {date.toLocaleString('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                                            <div>
+                                                <div className="font-semibold text-slate-200 flex items-center gap-2">
+                                                    ייבוא <span className="text-white font-black capitalize px-2 py-0.5 bg-white/5 rounded-md border border-white/10">{log.category}</span>
+                                                    {isNew && <Badge className="bg-red-500/10 text-red-500 border-none text-[10px] py-0 h-4 px-1.5 animate-pulse">עדכון אחרון</Badge>}
+                                                </div>
+                                                <div className="text-xs text-slate-500 flex flex-wrap gap-x-4 gap-y-1 mt-1 font-medium">
+                                                    <span className="flex items-center gap-1 font-bold text-slate-300"><User size={12} className="text-indigo-400" /> {log.adminName || "מנהל מערכת"}</span>
+                                                    <span className="flex items-center gap-1"><Clock size={12} /> {date.toLocaleString('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex items-center gap-4 mt-4 md:mt-0">
+                                            <div className="flex gap-2">
+                                                {log.added > 0 && (
+                                                    <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[11px] font-bold text-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.1)]">
+                                                        +{log.added} רשומות חדשות ✅
+                                                    </div>
+                                                )}
+                                                {log.skipped > 0 && (
+                                                    <div className="px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-[11px] font-bold text-amber-400">
+                                                        {log.skipped} כפילויות שסוננו
+                                                    </div>
+                                                )}
+                                                {log.errors > 0 && (
+                                                    <div className="px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full text-[11px] font-bold text-red-400">
+                                                        {log.errors} שגיאות בקובץ
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div className="flex items-center gap-4 mt-4 md:mt-0">
-                                        <div className="flex gap-2">
-                                            {log.added > 0 && (
-                                                <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[11px] font-bold text-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.1)]">
-                                                    +{log.added} רשומות
-                                                </div>
-                                            )}
-                                            {log.skipped > 0 && (
-                                                <div className="px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-[11px] font-bold text-amber-400">
-                                                    {log.skipped} כפילויות
-                                                </div>
-                                            )}
-                                            {log.errors > 0 && (
-                                                <div className="px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full text-[11px] font-bold text-red-400">
-                                                    {log.errors} שגיאות
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })
+                                );
+                            });
+                        })()
                     ) : (
                         <div className="text-center py-16 bg-white/5 rounded-3xl border border-dashed border-white/10">
                             <Database className="w-12 h-12 text-slate-700 mx-auto mb-3 opacity-20" />

@@ -12,10 +12,10 @@ export type ImportResult = {
 };
 
 /**
- * ייבוא מחשבים ניידים עם מניעת כפילויות
+ * ייבוא מחשבים ניידים עם מניעת כפילויות ואימות נתונים
  */
-export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
-    const result: ImportResult = {
+export async function importLaptopsAction(data: any[]): Promise<ImportResult & { newTotal?: number }> {
+    const result: ImportResult & { newTotal?: number } = {
         total: data.length,
         added: 0,
         skipped: 0,
@@ -23,14 +23,18 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
     };
 
     try {
+        const initialCount = await prismadb.laptopCatalog.count();
+
         for (const item of data) {
             try {
-                // לוגיקת זיהוי כפילות:
-                // 1. אם יש SKU - זה הכי בטוח
-                // 2. אם אין SKU - בודקים שילוב של מותג, דגם, ומעבד (המעבד הראשון במערך)
-                
+                // בדיקת מינימום שדות חובה
+                if (!item.brand || !item.modelName) {
+                    result.skipped++;
+                    result.errors.push(`חסר מותג או דגם עבור רשומה`);
+                    continue;
+                }
+
                 let existing = null;
-                
                 if (item.sku) {
                     existing = await prismadb.laptopCatalog.findUnique({
                         where: { sku: item.sku }
@@ -38,41 +42,37 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
                 }
 
                 if (!existing) {
-                    // חיפוש לפי מותג ודגם כגיבוי
                     const possibleMatches = await prismadb.laptopCatalog.findMany({
                         where: {
                             brand: item.brand,
                             modelName: item.modelName,
-                        }
+                        },
+                        select: { cpu: true, ram: true, storage: true }
                     });
 
-                    // בדיקה מעמיקה יותר על המפרט (מעבד/זיכרון) אם מצאנו דגמים דומים
                     if (possibleMatches.length > 0) {
                         const isDuplicate = possibleMatches.some(m => {
-                            const sameCpu = JSON.stringify(m.cpu) === JSON.stringify(item.cpu || []);
-                            const sameRam = JSON.stringify(m.ram) === JSON.stringify(item.ram || []);
-                            const sameStorage = JSON.stringify(m.storage) === JSON.stringify(item.storage || []);
+                            const sameCpu = JSON.stringify(m.cpu || []) === JSON.stringify(item.cpu || []);
+                            const sameRam = JSON.stringify(m.ram || []) === JSON.stringify(item.ram || []);
+                            const sameStorage = JSON.stringify(m.storage || []) === JSON.stringify(item.storage || []);
                             return sameCpu && sameRam && sameStorage;
                         });
 
-                        if (isDuplicate) {
-                            existing = true; // סימון שמצאנו כפילות
-                        }
+                        if (isDuplicate) existing = true;
                     }
                 }
 
                 if (existing) {
                     result.skipped++;
-                    continue; // דלג על הרשומה הזו
+                    continue;
                 }
 
-                // הכנסה ל-DB
                 await prismadb.laptopCatalog.create({
                     data: {
                         brand: item.brand,
                         series: item.series || "",
                         modelName: item.modelName,
-                        type: item.type,
+                        type: item.type || "Laptop",
                         screenSize: Array.isArray(item.screenSize) ? item.screenSize : [item.screenSize].filter(Boolean),
                         cpu: Array.isArray(item.cpu) ? item.cpu : [item.cpu].filter(Boolean),
                         gpu: Array.isArray(item.gpu) ? item.gpu : [item.gpu].filter(Boolean),
@@ -90,14 +90,20 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
 
                 result.added++;
             } catch (err: any) {
-                console.error("Error importing item:", item.modelName, err);
-                result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`);
+                result.errors.push(`שגיאה בדגם ${item.modelName || 'לא ידוע'}: ${err.message}`);
             }
+        }
+
+        // אימות סופי
+        const finalCount = await prismadb.laptopCatalog.count();
+        result.newTotal = finalCount;
+
+        if (finalCount !== initialCount + result.added) {
+            console.warn(`Verification mismatch: Initial ${initialCount} + Added ${result.added} != Final ${finalCount}`);
         }
 
         revalidatePath("/admin/export");
         
-        // לוג פעולה
         const user = await currentUser();
         await prismadb.catalogImportLog.create({
             data: {
@@ -111,51 +117,37 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
 
         return result;
     } catch (error: any) {
-        console.error("Critical Import Error:", error);
-        throw new Error("נכשלה פעולת הייבוא הכללית");
+        throw new Error("נכשלה פעולת הייבוא הכללית: " + error.message);
     }
 }
 
 /**
  * ייבוא מחשבי מותג (נייחים)
  */
-export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
-    const result: ImportResult = {
-        total: data.length,
-        added: 0,
-        skipped: 0,
-        errors: []
-    };
-
+export async function importDesktopsAction(data: any[]): Promise<ImportResult & { newTotal?: number }> {
+    const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
+        const initialCount = await prismadb.brandDesktopCatalog.count();
         for (const item of data) {
             try {
+                if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 let existing = null;
                 if (item.sku) {
-                    existing = await prismadb.brandDesktopCatalog.findUnique({
-                        where: { sku: item.sku }
-                    });
+                    existing = await prismadb.brandDesktopCatalog.findUnique({ where: { sku: item.sku } });
                 }
-
                 if (!existing) {
                     const possibleMatches = await prismadb.brandDesktopCatalog.findMany({
                         where: { brand: item.brand, modelName: item.modelName }
                     });
-
                     if (possibleMatches.length > 0) {
-                        const isDuplicate = possibleMatches.some(m => {
-                            const sameCpu = JSON.stringify(m.cpu) === JSON.stringify(item.cpu || []);
-                            const sameRam = JSON.stringify(m.ram) === JSON.stringify(item.ram || []);
-                            return sameCpu && sameRam;
-                        });
+                        const isDuplicate = possibleMatches.some(m => 
+                            JSON.stringify(m.cpu || []) === JSON.stringify(item.cpu || []) &&
+                            JSON.stringify(m.ram || []) === JSON.stringify(item.ram || [])
+                        );
                         if (isDuplicate) existing = true;
                     }
                 }
-
-                if (existing) {
-                    result.skipped++;
-                    continue;
-                }
+                if (existing) { result.skipped++; continue; }
 
                 await prismadb.brandDesktopCatalog.create({
                     data: {
@@ -180,8 +172,9 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
                 result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`);
             }
         }
+        const finalCount = await prismadb.brandDesktopCatalog.count();
+        result.newTotal = finalCount;
         revalidatePath("/admin/export");
-        
         const user = await currentUser();
         await prismadb.catalogImportLog.create({
             data: {
@@ -192,21 +185,20 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
                 adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
             }
         });
-
         return result;
-    } catch (error: any) {
-        throw new Error("נכשלה פעולת הייבוא הכללית");
-    }
+    } catch (error: any) { throw new Error("נכשלה פעולת הייבוא הכללית"); }
 }
 
 /**
  * ייבוא All-in-One
  */
-export async function importAioAction(data: any[]): Promise<ImportResult> {
-    const result: ImportResult = { total: data.length, added: 0, skipped: 0, errors: [] };
+export async function importAioAction(data: any[]): Promise<ImportResult & { newTotal?: number }> {
+    const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
+        const initialCount = await prismadb.aioCatalog.count();
         for (const item of data) {
             try {
+                if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 let existing = null;
                 if (item.sku) {
                     existing = await prismadb.aioCatalog.findUnique({ where: { sku: item.sku } });
@@ -217,8 +209,8 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
                     });
                     if (possibleMatches.length > 0) {
                         const isDuplicate = possibleMatches.some(m => 
-                            JSON.stringify(m.cpu) === JSON.stringify(item.cpu || []) &&
-                            JSON.stringify(m.ram) === JSON.stringify(item.ram || [])
+                            JSON.stringify(m.cpu || []) === JSON.stringify(item.cpu || []) &&
+                            JSON.stringify(m.ram || []) === JSON.stringify(item.ram || [])
                         );
                         if (isDuplicate) existing = true;
                     }
@@ -246,8 +238,9 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`); }
         }
+        const finalCount = await prismadb.aioCatalog.count();
+        result.newTotal = finalCount;
         revalidatePath("/admin/export");
-
         const user = await currentUser();
         await prismadb.catalogImportLog.create({
             data: {
@@ -258,7 +251,6 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
                 adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
             }
         });
-
         return result;
     } catch (error: any) { throw new Error("נכשלה פעולת הייבוא"); }
 }
@@ -266,11 +258,13 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
 /**
  * ייבוא סלולריים
  */
-export async function importMobileAction(data: any[]): Promise<ImportResult> {
-    const result: ImportResult = { total: data.length, added: 0, skipped: 0, errors: [] };
+export async function importMobileAction(data: any[]): Promise<ImportResult & { newTotal?: number }> {
+    const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
+        const initialCount = await prismadb.mobileCatalog.count();
         for (const item of data) {
             try {
+                if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 const existing = await prismadb.mobileCatalog.findFirst({
                     where: { brand: item.brand, modelName: item.modelName }
                 });
@@ -285,13 +279,13 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
                         storages: Array.isArray(item.storages) ? item.storages.map(Number) : [],
                         screenSize: item.screenSize ? parseFloat(item.screenSize) : null,
                         releaseYear: item.releaseYear ? parseInt(item.releaseYear) : null,
-                        cpu: item.cpu,
+                        cpu: item.cpu || "",
                         ramG: item.ramG ? parseInt(item.ramG) : null,
-                        os: item.os,
-                        battery: item.battery,
-                        rearCamera: item.rearCamera,
-                        frontCamera: item.frontCamera,
-                        weight: item.weight,
+                        os: item.os || "",
+                        battery: item.battery || "",
+                        rearCamera: item.rearCamera || "",
+                        frontCamera: item.frontCamera || "",
+                        weight: item.weight || "",
                         nfc: !!item.nfc,
                         wirelessCharging: !!item.wirelessCharging
                     }
@@ -299,6 +293,8 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`); }
         }
+        const finalCount = await prismadb.mobileCatalog.count();
+        result.newTotal = finalCount;
         revalidatePath("/admin/export");
 
         const user = await currentUser();
@@ -319,11 +315,13 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
 /**
  * ייבוא רכבים
  */
-export async function importVehicleAction(data: any[]): Promise<ImportResult> {
-    const result: ImportResult = { total: data.length, added: 0, skipped: 0, errors: [] };
+export async function importVehicleAction(data: any[]): Promise<ImportResult & { newTotal?: number }> {
+    const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
+        const initialCount = await prismadb.vehicleCatalog.count();
         for (const item of data) {
             try {
+                if (!item.make || !item.model) { result.skipped++; continue; }
                 const existing = await prismadb.vehicleCatalog.findFirst({
                     where: { make: item.make, model: item.model, year: item.year ? parseInt(item.year) : undefined }
                 });
@@ -334,16 +332,18 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult> {
                         make: item.make,
                         model: item.model,
                         year: item.year ? parseInt(item.year) : null,
-                        type: item.type,
-                        fuelType: item.fuelType,
-                        transmission: item.transmission,
-                        engineSize: item.engineSize,
+                        type: item.type || "",
+                        fuelType: item.fuelType || "",
+                        transmission: item.transmission || "",
+                        engineSize: item.engineSize || "",
                         hp: item.hp ? parseInt(item.hp) : null
                     }
                 });
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה ברכב ${item.make} ${item.model}: ${err.message}`); }
         }
+        const finalCount = await prismadb.vehicleCatalog.count();
+        result.newTotal = finalCount;
         revalidatePath("/admin/export");
 
         const user = await currentUser();
@@ -364,11 +364,13 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult> {
 /**
  * ייבוא אלקטרוניקה
  */
-export async function importElectronicsAction(data: any[]): Promise<ImportResult> {
-    const result: ImportResult = { total: data.length, added: 0, skipped: 0, errors: [] };
+export async function importElectronicsAction(data: any[]): Promise<ImportResult & { newTotal?: number }> {
+    const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
+        const initialCount = await prismadb.electronicsCatalog.count();
         for (const item of data) {
             try {
+                if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 const existing = await prismadb.electronicsCatalog.findFirst({
                     where: { brand: item.brand, modelName: item.modelName, category: item.category }
                 });
@@ -377,7 +379,7 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
                 await prismadb.electronicsCatalog.create({
                     data: {
                         brand: item.brand,
-                        category: item.category,
+                        category: item.category || "General",
                         modelName: item.modelName,
                         hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases : [],
                         releaseYear: item.releaseYear ? parseInt(item.releaseYear) : null,
@@ -387,6 +389,8 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה במוצר ${item.modelName}: ${err.message}`); }
         }
+        const finalCount = await prismadb.electronicsCatalog.count();
+        result.newTotal = finalCount;
         revalidatePath("/admin/export");
 
         const user = await currentUser();
@@ -407,11 +411,13 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
 /**
  * ייבוא מוצרי חשמל
  */
-export async function importApplianceAction(data: any[]): Promise<ImportResult> {
-    const result: ImportResult = { total: data.length, added: 0, skipped: 0, errors: [] };
+export async function importApplianceAction(data: any[]): Promise<ImportResult & { newTotal?: number }> {
+    const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
+        const initialCount = await prismadb.applianceCatalog.count();
         for (const item of data) {
             try {
+                if (!item.brand || !item.modelName) { result.skipped++; continue; }
                 const existing = await prismadb.applianceCatalog.findFirst({
                     where: { brand: item.brand, modelName: item.modelName, category: item.category }
                 });
@@ -420,16 +426,18 @@ export async function importApplianceAction(data: any[]): Promise<ImportResult> 
                 await prismadb.applianceCatalog.create({
                     data: {
                         brand: item.brand,
-                        category: item.category,
+                        category: item.category || "General",
                         modelName: item.modelName,
                         hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases : [],
-                        capacity: item.capacity,
-                        energyRating: item.energyRating
+                        capacity: item.capacity || "",
+                        energyRating: item.energyRating || ""
                     }
                 });
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה במוצר ${item.modelName}: ${err.message}`); }
         }
+        const finalCount = await prismadb.applianceCatalog.count();
+        result.newTotal = finalCount;
         revalidatePath("/admin/export");
 
         const user = await currentUser();
@@ -450,12 +458,13 @@ export async function importApplianceAction(data: any[]): Promise<ImportResult> 
 /**
  * ייבוא לוחות אם
  */
-export async function importMotherboardAction(data: any[]): Promise<ImportResult> {
-    const result: ImportResult = { total: data.length, added: 0, skipped: 0, errors: [] };
+export async function importMotherboardAction(data: any[]): Promise<ImportResult & { newTotal?: number }> {
+    const result: ImportResult & { newTotal?: number } = { total: data.length, added: 0, skipped: 0, errors: [] };
     try {
+        const initialCount = await prismadb.motherboardCatalog.count();
         for (const item of data) {
             try {
-                // בדיקה לפי מותג ודגם
+                if (!item.brand || !item.model) { result.skipped++; continue; }
                 const existing = await prismadb.motherboardCatalog.findFirst({
                     where: { brand: item.brand, model: item.model }
                 });
@@ -465,21 +474,23 @@ export async function importMotherboardAction(data: any[]): Promise<ImportResult
                     data: {
                         brand: item.brand,
                         model: item.model,
-                        chipset: item.chipset,
-                        socket: item.socket,
-                        formFactor: item.formFactor,
-                        ramType: item.ramType,
-                        maxRam: item.maxRam,
-                        pcie: item.pcie,
-                        m2: item.m2,
-                        lan: item.lan,
-                        wifi: item.wifi,
+                        chipset: item.chipset || "",
+                        socket: item.socket || "",
+                        formFactor: item.formFactor || "",
+                        ramType: item.ramType || "",
+                        maxRam: item.maxRam || "",
+                        pcie: item.pcie || "",
+                        m2: item.m2 || "",
+                        lan: item.lan || "",
+                        wifi: item.wifi || "",
                         releaseYear: item.releaseYear ? String(item.releaseYear) : null
                     }
                 });
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה בלוח ${item.model}: ${err.message}`); }
         }
+        const finalCount = await prismadb.motherboardCatalog.count();
+        result.newTotal = finalCount;
         revalidatePath("/admin/export");
 
         const user = await currentUser();
