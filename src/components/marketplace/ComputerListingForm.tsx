@@ -744,27 +744,28 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
 
     const handleApplySearchEngineSpecs = (result: any) => {
         // The search engine result contains full specs - apply them all to the form
+        // We handle multiple potential field names because mapping can vary between local search, DB search, and AI search
         setSpec(s => ({
             ...s,
-            brand: result.brand || result.model_name?.split(" ")[0] || s.brand,
-            family: result.family || s.family,
-            subModel: result.model_name || s.subModel,
-            sku: result.model_number || s.sku,          // ← SKU from DB
+            brand: result.brand || result.make || s.brand,
+            family: result.family || result.series || s.family,
+            subModel: result.model_name || result.subModel || result.model || s.subModel,
+            sku: result.model_number || result.sku || s.sku,
             ram: result.ram || s.ram,
             storage: result.storage || s.storage,
-            screen: result.display || s.screen,
+            screen: result.display || result.screen || result.screenSize || s.screen,
             cpu: result.cpu || s.cpu,
             gpu: result.gpu || s.gpu,
             os: result.os || s.os,
             battery: result.battery || s.battery,
             ports: result.ports || s.ports,
             weight: result.weight || s.weight,
-            release_year: result.release_year || s.release_year,
+            release_year: result.release_year || result.year || s.release_year,
         }));
 
         setDetails(d => ({
             ...d,
-            title: result.model_name || d.title,
+            title: result.model_name || result.subModel || result.model || d.title,
         }));
 
         setUncertainFields([]);

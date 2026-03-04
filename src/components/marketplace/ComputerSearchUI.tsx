@@ -155,28 +155,40 @@ export function ComputerSearchUI({ activeDb, onApplySpecs, subCategory }: { acti
         if (data.isFromDb) {
             setLoading(true);
             const q = data.name;
-            const laptops = await searchLaptops(q);
-            const desktops = await searchBrandDesktops(q);
-            const aios = await searchAio(q);
+            
+            // Restrict search based on subCategory to avoid cross-category pollution
+            let laptops: any[] = [];
+            let desktops: any[] = [];
+            let aios: any[] = [];
+
+            if (!subCategory || subCategory === 'laptop') laptops = await searchLaptops(q);
+            if (!subCategory || subCategory === 'desktop') desktops = await searchBrandDesktops(q);
+            if (!subCategory || subCategory === 'aio') aios = await searchAio(q);
+            
             const allResults = [...laptops, ...desktops, ...aios];
             
             if (allResults.length > 0) {
-                const best = allResults[0];
+                // Find exact match if possible, otherwise use first
+                const exact = allResults.find(r => r.model === q || `${r.brand} ${r.model}` === q) || allResults[0];
                 onApplySpecs({
-                    brand: best.brand,
-                    family: best.series,
-                    subModel: best.model,
-                    sku: best.sku,
-                    type: best.type || "",
-                    ram: best.ram,
-                    storage: best.storage,
-                    screen: best.screen,
-                    cpu: best.cpu,
-                    gpu: best.gpu,
-                    os: best.os,
-                    release_year: best.year,
-                    ports: best.notes // using notes for extra info if ports null
+                    brand: exact.brand,
+                    family: exact.series,
+                    subModel: exact.model,
+                    sku: exact.sku,
+                    type: exact.type || "",
+                    ram: exact.ram,
+                    storage: exact.storage,
+                    screen: exact.screen,
+                    cpu: exact.cpu,
+                    gpu: exact.gpu,
+                    os: exact.os,
+                    release_year: exact.year,
+                    ports: exact.notes
                 });
+            } else {
+                // FALLBACK: If search by name failed, something is wrong with the index but we know it's in the DB.
+                // Just pass the name and let the user fill manually or try AI.
+                onApplySpecs({ subModel: q });
             }
             setLoading(false);
         } else {
@@ -215,10 +227,15 @@ export function ComputerSearchUI({ activeDb, onApplySpecs, subCategory }: { acti
             if (local.length > 0) {
                 loadSpec(local[0].data);
             } else {
-                // Try database
-                const laptops = await searchLaptops(q);
-                const desktops = await searchBrandDesktops(q);
-                const aios = await searchAio(q);
+                // Try database - respect subCategory
+                let laptops: any[] = [];
+                let desktops: any[] = [];
+                let aios: any[] = [];
+
+                if (!subCategory || subCategory === 'laptop') laptops = await searchLaptops(q);
+                if (!subCategory || subCategory === 'desktop') desktops = await searchBrandDesktops(q);
+                if (!subCategory || subCategory === 'aio') aios = await searchAio(q);
+                
                 const allResults = [...laptops, ...desktops, ...aios];
 
                 if (allResults.length > 0) {
