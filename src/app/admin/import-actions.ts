@@ -270,12 +270,26 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
                 const existing = await prismadb.mobileCatalog.findFirst({ where: { brand: item.brand, modelName: item.modelName } });
                 if (existing) { result.skipped++; continue; }
 
-                await prismadb.mobileCatalog.create({
-                    data: {
-                        brand: item.brand, series: item.series || "", modelName: item.modelName,
-                        hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases : (typeof item.hebrewAliases === 'string' ? item.hebrewAliases.split(",").map((s: string) => s.trim()) : []),
-                        storages: Array.isArray(item.storages) ? item.storages.map((s: any) => parseInt(String(s).replace(/[^0-9]/g, "")) || 0).filter(Boolean) : (typeof item.storages === 'string' ? item.storages.split(",").map((s: string) => parseInt(s.replace(/[^0-9]/g, "")) || 0).filter(Boolean) : []),
-                        screenSize: item.screenSize ? parseFloat(String(item.screenSize).replace(/[^0-9.]/g, "")) || null : null,
+                    const parsedStorages: number[] = [];
+                    if (Array.isArray(item.storages)) {
+                        for (const s of item.storages) {
+                            const val = parseInt(String(s).replace(/[^0-9]/g, ""));
+                            if (val) parsedStorages.push(val);
+                        }
+                    } else if (typeof item.storages === 'string') {
+                        const parts = item.storages.split(/\/|,/);
+                        for (const s of parts) {
+                            const val = parseInt(String(s).replace(/[^0-9]/g, ""));
+                            if (val) parsedStorages.push(val);
+                        }
+                    }
+
+                    await prismadb.mobileCatalog.create({
+                        data: {
+                            brand: item.brand, series: item.series || "", modelName: item.modelName,
+                            hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases : (typeof item.hebrewAliases === 'string' ? item.hebrewAliases.split(",").map((s: string) => s.trim()) : []),
+                            storages: parsedStorages.length > 0 ? parsedStorages : [0], // Default 0 if empty instead of failure
+                            screenSize: item.screenSize ? parseFloat(String(item.screenSize).replace(/[^0-9.]/g, "")) || null : null,
                         releaseYear: item.releaseYear ? parseInt(String(item.releaseYear).replace(/[^0-9]/g, "")) || null : null,
                         cpu: item.cpu || "", 
                         ramG: item.ramG || item.ram ? parseInt(String(item.ramG || item.ram).replace(/[^0-9]/g, "")) || null : null,
