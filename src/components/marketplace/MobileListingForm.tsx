@@ -10,7 +10,7 @@ import { createListing, updateListing, getMyListings, getMyPhone } from "@/app/a
 import { Loader2, Plus, Image as ImageIcon, X, Sparkles, Smartphone, Cpu, MemoryStick, HardDrive, Battery, Camera, Search, Check, ChevronDown } from "lucide-react";
 import { MobileSearchUI } from "@/components/marketplace/MobileSearchUI";
 import { getUniqueBrands } from "@/app/admin/export-actions";
-import { getUniqueFamilies, getModelsByFamily } from "@/app/actions/hardware-search";
+import { getUniqueFamilies, getModelsByFamily, getAutocomplete } from "@/app/actions/hardware-search";
 
 export const MOBILE_CONDITION_OPTIONS = ["חדש (בקופסה)", "כמו חדש (ללא שריטות)", "משומש (מצב טוב)", "משומש (עם סימני שימוש)", "מחודש", "לא תקין / לחלקים"];
 

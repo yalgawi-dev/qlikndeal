@@ -28,7 +28,7 @@ import {
     DESKTOP_SUB_CATEGORIES
 } from "@/lib/computer-data";
 import { getUniqueBrands } from "@/app/admin/export-actions";
-import { getUniqueFamilies, getModelsByFamily } from "@/app/actions/hardware-search";
+import { getUniqueFamilies, getModelsByFamily, getAutocomplete } from "@/app/actions/hardware-search";
 import { MOTHERBOARD_DATABASE } from "@/lib/motherboard-database";
 import { ComputerSearchUI } from "@/components/marketplace/ComputerSearchUI";
 
