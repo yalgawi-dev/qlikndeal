@@ -26,7 +26,17 @@ export async function getAdminTasks() {
         await checkAdmin();
         return await prismadb.adminTask.findMany({
             orderBy: { createdAt: 'desc' },
-            include: { createdBy: true }
+            include: { 
+                createdBy: true,
+                comments: {
+                    include: {
+                        author: true
+                    },
+                    orderBy: {
+                        createdAt: 'asc'
+                    }
+                }
+            }
         });
     } catch (error) {
         console.error("Failed to fetch tasks:", error);
@@ -42,6 +52,23 @@ export async function createAdminTask(title: string, description?: string) {
                 title,
                 description,
                 createdById: user.id
+            }
+        });
+        revalidatePath("/admin/tasks");
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function addTaskComment(taskId: string, content: string) {
+    try {
+        const user = await checkAdmin();
+        await prismadb.adminTaskComment.create({
+            data: {
+                taskId,
+                content,
+                authorId: user.id
             }
         });
         revalidatePath("/admin/tasks");

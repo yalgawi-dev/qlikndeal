@@ -85,8 +85,9 @@ model User {
   listings MarketplaceListing[]
 
   // Admin Collaboration
-  createdTasks AdminTask[] @relation("CreatedTasks")
-  writtenNotes AdminNote[] @relation("WrittenNotes")
+  createdTasks AdminTask[]        @relation("CreatedTasks")
+  writtenNotes AdminNote[]        @relation("WrittenNotes")
+  taskComments AdminTaskComment[]
 }
 
 model ServiceProviderProfile {
@@ -323,13 +324,26 @@ model AdminTask {
   title       String
   description String?
   completed   Boolean @default(false)
-  notes       String? // Shared comments on this task
+  notes       String? // Deprecated in favor of comments, but keeping for now
+
+  comments AdminTaskComment[]
 
   createdById String?
   createdBy   User?   @relation("CreatedTasks", fields: [createdById], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model AdminTaskComment {
+  id        String    @id @default(uuid())
+  taskId    String
+  task      AdminTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id])
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model AdminNote {
