@@ -27,6 +27,7 @@ import {
     importElectronicsAction,
     importApplianceAction,
     importMotherboardAction,
+    undoRecentInCategoryAction,
     ImportResult 
 } from "../import-actions";
 import { toast } from "sonner";
@@ -289,6 +290,25 @@ export default function ExportPageClient() {
             console.error("Parse error:", err);
             setImportPreview([]);
             toast.error("שגיאה בפענוח הקובץ. וודא שהוא בפורמט CSV או JSON תקין.");
+        }
+    };
+
+    const handleUndoImport = async () => {
+        if (!importType) return;
+        if (!confirm("האם אתה בטוח שברצונך למחוק את כל הרשומות שנוספו באופן אוטומטי בשעתיים האחרונות בקטגוריה זו? (מחיקה אחת לכל מה שנוסף היום)")) return;
+        setImportLoading(true);
+        try {
+            const res = await undoRecentInCategoryAction(importType);
+            toast.success(`בוטל בהצלחה! ${res.deletedCount} רשומות אחרונות נמחקו מהמאגר.`);
+            fetchStats();
+            setImportResult(null);
+            setImportData("");
+            setImportPreview([]);
+            setImportModalOpen(false);
+        } catch (error: any) {
+            toast.error("שגיאה במחיקה: " + error.message);
+        } finally {
+            setImportLoading(false);
         }
     };
 
@@ -675,7 +695,7 @@ export default function ExportPageClient() {
                                 {importResult && (
                                     <div className="p-4 bg-slate-800/60 border border-white/10 rounded-xl space-y-2">
                                         <h5 className="text-xs font-black text-white mb-2 flex items-center gap-2">
-                                            ✅ תוצאות הייבוא
+                                            {importResult.added > 0 ? "✅ תוצאות הייבוא" : "⚠️ הייבוא הסתיים, לא נוספו רשומות חדשות"}
                                         </h5>
                                         <div className="grid grid-cols-2 gap-2 text-[11px]">
                                             <div className="flex justify-between px-2 py-1 bg-white/5 rounded-lg">
@@ -735,7 +755,15 @@ export default function ExportPageClient() {
                                 className="bg-indigo-500/10 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20"
                             >
                                 <Download size={14} className="ml-2" />
-                                הורד תבנית CSV
+                                הורד תבנית
+                            </Button>
+                            <Button 
+                                variant="outline"
+                                onClick={handleUndoImport}
+                                disabled={importLoading}
+                                className="bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
+                            >
+                                מחיקת רשומות אחרונות (Undo)
                             </Button>
                         </div>
                         {importResult ? (

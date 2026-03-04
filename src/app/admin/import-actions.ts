@@ -469,3 +469,53 @@ export async function importMotherboardAction(data: any[]): Promise<ImportResult
         return result;
     } catch (error: any) { throw new Error("נכשל ייבוא Motherboards: " + error.message); }
 }
+
+/**
+ * מחיקת רשומות אחרונות (שעתיים אחרונות) לפי קטגוריה כולל כתיבת לוג
+ */
+export async function undoRecentInCategoryAction(category: string): Promise<{ deletedCount: number }> {
+    const timeLimit = new Date();
+    timeLimit.setHours(timeLimit.getHours() - 2);
+
+    const filter = { createdAt: { gte: timeLimit } };
+    let deletedCount = 0;
+
+    try {
+        switch (category) {
+            case "laptop": deletedCount = (await prismadb.laptopCatalog.deleteMany({ where: filter })).count; break;
+            case "desktop": deletedCount = (await prismadb.brandDesktopCatalog.deleteMany({ where: filter })).count; break;
+            case "aio": deletedCount = (await prismadb.aioCatalog.deleteMany({ where: filter })).count; break;
+            case "mobile": case "phone": deletedCount = (await prismadb.mobileCatalog.deleteMany({ where: filter })).count; break;
+            case "electronics": deletedCount = (await prismadb.electronicsCatalog.deleteMany({ where: filter })).count; break;
+            case "appliance": deletedCount = (await prismadb.applianceCatalog.deleteMany({ where: filter })).count; break;
+            case "motherboard": deletedCount = (await prismadb.motherboardCatalog.deleteMany({ where: filter })).count; break;
+            default: throw new Error("קטגוריה לא נתמכת");
+        }
+        
+        revalidatePath("/", "layout");
+        revalidatePath("/admin/export");
+        revalidatePath("/admin/logs");
+        
+        if (deletedCount > 0) {
+            const user = await currentUser();
+            const adminName = user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "מערכת";
+            await prismadb.catalogImportLog.create({
+                data: {
+                    category,
+                    totalInFile: 0,
+                    added: -deletedCount, // Minus to indicate removal
+                    skipped: 0,
+                    duplicatesInFile: 0,
+                    errors: 0,
+                    errorDetails: ["בוצעה פעולת ביטול (Undo) ידנית"],
+                    newTotal: 0,
+                    adminName
+                }
+            });
+        }
+        
+        return { deletedCount };
+    } catch (e: any) {
+        throw new Error("מחיקה נכשלה: " + e.message);
+    }
+}
