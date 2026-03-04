@@ -52,6 +52,7 @@ export default function ExportPageClient() {
     const [syncing, setSyncing] = useState<string | null>(null);
     const [stats, setStats] = useState<Record<string, CatalogStats>>({});
     const [statsLoading, setStatsLoading] = useState(true);
+    const [recentLogs, setRecentLogs] = useState<any[]>([]);
 
     // Import State
     const [importModalOpen, setImportModalOpen] = useState(false);
@@ -66,6 +67,8 @@ export default function ExportPageClient() {
         const res = await getDatabaseStats();
         if (res.success && res.stats) {
             setStats(res.stats as any);
+            // @ts-ignore
+            if (res.recentLogs) setRecentLogs(res.recentLogs);
         }
         setStatsLoading(false);
     };
@@ -335,7 +338,8 @@ export default function ExportPageClient() {
         id: string, title: string, desc: string, icon: any, color: string, neonColor: string, statsKey: string 
     }) => {
         const itemStats = stats[statsKey] || { count: 0, lastUpdate: null };
-        
+        const isRecentlyUpdated = itemStats.lastUpdate && (new Date().getTime() - new Date(itemStats.lastUpdate).getTime()) < 1000 * 60 * 60 * 12; // 12 שעות
+
         // Define neon glow classes based on color
         const glowClass = {
             blue: "shadow-[0_0_20px_rgba(59,130,246,0.3)] border-blue-500/50",
@@ -346,7 +350,7 @@ export default function ExportPageClient() {
             rose: "shadow-[0_0_20px_rgba(244,63,94,0.3)] border-rose-500/50",
             amber: "shadow-[0_0_20px_rgba(245,158,11,0.3)] border-amber-500/50",
             emerald: "shadow-[0_0_20px_rgba(16,185,129,0.3)] border-emerald-500/50",
-        }[neonColor] || "shadow-none";
+        }[neonColor as keyof typeof stats] || "shadow-none";
 
         const textColor = {
             blue: "text-blue-400",
@@ -357,7 +361,7 @@ export default function ExportPageClient() {
             rose: "text-rose-400",
             amber: "text-amber-400",
             emerald: "text-emerald-400",
-        }[neonColor] || "text-white";
+        }[neonColor as keyof typeof stats] || "text-white";
 
         const bgColor = {
             blue: "bg-blue-500/10",
@@ -368,11 +372,17 @@ export default function ExportPageClient() {
             rose: "bg-rose-500/10",
             amber: "bg-amber-500/10",
             emerald: "bg-emerald-500/10",
-        }[neonColor] || "bg-white/10";
+        }[neonColor as keyof typeof stats] || "bg-white/10";
 
         return (
-            <div className={`relative group overflow-hidden bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-7 transition-all duration-500 hover:scale-[1.02] ${glowClass}`}>
-                <div className={`absolute -right-8 -top-8 w-40 h-40 ${bgColor} blur-3xl rounded-full group-hover:opacity-100 opacity-50 transition-all duration-700`} />
+            <div className={`relative group overflow-hidden bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-7 transition-all duration-500 hover:scale-[1.02] ${isRecentlyUpdated ? 'shadow-[0_0_25px_rgba(239,68,68,0.3)] border-red-500/50' : glowClass}`}>
+                {isRecentlyUpdated && (
+                    <div className="absolute top-4 left-4 z-20 flex items-center gap-1.5 px-3 py-1 bg-red-500 text-white rounded-full text-[10px] font-black animate-pulse shadow-lg shadow-red-500/20">
+                        <RefreshCw size={10} className="animate-spin-slow" />
+                        עודכן כרגע
+                    </div>
+                )}
+                <div className={`absolute -right-8 -top-8 w-40 h-40 ${isRecentlyUpdated ? 'bg-red-500/10' : bgColor} blur-3xl rounded-full group-hover:opacity-100 opacity-50 transition-all duration-700`} />
                 
                 <div className="relative flex flex-col h-full">
                     <div className="flex items-start justify-between mb-6">
@@ -652,6 +662,75 @@ export default function ExportPageClient() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Recent Activity Log */}
+            <div className="mt-12 bg-white/5 border border-white/10 rounded-3xl p-6 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -mr-32 -mt-32 transition-all duration-700 group-hover:bg-indigo-500/20" />
+                
+                <div className="flex items-center gap-3 mb-8 relative z-10">
+                    <div className="p-2 bg-indigo-500/20 rounded-xl">
+                        <Clock className="w-5 h-5 text-indigo-400" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold text-white">פעולות אחרונות במאגר</h2>
+                        <p className="text-xs text-slate-500">מעקב אחר ייבוא נתונים ושינויי קטלוג</p>
+                    </div>
+                </div>
+                
+                <div className="space-y-4 relative z-10">
+                    {recentLogs.length > 0 ? (
+                        recentLogs.map((log: any) => {
+                            const date = new Date(log.createdAt);
+                            const isNew = (new Date().getTime() - date.getTime()) < 1000 * 60 * 60 * 24;
+                            
+                            return (
+                                <div key={log.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/[0.08] hover:border-white/10 transition-all group/item">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`p-2.5 rounded-xl ${log.added > 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                                            <Database className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <div className="font-semibold text-slate-200 flex items-center gap-2">
+                                                ייבוא <span className="text-indigo-400 font-bold capitalize">{log.category}</span>
+                                                {isNew && <Badge className="bg-red-500/10 text-red-500 border-none text-[10px] py-0 h-4 px-1.5 animate-pulse">חדש</Badge>}
+                                            </div>
+                                            <div className="text-xs text-slate-500 flex flex-wrap gap-x-4 gap-y-1 mt-1 font-medium">
+                                                <span className="flex items-center gap-1"><RefreshCw size={12} /> {log.adminName || "מנהל מערכת"}</span>
+                                                <span className="flex items-center gap-1"><Clock size={12} /> {date.toLocaleString('he-IL', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center gap-4 mt-4 md:mt-0">
+                                        <div className="flex gap-2">
+                                            {log.added > 0 && (
+                                                <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[11px] font-bold text-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.1)]">
+                                                    +{log.added} רשומות
+                                                </div>
+                                            )}
+                                            {log.skipped > 0 && (
+                                                <div className="px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-[11px] font-bold text-amber-400">
+                                                    {log.skipped} כפילויות
+                                                </div>
+                                            )}
+                                            {log.errors > 0 && (
+                                                <div className="px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full text-[11px] font-bold text-red-400">
+                                                    {log.errors} שגיאות
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="text-center py-16 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                            <Database className="w-12 h-12 text-slate-700 mx-auto mb-3 opacity-20" />
+                            <p className="text-slate-500 text-sm">לא נמצאו פעולות ייבוא אחרונות במערכת.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
 
             <style jsx global>{`
                 @keyframes spin-slow {

@@ -39,7 +39,12 @@ export async function getDatabaseStats() {
             };
         }
 
-        return { success: true, stats };
+        const recentLogs = await prisma.catalogImportLog.findMany({
+            orderBy: { createdAt: "desc" },
+            take: 10
+        });
+
+        return { success: true, stats, recentLogs };
     } catch (error: any) {
         console.error("Get Database Stats Error:", error);
         return { success: false, error: error.message };
@@ -97,12 +102,19 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
     
     let html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head><meta charset="utf-8" /><style>td { mso-number-format:"\\@"; } th { background-color: #f4f4f4; }</style></head>
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            td { mso-number-format:"\\@"; } 
+            th { background-color: #f4f4f4; font-weight: bold; }
+            .new-row { background-color: #fee2e2; color: #991b1b; } /* אדום בהיר לרשומות חדשות */
+        </style>
+    </head>
     <body dir="rtl">
     <table border="1">
     <thead>
         <tr>
-            <th>קטגוריה</th><th>יצרן</th><th>סדרה</th><th>דגם</th><th>סוג</th><th>מסך</th><th>תצוגה</th><th>מעבד</th><th>זיכרון RAM</th><th>אחסון</th><th>מאיץ גרפי</th><th>OS</th><th>שנה</th><th>SKU</th><th>משקל</th><th>חיבורים</th><th>הערות</th>
+            <th>סטטוס</th><th>קטגוריה</th><th>יצרן</th><th>סדרה</th><th>דגם</th><th>סוג</th><th>מסך</th><th>תצוגה</th><th>מעבד</th><th>זיכרון RAM</th><th>אחסון</th><th>מאיץ גרפי</th><th>OS</th><th>שנה</th><th>SKU</th><th>משקל</th><th>חיבורים</th><th>הערות</th>
         </tr>
     </thead>
     <tbody>`;
@@ -120,8 +132,12 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
 
     // Laptops
     for (const l of laptops_all) {
+        const isNew = l.createdAt && (new Date().getTime() - new Date(l.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+        
         html += `
-        <tr>
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
             <td>נייד</td>
             <td>${clean(l.brand)}</td>
             <td>${clean(l.series)}</td>
@@ -144,8 +160,12 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
 
     // Desktops
     for (const d of desktops) {
+        const isNew = d.createdAt && (new Date().getTime() - new Date(d.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+        
         html += `
-        <tr>
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
             <td>נייח מותג</td>
             <td>${clean(d.brand)}</td>
             <td>${clean(d.series)}</td>
@@ -168,8 +188,12 @@ export async function exportComputersToCSV(type: "laptop" | "desktop" | "aio" | 
 
     // AIOs
     for (const a of aios) {
+        const isNew = a.createdAt && (new Date().getTime() - new Date(a.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+
         html += `
-        <tr>
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
             <td>AIO</td>
             <td>${clean(a.brand)}</td>
             <td>${clean(a.series)}</td>
@@ -208,12 +232,19 @@ export async function exportPhonesToCSV() {
     noStore();
     let html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head><meta charset="utf-8" /><style>td { mso-number-format:"\\@"; } th { background-color: #f4f4f4; }</style></head>
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            td { mso-number-format:"\\@"; } 
+            th { background-color: #f4f4f4; font-weight: bold; }
+            .new-row { background-color: #fee2e2; color: #991b1b; }
+        </style>
+    </head>
     <body dir="rtl">
     <table border="1">
     <thead>
         <tr>
-            <th>מותג</th><th>סדרה</th><th>דגם</th><th>כינויים (HE)</th><th>מסך</th><th>שנה</th><th>מעבד</th><th>RAM</th><th>אחסון (GB)</th><th>OS</th><th>סוללה</th><th>מצלמה אחורית</th><th>מצלמה קדמית</th><th>משקל</th><th>NFC</th><th>טעינה אלחוטית</th>
+            <th>סטטוס</th><th>מותג</th><th>סדרה</th><th>דגם</th><th>כינויים (HE)</th><th>מסך</th><th>שנה</th><th>מעבד</th><th>RAM</th><th>אחסון (GB)</th><th>OS</th><th>סוללה</th><th>מצלמה אחורית</th><th>מצלמה קדמית</th><th>משקל</th><th>NFC</th><th>טעינה אלחוטית</th>
         </tr>
     </thead>
     <tbody>`;
@@ -221,8 +252,12 @@ export async function exportPhonesToCSV() {
     const mobiles = await prisma.mobileCatalog.findMany({ orderBy: { brand: "asc" } });
 
     for (const phone of mobiles) {
+        const isNew = phone.createdAt && (new Date().getTime() - new Date(phone.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+
         html += `
-        <tr>
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
             <td>${clean(phone.brand)}</td>
             <td>${clean(phone.series)}</td>
             <td>${clean(phone.modelName)}</td>
@@ -250,12 +285,19 @@ export async function exportVehiclesToCSV() {
     noStore();
     let html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head><meta charset="utf-8" /><style>td { mso-number-format:"\\@"; } th { background-color: #f4f4f4; }</style></head>
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            td { mso-number-format:"\\@"; } 
+            th { background-color: #f4f4f4; font-weight: bold; }
+            .new-row { background-color: #fee2e2; color: #991b1b; }
+        </style>
+    </head>
     <body dir="rtl">
     <table border="1">
     <thead>
         <tr>
-            <th>מותג</th><th>דגם</th><th>שנה</th><th>סוג</th><th>סוג דלק</th><th>תיבת הילוכים</th><th>נפח מנוע</th><th>כ"ס</th>
+            <th>סטטוס</th><th>מותג</th><th>דגם</th><th>שנה</th><th>סוג</th><th>סוג דלק</th><th>תיבת הילוכים</th><th>נפח מנוע</th><th>כ"ס</th>
         </tr>
     </thead>
     <tbody>`;
@@ -263,8 +305,12 @@ export async function exportVehiclesToCSV() {
     const vehicles = await prisma.vehicleCatalog.findMany({ orderBy: { make: "asc" } });
 
     for (const v of vehicles) {
+        const isNew = v.createdAt && (new Date().getTime() - new Date(v.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+
         html += `
-        <tr>
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
             <td>${clean(v.make)}</td>
             <td>${clean(v.model)}</td>
             <td>${clean(v.year)}</td>
@@ -316,12 +362,19 @@ export async function exportElectronicsToCSV() {
     noStore();
     let html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head><meta charset="utf-8" /><style>td { mso-number-format:"\\@"; } th { background-color: #f4f4f4; }</style></head>
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            td { mso-number-format:"\\@"; } 
+            th { background-color: #f4f4f4; font-weight: bold; }
+            .new-row { background-color: #fee2e2; color: #991b1b; }
+        </style>
+    </head>
     <body dir="rtl">
     <table border="1">
     <thead>
         <tr>
-            <th>מותג</th><th>קטגוריה</th><th>דגם</th><th>כילויים נוספים</th><th>שנת יציאה</th><th>מפרט (JSON)</th>
+            <th>סטטוס</th><th>מותג</th><th>קטגוריה</th><th>דגם</th><th>כילויים נוספים</th><th>שנת יציאה</th><th>מפרט (JSON)</th>
         </tr>
     </thead>
     <tbody>`;
@@ -329,8 +382,12 @@ export async function exportElectronicsToCSV() {
     const electronics = await prisma.electronicsCatalog.findMany({ orderBy: { brand: "asc" } });
 
     for (const e of electronics) {
+        const isNew = e.createdAt && (new Date().getTime() - new Date(e.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+
         html += `
-        <tr>
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
             <td>${clean(e.brand)}</td>
             <td>${clean(e.category)}</td>
             <td>${clean(e.modelName)}</td>
@@ -348,12 +405,19 @@ export async function exportAppliancesToCSV() {
     noStore();
     let html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head><meta charset="utf-8" /><style>td { mso-number-format:"\\@"; } th { background-color: #f4f4f4; }</style></head>
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            td { mso-number-format:"\\@"; } 
+            th { background-color: #f4f4f4; font-weight: bold; }
+            .new-row { background-color: #fee2e2; color: #991b1b; }
+        </style>
+    </head>
     <body dir="rtl">
     <table border="1">
     <thead>
         <tr>
-            <th>מותג</th><th>קטגוריה</th><th>דגם</th><th>קיבולת</th><th>דירוג אנרגטי</th>
+            <th>סטטוס</th><th>מותג</th><th>קטגוריה</th><th>דגם</th><th>קיבולת</th><th>דירוג אנרגטי</th>
         </tr>
     </thead>
     <tbody>`;
@@ -361,8 +425,12 @@ export async function exportAppliancesToCSV() {
     const appliances = await prisma.applianceCatalog.findMany({ orderBy: { brand: "asc" } });
 
     for (const a of appliances) {
+        const isNew = a.createdAt && (new Date().getTime() - new Date(a.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+
         html += `
-        <tr>
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
             <td>${clean(a.brand)}</td>
             <td>${clean(a.category)}</td>
             <td>${clean(a.modelName)}</td>
@@ -379,12 +447,19 @@ export async function exportMotherboardsToCSV() {
     noStore();
     let html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head><meta charset="utf-8" /><style>td { mso-number-format:"\\@"; } th { background-color: #f4f4f4; }</style></head>
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            td { mso-number-format:"\\@"; } 
+            th { background-color: #f4f4f4; font-weight: bold; }
+            .new-row { background-color: #fee2e2; color: #991b1b; }
+        </style>
+    </head>
     <body dir="rtl">
     <table border="1">
     <thead>
         <tr>
-            <th>מותג</th><th>דגם</th><th>Chipset</th><th>Socket</th><th>Form Factor</th><th>סוג RAM</th><th>RAM מקסימלי</th><th>PCIe</th><th>M.2</th><th>LAN</th><th>WiFi</th><th>שנת יציאה</th>
+            <th>סטטוס</th><th>מותג</th><th>דגם</th><th>Chipset</th><th>Socket</th><th>Form Factor</th><th>סוג RAM</th><th>RAM מקסימלי</th><th>PCIe</th><th>M.2</th><th>LAN</th><th>WiFi</th><th>שנת יציאה</th>
         </tr>
     </thead>
     <tbody>`;
@@ -392,8 +467,12 @@ export async function exportMotherboardsToCSV() {
     const mbs = await prisma.motherboardCatalog.findMany({ orderBy: { brand: "asc" } });
 
     for (const m of mbs) {
+        const isNew = m.createdAt && (new Date().getTime() - new Date(m.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+
         html += `
-        <tr>
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
             <td>${clean(m.brand)}</td>
             <td>${clean(m.model)}</td>
             <td>${clean(m.chipset)}</td>

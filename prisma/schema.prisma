@@ -532,3 +532,15 @@ model MotherboardCatalog {
   @@index([brand])
   @@index([model])
 }
+
+model CatalogImportLog {
+  id        String   @id @default(uuid())
+  category  String
+  added     Int
+  skipped   Int
+  errors    Int
+  adminName String?
+  createdAt DateTime @default(now())
+
+  @@index([category])
+}

@@ -2,6 +2,7 @@
 
 import prismadb from "@/lib/prismadb";
 import { revalidatePath } from "next/cache";
+import { currentUser } from "@clerk/nextjs/server";
 
 export type ImportResult = {
     total: number;
@@ -95,6 +96,19 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
         }
 
         revalidatePath("/admin/export");
+        
+        // לוג פעולה
+        const user = await currentUser();
+        await prismadb.catalogImportLog.create({
+            data: {
+                category: "laptop",
+                added: result.added,
+                skipped: result.skipped,
+                errors: result.errors.length,
+                adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
+            }
+        });
+
         return result;
     } catch (error: any) {
         console.error("Critical Import Error:", error);
@@ -167,6 +181,18 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
             }
         }
         revalidatePath("/admin/export");
+        
+        const user = await currentUser();
+        await prismadb.catalogImportLog.create({
+            data: {
+                category: "desktop",
+                added: result.added,
+                skipped: result.skipped,
+                errors: result.errors.length,
+                adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
+            }
+        });
+
         return result;
     } catch (error: any) {
         throw new Error("נכשלה פעולת הייבוא הכללית");
@@ -221,6 +247,18 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
             } catch (err: any) { result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`); }
         }
         revalidatePath("/admin/export");
+
+        const user = await currentUser();
+        await prismadb.catalogImportLog.create({
+            data: {
+                category: "aio",
+                added: result.added,
+                skipped: result.skipped,
+                errors: result.errors.length,
+                adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
+            }
+        });
+
         return result;
     } catch (error: any) { throw new Error("נכשלה פעולת הייבוא"); }
 }
@@ -262,6 +300,18 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
             } catch (err: any) { result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`); }
         }
         revalidatePath("/admin/export");
+
+        const user = await currentUser();
+        await prismadb.catalogImportLog.create({
+            data: {
+                category: "mobile",
+                added: result.added,
+                skipped: result.skipped,
+                errors: result.errors.length,
+                adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
+            }
+        });
+
         return result;
     } catch (error: any) { throw new Error("נכשלה פעולת הייבוא"); }
 }
@@ -295,6 +345,18 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult> {
             } catch (err: any) { result.errors.push(`שגיאה ברכב ${item.make} ${item.model}: ${err.message}`); }
         }
         revalidatePath("/admin/export");
+
+        const user = await currentUser();
+        await prismadb.catalogImportLog.create({
+            data: {
+                category: "vehicle",
+                added: result.added,
+                skipped: result.skipped,
+                errors: result.errors.length,
+                adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
+            }
+        });
+
         return result;
     } catch (error: any) { throw new Error("נכשלה פעולת הייבוא"); }
 }
@@ -326,6 +388,18 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
             } catch (err: any) { result.errors.push(`שגיאה במוצר ${item.modelName}: ${err.message}`); }
         }
         revalidatePath("/admin/export");
+
+        const user = await currentUser();
+        await prismadb.catalogImportLog.create({
+            data: {
+                category: "electronics",
+                added: result.added,
+                skipped: result.skipped,
+                errors: result.errors.length,
+                adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
+            }
+        });
+
         return result;
     } catch (error: any) { throw new Error("נכשלה פעולת הייבוא"); }
 }
@@ -357,6 +431,18 @@ export async function importApplianceAction(data: any[]): Promise<ImportResult> 
             } catch (err: any) { result.errors.push(`שגיאה במוצר ${item.modelName}: ${err.message}`); }
         }
         revalidatePath("/admin/export");
+
+        const user = await currentUser();
+        await prismadb.catalogImportLog.create({
+            data: {
+                category: "appliance",
+                added: result.added,
+                skipped: result.skipped,
+                errors: result.errors.length,
+                adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
+            }
+        });
+
         return result;
     } catch (error: any) { throw new Error("נכשלה פעולת הייבוא"); }
 }
@@ -395,6 +481,18 @@ export async function importMotherboardAction(data: any[]): Promise<ImportResult
             } catch (err: any) { result.errors.push(`שגיאה בלוח ${item.model}: ${err.message}`); }
         }
         revalidatePath("/admin/export");
+
+        const user = await currentUser();
+        await prismadb.catalogImportLog.create({
+            data: {
+                category: "motherboard",
+                added: result.added,
+                skipped: result.skipped,
+                errors: result.errors.length,
+                adminName: user?.firstName ? `${user.firstName} ${user.lastName || ""}` : "מערכת"
+            }
+        });
+
         return result;
     } catch (error: any) { throw new Error("נכשלה פעולת הייבוא"); }
 }
