@@ -502,48 +502,74 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     }, [spec.brand, spec.family, spec.subModel, spec.cpu, spec.ram]);
 
     const handleSubModelPick = async (v: string) => {
+        console.log("DEBUG: handleSubModelPick called with:", v);
         if (v === "אחר / לא ברשימה") {
             setSpec(s => ({ ...s, subModel: v }));
             return;
         }
 
-        let modelObj = dynamicModels.find(m => (m.sku ? `${m.name} (מק"ט: ${m.sku})` : m.name) === v);
+        // Try to find the model in the current dynamicModels list
+        let modelObj = dynamicModels.find(m => {
+            const label = m.sku ? `${m.name} (מק"ט: ${m.sku})` : m.name;
+            return label === v || m.name === v;
+        });
         
-        // If not in current 100 models, try a direct lookup
+        // If not in current list (maybe because of searching), try a direct lookup
         if (!modelObj && v) {
+            console.log("DEBUG: Model not found in dynamicModels, attempting direct lookup for:", v);
             const typeMap: any = { "laptop": "laptop", "all_in_one": "aio", "brand_desktop": "desktop" };
             const type = mainCategory === "laptop" ? "laptop" : (computerTypeMode ? typeMap[computerTypeMode] : "laptop");
+            // Remove SKU part if present for cleaner search
             const q = v.includes("(מק\"ט: ") ? v.split("(מק\"ט: ")[0].trim() : v;
             
             setFetchingDynamic(true);
-            const res = await getAutocomplete(q, "Computers", type);
-            if (res && res.length > 0) {
-                const match = res.find((r: any) => r.label === v) || res[0];
-                if (match.details) modelObj = match.details;
+            try {
+                const res = await getAutocomplete(q, "Computers", type);
+                if (res && res.length > 0) {
+                    const match = res.find((r: any) => r.label === v) || res[0];
+                    if (match.details) {
+                        modelObj = match.details;
+                        console.log("DEBUG: Direct lookup found match:", modelObj);
+                    }
+                }
+            } catch (err) {
+                console.error("DEBUG: Direct lookup error:", err);
             }
             setFetchingDynamic(false);
         }
 
         if (modelObj) {
+            console.log("DEBUG: Found modelObj for autopopulation:", modelObj);
             const newBrand = modelObj.brand || spec.brand;
             const newFamily = modelObj.series || spec.family;
             
-            const sub = {
-                name: modelObj.modelName || modelObj.name,
-                cpu: Array.isArray(modelObj.cpu) ? modelObj.cpu : [modelObj.cpu],
-                ram: Array.isArray(modelObj.ram) ? modelObj.ram : [modelObj.ram],
-                storage: Array.isArray(modelObj.storage) ? modelObj.storage : [modelObj.storage],
-                screenSize: Array.isArray(modelObj.screenSize) ? modelObj.screenSize : [modelObj.screenSize],
-                gpu: Array.isArray(modelObj.gpu) ? modelObj.gpu : [modelObj.gpu],
-                os: Array.isArray(modelObj.os) ? modelObj.os : [modelObj.os],
-                weight: modelObj.weight,
-                ports: modelObj.ports,
-                release_year: modelObj.release_year || modelObj.releaseYear,
-                display: modelObj.display,
-                sku: modelObj.sku
+            // Normalize all fields to arrays (as expected by applySmartModelPick's "sub" argument)
+            // or handle them as strings if they are returned as such from the DB
+            const toArr = (val: any) => {
+                if (Array.isArray(val)) return val;
+                if (!val) return [];
+                return [val];
             };
+
+            const sub = {
+                name: modelObj.modelName || modelObj.name || (typeof v === 'string' ? v : ""),
+                cpu: toArr(modelObj.cpu),
+                ram: toArr(modelObj.ram),
+                storage: toArr(modelObj.storage),
+                screenSize: toArr(modelObj.screenSize || modelObj.screen_size),
+                gpu: toArr(modelObj.gpu),
+                os: toArr(modelObj.os),
+                weight: modelObj.weight || "",
+                ports: modelObj.ports || "",
+                release_year: modelObj.release_year || modelObj.releaseYear || "",
+                display: modelObj.display || "",
+                sku: modelObj.sku || ""
+            };
+
+            console.log("DEBUG: Calling applySmartModelPick with sub:", sub);
             applySmartModelPick(newBrand, newFamily, sub as any, modelObj.sku ? { id: modelObj.sku } : null);
         } else {
+            console.log("DEBUG: No modelObj found at all, setting subModel name only.");
             setSpec(s => ({ ...s, subModel: v }));
         }
     };
@@ -583,13 +609,58 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         return list;
     }, [mainCategory, activeDb]);
 
-    const filteredGlobalModels = useMemo(() => {
-        if (!globalSearch.trim()) return [];
-        const queryTerms = globalSearch.toLowerCase().split(' ').filter(Boolean);
-        return allModelsFlat.filter(m =>
-            queryTerms.every(term => m.searchText.includes(term))
-        ).slice(0, 10); // show top 10
-    }, [globalSearch, allModelsFlat]);
+    // Dynamic Global Search
+    const [globalSuggestions, setGlobalSuggestions] = useState<any[]>([]);
+    const [fetchingGlobal, setFetchingGlobal] = useState(false);
+    const globalDebounceRef = useRef<any>(null);
+
+    useEffect(() => {
+        if (globalDebounceRef.current) clearTimeout(globalDebounceRef.current);
+        const q = globalSearch.trim();
+        if (q.length < 2) {
+            setGlobalSuggestions([]);
+            return;
+        }
+
+        globalDebounceRef.current = setTimeout(async () => {
+            setFetchingGlobal(true);
+            try {
+                const typeMap: any = { "laptop": "laptop", "all_in_one": "aio", "brand_desktop": "desktop" };
+                const type = mainCategory === "laptop" ? "laptop" : (computerTypeMode ? typeMap[computerTypeMode] : "laptop");
+                const res = await getAutocomplete(q, "Computers", type);
+                if (res) setGlobalSuggestions(res);
+            } catch (err) {
+                console.error("DEBUG: Global search error:", err);
+            } finally {
+                setFetchingGlobal(false);
+            }
+        }, 400);
+    }, [globalSearch, mainCategory, computerTypeMode]);
+
+    const handleGlobalResultPick = (res: any) => {
+        console.log("DEBUG: Global result picked:", res);
+        setGlobalSearch("");
+        setShowGlobalResults(false);
+        
+        if (res.details) {
+            const d = res.details;
+            const sub = {
+                name: d.modelName || d.name || "",
+                cpu: Array.isArray(d.cpu) ? d.cpu : [d.cpu],
+                ram: Array.isArray(d.ram) ? d.ram : [d.ram],
+                storage: Array.isArray(d.storage) ? d.storage : [d.storage],
+                screenSize: Array.isArray(d.screenSize) ? d.screenSize : [d.screenSize],
+                gpu: Array.isArray(d.gpu) ? d.gpu : [d.gpu],
+                os: Array.isArray(d.os) ? d.os : [d.os],
+                weight: d.weight,
+                ports: d.ports,
+                release_year: d.release_year || d.releaseYear,
+                display: d.display,
+                sku: d.sku
+            };
+            applySmartModelPick(d.brand, d.series, sub as any, d.sku ? { id: d.sku } : null);
+        }
+    };
 
     // Derived options based on current selections
     const modelFamilies = useMemo(() => spec.brand ? (activeDb[spec.brand] || []) : [], [spec.brand, activeDb]);
@@ -631,7 +702,7 @@ const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSub
             return val || "";
         };
 
-        newSpec.screen = getVal("screenSize") || getVal("display") || getVal("screen");
+        newSpec.screen = getVal("screenSize") || getVal("display");
         newSpec.cpu = getVal("cpu");
         newSpec.gpu = getVal("gpu");
         newSpec.ram = getVal("ram");
@@ -1013,7 +1084,43 @@ const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSub
                                                 })}
                                             </div>
 
-                                            <h3 className="text-lg font-bold border-b border-blue-900/50 pb-2 text-blue-300 mt-6">🖥️ מסך מחשב (אם מצורף)</h3>
+                                            <div className="flex gap-2">
+                                                <div className="relative flex-1">
+                                                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                                    <input
+                                                        type="text"
+                                                        value={globalSearch}
+                                                        onChange={e => setGlobalSearch(e.target.value)}
+                                                        onFocus={() => setShowGlobalResults(true)}
+                                                        className="w-full bg-gray-950 border border-gray-700 rounded-xl pr-10 pl-4 py-3 text-sm focus:border-indigo-500 transition-all outline-none"
+                                                        placeholder="למשל: MacBook Air M3, Latitude 5440, MQKU3LL/A..."
+                                                    />
+                                                    
+                                                    {showGlobalResults && (globalSuggestions.length > 0 || fetchingGlobal) && (
+                                                        <div className="absolute top-full left-0 right-0 mt-2 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                                                            {fetchingGlobal ? (
+                                                                <div className="p-4 text-center text-gray-500 flex items-center justify-center gap-2">
+                                                                    <Loader2 className="w-4 h-4 animate-spin" /> מחפש...
+                                                                </div>
+                                                            ) : (
+                                                                <div className="max-h-64 overflow-y-auto">
+                                                                    {globalSuggestions.map((res, i) => (
+                                                                        <button
+                                                                            key={i}
+                                                                            type="button"
+                                                                            onClick={() => handleGlobalResultPick(res)}
+                                                                            className="w-full text-right px-4 py-3 text-sm text-gray-300 hover:bg-indigo-600/20 hover:text-white transition-colors flex items-center gap-3 border-b border-gray-800/50 last:border-0"
+                                                                        >
+                                                                            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                                                                            <span>{res.label}</span>
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>     <h3 className="text-lg font-bold border-b border-blue-900/50 pb-2 text-blue-300 mt-6">🖥️ מסך מחשב (אם מצורף)</h3>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {MONITOR_FIELDS.map(field => {
                                                     const options = (CUSTOM_BUILD_CATEGORIES as any)[field.dataKey]?.options || [];
@@ -1056,29 +1163,46 @@ const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSub
                                                         label="יצרן"
                                                         disabled={fetchingBrands}
                                                         placeholder={fetchingBrands ? "טוען מותגים..." : "בחר יצרן..."}
-                                                        options={dbBrands}
+                                                        options={[...dbBrands, "אחר / לא ברשימה"]}
                                                         value={spec.brand}
                                                         onChange={v => {
                                                             // Clear family and submodel when brand changes to prevent invalid state
                                                             setSpec(s => ({ ...s, brand: v, family: "", subModel: "", sku: "" }));
                                                         }}
                                                     />
-                                                    <SpecSelector
-                                                        label="סדרה (Family)"
-                                                        options={dynamicFamilies}
-                                                        value={spec.family}
-                                                        disabled={fetchingDynamic}
-                                                        placeholder={fetchingDynamic ? "טוען סדרות..." : "בחר סדרה..."}
-                                                        onChange={v => {
-                                                            // Clear submodel when family changes
-                                                            setSpec(s => ({ ...s, family: v, subModel: "", sku: "" }));
-                                                            // If we chose a family that has a known brand, and brand is empty, fill it
-                                                            if (!spec.brand) {
-                                                                const knownModel = dynamicModels.find(m => m.series === v);
-                                                                if (knownModel) setSpec(s => ({ ...s, family: v, brand: knownModel.brand }));
-                                                            }
-                                                        }}
-                                                    />
+                                                     <SpecSelector
+                                                         label="סדרה (Family)"
+                                                         options={[...dynamicFamilies, "אחר / לא ברשימה"]}
+                                                         value={spec.family}
+                                                         disabled={fetchingDynamic}
+                                                         placeholder={fetchingDynamic ? "טוען סדרות..." : "בחר סדרה..."}
+                                                         onChange={v => {
+                                                             if (v === "אחר / לא ברשימה") {
+                                                                 setSpec(s => ({ ...s, family: v, subModel: "", sku: "" }));
+                                                                 return;
+                                                             }
+                                                             // Clear submodel when family changes
+                                                             setSpec(s => ({ ...s, family: v, subModel: "", sku: "" }));
+                                                             // If we chose a family that has a known brand, and brand is empty, fill it
+                                                             if (!spec.brand) {
+                                                                 // Try to find the brand for this series from any already loaded models
+                                                                 // or use a smart guess if common ones are picked
+                                                                 const knownModel = dynamicModels.find(m => m.series === v);
+                                                                 if (knownModel) {
+                                                                     setSpec(s => ({ ...s, family: v, brand: knownModel.brand }));
+                                                                 } else {
+                                                                     // Trigger a small search to find the brand for this series
+                                                                     const typeMap: any = { "laptop": "laptop", "all_in_one": "aio", "brand_desktop": "desktop" };
+                                                                     const type = mainCategory === "laptop" ? "laptop" : (computerTypeMode ? typeMap[computerTypeMode] : "laptop");
+                                                                     getAutocomplete(v, "Computers", type).then(res => {
+                                                                         if (res && res.length > 0 && res[0].details?.brand) {
+                                                                             setSpec(s => ({ ...s, family: v, brand: res[0].details.brand }));
+                                                                         }
+                                                                     });
+                                                                 }
+                                                             }
+                                                         }}
+                                                     />
                                                     <SpecSelector
                                                         label="תת דגם / מק״ט"
                                                         options={[
@@ -1130,7 +1254,7 @@ const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSub
                                                     />
                                                     <SpecSelector
                                                         label="מעבד (CPU)"
-                                                        options={specOptions.cpu}
+                                                        options={specOptions.cpu.length > 0 ? specOptions.cpu : (CPU_OPTIONS[spec.brand] || CPU_OPTIONS["Intel"] || [])}
                                                         value={spec.cpu}
                                                         onChange={v => setSpec(s => ({ ...s, cpu: v }))}
                                                         icon={<Cpu className="w-4 h-4" />}
