@@ -228,70 +228,79 @@ export async function searchMotherboards(query: string) {
     return results;
 }
 
-export async function getAutocomplete(query: string, category: string) {
+export async function getAutocomplete(query: string, category: string, subCategory?: string) {
     const q = query.trim();
     if (!q) return [];
 
     let results: string[] = [];
     if (category === "Computers") {
-        // 1. Try to get exact prefix matches first for better sorting
-        const laptopMatches = await prisma.laptopCatalog.findMany({
-            where: {
-                OR: [
-                    { brand: { startsWith: q, mode: 'insensitive' } },
-                    { modelName: { startsWith: q, mode: 'insensitive' } },
-                    { sku: { startsWith: q, mode: 'insensitive' } },
-                ]
-            },
-            take: 15,
-            select: { brand: true, modelName: true }
-        });
+        const fetchLimit = 20;
+        
+        // Determine which tables to search based on subCategory
+        const typesToSearch = subCategory 
+            ? [subCategory] 
+            : ["laptop", "desktop", "aio"];
 
-        // 2. If not enough, fill with "contains" matches
-        let laptops = [...laptopMatches];
-        if (laptops.length < 15) {
-            const moreLaptops = await prisma.laptopCatalog.findMany({
+        if (typesToSearch.includes("laptop")) {
+            const laptopMatches = await prisma.laptopCatalog.findMany({
                 where: {
-                    AND: [
-                        { OR: [
-                            { brand: { contains: q, mode: 'insensitive' } },
-                            { modelName: { contains: q, mode: 'insensitive' } },
-                            { sku: { contains: q, mode: 'insensitive' } },
-                        ]},
-                        { NOT: { id: { in: laptops.map(l => (l as any).id).filter(Boolean) } } }
+                    OR: [
+                        { brand: { startsWith: q, mode: 'insensitive' } },
+                        { modelName: { startsWith: q, mode: 'insensitive' } },
+                        { sku: { startsWith: q, mode: 'insensitive' } },
                     ]
                 },
-                take: 15 - laptops.length,
-                select: { brand: true, modelName: true, id: true }
+                take: fetchLimit,
+                select: { brand: true, modelName: true }
             });
-            laptops = [...laptops, ...moreLaptops];
+            
+            let currentLaptops = [...laptopMatches];
+            if (currentLaptops.length < fetchLimit) {
+                const more = await prisma.laptopCatalog.findMany({
+                    where: {
+                        AND: [
+                            { OR: [
+                                { brand: { contains: q, mode: 'insensitive' } },
+                                { modelName: { contains: q, mode: 'insensitive' } },
+                                { sku: { contains: q, mode: 'insensitive' } },
+                            ]},
+                            { NOT: { brand: { startsWith: q, mode: 'insensitive' } } },
+                            { NOT: { modelName: { startsWith: q, mode: 'insensitive' } } }
+                        ]
+                    },
+                    take: fetchLimit - currentLaptops.length,
+                    select: { brand: true, modelName: true }
+                });
+                currentLaptops = [...currentLaptops, ...more];
+            }
+            results.push(...currentLaptops.map(l => l.modelName.toLowerCase().includes(l.brand.toLowerCase()) ? l.modelName : `${l.brand} ${l.modelName}`));
         }
 
-        const desktops = await prisma.brandDesktopCatalog.findMany({
-            where: {
-                OR: [
-                    { brand: { contains: q, mode: 'insensitive' } },
-                    { modelName: { contains: q, mode: 'insensitive' } },
-                ]
-            },
-            take: 5
-        });
+        if (typesToSearch.includes("desktop")) {
+            const desktopMatches = await prisma.brandDesktopCatalog.findMany({
+                where: {
+                    OR: [
+                        { brand: { contains: q, mode: 'insensitive' } },
+                        { modelName: { contains: q, mode: 'insensitive' } },
+                    ]
+                },
+                take: 10
+            });
+            results.push(...desktopMatches.map(d => d.modelName.toLowerCase().includes(d.brand.toLowerCase()) ? d.modelName : `${d.brand} ${d.modelName}`));
+        }
 
-        const aios = await prisma.aioCatalog.findMany({
-            where: {
-                OR: [
-                    { brand: { contains: q, mode: 'insensitive' } },
-                    { modelName: { contains: q, mode: 'insensitive' } },
-                ]
-            },
-            take: 5
-        });
-
-        results = [
-            ...laptops.map(l => l.modelName.toLowerCase().includes(l.brand.toLowerCase()) ? l.modelName : `${l.brand} ${l.modelName}`),
-            ...desktops.map(d => d.modelName.toLowerCase().includes(d.brand.toLowerCase()) ? d.modelName : `${d.brand} ${d.modelName}`),
-            ...aios.map(a => a.modelName.toLowerCase().includes(a.brand.toLowerCase()) ? a.modelName : `${a.brand} ${a.modelName}`)
-        ];
+        if (typesToSearch.includes("aio")) {
+            const aioMatches = await prisma.aioCatalog.findMany({
+                where: {
+                    OR: [
+                        { brand: { contains: q, mode: 'insensitive' } },
+                        { modelName: { contains: q, mode: 'insensitive' } },
+                    ]
+                },
+                take: 10
+            });
+            results.push(...aioMatches.map(a => a.modelName.toLowerCase().includes(a.brand.toLowerCase()) ? a.modelName : `${a.brand} ${a.modelName}`));
+        }
     } else if (category === "Phones") {
         const mobiles = await prisma.mobileCatalog.findMany({
             where: {
@@ -301,7 +310,7 @@ export async function getAutocomplete(query: string, category: string) {
                 { hebrewAliases: { has: q } }
               ]
             },
-            take: 10
+            take: 15
         });
         results = mobiles.map(m => m.modelName.toLowerCase().includes(m.brand.toLowerCase()) ? m.modelName : `${m.brand} ${m.modelName}`);
     } else if (category === "Vehicles") {
@@ -312,7 +321,7 @@ export async function getAutocomplete(query: string, category: string) {
                 { model: { contains: q, mode: 'insensitive' } },
               ]
             },
-            take: 10
+            take: 15
         });
         results = vehicles.map(v => `${v.make} ${v.model}`);
     } else if (category === "Electronics") {
@@ -324,7 +333,7 @@ export async function getAutocomplete(query: string, category: string) {
                 { hebrewAliases: { has: q } }
               ]
             },
-            take: 10
+            take: 15
         });
         results = items.map(i => i.modelName.toLowerCase().includes(i.brand.toLowerCase()) ? i.modelName : `${i.brand} ${i.modelName}`);
     } else if (category === "Appliances") {
@@ -336,20 +345,109 @@ export async function getAutocomplete(query: string, category: string) {
                 { hebrewAliases: { has: q } }
               ]
             },
-            take: 10
+            take: 15
         });
         results = items.map(i => i.modelName.toLowerCase().includes(i.brand.toLowerCase()) ? i.modelName : `${i.brand} ${i.modelName}`);
     }
+
     // Final Sort: Prioritize results starting with the query, then alphabetical
     const sortedResults = Array.from(new Set(results)).sort((a, b) => {
-        const aStarts = a.toLowerCase().startsWith(q.toLowerCase());
-        const bStarts = b.toLowerCase().startsWith(q.toLowerCase());
+        const aLower = a.toLowerCase();
+        const bLower = b.toLowerCase();
+        const qLower = q.toLowerCase();
+        
+        const aStarts = aLower.startsWith(qLower);
+        const bStarts = bLower.startsWith(qLower);
         
         if (aStarts && !bStarts) return -1;
         if (!aStarts && bStarts) return 1;
         
-        return a.localeCompare(b, 'en', { sensitivity: 'base' });
+        // Special case for numbers in strings (e.g., iPhone 13 vs iPhone 14)
+        return a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' });
     });
     
     return sortedResults.slice(0, 15);
+}
+
+export async function getUniqueFamilies(type: "laptop" | "desktop" | "aio", brand?: string) {
+    try {
+        let families: string[] = [];
+        const where: any = {};
+        if (brand) where.brand = brand;
+
+        if (type === "laptop") {
+            const raw = await prisma.laptopCatalog.findMany({
+                where,
+                select: { series: true },
+                distinct: ['series']
+            });
+            families = raw.map(r => r.series).filter(Boolean);
+        } else if (type === "desktop") {
+            const raw = await prisma.brandDesktopCatalog.findMany({
+                where,
+                select: { series: true },
+                distinct: ['series']
+            });
+            families = raw.map(r => r.series).filter(Boolean);
+        } else if (type === "aio") {
+            const raw = await prisma.aioCatalog.findMany({
+                where,
+                select: { series: true },
+                distinct: ['series']
+            });
+            families = raw.map(r => r.series).filter(Boolean);
+        }
+        return { success: true, families: families.sort() };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function getModelsByFamily(type: "laptop" | "desktop" | "aio", brand?: string, family?: string) {
+    try {
+        let models: any[] = [];
+        const where: any = {};
+        if (brand) where.brand = brand;
+        if (family) where.series = family;
+
+        if (type === "laptop") {
+            models = await prisma.laptopCatalog.findMany({
+                where,
+                take: 50 // Limit when no filter to avoid huge payload
+            });
+        } else if (type === "desktop") {
+            models = await prisma.brandDesktopCatalog.findMany({
+                where,
+                take: 50
+            });
+        } else if (type === "aio") {
+            models = await prisma.aioCatalog.findMany({
+                where,
+                take: 50
+            });
+        }
+        
+        return { 
+            success: true, 
+            models: models.map(m => ({
+                id: m.id,
+                brand: m.brand,
+                series: m.series,
+                name: m.modelName,
+                sku: m.sku,
+                cpu: m.cpu,
+                ram: m.ram,
+                storage: m.storage,
+                screenSize: m.screenSize,
+                gpu: m.gpu,
+                os: m.os,
+                weight: m.weight,
+                ports: m.ports,
+                release_year: m.releaseYear,
+                display: m.display
+            }))
+        };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
 }

@@ -28,6 +28,7 @@ import {
     DESKTOP_SUB_CATEGORIES
 } from "@/lib/computer-data";
 import { getUniqueBrands } from "@/app/admin/export-actions";
+import { getUniqueFamilies, getModelsByFamily } from "@/app/actions/hardware-search";
 import { MOTHERBOARD_DATABASE } from "@/lib/motherboard-database";
 import { ComputerSearchUI } from "@/components/marketplace/ComputerSearchUI";
 
@@ -279,6 +280,9 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     const [uploading, setUploading] = useState(false);
     const [uploadingVideo, setUploadingVideo] = useState(false);
     const [imageUrlInput, setImageUrlInput] = useState("");
+    const [dynamicFamilies, setDynamicFamilies] = useState<string[]>([]);
+    const [dynamicModels, setDynamicModels] = useState<any[]>([]);
+    const [fetchingDynamic, setFetchingDynamic] = useState(false);
 
     // Normalize extraData: DB stores it as array [{key,value}], form expects object {key: value}
     const normalizeExtraData = (raw: any): Record<string, string> => {
@@ -447,6 +451,40 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
         };
         fetchDbBrands();
     }, [activeDb, mainCategory, computerTypeMode]);
+
+    // Fetch Families
+    useEffect(() => {
+        const fetchFamilies = async () => {
+            const typeMap: any = { "laptop": "laptop", "all_in_one": "aio", "brand_desktop": "desktop" };
+            const type = mainCategory === "laptop" ? "laptop" : (computerTypeMode ? typeMap[computerTypeMode] : null);
+            if (!type) return;
+
+            setFetchingDynamic(true);
+            const res = await getUniqueFamilies(type, spec.brand || undefined);
+            if (res.success && res.families) {
+                setDynamicFamilies(res.families);
+            }
+            setFetchingDynamic(false);
+        };
+        fetchFamilies();
+    }, [spec.brand, mainCategory, computerTypeMode]);
+
+    // Fetch Models
+    useEffect(() => {
+        const fetchModels = async () => {
+            const typeMap: any = { "laptop": "laptop", "all_in_one": "aio", "brand_desktop": "desktop" };
+            const type = mainCategory === "laptop" ? "laptop" : (computerTypeMode ? typeMap[computerTypeMode] : null);
+            if (!type) return;
+
+            setFetchingDynamic(true);
+            const res = await getModelsByFamily(type, spec.brand || undefined, spec.family || undefined);
+            if (res.success && res.models) {
+                setDynamicModels(res.models);
+            }
+            setFetchingDynamic(false);
+        };
+        fetchModels();
+    }, [spec.brand, spec.family, mainCategory, computerTypeMode]);
 
     // Flat list of all available submodels for the fast global search
     const allModelsFlat = useMemo(() => {
@@ -829,7 +867,11 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                 {/* ──── SMART SEARCH (identification) ──── */}
                                 {(mainCategory === "laptop" || computerTypeMode !== "custom_build") && (
                                     <div className="mb-6 animate-in fade-in slide-in-from-top-4">
-                                        <ComputerSearchUI activeDb={activeDb} onApplySpecs={handleApplySearchEngineSpecs} />
+                                        <ComputerSearchUI 
+                                            activeDb={activeDb} 
+                                            onApplySpecs={handleApplySearchEngineSpecs} 
+                                            subCategory={mainCategory === 'laptop' ? 'laptop' : (computerTypeMode === 'all_in_one' ? 'aio' : 'desktop')}
+                                        />
                                     </div>
                                 )}
 
@@ -934,33 +976,58 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                                                         options={dbBrands}
                                                         value={spec.brand}
                                                         onChange={v => {
-                                                            setSpec(s => ({ ...s, brand: v, family: "", subModel: "", sku: "" }));
-                                                            setUncertainFields([]);
+                                                            setSpec(s => ({ ...s, brand: v }));
                                                         }}
                                                     />
                                                     <SpecSelector
                                                         label="סדרה (Family)"
-                                                        options={(spec.brand ? modelFamilies.map(f => f.name) : Array.from(new Set(allModelsFlat.map(m => m.family.name)))).sort()}
+                                                        options={dynamicFamilies}
                                                         value={spec.family}
+                                                        disabled={fetchingDynamic}
+                                                        placeholder={fetchingDynamic ? "טוען סדרות..." : "בחר סדרה..."}
                                                         onChange={v => {
-                                                            const mappedBrand = spec.brand ? spec.brand : allModelsFlat.find(m => m.family.name === v)?.brand || "";
-                                                            setSpec(s => ({ ...s, brand: mappedBrand, family: v }));
+                                                            setSpec(s => ({ ...s, family: v }));
+                                                            // If we chose a family that has a known brand, and brand is empty, fill it
+                                                            if (!spec.brand) {
+                                                                const knownModel = dynamicModels.find(m => m.series === v);
+                                                                if (knownModel) setSpec(s => ({ ...s, family: v, brand: knownModel.brand }));
+                                                            }
                                                         }}
                                                     />
                                                     <SpecSelector
                                                         label="תת דגם / מק״ט"
                                                         options={[
-                                                            ...(spec.family
-                                                                ? allModelsFlat.filter(m => m.family.name === spec.family).map(m => m.displayName)
-                                                                : Array.from(new Set(allModelsFlat.map(m => m.displayName)))
-                                                            ).sort(),
+                                                            ...dynamicModels.map(m => m.sku ? `${m.name} (מק"ט: ${m.sku})` : m.name).sort(),
                                                             "אחר / לא ברשימה"
                                                         ]}
                                                         value={spec.subModel}
+                                                        disabled={fetchingDynamic}
+                                                        placeholder={fetchingDynamic ? "טוען דגמים..." : "בחר דגם..."}
                                                         onChange={v => {
                                                             if (v !== "אחר / לא ברשימה") {
-                                                                const found = allModelsFlat.find(m => m.sub.name === v || m.displayName === v);
-                                                                if (found) applySmartModelPick(found.brand, found.family.name, found.sub, found.sku);
+                                                                const modelObj = dynamicModels.find(m => (m.sku ? `${m.name} (מק"ט: ${m.sku})` : m.name) === v);
+                                                                if (modelObj) {
+                                                                    // Update brand and family if they are empty
+                                                                    const newBrand = spec.brand || modelObj.brand;
+                                                                    const newFamily = spec.family || modelObj.series;
+                                                                    
+                                                                    // Map DB fields to form fields
+                                                                    const sub = {
+                                                                        name: modelObj.name,
+                                                                        cpu: Array.isArray(modelObj.cpu) ? modelObj.cpu : [modelObj.cpu],
+                                                                        ram: Array.isArray(modelObj.ram) ? modelObj.ram : [modelObj.ram],
+                                                                        storage: Array.isArray(modelObj.storage) ? modelObj.storage : [modelObj.storage],
+                                                                        screenSize: Array.isArray(modelObj.screenSize) ? modelObj.screenSize : [modelObj.screenSize],
+                                                                        gpu: Array.isArray(modelObj.gpu) ? modelObj.gpu : [modelObj.gpu],
+                                                                        os: Array.isArray(modelObj.os) ? modelObj.os : [modelObj.os],
+                                                                        weight: modelObj.weight,
+                                                                        ports: modelObj.ports,
+                                                                        release_year: modelObj.release_year,
+                                                                        display: modelObj.display,
+                                                                        sku: modelObj.sku
+                                                                    };
+                                                                    applySmartModelPick(newBrand, newFamily, sub as any, modelObj.sku ? { id: modelObj.sku } : null);
+                                                                }
                                                             } else {
                                                                 setSpec(s => ({ ...s, subModel: v }));
                                                             }

@@ -95,16 +95,16 @@ function buildSpec(d: { brand: string; family: any; sub: any; matchedSku: any })
 }
 
 // ─── Main Component ───────────────────────────────────────────────
-export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; onApplySpecs: (specs: any) => void }) {
+export function ComputerSearchUI({ activeDb, onApplySpecs, subCategory }: { activeDb: any; onApplySpecs: (specs: any) => void; subCategory?: string }) {
     const [query, setQuery] = useState("");
     const [suggestions, setSuggestions] = useState<{ label: string; data: any }[]>([]);
     const [showSug, setShowSug] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(null as string | null);
     const [isPremium, setIsPremium] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
-    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
     // Autocomplete
     useEffect(() => {
@@ -120,7 +120,7 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
                 setShowSug(true);
             } else {
                 // Try fetching from DB
-                const dbNames = await getAutocomplete(q, "Computers");
+                const dbNames = await getAutocomplete(q, "Computers", subCategory);
                 if (dbNames.length > 0) {
                     // Final client-side sort to be absolutely sure
                     const sortedDbNames = [...dbNames].sort((a, b) => {
@@ -128,7 +128,7 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
                         const bStarts = b.toLowerCase().startsWith(q.toLowerCase());
                         if (aStarts && !bStarts) return -1;
                         if (!aStarts && bStarts) return 1;
-                        return a.localeCompare(b, 'en', { sensitivity: 'base' });
+                        return a.localeCompare(b, 'en', { numeric: true, sensitivity: 'base' });
                     });
 
                     setSuggestions(sortedDbNames.map(name => ({
@@ -141,8 +141,8 @@ export function ComputerSearchUI({ activeDb, onApplySpecs }: { activeDb: any; on
                     setShowSug(false);
                 }
             }
-        }, 150);
-    }, [query, activeDb]);
+        }, 300);
+    }, [query, activeDb, subCategory]);
 
     // Close dropdown on outside click
     useEffect(() => {

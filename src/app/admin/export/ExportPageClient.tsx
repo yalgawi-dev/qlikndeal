@@ -152,50 +152,89 @@ export default function ExportPageClient() {
     }) => {
         const itemStats = stats[statsKey] || { count: 0, lastUpdate: null };
         
+        // Define neon glow classes based on color
+        const glowClass = {
+            blue: "shadow-[0_0_20px_rgba(59,130,246,0.3)] border-blue-500/50",
+            indigo: "shadow-[0_0_20px_rgba(99,102,241,0.3)] border-indigo-500/50",
+            cyan: "shadow-[0_0_20px_rgba(6,182,212,0.3)] border-cyan-500/50",
+            slate: "shadow-[0_0_20px_rgba(148,163,184,0.3)] border-slate-500/50",
+            purple: "shadow-[0_0_20px_rgba(168,85,247,0.3)] border-purple-500/50",
+            rose: "shadow-[0_0_20px_rgba(244,63,94,0.3)] border-rose-500/50",
+            amber: "shadow-[0_0_20px_rgba(245,158,11,0.3)] border-amber-500/50",
+            emerald: "shadow-[0_0_20px_rgba(16,185,129,0.3)] border-emerald-500/50",
+        }[neonColor] || "shadow-none";
+
+        const textColor = {
+            blue: "text-blue-400",
+            indigo: "text-indigo-400",
+            cyan: "text-cyan-400",
+            slate: "text-slate-400",
+            purple: "text-purple-400",
+            rose: "text-rose-400",
+            amber: "text-amber-400",
+            emerald: "text-emerald-400",
+        }[neonColor] || "text-white";
+
+        const bgColor = {
+            blue: "bg-blue-500/10",
+            indigo: "bg-indigo-500/10",
+            cyan: "bg-cyan-500/10",
+            slate: "bg-slate-500/10",
+            purple: "bg-purple-500/10",
+            rose: "bg-rose-500/10",
+            amber: "bg-amber-500/10",
+            emerald: "bg-emerald-500/10",
+        }[neonColor] || "bg-white/10";
+
         return (
-            <div className={`relative group overflow-hidden bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 transition-all duration-500 hover:border-${neonColor}-500/50 hover:shadow-[0_0_30px_rgba(0,0,0,0.4)]`}>
-                <div className={`absolute -right-12 -top-12 w-32 h-32 bg-${neonColor}-500/10 blur-3xl rounded-full group-hover:bg-${neonColor}-500/20 transition-all duration-700`} />
+            <div className={`relative group overflow-hidden bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-7 transition-all duration-500 hover:scale-[1.02] ${glowClass}`}>
+                <div className={`absolute -right-8 -top-8 w-40 h-40 ${bgColor} blur-3xl rounded-full group-hover:opacity-100 opacity-50 transition-all duration-700`} />
                 
                 <div className="relative flex flex-col h-full">
-                    <div className="flex items-start justify-between mb-4">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-${neonColor}-500/20 text-${neonColor}-400 shadow-[0_0_15px_rgba(0,0,0,0.2)]`}>
-                            <Icon size={24} />
+                    <div className="flex items-start justify-between mb-6">
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${bgColor} ${textColor} shadow-inner`}>
+                            <Icon size={28} />
                         </div>
                         <div className="text-left">
-                            <span className={`text-2xl font-black text-${neonColor}-400/80`}>
+                            <div className={`text-3xl font-black ${textColor} drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]`}>
                                 {statsLoading ? "..." : itemStats.count.toLocaleString()}
-                            </span>
-                            <div className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">רשומות</div>
+                            </div>
+                            <div className="text-[10px] text-slate-500 uppercase tracking-widest font-black mr-1">רשומות במאגר</div>
                         </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-l group-hover:from-white group-hover:to-slate-400 transition-all">{title}</h3>
-                    <p className="text-sm text-slate-400 mb-6 flex-grow">{desc}</p>
+                    <h3 className="text-2xl font-black text-white mb-2 leading-none">{title}</h3>
+                    <p className="text-sm text-slate-400 mb-8 leading-relaxed font-medium">{desc}</p>
 
-                    <div className="mt-auto space-y-4">
-                        <div className="flex items-center gap-2 text-[11px] text-slate-500 bg-black/30 p-2 rounded-lg border border-white/5">
-                            <Clock size={12} className={`text-${neonColor}-500/60`} />
-                            <span>עדכון אחרון: {statsLoading ? "טוען..." : formatDate(itemStats.lastUpdate)}</span>
+                    <div className="mt-auto space-y-5">
+                        <div className="flex flex-col gap-1 px-4 py-3 rounded-2xl bg-black/40 border border-white/5 group-hover:border-white/10 transition-colors">
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                <Clock size={12} className={textColor} />
+                                <span>סטטוס סנכרון אחרון</span>
+                            </div>
+                            <div className="text-xs text-slate-200 font-bold">
+                                {statsLoading ? "מעדכן נתונים..." : formatDate(itemStats.lastUpdate)}
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-3">
                             <Button 
                                 onClick={() => handleExport(id)} 
                                 disabled={!!loading}
-                                className={`w-full h-11 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-white/5 text-xs font-bold gap-2`}
+                                className={`w-full h-12 bg-white/5 hover:bg-white/10 text-white rounded-2xl border border-white/10 text-xs font-black transition-all active:scale-95`}
                             >
-                                {loading === id ? <Loader2 className="animate-spin" size={14} /> : <Download size={14} />}
-                                ייצוא
+                                {loading === id ? <Loader2 className="animate-spin" size={16} /> : <Download size={16} className="ml-2" />}
+                                ייצוא לקובץ
                             </Button>
                             
-                            {["desktop", "aio", "motherboard", "electronics", "vehicle"].includes(id) && (
+                            {["laptop", "desktop", "aio", "motherboard", "electronics", "vehicle"].includes(id) && (
                                 <Button 
                                     onClick={() => handleSync(id)} 
                                     disabled={!!syncing}
-                                    className={`w-full h-11 bg-${neonColor}-600/20 hover:bg-${neonColor}-600/40 text-${neonColor}-400 rounded-xl border border-${neonColor}-500/30 text-xs font-bold gap-2`}
+                                    className={`w-full h-12 ${bgColor} ${textColor} hover:brightness-125 rounded-2xl border ${glowClass.split(" ")[1]} text-xs font-black transition-all shadow-lg active:scale-95`}
                                 >
-                                    {syncing === id ? <Loader2 className="animate-spin" size={14} /> : <RefreshCw size={14} />}
-                                    סנכרון
+                                    {syncing === id ? <Loader2 className="animate-spin" size={16} /> : <RefreshCw size={16} className="ml-2" />}
+                                    סנכרון חכם
                                 </Button>
                             )}
                         </div>
