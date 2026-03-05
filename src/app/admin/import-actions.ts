@@ -24,6 +24,11 @@ async function logImport(params: {
     newTotal: number;
     batchId?: string;
 }) {
+    // Only log when something meaningful happened (added > 0 or there were errors)
+    // Avoids showing "Updated Now" badge when only duplicates were found
+    if (params.added === 0 && params.errors.length === 0) {
+        return; // Skip logging pure-duplicate-only runs
+    }
     const user = await currentUser();
     const adminName = user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "מערכת";
     await prismadb.catalogImportLog.create({
@@ -37,7 +42,7 @@ async function logImport(params: {
             errorDetails: params.errors.slice(0, 20), // save up to 20 error messages
             newTotal: params.newTotal,
             adminName,
-            batchId: params.batchId,
+            batchId: params.added > 0 ? params.batchId : undefined, // Only attach batchId if something was added
         }
     });
 }

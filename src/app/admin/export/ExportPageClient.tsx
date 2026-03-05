@@ -461,7 +461,7 @@ export default function ExportPageClient() {
         
         // We only show the "Updated Now" badge if there's a MANUAL import log in the last 12 hours for this category
         const lastManualLog = recentLogs.find((l: any) => l.category === id);
-        const isRecentlyUpdated = lastManualLog && (new Date().getTime() - new Date(lastManualLog.createdAt).getTime()) < 1000 * 60 * 60 * 12;
+        const isRecentlyUpdated = lastManualLog && lastManualLog.added > 0 && (new Date().getTime() - new Date(lastManualLog.createdAt).getTime()) < 1000 * 60 * 60 * 12;
 
         // Define neon glow classes based on color
         const glowClass = {
