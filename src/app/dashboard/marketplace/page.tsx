@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { ListingCard } from "@/components/marketplace/ListingCard";
@@ -18,6 +19,13 @@ export default function MarketplacePage() {
     
     // Search State
     const [searchInput, setSearchInput] = useState("");
+    const [autocompleteResults, setAutocompleteResults] = useState<any[]>([]);
+    const [showAutocomplete, setShowAutocomplete] = useState(false);
+    const [isAutocompleteLoading, setIsAutocompleteLoading] = useState(false);
+    const debounceRef = useRef<NodeJS.Timeout | null>(null);
+    const autocompleteRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+
     const [lat, setLat] = useState<number | null>(null);
     const [lng, setLng] = useState<number | null>(null);
     const [locationName, setLocationName] = useState("");
@@ -30,8 +38,56 @@ export default function MarketplacePage() {
         user?.primaryEmailAddress?.emailAddress || ""
     );
 
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (autocompleteRef.current && !autocompleteRef.current.contains(e.target as Node)) {
+                setShowAutocomplete(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setSearchInput(val);
+        setShowAutocomplete(true);
+        
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        
+        if (val.trim().length > 1) {
+            setIsAutocompleteLoading(true);
+            debounceRef.current = setTimeout(async () => {
+                try {
+                    const res = await fetch("/api/marketplace/smart-search", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            query: val,
+                            lat: lat,
+                            lng: lng,
+                            radiusKm: (lat && lng) ? (radiusKm === 155 ? null : radiusKm) : null
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        setAutocompleteResults((data.results || []).slice(0, 5));
+                    }
+                } catch (error) {
+                    console.error("Autocomplete failed:", error);
+                } finally {
+                    setIsAutocompleteLoading(false);
+                }
+            }, 300);
+        } else {
+            setAutocompleteResults([]);
+            setIsAutocompleteLoading(false);
+        }
+    };
+
     const fetchSmartSearch = async () => {
         setLoading(true);
+        setShowAutocomplete(false);
         try {
             // Geocode manual location input if it's set but we don't have coords
             let currentLat = lat;
@@ -215,14 +271,66 @@ export default function MarketplacePage() {
                 {/* Search Bar & Filters */}
                 <div className="bg-gray-900/40 p-4 rounded-3xl border border-gray-800 backdrop-blur-sm space-y-4">
                     <form onSubmit={handleSearch} className="flex gap-2">
-                        <div className="relative flex-1">
-                            <Sparkles className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400 w-5 h-5" />
+                        <div className="relative flex-1" ref={autocompleteRef}>
+                            <Sparkles className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400 w-5 h-5 z-10 pointer-events-none" />
                             <Input
                                 placeholder='נסה "לפטופ גיימינג מתחת ל-4000 שקל באיזור תל אביב"...'
-                                className="pl-4 pr-12 h-14 bg-gray-900/80 border-gray-700 rounded-2xl text-lg focus:ring-purple-500 focus:border-purple-500 transition-all"
+                                className="pl-4 pr-12 h-14 bg-gray-900/80 border-gray-700 rounded-2xl text-lg focus:ring-purple-500 focus:border-purple-500 transition-all relative z-10"
                                 value={searchInput}
-                                onChange={e => setSearchInput(e.target.value)}
+                                onChange={handleSearchInputChange}
+                                onFocus={() => { if (searchInput.trim().length > 0) setShowAutocomplete(true) }}
                             />
+                            {isAutocompleteLoading && (
+                                <Loader2 className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400 w-5 h-5 animate-spin z-10 pointer-events-none" />
+                            )}
+                            
+                            {/* Autocomplete Dropdown */}
+                            {showAutocomplete && searchInput.trim().length > 0 && (
+                                <div className="absolute top-[110%] left-0 right-0 bg-gray-900/95 backdrop-blur-md border border-gray-700 rounded-2xl shadow-xl shadow-purple-900/20 z-[100] overflow-hidden max-h-[400px] overflow-y-auto">
+                                    {autocompleteResults.length > 0 ? (
+                                        <div className="flex flex-col">
+                                            {autocompleteResults.map(res => {
+                                                const imgs = res.images ? (typeof res.images === 'string' ? JSON.parse(res.images) : res.images) : [];
+                                                return (
+                                                    <div 
+                                                        key={res.id}
+                                                        onClick={() => {
+                                                            setShowAutocomplete(false);
+                                                            if (res.type === "external" && res.sourceUrl) {
+                                                                window.open(res.sourceUrl, "_blank");
+                                                            } else if (res.type !== "catalog") {
+                                                                router.push(`/dashboard/marketplace/${res.id}`);
+                                                            }
+                                                        }}
+                                                        className="flex items-center gap-4 p-3 hover:bg-gray-800 cursor-pointer border-b border-gray-800 last:border-0 transition-colors"
+                                                    >
+                                                        {imgs.length > 0 ? (
+                                                            <img src={imgs[0]} className="w-12 h-12 object-cover rounded-lg" alt={res.title} />
+                                                        ) : (
+                                                            <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center">
+                                                                <ScanSearch className="w-6 h-6 text-gray-500" />
+                                                            </div>
+                                                        )}
+                                                        <div className="flex-1 overflow-hidden">
+                                                            <div className="text-sm font-bold truncate text-white">{res.title}</div>
+                                                            <div className="text-xs text-gray-400 truncate mt-1 text-right">
+                                                                <span className="text-green-400 font-bold">{res.price > 0 ? `₪${res.price.toLocaleString()}` : 'צור קשר'}</span>
+                                                                {res.category && <span className="mr-2"> • {res.category}</span>}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        !isAutocompleteLoading && (
+                                            <div className="p-4 text-center text-gray-500 text-sm">
+                                                לא נמצאו תוצאות לחיפוש זה
+                                            </div>
+                                        )
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <Button type="button" variant="outline" onClick={() => setShowFilters(!showFilters)} className={`h-14 px-4 rounded-2xl border-gray-700 hover:bg-gray-800 ${showFilters ? 'bg-gray-800 text-purple-400 border-purple-500' : 'bg-gray-900'}`}>
                             <Filter className="w-5 h-5" />
