@@ -298,21 +298,27 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
                         }
                     }
 
+                    // Helper: normalize a value that might be array or string → always String
+                    const str = (v: any) => Array.isArray(v) ? v.join(" / ") : (v ? String(v) : "");
+
                     await prismadb.mobileCatalog.create({
                         data: {
-                            brand: item.brand, series: item.series || "", modelName: item.modelName,
-                            hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases : (typeof item.hebrewAliases === 'string' ? item.hebrewAliases.split(",").map((s: string) => s.trim()) : []),
-                            storages: parsedStorages.length > 0 ? parsedStorages : [0], // Default 0 if empty instead of failure
-                            screenSize: item.screenSize ? parseFloat(String(item.screenSize).replace(/[^0-9.]/g, "")) || null : null,
-                        releaseYear: item.releaseYear ? parseInt(String(item.releaseYear).replace(/[^0-9]/g, "")) || null : null,
-                        cpu: item.cpu || "", 
-                        ramG: item.ramG || item.ram ? parseInt(String(item.ramG || item.ram).replace(/[^0-9]/g, "")) || null : null,
-                        os: item.os || "", battery: item.battery || "",
-                        rearCamera: item.rearCamera || "", frontCamera: item.frontCamera || "",
-                        weight: item.weight || "", nfc: !!item.nfc, wirelessCharging: !!item.wirelessCharging,
-                        importBatchId: batchId
-                    }
-                });
+                            brand: item.brand, series: str(item.series), modelName: item.modelName,
+                            hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases.filter(Boolean) : (typeof item.hebrewAliases === 'string' && item.hebrewAliases ? item.hebrewAliases.split(",").map((s: string) => s.trim()).filter(Boolean) : []),
+                            storages: parsedStorages.length > 0 ? parsedStorages : [],
+                            screenSize: item.screenSize ? parseFloat(str(item.screenSize).replace(/[^0-9.]/g, "")) || null : null,
+                            releaseYear: item.releaseYear ? parseInt(str(item.releaseYear).replace(/[^0-9]/g, "")) || null : null,
+                            cpu: str(item.cpu),
+                            ramG: (item.ramG || item.ram) ? parseInt(str(item.ramG || item.ram).replace(/[^0-9]/g, "")) || null : null,
+                            os: str(item.os),
+                            battery: str(item.battery),
+                            rearCamera: str(item.rearCamera),
+                            frontCamera: str(item.frontCamera),
+                            weight: str(item.weight),
+                            nfc: !!item.nfc, wirelessCharging: !!item.wirelessCharging,
+                            importBatchId: batchId
+                        }
+                    });
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`); }
         }
