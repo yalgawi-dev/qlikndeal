@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Laptop, Monitor, Tablet, Download, FileSpreadsheet, Loader2, Car, Settings, Tv, Package, Cpu, Database, RefreshCw, Clock, Check, User } from "lucide-react";
+import { Laptop, Monitor, Tablet, Download, FileSpreadsheet, Loader2, Car, Settings, Tv, Package, Cpu, Database, RefreshCw, Clock, Check, User, TableProperties } from "lucide-react";
+import CatalogManagerModal from "./CatalogManagerModal";
+import type { CatalogType } from "../catalog-actions";
 import { 
     exportComputersToCSV, 
     exportPhonesToCSV, 
@@ -62,6 +64,11 @@ export default function ExportPageClient() {
     const [importPreview, setImportPreview] = useState<any[]>([]);
     const [importLoading, setImportLoading] = useState(false);
     const [importResult, setImportResult] = useState<ImportResult | null>(null);
+
+    // Catalog Manager State
+    const [managerOpen, setManagerOpen] = useState(false);
+    const [managerType, setManagerType] = useState<CatalogType>("laptop");
+    const [managerTitle, setManagerTitle] = useState("");
 
     const fetchStats = async () => {
         setStatsLoading(true);
@@ -568,6 +575,18 @@ export default function ExportPageClient() {
                             ביטול ייבוא אחרון (Undo)
                         </Button>
 
+                        <Button
+                            onClick={() => {
+                                setManagerType(id as CatalogType);
+                                setManagerTitle(title);
+                                setManagerOpen(true);
+                            }}
+                            className={`w-full h-10 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-2xl border border-emerald-500/20 text-xs font-black transition-all active:scale-95`}
+                        >
+                            <TableProperties size={14} className="ml-2" />
+                            נהל רשומות
+                        </Button>
+
                         <div className="flex flex-col items-end gap-2 pt-4 border-t border-white/5 mt-4 opacity-50">
                              <div className="flex items-center gap-2 text-[9px] font-mono text-slate-500">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -943,6 +962,14 @@ export default function ExportPageClient() {
                     color: white;
                 }
             `}</style>
+
+            {/* Catalog Manager Modal */}
+            <CatalogManagerModal
+                type={managerType}
+                title={managerTitle}
+                open={managerOpen}
+                onClose={() => { setManagerOpen(false); fetchStats(); }}
+            />
         </div>
     );
 }
