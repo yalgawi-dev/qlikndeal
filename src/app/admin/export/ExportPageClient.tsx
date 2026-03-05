@@ -186,7 +186,8 @@ export default function ExportPageClient() {
 
     const tryParseImport = (text: string) => {
         try {
-            const trimmed = text.trim();
+            // Remove BOM if present and trim
+            const trimmed = text.trim().replace(/^\uFEFF/, "");
             if (!trimmed) {
                 setImportPreview([]);
                 return;
@@ -223,15 +224,35 @@ export default function ExportPageClient() {
             } 
             // ניסיון שלישי: CSV או TSV
             else {
-                const lines = trimmed.split("\n");
+                const lines = trimmed.split(/\r?\n/);
                 if (lines.length >= 2) {
                     const firstLine = lines[0];
                     const delimiter = firstLine.includes("\t") ? "\t" : ",";
-                    rawHeaders = firstLine.split(delimiter).map(h => h.trim());
+                    
+                    const parseLine = (line: string, delim: string) => {
+                        const result = [];
+                        let cur = '';
+                        let inQuotes = false;
+                        for (let i = 0; i < line.length; i++) {
+                            const char = line[i];
+                            if (char === '"') {
+                                inQuotes = !inQuotes;
+                            } else if (char === delim && !inQuotes) {
+                                result.push(cur);
+                                cur = '';
+                            } else {
+                                cur += char;
+                            }
+                        }
+                        result.push(cur);
+                        return result.map(v => v.trim().replace(/^"|"$/g, ''));
+                    };
+
+                    rawHeaders = parseLine(firstLine, delimiter);
                     
                     for (let i = 1; i < lines.length; i++) {
                         if (lines[i].trim()) {
-                            rowsRaw.push(lines[i].split(delimiter).map(v => v.trim()));
+                            rowsRaw.push(parseLine(lines[i], delimiter));
                         }
                     }
                 }
@@ -242,29 +263,38 @@ export default function ExportPageClient() {
                 return;
             }
 
-            // מיפוי עברית לאנגלית
+            // מיפוי עברית לאנגלית (כולל אנגלית באותיות קטנות לטיפול בכפילויות ווריאציות)
             const mapping: Record<string, string> = {
-                "יצרן": "brand", "מותג": "brand", "Make": "brand",
-                "סדרה": "series",
-                "דגם": "modelName", "Model": "modelName",
-                "סוג": "type",
-                "מסך": "screenSize", "גודל מסך": "screenSize",
-                "מעבד": "cpu", "CPU": "cpu",
-                "זיכרון RAM": "ram", "זיכרון": "ram", "RAM": "ram", "ramG": "ramG",
-                "אחסון": "storage", "Storage": "storage", "אחסון (GB)": "storages", "storages": "storages",
-                "מאיץ גרפי": "gpu", "כרטיס מסך": "gpu", "GPU": "gpu",
-                "שנה": "releaseYear", "Year": "releaseYear",
-                "הערות": "notes",
-                "מק\"ט": "sku", "SKU": "sku",
-                "משקל": "weight",
-                "חיבורים": "ports",
-                "תצוגה": "display",
-                "כינויים (HE)": "hebrewAliases", "סוללה": "battery",
-                "מצלמה אחורית": "rearCamera", "מצלמה קדמית": "frontCamera",
-                "NFC": "nfc", "טעינה אלחוטית": "wirelessCharging"
+                "יצרן": "brand", "מותג": "brand", "make": "brand", "brand": "brand",
+                "סדרה": "series", "series": "series",
+                "דגם": "modelName", "model": "modelName", "modelname": "modelName",
+                "סוג": "type", "type": "type",
+                "מסך": "screenSize", "גודל מסך": "screenSize", "screensize": "screenSize",
+                "מעבד": "cpu", "cpu": "cpu",
+                "זיכרון ram": "ram", "זיכרון": "ram", "ram": "ram", "ramg": "ramG",
+                "אחסון": "storage", "storage": "storage", "אחסון (gb)": "storages", "storages": "storages",
+                "מאיץ גרפי": "gpu", "כרטיס מסך": "gpu", "gpu": "gpu",
+                "שנה": "releaseYear", "year": "releaseYear", "releaseyear": "releaseYear",
+                "הערות": "notes", "notes": "notes",
+                "מק\"ט": "sku", "sku": "sku",
+                "משקל": "weight", "weight": "weight",
+                "חיבורים": "ports", "ports": "ports",
+                "תצוגה": "display", "display": "display",
+                "כינויים (he)": "hebrewAliases", "hebrewaliases": "hebrewAliases", "כינויים": "hebrewAliases",
+                "סוללה": "battery", "battery": "battery",
+                "מצלמה אחורית": "rearCamera", "rearcamera": "rearCamera",
+                "מצלמה קדמית": "frontCamera", "frontcamera": "frontCamera",
+                "nfc": "nfc", "טעינה אלחוטית": "wirelessCharging", "wirelesscharging": "wirelessCharging",
+                "קטגוריה": "category", "category": "category",
+                "קיבולת": "capacity", "capacity": "capacity",
+                "דירוג אנרגטי": "energyRating", "energy rating": "energyRating", "energyrating": "energyRating",
+                "מערכת הפעלה": "os", "os": "os"
             };
 
-            const headers = rawHeaders.map(h => mapping[h] || h);
+            const headers = rawHeaders.map(h => {
+                const normalized = h.trim().toLowerCase();
+                return mapping[normalized] || h.trim();
+            });
 
             const rows = rowsRaw.map((values) => {
                 const obj: any = {};
