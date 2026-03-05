@@ -362,6 +362,12 @@ export default function ExportPageClient() {
                 res = await importAioAction(importPreview);
             } else if (type === "mobile" || type === "phone") {
                 res = await importMobileAction(importPreview);
+                if (res.newTotal !== undefined) {
+                    setStats(prev => ({
+                        ...prev,
+                        ["mobile"]: { count: res.newTotal!, lastUpdate: new Date() }
+                    }));
+                }
             } else if (type === "vehicle") {
                 res = await importVehicleAction(importPreview);
             } else if (type === "electronics") {
