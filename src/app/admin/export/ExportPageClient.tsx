@@ -293,18 +293,21 @@ export default function ExportPageClient() {
         }
     };
 
-    const handleUndoImport = async () => {
-        if (!importType) return;
-        if (!confirm("האם אתה בטוח שברצונך למחוק את כל הרשומות שנוספו באופן אוטומטי בשעתיים האחרונות בקטגוריה זו? (מחיקה אחת לכל מה שנוסף היום)")) return;
+    const handleUndoImport = async (targetCategory?: string) => {
+        const cat = targetCategory || importType;
+        if (!cat) return;
+        if (!confirm("האם אתה בטוח שברצונך למחוק את קבוצת הרשומות האחרונה שנוספה בקטגוריה זו? (מחיקת קבוצת ייבוא אחת)")) return;
         setImportLoading(true);
         try {
-            const res = await undoRecentInCategoryAction(importType);
-            toast.success(`בוטל בהצלחה! ${res.deletedCount} רשומות אחרונות נמחקו מהמאגר.`);
+            const res = await undoRecentInCategoryAction(cat);
+            toast.success(`בוטל בהצלחה! ${res.deletedCount} רשומות מהייבוא האחרון נמחקו מהמאגר.`);
             fetchStats();
-            setImportResult(null);
-            setImportData("");
-            setImportPreview([]);
-            setImportModalOpen(false);
+            if (!targetCategory) {
+                setImportResult(null);
+                setImportData("");
+                setImportPreview([]);
+                setImportModalOpen(false);
+            }
         } catch (error: any) {
             toast.error("שגיאה במחיקה: " + error.message);
         } finally {
@@ -495,7 +498,7 @@ export default function ExportPageClient() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-3 mb-3">
                             <Button 
                                 onClick={() => handleExport(id)} 
                                 disabled={!!loading}
@@ -519,6 +522,15 @@ export default function ExportPageClient() {
                                 ייבוא חכם
                             </Button>
                         </div>
+                        
+                        <Button
+                            onClick={() => handleUndoImport(id)}
+                            disabled={importLoading}
+                            className={`w-full h-10 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-2xl border border-red-500/20 text-xs font-black transition-all active:scale-95`}
+                        >
+                            <RefreshCw size={14} className="ml-2" />
+                            ביטול ייבוא אחרון (Undo)
+                        </Button>
 
                         <div className="flex flex-col items-end gap-2 pt-4 border-t border-white/5 mt-4 opacity-50">
                              <div className="flex items-center gap-2 text-[9px] font-mono text-slate-500">
@@ -756,14 +768,6 @@ export default function ExportPageClient() {
                             >
                                 <Download size={14} className="ml-2" />
                                 הורד תבנית
-                            </Button>
-                            <Button 
-                                variant="outline"
-                                onClick={handleUndoImport}
-                                disabled={importLoading}
-                                className="bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
-                            >
-                                מחיקת רשומות אחרונות (Undo)
                             </Button>
                         </div>
                         {importResult ? (

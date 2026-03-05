@@ -22,6 +22,7 @@ async function logImport(params: {
     duplicatesInFile: number;
     errors: string[];
     newTotal: number;
+    batchId?: string;
 }) {
     const user = await currentUser();
     const adminName = user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "מערכת";
@@ -35,7 +36,8 @@ async function logImport(params: {
             errors: params.errors.length,
             errorDetails: params.errors.slice(0, 20), // save up to 20 error messages
             newTotal: params.newTotal,
-            adminName
+            adminName,
+            batchId: params.batchId,
         }
     });
 }
@@ -58,6 +60,7 @@ function deduplicateInFile<T extends Record<string, any>>(data: T[], keyFn: (ite
  */
 export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
     const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
     try {
         // 1. כפילויות בתוך הקובץ
         const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
@@ -123,7 +126,8 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
                         sku: item.sku,
                         weight: item.weight,
                         ports: item.ports,
-                        display: item.display
+                        display: item.display,
+                        importBatchId: batchId
                     }
                 });
                 result.added++;
@@ -140,7 +144,7 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
         revalidatePath("/admin/export");
         revalidatePath("/admin/logs");
 
-        await logImport({ category: "laptop", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount });
+        await logImport({ category: "laptop", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
         return result;
     } catch (error: any) {
         throw new Error("נכשל ייבוא Laptops: " + error.message);
@@ -152,6 +156,7 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
  */
 export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
     const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
     try {
         const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
             (item.sku || `${item.brand}-${item.modelName}-${JSON.stringify(item.cpu)}`).toLowerCase()
@@ -184,7 +189,8 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
                         storage: Array.isArray(item.storage) ? item.storage : [item.storage].filter(Boolean),
                         os: Array.isArray(item.os) ? item.os : [item.os].filter(Boolean),
                         releaseYear: String(item.releaseYear || ""),
-                        notes: item.notes, sku: item.sku, ports: item.ports, weight: item.weight, isMini: !!item.isMini
+                        notes: item.notes, sku: item.sku, ports: item.ports, weight: item.weight, isMini: !!item.isMini,
+                        importBatchId: batchId
                     }
                 });
                 result.added++;
@@ -194,7 +200,7 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
         const finalCount = await prismadb.brandDesktopCatalog.count();
         result.newTotal = finalCount;
         revalidatePath("/", "layout"); revalidatePath("/admin/export"); revalidatePath("/admin/logs");
-        await logImport({ category: "desktop", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount });
+        await logImport({ category: "desktop", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
         return result;
     } catch (error: any) { throw new Error("נכשל ייבוא Desktops: " + error.message); }
 }
@@ -204,6 +210,7 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
  */
 export async function importAioAction(data: any[]): Promise<ImportResult> {
     const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
     try {
         const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
             (item.sku || `${item.brand}-${item.modelName}-${JSON.stringify(item.screenSize)}`).toLowerCase()
@@ -237,7 +244,8 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
                         storage: Array.isArray(item.storage) ? item.storage : [item.storage].filter(Boolean),
                         os: Array.isArray(item.os) ? item.os : [item.os].filter(Boolean),
                         releaseYear: String(item.releaseYear || ""),
-                        notes: item.notes, sku: item.sku, display: item.display, ports: item.ports
+                        notes: item.notes, sku: item.sku, display: item.display, ports: item.ports,
+                        importBatchId: batchId
                     }
                 });
                 result.added++;
@@ -247,7 +255,7 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
         const finalCount = await prismadb.aioCatalog.count();
         result.newTotal = finalCount;
         revalidatePath("/", "layout"); revalidatePath("/admin/export"); revalidatePath("/admin/logs");
-        await logImport({ category: "aio", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount });
+        await logImport({ category: "aio", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
         return result;
     } catch (error: any) { throw new Error("נכשל ייבוא AIO: " + error.message); }
 }
@@ -257,6 +265,7 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
  */
 export async function importMobileAction(data: any[]): Promise<ImportResult> {
     const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
     try {
         const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
             `${item.brand}-${item.modelName}`.toLowerCase()
@@ -295,7 +304,8 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
                         ramG: item.ramG || item.ram ? parseInt(String(item.ramG || item.ram).replace(/[^0-9]/g, "")) || null : null,
                         os: item.os || "", battery: item.battery || "",
                         rearCamera: item.rearCamera || "", frontCamera: item.frontCamera || "",
-                        weight: item.weight || "", nfc: !!item.nfc, wirelessCharging: !!item.wirelessCharging
+                        weight: item.weight || "", nfc: !!item.nfc, wirelessCharging: !!item.wirelessCharging,
+                        importBatchId: batchId
                     }
                 });
                 result.added++;
@@ -306,7 +316,7 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
         result.newTotal = finalCount;
         revalidatePath("/", "layout"); revalidatePath("/admin/export"); revalidatePath("/admin/logs");
         // note: stats key is "mobile" but importType="phone" → map correctly in UI
-        await logImport({ category: "mobile", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount });
+        await logImport({ category: "mobile", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
         return result;
     } catch (error: any) { throw new Error("נכשל ייבוא Mobile: " + error.message); }
 }
@@ -316,6 +326,7 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
  */
 export async function importVehicleAction(data: any[]): Promise<ImportResult> {
     const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
     try {
         const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
             `${item.make}-${item.model}-${item.year}`.toLowerCase()
@@ -337,7 +348,8 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult> {
                         year: item.year ? parseInt(item.year) : null,
                         type: item.type || "", fuelType: item.fuelType || "",
                         transmission: item.transmission || "", engineSize: item.engineSize || "",
-                        hp: item.hp ? parseInt(item.hp) : null
+                        hp: item.hp ? parseInt(item.hp) : null,
+                        importBatchId: batchId
                     }
                 });
                 result.added++;
@@ -347,7 +359,7 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult> {
         const finalCount = await prismadb.vehicleCatalog.count();
         result.newTotal = finalCount;
         revalidatePath("/", "layout"); revalidatePath("/admin/export"); revalidatePath("/admin/logs");
-        await logImport({ category: "vehicle", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount });
+        await logImport({ category: "vehicle", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
         return result;
     } catch (error: any) { throw new Error("נכשל ייבוא Vehicles: " + error.message); }
 }
@@ -357,6 +369,7 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult> {
  */
 export async function importElectronicsAction(data: any[]): Promise<ImportResult> {
     const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
     try {
         const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
             `${item.brand}-${item.modelName}-${item.category}`.toLowerCase()
@@ -377,7 +390,8 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
                         brand: item.brand, category: item.category || "General", modelName: item.modelName,
                         hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases : [],
                         releaseYear: item.releaseYear ? parseInt(item.releaseYear) : null,
-                        specs: typeof item.specs === 'string' ? item.specs : JSON.stringify(item.specs || {})
+                        specs: typeof item.specs === 'string' ? item.specs : JSON.stringify(item.specs || {}),
+                        importBatchId: batchId
                     }
                 });
                 result.added++;
@@ -387,7 +401,7 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
         const finalCount = await prismadb.electronicsCatalog.count();
         result.newTotal = finalCount;
         revalidatePath("/", "layout"); revalidatePath("/admin/export"); revalidatePath("/admin/logs");
-        await logImport({ category: "electronics", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount });
+        await logImport({ category: "electronics", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
         return result;
     } catch (error: any) { throw new Error("נכשל ייבוא Electronics: " + error.message); }
 }
@@ -397,6 +411,7 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
  */
 export async function importApplianceAction(data: any[]): Promise<ImportResult> {
     const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
     try {
         const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
             `${item.brand}-${item.modelName}-${item.category}`.toLowerCase()
@@ -416,7 +431,8 @@ export async function importApplianceAction(data: any[]): Promise<ImportResult> 
                     data: {
                         brand: item.brand, category: item.category || "General", modelName: item.modelName,
                         hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases : [],
-                        capacity: item.capacity || "", energyRating: item.energyRating || ""
+                        capacity: item.capacity || "", energyRating: item.energyRating || "",
+                        importBatchId: batchId
                     }
                 });
                 result.added++;
@@ -426,7 +442,7 @@ export async function importApplianceAction(data: any[]): Promise<ImportResult> 
         const finalCount = await prismadb.applianceCatalog.count();
         result.newTotal = finalCount;
         revalidatePath("/", "layout"); revalidatePath("/admin/export"); revalidatePath("/admin/logs");
-        await logImport({ category: "appliance", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount });
+        await logImport({ category: "appliance", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
         return result;
     } catch (error: any) { throw new Error("נכשל ייבוא Appliances: " + error.message); }
 }
@@ -436,6 +452,7 @@ export async function importApplianceAction(data: any[]): Promise<ImportResult> 
  */
 export async function importMotherboardAction(data: any[]): Promise<ImportResult> {
     const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
     try {
         const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
             `${item.brand}-${item.model}`.toLowerCase()
@@ -455,7 +472,8 @@ export async function importMotherboardAction(data: any[]): Promise<ImportResult
                         socket: item.socket || "", formFactor: item.formFactor || "",
                         ramType: item.ramType || "", maxRam: item.maxRam || "",
                         pcie: item.pcie || "", m2: item.m2 || "", lan: item.lan || "",
-                        wifi: item.wifi || "", releaseYear: item.releaseYear ? String(item.releaseYear) : null
+                        wifi: item.wifi || "", releaseYear: item.releaseYear ? String(item.releaseYear) : null,
+                        importBatchId: batchId
                     }
                 });
                 result.added++;
@@ -465,22 +483,36 @@ export async function importMotherboardAction(data: any[]): Promise<ImportResult
         const finalCount = await prismadb.motherboardCatalog.count();
         result.newTotal = finalCount;
         revalidatePath("/", "layout"); revalidatePath("/admin/export"); revalidatePath("/admin/logs");
-        await logImport({ category: "motherboard", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount });
+        await logImport({ category: "motherboard", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
         return result;
     } catch (error: any) { throw new Error("נכשל ייבוא Motherboards: " + error.message); }
 }
 
 /**
- * מחיקת רשומות אחרונות (שעתיים אחרונות) לפי קטגוריה כולל כתיבת לוג
+ * מחיקת רשומות ייבוא אחרון לפי קטגוריה וקבוצת ייבוא ספציפית
  */
 export async function undoRecentInCategoryAction(category: string): Promise<{ deletedCount: number }> {
-    const timeLimit = new Date();
-    timeLimit.setHours(timeLimit.getHours() - 2);
-
-    const filter = { createdAt: { gte: timeLimit } };
-    let deletedCount = 0;
-
     try {
+        if (category === "phone") category = "mobile";
+        
+        // Find the most recent import log that added items, possesses a batchId, and hasn't been undone
+        const lastLog = await prismadb.catalogImportLog.findFirst({
+            where: { 
+                category, 
+                batchId: { not: null },
+                isUndone: false,
+                added: { gt: 0 }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        if (!lastLog || !lastLog.batchId) {
+            throw new Error("לא נמצא ייבוא זמין לביטול.");
+        }
+
+        const filter = { importBatchId: lastLog.batchId };
+        let deletedCount = 0;
+
         switch (category) {
             case "laptop": deletedCount = (await prismadb.laptopCatalog.deleteMany({ where: filter })).count; break;
             case "desktop": deletedCount = (await prismadb.brandDesktopCatalog.deleteMany({ where: filter })).count; break;
@@ -492,11 +524,13 @@ export async function undoRecentInCategoryAction(category: string): Promise<{ de
             default: throw new Error("קטגוריה לא נתמכת");
         }
         
-        revalidatePath("/", "layout");
-        revalidatePath("/admin/export");
-        revalidatePath("/admin/logs");
-        
+        // Mark the log as undone
         if (deletedCount > 0) {
+            await prismadb.catalogImportLog.update({
+                where: { id: lastLog.id },
+                data: { isUndone: true }
+            });
+
             const user = await currentUser();
             const adminName = user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "מערכת";
             await prismadb.catalogImportLog.create({
@@ -507,12 +541,16 @@ export async function undoRecentInCategoryAction(category: string): Promise<{ de
                     skipped: 0,
                     duplicatesInFile: 0,
                     errors: 0,
-                    errorDetails: ["בוצעה פעולת ביטול (Undo) ידנית"],
+                    errorDetails: [`בוצעה פעולת ביטול (Undo) ידנית עבור קבוצה: ${lastLog.batchId}`],
                     newTotal: 0,
                     adminName
                 }
             });
         }
+        
+        revalidatePath("/", "layout");
+        revalidatePath("/admin/export");
+        revalidatePath("/admin/logs");
         
         return { deletedCount };
     } catch (e: any) {

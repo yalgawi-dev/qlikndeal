@@ -363,23 +363,24 @@ model AdminNote {
 // ─────────────────────────────────────────────────────────────
 
 model LaptopCatalog {
-  id          String   @id @default(uuid())
-  brand       String
-  series      String
-  modelName   String
-  type        String?
-  screenSize  String[] // Array of options or single value
-  cpu         String[]
-  gpu         String[]
-  ram         String[]
-  storage     String[]
-  os          String[]
-  releaseYear String?
-  notes       String?
-  sku         String?  @unique
-  weight      String?
-  ports       String?
-  display     String?
+  id            String   @id @default(uuid())
+  brand         String
+  series        String
+  modelName     String
+  type          String?
+  screenSize    String[] // Array of options or single value
+  cpu           String[]
+  gpu           String[]
+  ram           String[]
+  storage       String[]
+  os            String[]
+  releaseYear   String?
+  notes         String?
+  sku           String?  @unique
+  weight        String?
+  ports         String?
+  display       String?
+  importBatchId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -389,21 +390,22 @@ model LaptopCatalog {
 }
 
 model BrandDesktopCatalog {
-  id          String   @id @default(uuid())
-  brand       String
-  series      String
-  modelName   String
-  cpu         String[]
-  gpu         String[]
-  ram         String[]
-  storage     String[]
-  os          String[]
-  releaseYear String?
-  notes       String?
-  sku         String?  @unique
-  ports       String?
-  weight      String?
-  isMini      Boolean  @default(false)
+  id            String   @id @default(uuid())
+  brand         String
+  series        String
+  modelName     String
+  cpu           String[]
+  gpu           String[]
+  ram           String[]
+  storage       String[]
+  os            String[]
+  releaseYear   String?
+  notes         String?
+  sku           String?  @unique
+  ports         String?
+  weight        String?
+  isMini        Boolean  @default(false)
+  importBatchId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -412,34 +414,36 @@ model BrandDesktopCatalog {
 }
 
 model CustomBuildCatalog {
-  id          String  @id @default(uuid())
-  category    String // Gaming, Office, Workstation
-  subCategory String?
-  typicalCpu  String?
-  typicalGpu  String?
-  typicalRam  String?
-  description String?
+  id            String  @id @default(uuid())
+  category      String // Gaming, Office, Workstation
+  subCategory   String?
+  typicalCpu    String?
+  typicalGpu    String?
+  typicalRam    String?
+  description   String?
+  importBatchId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model AioCatalog {
-  id          String   @id @default(uuid())
-  brand       String
-  series      String
-  modelName   String
-  screenSize  String[]
-  cpu         String[]
-  gpu         String[]
-  ram         String[]
-  storage     String[]
-  os          String[]
-  releaseYear String?
-  notes       String?
-  sku         String?  @unique
-  display     String?
-  ports       String?
+  id            String   @id @default(uuid())
+  brand         String
+  series        String
+  modelName     String
+  screenSize    String[]
+  cpu           String[]
+  gpu           String[]
+  ram           String[]
+  storage       String[]
+  os            String[]
+  releaseYear   String?
+  notes         String?
+  sku           String?  @unique
+  display       String?
+  ports         String?
+  importBatchId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -465,6 +469,7 @@ model MobileCatalog {
   weight           String?
   nfc              Boolean  @default(false)
   wirelessCharging Boolean  @default(false)
+  importBatchId    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -473,15 +478,16 @@ model MobileCatalog {
 }
 
 model VehicleCatalog {
-  id           String  @id @default(uuid())
-  make         String
-  model        String
-  year         Int?
-  type         String? // Sedan, SUV, etc.
-  fuelType     String?
-  transmission String?
-  engineSize   String?
-  hp           Int?
+  id            String  @id @default(uuid())
+  make          String
+  model         String
+  year          Int?
+  type          String? // Sedan, SUV, etc.
+  fuelType      String?
+  transmission  String?
+  engineSize    String?
+  hp            Int?
+  importBatchId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -498,6 +504,7 @@ model ElectronicsCatalog {
   hebrewAliases String[]
   releaseYear   Int?
   specs         String? // JSON string for varied specs
+  importBatchId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -515,6 +522,7 @@ model ApplianceCatalog {
   hebrewAliases String[]
   capacity      String? // Liters, KG, BTU
   energyRating  String?
+  importBatchId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -525,19 +533,20 @@ model ApplianceCatalog {
 }
 
 model MotherboardCatalog {
-  id          String  @id @default(uuid())
-  brand       String
-  model       String
-  chipset     String?
-  socket      String?
-  formFactor  String?
-  ramType     String?
-  maxRam      String?
-  pcie        String?
-  m2          String?
-  lan         String?
-  wifi        String?
-  releaseYear String?
+  id            String  @id @default(uuid())
+  brand         String
+  model         String
+  chipset       String?
+  socket        String?
+  formFactor    String?
+  ramType       String?
+  maxRam        String?
+  pcie          String?
+  m2            String?
+  lan           String?
+  wifi          String?
+  releaseYear   String?
+  importBatchId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -558,6 +567,8 @@ model CatalogImportLog {
   errorDetails     String[] @default([])
   newTotal         Int      @default(0)
   adminName        String?
+  batchId          String?  @unique
+  isUndone         Boolean  @default(false)
   createdAt        DateTime @default(now())
 
   @@index([category])
