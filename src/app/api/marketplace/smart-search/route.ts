@@ -210,16 +210,18 @@ export async function POST(req: Request) {
 
             // --- Detect the category/segment of the query ---
             // Map of category signals → DB category values to search within
-            const categorySignals: Array<{ keywords: string[]; dbCategories: string[]; label: string }> = [
+            const categorySignals: Array<{ keywords: string[]; dbCategories: string[]; label: string; forbiddenWords?: string[] }> = [
                 {
                     label: "מחשבים ניידים",
-                    keywords: ["לפטופ", "מחשב נייד", "laptop", "נייד", "notebook", "i3", "i5", "i7", "i9", "ryzen", "macbook", "מקבוק", "thinkpad", "ideapad", "vivobook", "zenbook", "inspiron", "xps", "pavilion", "spectre", "laptop"],
-                    dbCategories: ["מחשבים", "מחשב נייד", "computers", "laptop"]
+                    keywords: ["לפטופ", "מחשב נייד", "laptop", "נייד", "notebook", "i3", "i5", "i7", "i9", "ryzen", "macbook", "מקבוק", "thinkpad", "ideapad", "vivobook", "zenbook", "inspiron", "xps", "pavilion", "spectre"],
+                    dbCategories: ["מחשבים", "מחשב נייד", "computers", "laptop"],
+                    forbiddenWords: ["נייח", "שולחני", "desktop", "מארז", "פיסי"] // Explicitly ban desktop terms
                 },
                 {
                     label: "מחשבים שולחניים",
                     keywords: ["מחשב שניח", "מחשב נייח", "שולחני", "desktop", "pc", "מחשב שולחני"],
-                    dbCategories: ["מחשבים", "מחשב נייח", "computers", "desktop"]
+                    dbCategories: ["מחשבים", "מחשב נייח", "computers", "desktop"],
+                    forbiddenWords: ["נייד", "לפטופ", "laptop", "notebook"] // Explicitly ban laptop terms
                 },
                 {
                     label: "טלפונים סלולריים",
@@ -294,6 +296,16 @@ export async function POST(req: Request) {
                 similarWhere.OR = detectedSegment.dbCategories.map(cat => ({
                     category: { contains: cat, mode: "insensitive" as const }
                 }));
+
+                // Apply strict exclusions so segments don't cross-pollinate (e.g., Laptops vs Desktops)
+                if (detectedSegment.forbiddenWords && detectedSegment.forbiddenWords.length > 0) {
+                    similarWhere.AND = [
+                        ...(similarWhere.AND || []),
+                        ...detectedSegment.forbiddenWords.map(word => ({
+                            title: { not: { contains: word, mode: "insensitive" as const } }
+                        }))
+                    ];
+                }
             } else if (aiDetectedCategory) {
                 // Fallback: use AI-detected category
                 similarWhere.category = { contains: aiDetectedCategory, mode: "insensitive" as const };
