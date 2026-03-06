@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Search, BellRing, Sparkles, Loader2, Plus, ArrowRight } from "lucide-re
 import { toast } from "sonner";
 import Link from "next/link";
 
-export default function MyRequestsPage() {
+function MyRequestsContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const initialQuery = searchParams.get("query") || "";
@@ -251,5 +251,13 @@ export default function MyRequestsPage() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function MyRequestsPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-purple-500" /></div>}>
+            <MyRequestsContent />
+        </Suspense>
     );
 }
