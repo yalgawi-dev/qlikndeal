@@ -469,21 +469,35 @@ export default function MarketplacePage() {
                         )}
 
                         {isFallback && searchInput.trim().length > 0 && (
-                            <div className="bg-purple-900/20 border border-purple-500/30 rounded-2xl p-6 text-center animate-in fade-in zoom-in duration-500">
-                                <Sparkles className="w-8 h-8 text-purple-400 mx-auto mb-3" />
-                                <h3 className="text-xl font-bold text-white mb-2">לא מצאנו בדיוק את מה שחיפשת...</h3>
-                                <p className="text-purple-200 mb-4">אבל ה-AI שלנו מצא <strong>הצעות דומות</strong> שאולי יעניינו אותך!</p>
-                                
-                                <div className="p-4 bg-gray-900/50 rounded-xl max-w-lg mx-auto border border-gray-800">
-                                    <p className="text-gray-300 text-sm mb-3">לא מוותר? רוצה שנודיע לך כשבדיוק מה שאתה מחפש יפורסם?</p>
+                            <div className="bg-gradient-to-r from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-2xl p-5 animate-in fade-in zoom-in duration-500">
+                                <div className="flex items-start gap-4">
+                                    <div className="bg-amber-500/20 p-2.5 rounded-xl shrink-0 hidden sm:block">
+                                        <Sparkles className="w-5 h-5 text-amber-400" />
+                                    </div>
+                                    <div className="flex-1 text-right" dir="rtl">
+                                        <h3 className="text-base font-bold text-amber-200 mb-1">
+                                            לא נמצא &quot;{searchInput}&quot; — מציג הצעות דומות מאותה קטגוריה
+                                        </h3>
+                                        {aiInsight ? (
+                                            <p className="text-amber-100/80 text-sm">{aiInsight}</p>
+                                        ) : (
+                                            <p className="text-amber-100/80 text-sm">
+                                                התוצאות שלמטה הן מוצרים מאותה קטגוריה בלבד — לא מוצרים ממגזרים שונים.
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="mt-4 pt-4 border-t border-amber-800/30 flex flex-col sm:flex-row gap-2 justify-end" dir="rtl">
+                                    <p className="text-gray-400 text-xs self-center ml-auto">רוצה שנעדכן אותך כשמה שחיפשת יפורסם?</p>
                                     <Button 
-                                        className="bg-purple-600 hover:bg-purple-700 text-white w-full shadow-lg shadow-purple-900/50"
+                                        size="sm"
+                                        className="bg-amber-600 hover:bg-amber-700 text-white shadow-lg shadow-amber-900/30 shrink-0"
                                         onClick={() => {
                                             router.push(`/dashboard/marketplace/my-requests?query=${encodeURIComponent(searchInput)}`);
                                         }}
                                     >
-                                        <Search className="w-4 h-4 ml-2" />
-                                        פתח מודעת "דרוש מוצר" בחינם
+                                        <Search className="w-3.5 h-3.5 ml-1.5" />
+                                        פתח מודעת &quot;דרוש מוצר&quot;
                                     </Button>
                                 </div>
                             </div>

@@ -201,60 +201,162 @@ export async function POST(req: Request) {
             orderBy: { createdAt: "desc" }
         });
 
-        // 4b. Smart Relaxed Search (Fuzzy): If strict logic found nothing, try ultra-loose substring matching.
-        // This is the "AI brain" fallback to guarantee the buyer finds relevant listings even with completely broken queries.
+        // 4b. Smart Category-Aware Similar Suggestions
+        // When no exact match is found, find similar items ONLY within the same category/segment.
+        // e.g. "laptop I9" with no results → suggest other laptops (I7, I5, Ryzen), NOT phones or cars.
         if (listings.length === 0 && searchKeywords.length > 0) {
             delete whereClause.AND;
             delete whereClause.OR;
 
-            // Generate character-level splits and very loose ORs.
-            const megaLooseOrs = searchKeywords.map(term => ({
-                OR: [
-                    { title: { contains: term, mode: "insensitive" as const } },
-                    { description: { contains: term, mode: "insensitive" as const } },
-                    { extraData: { contains: term, mode: "insensitive" as const } },
-                    { category: { contains: term, mode: "insensitive" as const } }
-                ]
-            }));
-
-            // Step 1: At least ONE keyword MUST match anywhere in the document
-            whereClause.OR = megaLooseOrs;
-
-            let fallbackListings = await prismadb.marketplaceListing.findMany({
-                where: whereClause,
-                include: {
-                    seller: {
-                        select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
-                    }
+            // --- Detect the category/segment of the query ---
+            // Map of category signals → DB category values to search within
+            const categorySignals: Array<{ keywords: string[]; dbCategories: string[]; label: string }> = [
+                {
+                    label: "מחשבים ניידים",
+                    keywords: ["לפטופ", "מחשב נייד", "laptop", "נייד", "notebook", "i3", "i5", "i7", "i9", "ryzen", "macbook", "מקבוק", "thinkpad", "ideapad", "vivobook", "zenbook", "inspiron", "xps", "pavilion", "spectre", "laptop"],
+                    dbCategories: ["מחשבים", "מחשב נייד", "computers", "laptop"]
                 },
-                take: 100, // pull more to rank them below
-                orderBy: { createdAt: "desc" }
-            });
+                {
+                    label: "מחשבים שולחניים",
+                    keywords: ["מחשב שניח", "מחשב נייח", "שולחני", "desktop", "pc", "מחשב שולחני"],
+                    dbCategories: ["מחשבים", "מחשב נייח", "computers", "desktop"]
+                },
+                {
+                    label: "טלפונים סלולריים",
+                    keywords: ["אייפון", "iphone", "סמסונג", "samsung", "galaxy", "גלקסי", "שיאומי", "xiaomi", "טלפון", "סלולרי", "סמארטפון", "smartphone", "redmi", "poco", "pixel"],
+                    dbCategories: ["סלולרי", "פלאפלים", "טלפונים", "phones", "mobile"]
+                },
+                {
+                    label: "אוזניות ושמע",
+                    keywords: ["אוזניות", "headphones", "airpods", "בוז", "bose", "jbl", "sony wh", "sony wf", "headset", "ג'יביאל", "שמע"],
+                    dbCategories: ["אלקטרוניקה", "אוזניות", "electronics", "audio"]
+                },
+                {
+                    label: "טלוויזיות ומסכים",
+                    keywords: ["טלוויזיה", "טלויזיה", "tv", "מסך", "oled", "qled", "4k", "8k", "samsungtv", "65 אינץ", "55 אינץ"],
+                    dbCategories: ["אלקטרוניקה", "טלוויזיות", "electronics", "tv"]
+                },
+                {
+                    label: "רכבים",
+                    keywords: ["רכב", "מכונית", "אוטו", "car", "טויוטה", "toyota", "יונדאי", "hyundai", "קיה", "kia", "מאזדה", "mazda", "הונדה", "honda", "מרצדס", "mercedes", "bmw", "אאודי", "audi", "טסלה", "tesla", "איוניק", "ספורטאז", "קורולה"],
+                    dbCategories: ["רכבים", "cars", "רכב"]
+                },
+                {
+                    label: "ריהוט וצרכי בית",
+                    keywords: ["ספה", "כיסא", "שולחן", "מיטה", "ארון", "איקאה", "ikea", "ריהוט", "מזרון", "ספריה"],
+                    dbCategories: ["ריהוט", "בית", "furniture", "home"]
+                },
+                {
+                    label: "מוצרי חשמל ביתיים",
+                    keywords: ["מכונת כביסה", "מקרר", "מדיח", "מיקרוגל", "תנור", "בוילר", "מזגן", "בוש", "bosch", "מילה", "miele", "סימנס", "siemens", "אלקטרולוקס"],
+                    dbCategories: ["מוצרי חשמל", "מוצרי חשמל ביתיים", "appliances", "חשמל"]
+                },
+                {
+                    label: "קונסולות ומשחקים",
+                    keywords: ["פלייסטיישן", "playstation", "ps4", "ps5", "xbox", "אקסבוקס", "נינטנדו", "nintendo", "switch", "סוויץ", "gaming", "גיימינג"],
+                    dbCategories: ["אלקטרוניקה", "גיימינג", "gaming", "electronics"]
+                },
+                {
+                    label: "נדלן",
+                    keywords: ["דירה", "בית", "חדרים", "ווילה", "פנטהאוז", "נכס", "להשכרה", "למכירה", "קוטג"],
+                    dbCategories: ["נדלן", "דירות", "real estate"]
+                },
+            ];
 
-            // Step 2: Rank the fallback listings by how many keywords they matched
-            if (fallbackListings.length > 0) {
-                fallbackListings = fallbackListings.map(listing => {
-                    let score = 0;
-                    const combinedText = `${listing.title} ${listing.description} ${listing.extraData} ${listing.category}`.toLowerCase();
-                    searchKeywords.forEach(term => {
-                        const termLower = term.toLowerCase();
-                        if (combinedText.includes(termLower)) score += 2;
-                        
-                        // Ultra-fuzzy: partial character matches for very bad typos (e.g. "כביسה")
-                        if (termLower.length > 3) {
-                            const sub = termLower.substring(0, termLower.length - 1);
-                            if (combinedText.includes(sub)) score += 1;
+            // Find which category segment best matches the query
+            const queryLower = (query || "").toLowerCase();
+            const allKeywordsLower = searchKeywords.map(k => k.toLowerCase());
+            
+            let detectedSegment: typeof categorySignals[0] | null = null;
+            let bestScore = 0;
+
+            for (const signal of categorySignals) {
+                let matchScore = 0;
+                for (const kw of signal.keywords) {
+                    const kwLower = kw.toLowerCase();
+                    if (queryLower.includes(kwLower)) matchScore += 3;
+                    if (allKeywordsLower.some(k => k.includes(kwLower) || kwLower.includes(k))) matchScore += 1;
+                }
+                if (matchScore > bestScore) {
+                    bestScore = matchScore;
+                    detectedSegment = signal;
+                }
+            }
+
+            // Also use aiFilters.aiCategory if analyzeListingText detected a category
+            const aiDetectedCategory = aiFilters.aiCategory as string | undefined;
+
+            // Build the similar suggestions query — ONLY within the detected category
+            const similarWhere: any = { status: "ACTIVE", ...latLngFilter };
+
+            if (detectedSegment) {
+                // Filter strictly to the detected segment's DB categories
+                similarWhere.OR = detectedSegment.dbCategories.map(cat => ({
+                    category: { contains: cat, mode: "insensitive" as const }
+                }));
+            } else if (aiDetectedCategory) {
+                // Fallback: use AI-detected category
+                similarWhere.category = { contains: aiDetectedCategory, mode: "insensitive" as const };
+            }
+            // If no category detected at all — do NOT run fallback (avoid unrelated results)
+
+            if (detectedSegment || aiDetectedCategory) {
+                let fallbackListings = await prismadb.marketplaceListing.findMany({
+                    where: similarWhere,
+                    include: {
+                        seller: {
+                            select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
                         }
-                    });
-                    return { ...listing, matchScore: score, isSuggestion: true };
-                })
-                .filter(l => l.matchScore > 0) // Ensure at least partial relevance
-                .sort((a, b) => b.matchScore - a.matchScore) // Highest score first
-                .slice(0, 60); // Cap at 60 results
-                
+                    },
+                    take: 100,
+                    orderBy: { createdAt: "desc" }
+                });
+
+                // Score each result by relevance within the same category
                 if (fallbackListings.length > 0) {
-                    listings = fallbackListings;
-                    isFallback = true;
+                    // Extract "core" keywords only — strip the specific model/spec the user searched for
+                    // e.g. from "מחשב נייד I9" → keep ["מחשב נייד", "laptop", "lenovo"] but the I9 can be relaxed
+                    const categoryKeywords = detectedSegment ? detectedSegment.keywords : [];
+
+                    fallbackListings = fallbackListings.map(listing => {
+                        let score = 0;
+                        const combinedText = `${listing.title} ${listing.description} ${listing.extraData} ${listing.category}`.toLowerCase();
+                        
+                        // Score for matching any category signal keyword
+                        categoryKeywords.forEach(term => {
+                            if (combinedText.includes(term.toLowerCase())) score += 1;
+                        });
+                        
+                        // Bonus: score for matching non-spec keywords from original query
+                        // (brand names, general product type - not the specific specs like I9/RTX4090)
+                        const specPatterns = /\b(i\d|i\d\d|rtx\s?\d+|gtx\s?\d+|rx\s?\d+|gb|tb|mhz|ghz|\d+gb|\d+tb)\b/gi;
+                        const queryWithoutSpecs = queryLower.replace(specPatterns, "");
+                        const queryTerms = queryWithoutSpecs.split(/\s+/).filter((t: string) => t.length > 1);
+                        queryTerms.forEach((term: string) => {
+                            if (combinedText.includes(term)) score += 2;
+                        });
+
+                        // Price proximity bonus: if user specified price, boost similar-priced items
+                        if (aiFilters.maxPrice && listing.price) {
+                            const priceDelta = Math.abs(listing.price - aiFilters.maxPrice) / aiFilters.maxPrice;
+                            if (priceDelta < 0.3) score += 3;  // within 30% of requested price → big bonus
+                            else if (priceDelta < 0.6) score += 1;
+                        }
+
+                        return { ...listing, matchScore: score, isSuggestion: true };
+                    })
+                    .filter(l => l.matchScore >= 0) // Allow all same-category items even with score 0
+                    .sort((a, b) => b.matchScore - a.matchScore)
+                    .slice(0, 60);
+
+                    if (fallbackListings.length > 0) {
+                        listings = fallbackListings;
+                        isFallback = true;
+                        // Update aiInsight to describe what we're showing
+                        if (detectedSegment) {
+                            aiInsight = `לא מצאנו ${query} מדויק, אבל הנה ${detectedSegment.label} דומים שאולי יתאימו לך. אם אתה מחפש משהו ספציפי – פרסם מודעת "דרוש מוצר" וקבל התראה.`;
+                        }
+                    }
                 }
             }
         }
