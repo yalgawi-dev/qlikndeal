@@ -25,14 +25,31 @@ export function BuyerRequestCard({ request, onDelete }: BuyerRequestCardProps) {
                     </div>
                     <div>
                         <h4 className="font-bold text-white text-lg">{request.query}</h4>
-                        <div className="flex items-center gap-2 text-xs mt-1">
-                            <span className={`px-2 py-0.5 rounded-md border ${statusColor} font-bold`}>
-                                {statusLabel}
-                            </span>
-                            <span className="text-gray-500 flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {new Date(request.createdAt).toLocaleDateString('he-IL')}
-                            </span>
+                        <div className="flex flex-col gap-1 mt-1">
+                            <div className="flex items-center gap-2 text-xs">
+                                <span className={`px-2 py-0.5 rounded-md border ${statusColor} font-bold`}>
+                                    {statusLabel}
+                                </span>
+                                <span className="text-gray-500 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {new Date(request.createdAt).toLocaleDateString('he-IL')}
+                                </span>
+                            </div>
+                            
+                            {request.extraData && (
+                                <div className="text-xs text-gray-400 mt-1 flex gap-2">
+                                    {JSON.parse(request.extraData)?.budget && (
+                                        <span className="bg-gray-800 px-2 py-0.5 rounded">
+                                            עד ₪{JSON.parse(request.extraData).budget}
+                                        </span>
+                                    )}
+                                    {JSON.parse(request.extraData)?.category && JSON.parse(request.extraData).category !== "General" && (
+                                        <span className="bg-gray-800 px-2 py-0.5 rounded">
+                                            {JSON.parse(request.extraData).category}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

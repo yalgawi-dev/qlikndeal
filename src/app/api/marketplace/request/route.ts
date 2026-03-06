@@ -5,7 +5,7 @@ import prismadb from "@/lib/prismadb";
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { query } = body;
+        const { query, extraData } = body;
         const user = await currentUser();
 
         if (!query) {
@@ -28,6 +28,7 @@ export async function POST(req: Request) {
                 query,
                 userId,
                 status: "ACTIVE",
+                extraData: extraData || null
             },
         });
 
