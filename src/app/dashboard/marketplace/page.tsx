@@ -17,6 +17,7 @@ export default function MarketplacePage() {
     const [loading, setLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [isFallback, setIsFallback] = useState(false);
+    const [aiInsight, setAiInsight] = useState<string | null>(null);
     
     // Search State
     const [searchInput, setSearchInput] = useState("");
@@ -120,6 +121,7 @@ export default function MarketplacePage() {
             if (data.success) {
                 setListings(data.results || []);
                 setIsFallback(data.isFallback || false);
+                setAiInsight(data.aiInsight || null);
             }
         } catch (error) {
             console.error("Search failed:", error);
@@ -143,6 +145,7 @@ export default function MarketplacePage() {
                 if (data.success && isMounted) {
                     setListings(data.results || []);
                     setIsFallback(data.isFallback || false);
+                    setAiInsight(data.aiInsight || null);
                 }
             } catch (error) {
                 console.error("Initial search failed:", error);
@@ -450,6 +453,21 @@ export default function MarketplacePage() {
                     </div>
                 ) : listings.length > 0 ? (
                     <div className="space-y-6">
+                        {/* AI Insight for Generic Searches */}
+                        {aiInsight && !isFallback && (
+                            <div className="bg-indigo-900/30 border border-indigo-500/50 rounded-2xl p-4 flex gap-4 items-start animate-in fade-in zoom-in duration-500">
+                                <div className="bg-indigo-500/20 p-2 rounded-full hidden sm:block">
+                                    <Sparkles className="w-6 h-6 text-indigo-400" />
+                                </div>
+                                <div>
+                                    <h4 className="text-indigo-300 font-bold mb-1 flex items-center gap-2">
+                                        המלצת המערכת (AI)
+                                    </h4>
+                                    <p className="text-indigo-100">{aiInsight}</p>
+                                </div>
+                            </div>
+                        )}
+
                         {isFallback && searchInput.trim().length > 0 && (
                             <div className="bg-purple-900/20 border border-purple-500/30 rounded-2xl p-6 text-center animate-in fade-in zoom-in duration-500">
                                 <Sparkles className="w-8 h-8 text-purple-400 mx-auto mb-3" />

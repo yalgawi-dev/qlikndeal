@@ -12,6 +12,7 @@ export async function POST(req: Request) {
         let aiFilters: any = {};
         let searchKeywords: string[] = [];
         let keywordGroups: string[][] = [];
+        let aiInsight = "";
 
         // 1. Smart "AI" Query Parsing
         if (query && query.trim().length > 0) {
@@ -89,8 +90,37 @@ export async function POST(req: Request) {
                 "השכרה": ["להשכרה", "שכירות"],
                 "מכירה": ["למכירה", "למכור"],
                 "אופניים חשמליות": ["אופניים חשמליים", "חשמליות", "E-bike"],
-                "קורקינט": ["קורקינט חשמלי", "scooter"]
+                "קורקינט": ["קורקינט חשמלי", "scooter"],
+                
+                // Super Category Synonyms
+                "לפטופ": ["מחשב נייד", "לפטופ", "laptop", "נייד"],
+                "נייד": ["מחשב נייד", "לפטופ", "laptop", "נייד"],
+                "מחשב שניח": ["מחשב נייח", "מחשב שולחני", "PC", "נייח", "שולחני", "desktop"],
+                "טלוויזיה": ["טלוויזיה", "טלויזיה", "מסך", "tv"],
+                "אוזניות": ["אוזניות", "headset", "headphones"],
+                "טלפון": ["טלפון", "סלולרי", "סמארטפון", "smartphone", "נייד"],
+                "רכב": ["רכב", "מכונית", "אוטו", "car"]
             };
+
+            // Smart Interactive Insight (AI Questioning)
+            const genericQueries: Record<string, string> = {
+                "לפטופ": "ראיתי שאתה מחפש מחשב נייד. יש חברה מועדפת (למשל Dell או Mac), או שחשוב לך ייעוד (גיימינג/סטודנט)?",
+                "טלפון": "מחפש סלולרי חדש? איזה כיוון - אייפון, סמסונג או אולי משהו של שיאומי?",
+                "רכב": "חיפוש רכבים! אתה בוחר כיוון של משפחתית (כמו איוניק/ספורטאז') או רכב קטן וחסכוני?",
+                "טלוויזיה": "מעולה. בוא נשים פוקוס - מה גודל המסך שאתה מחפש, או אולי אתה רוצה לכוון ל-OLED/QLED?",
+                "דירה": "מחפש נכס? כדאי לציין איזור מועדף ואת מספר החדרים כדי שהתוצאות יהיו מדויקות."
+            };
+            
+            // If the user's primary word matches a highly generic one, add an AI tip
+            for (const word of searchKeywords) {
+                for (const [generic, tip] of Object.entries(genericQueries)) {
+                    if (word === generic || word === genericQueries[generic]) {
+                        aiInsight = tip;
+                        break;
+                    }
+                }
+                if (aiInsight) break;
+            }
 
             // Enhance search by grouping synonyms
             const expandedKeywords: string[] = [];
@@ -263,7 +293,8 @@ export async function POST(req: Request) {
             results: finalResults,
             total: finalResults.length,
             aiFilters,
-            isFallback
+            isFallback,
+            aiInsight: aiInsight || null
         });
 
     } catch (error) {
