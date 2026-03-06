@@ -11,6 +11,7 @@ export async function POST(req: Request) {
 
         let aiFilters: any = {};
         let searchKeywords: string[] = [];
+        let keywordGroups: string[][] = [];
 
         // 1. Smart "AI" Query Parsing
         if (query && query.trim().length > 0) {
@@ -25,23 +26,93 @@ export async function POST(req: Request) {
             if (analysis.make && !searchKeywords.includes(analysis.make)) searchKeywords.push(analysis.make);
             if (analysis.model && !searchKeywords.includes(analysis.model)) searchKeywords.push(analysis.model);
 
-            // Brand Mapping (Hebrew to English)
+            // Smart Learning Dictionary - Maps typos and Hebrew aliases to English brands
+            // Smart Learning Dictionary - Massive mapping for ALL marketplace categories
             const brandMappings: Record<string, string[]> = {
-                "אפל": ["Apple", "iPhone"], "דל": ["Dell"], "לנובו": ["Lenovo"], "אסוס": ["Asus"], 
-                "אייפון": ["iPhone"], "גלקסי": ["Galaxy"], "סמסונג": ["Samsung"],
-                "טויוטה": ["Toyota"], "יונדאי": ["Hyundai"], "קיה": ["Kia"], "מאזדה": ["Mazda"],
-                "הונדה": ["Honda"], "מרצדס": ["Mercedes"], "טסלה": ["Tesla"]
+                // Computers & Phones
+                "אפל": ["Apple", "iPhone", "MacBook", "iPad", "mac", "אייפד", "מקבוק", "אייפון"], 
+                "דל": ["Dell", "del", "inspiron", "latitude", "xps"], 
+                "לנובו": ["Lenovo", "lanovo", "linovo", "thinkpad", "ideapad"], 
+                "אסוס": ["Asus", "assus", "rog", "vivobook", "zenbook", "טוף", "tuf"], 
+                "אייסר": ["Acer", "acer", "איסר", "predator"],
+                "acer": ["Acer", "אייסר", "איסר"],
+                "hp": ["HP", "hp", "אייצ' פי", "אייצ פי", "h.p", "pavilion", "spectre"],
+                "אייפון": ["iPhone", "apple", "איפון", "אפון", "aifon"], 
+                "גלקסי": ["Galaxy", "Samsung", "גלאקסי", "גלכסי"], 
+                "סמסונג": ["Samsung", "Galaxy", "samsong"],
+                "שיאומי": ["Xiaomi", "שיומי", "xiaomi", "redmi", "poco", "פוקו"],
+                "שיומי": ["Xiaomi", "שיאומי", "xiaomi"],
+                
+                // Electronics & Audio
+                "סוני": ["Sony", "sony", "ps4", "ps5", "פלייסטיישן", "playstation"],
+                "פלייסטיישן": ["Playstation", "ps4", "ps5", "sony", "סוני"],
+                "אקסבוקס": ["Xbox", "xbox", "אקס בוקס", "מיקרוסופט", "microsoft"],
+                "נינטנדו": ["Nintendo", "nintendo", "switch", "סוויץ", "סוויטש"],
+                "בוז": ["Bose", "bose", "בוס"],
+                "ג'יביאל": ["JBL", "jbl", "ג'יי בי אל", "גיי בי אל"],
+                "פיליפס": ["Philips", "philips", "פליפס"],
+                "לג": ["LG", "lg", "אל גי", "אל ג'י", "אל גי'"],
+                "אל ג'י": ["LG", "lg", "אל גי", "אל גי'"],
+                "פנסוניק": ["Panasonic", "panasonic", "פנסוניק"],
+
+                // Home Appliances
+                "בוש": ["Bosch", "bosch", "בוס", "מכונת כביסה בוש"],
+                "מילה": ["Miele", "miele"],
+                "דייסון": ["Dyson", "dyson", "שואב דייסון"],
+                "נינג'ה": ["Ninja", "ninja", "נינגה", "בלנדר"],
+                "אלקטרולוקס": ["Electrolux", "electrolux", "אלקטרולוקס"],
+                "סימנס": ["Siemens", "siemens", "סימנס"],
+
+                // Cars
+                "טויוטה": ["Toyota", "toyota", "טיוטה", "קורולה", "יאריס"], 
+                "יונדאי": ["Hyundai", "hyundai", "hundai", "יונדאי", "איוניק", "טוסון"], 
+                "קיה": ["Kia", "kia", "פיקנטו", "ספורטאז"], 
+                "מאזדה": ["Mazda", "mazda", "מזדה"],
+                "מזדה": ["Mazda", "מאזדה"],
+                "הונדה": ["Honda", "honda", "hunda", "סיוויק"], 
+                "מרצדס": ["Mercedes", "mercedes", "mercedes-benz"], 
+                "טסלה": ["Tesla", "tesla", "tsla"],
+                "במוו": ["BMW", "bmw", "ב.מ.וו", "בי אמוו"],
+                "אאודי": ["Audi", "audi", "אודי"],
+                
+                // Furniture & Home
+                "איקאה": ["IKEA", "ikea", "אקאה"],
+                "עמינח": ["Aminach", "עמינח"],
+
+                // Fashion
+                "נייק": ["Nike", "nike", "נייקי"],
+                "אדידס": ["Adidas", "adidas", "אדידאס"],
+                "זארה": ["Zara", "zara", "זרה"],
+
+                // General Marketplace Aliases
+                "דירה": ["דירה", "בית", "נכס", "וילה", "פנטהאוז"],
+                "השכרה": ["להשכרה", "שכירות"],
+                "מכירה": ["למכירה", "למכור"],
+                "אופניים חשמליות": ["אופניים חשמליים", "חשמליות", "E-bike"],
+                "קורקינט": ["קורקינט חשמלי", "scooter"]
             };
 
-            const expandedKeywords: string[] = [...searchKeywords];
+            // Enhance search by grouping synonyms
+            const expandedKeywords: string[] = [];
             searchKeywords.forEach(k => {
-                if (brandMappings[k]) {
-                    brandMappings[k].forEach(mapped => {
-                        if (!expandedKeywords.includes(mapped)) expandedKeywords.push(mapped);
-                    });
+                const lowerK = k.toLowerCase();
+                const group = new Set<string>();
+                group.add(k);
+
+                // Find any mapping that matches the keyword (exact or case-insensitive)
+                for (const [key, aliases] of Object.entries(brandMappings)) {
+                    if (lowerK === key.toLowerCase() || aliases.some(a => lowerK === a.toLowerCase())) {
+                        group.add(key);
+                        aliases.forEach(mapped => group.add(mapped));
+                    }
                 }
+                
+                const groupArr = Array.from(group);
+                keywordGroups.push(groupArr);
+                groupArr.forEach(mapped => expandedKeywords.push(mapped));
             });
-            searchKeywords = expandedKeywords;
+            searchKeywords = Array.from(new Set(expandedKeywords)); // keep flat list for fallback scoring
+
         }
 
         // 2. Build Bounding Box for geo-distance filtering
@@ -61,54 +132,101 @@ export async function POST(req: Request) {
             ...latLngFilter
         };
 
-        const finalCategory = category && category !== "all" ? category : aiFilters.aiCategory;
-        if (finalCategory) whereClause.category = finalCategory;
+        if (category && category !== "all") {
+            whereClause.category = category;
+        }
+
         if (aiFilters.maxPrice) whereClause.price = { lte: aiFilters.maxPrice };
 
         // Keyword Filter - AND logic first
-        if (searchKeywords.length > 0) {
+        if (keywordGroups.length > 0) {
+            whereClause.AND = keywordGroups.map(group => ({
+                OR: group.flatMap(term => [
+                    { title: { contains: term, mode: "insensitive" as const } },
+                    { description: { contains: term, mode: "insensitive" as const } },
+                    { extraData: { contains: term, mode: "insensitive" as const } },
+                ])
+            }));
+        } else if (searchKeywords.length > 0) {
             whereClause.AND = searchKeywords.map(term => ({
                 OR: [
                     { title: { contains: term, mode: "insensitive" as const } },
                     { description: { contains: term, mode: "insensitive" as const } },
-                    { extraData: { contains: term, mode: "insensitive" as const } },
+                    { extraData: { contains: term, mode: "insensitive" as const } }
                 ]
             }));
         }
+
+        let isFallback = false;
 
         // 4. Query ONLY MarketplaceListing (published user ads)
         let listings = await prismadb.marketplaceListing.findMany({
             where: whereClause,
             include: {
                 seller: {
-                    select: { firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
+                    select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
                 }
             },
             take: 60,
             orderBy: { createdAt: "desc" }
         });
 
-        // 4b. Fallback: loose OR if AND returned nothing
-        if (listings.length === 0 && searchKeywords.length > 1) {
+        // 4b. Smart Relaxed Search (Fuzzy): If strict logic found nothing, try ultra-loose substring matching.
+        // This is the "AI brain" fallback to guarantee the buyer finds relevant listings even with completely broken queries.
+        if (listings.length === 0 && searchKeywords.length > 0) {
             delete whereClause.AND;
-            whereClause.OR = searchKeywords.map(term => ({
+            delete whereClause.OR;
+
+            // Generate character-level splits and very loose ORs.
+            const megaLooseOrs = searchKeywords.map(term => ({
                 OR: [
                     { title: { contains: term, mode: "insensitive" as const } },
                     { description: { contains: term, mode: "insensitive" as const } },
                     { extraData: { contains: term, mode: "insensitive" as const } },
+                    { category: { contains: term, mode: "insensitive" as const } }
                 ]
             }));
 
-            listings = await prismadb.marketplaceListing.findMany({
+            // Step 1: At least ONE keyword MUST match anywhere in the document
+            whereClause.OR = megaLooseOrs;
+
+            let fallbackListings = await prismadb.marketplaceListing.findMany({
                 where: whereClause,
                 include: {
                     seller: {
-                        select: { firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
+                        select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
                     }
                 },
-                take: 60,
+                take: 100, // pull more to rank them below
                 orderBy: { createdAt: "desc" }
             });
+
+            // Step 2: Rank the fallback listings by how many keywords they matched
+            if (fallbackListings.length > 0) {
+                fallbackListings = fallbackListings.map(listing => {
+                    let score = 0;
+                    const combinedText = `${listing.title} ${listing.description} ${listing.extraData} ${listing.category}`.toLowerCase();
+                    searchKeywords.forEach(term => {
+                        const termLower = term.toLowerCase();
+                        if (combinedText.includes(termLower)) score += 2;
+                        
+                        // Ultra-fuzzy: partial character matches for very bad typos (e.g. "כביسה")
+                        if (termLower.length > 3) {
+                            const sub = termLower.substring(0, termLower.length - 1);
+                            if (combinedText.includes(sub)) score += 1;
+                        }
+                    });
+                    return { ...listing, matchScore: score, isSuggestion: true };
+                })
+                .filter(l => l.matchScore > 0) // Ensure at least partial relevance
+                .sort((a, b) => b.matchScore - a.matchScore) // Highest score first
+                .slice(0, 60); // Cap at 60 results
+                
+                if (fallbackListings.length > 0) {
+                    listings = fallbackListings;
+                    isFallback = true;
+                }
+            }
         }
 
         // 5. Precise Distance Calculation & Sorting
@@ -144,7 +262,8 @@ export async function POST(req: Request) {
             success: true, 
             results: finalResults,
             total: finalResults.length,
-            aiFilters
+            aiFilters,
+            isFallback
         });
 
     } catch (error) {

@@ -419,6 +419,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
                 }));
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cbSpec["לוח אם - דגם"]]);
 
     // active database for dynamic references

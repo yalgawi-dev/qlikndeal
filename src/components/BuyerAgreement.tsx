@@ -34,6 +34,8 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
         street: "",
         needsDelivery: false
     });
+
+    const [agreementChecked, setAgreementChecked] = useState(false);
     const [payer, setPayer] = useState<'buyer' | 'seller'>('buyer'); // Default to buyer pays
 
 
@@ -45,6 +47,7 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
     const lastOfferBy = flexibleData.lastOfferBy || 'buyer';
     const isPriceAgreed = negotiationStatus === 'agreed';
     const isSellerFinalized = flexibleData.sellerApprovedAt;
+    const offers = flexibleData.offers || [];
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setGuestDetails({ ...guestDetails, [e.target.name]: e.target.value });
@@ -107,20 +110,21 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
                 lastOfferBy={lastOfferBy}
                 currentUserRole="buyer"
                 isGuest={needsIdentification} // Pass combined flag
+                offers={offers}
             />
         );
     }
 
     if (isPriceAgreed && !isSellerFinalized) {
         return (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center animate-pulse">
-                <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-600">
+            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 text-center animate-pulse shadow-inner">
+                <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
                     <Clock className="w-8 h-8 animate-spin-slow" />
                 </div>
-                <h3 className="font-bold text-lg text-amber-900 mb-2">ממתין לאישור המוכר...</h3>
-                <p className="text-amber-800 text-sm mb-4">
-                    המחיר סוכם! כעת המוכר מזין את פרטי החבילה הסופיים.<br />
-                    העמוד יתעדכן אוטומטית ברגע שהמוכר יסיים.
+                <h3 className="font-bold text-lg text-foreground mb-2">ממתין לחתימת המוכר...</h3>
+                <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+                    המחיר סוכם! כעת המוכר מאשר את טיוטת העסקה מצידו.<br />
+                    העמוד יתעדכן אוטומטית ברגע שהמוכר יחתום ותוכל להתקדם.
                 </p>
             </div>
         );
@@ -128,13 +132,41 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
 
     // Original Flow (Ready to Pay)
     return (
-        <>
+        <div className="space-y-6 animate-in slide-in-from-bottom-4 fade-in duration-500">
+            {/* Contract Box for Buyer */}
+            <div className="border border-border rounded-3xl overflow-hidden bg-card shadow-sm">
+                <div className="bg-muted p-4 border-b border-border flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-foreground" />
+                    <h4 className="font-bold text-foreground">הסכם סחר מוגן מקדמי</h4>
+                </div>
+                <div className="p-6">
+                    <div className="bg-background/50 rounded-2xl border border-dashed p-6 text-center mb-6">
+                        <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+                            המוכר חתם על ההסכם! מסמך ההסכם המלא ייכתב בשלב הבא של הפיתוח. בעתיד תוכלו לראות פה חוזה מפורט המגן על כללי העסקה.
+                        </p>
+                    </div>
+                    
+                    {/* Agreement Checkbox */}
+                    <label className="flex items-start gap-4 cursor-pointer p-5 bg-background border border-border/60 hover:border-primary/50 hover:bg-primary/5 rounded-2xl transition-all shadow-sm group">
+                        <input
+                            type="checkbox"
+                            checked={agreementChecked}
+                            onChange={e => setAgreementChecked(e.target.checked)}
+                            className="mt-1 rounded-md border-primary text-primary focus:ring-primary h-6 w-6 shrink-0 transition-transform group-active:scale-95 cursor-pointer"
+                        />
+                        <span className="text-sm font-medium leading-relaxed text-foreground cursor-pointer">
+                            אני מאשר שהמחיר לעסקה הוא <strong className="text-primary text-base">₪{details.value}</strong> ושאני מסכים לטיוטת ההסכם לקניית המוצר.
+                        </span>
+                    </label>
+                </div>
+            </div>
+
             <Button
                 onClick={() => setIsOpen(true)}
-                size="lg"
-                className="w-full text-lg h-12 font-bold shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all"
+                disabled={!agreementChecked}
+                className="w-full font-bold h-14 text-base shadow-lg shadow-primary/20 rounded-2xl bg-gradient-to-l from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-primary-foreground transform transition-all active:scale-[0.98]"
             >
-                {"אני מאשר ורוצה להמשיך"} <ArrowLeft className="mr-2 h-5 w-5" />
+                {"חתום על ההסכם והתקדם לתשלום 💳"} <ArrowLeft className="mr-2 h-5 w-5" />
             </Button>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -261,6 +293,6 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
 
                 </DialogContent>
             </Dialog>
-        </>
+        </div>
     );
 }

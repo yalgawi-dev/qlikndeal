@@ -16,6 +16,7 @@ export default function MarketplacePage() {
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [isFallback, setIsFallback] = useState(false);
     
     // Search State
     const [searchInput, setSearchInput] = useState("");
@@ -118,6 +119,7 @@ export default function MarketplacePage() {
             const data = await res.json();
             if (data.success) {
                 setListings(data.results || []);
+                setIsFallback(data.isFallback || false);
             }
         } catch (error) {
             console.error("Search failed:", error);
@@ -140,6 +142,7 @@ export default function MarketplacePage() {
                 const data = await res.json();
                 if (data.success && isMounted) {
                     setListings(data.results || []);
+                    setIsFallback(data.isFallback || false);
                 }
             } catch (error) {
                 console.error("Initial search failed:", error);
@@ -446,38 +449,73 @@ export default function MarketplacePage() {
                         ))}
                     </div>
                 ) : listings.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {listings.map(listing => (
-                            <div key={listing.id} className="relative">
-                                {/* Distance Badge if available */}
-                                {listing.distanceKm !== undefined && listing.distanceKm !== null && (
-                                    <div className="absolute top-4 left-4 z-10 bg-black/70 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">
-                                        <MapPin className="w-3 h-3 text-purple-400" />
-                                        {listing.distanceKm < 1 ? "קרוב אליך (<1 ק״מ)" : `${Math.round(listing.distanceKm)} ק״מ ממך`}
-                                    </div>
-                                )}
-                                <ListingCard listing={listing} />
+                    <div className="space-y-6">
+                        {isFallback && searchInput.trim().length > 0 && (
+                            <div className="bg-purple-900/20 border border-purple-500/30 rounded-2xl p-6 text-center animate-in fade-in zoom-in duration-500">
+                                <Sparkles className="w-8 h-8 text-purple-400 mx-auto mb-3" />
+                                <h3 className="text-xl font-bold text-white mb-2">לא מצאנו בדיוק את מה שחיפשת...</h3>
+                                <p className="text-purple-200 mb-4">אבל ה-AI שלנו מצא <strong>הצעות דומות</strong> שאולי יעניינו אותך!</p>
+                                
+                                <div className="p-4 bg-gray-900/50 rounded-xl max-w-lg mx-auto border border-gray-800">
+                                    <p className="text-gray-300 text-sm mb-3">לא מוותר? רוצה שנודיע לך כשבדיוק מה שאתה מחפש יפורסם?</p>
+                                    <Button 
+                                        className="bg-purple-600 hover:bg-purple-700 text-white w-full shadow-lg shadow-purple-900/50"
+                                        onClick={() => {
+                                            router.push(`/dashboard/marketplace/my-requests?query=${encodeURIComponent(searchInput)}`);
+                                        }}
+                                    >
+                                        <Search className="w-4 h-4 ml-2" />
+                                        פתח מודעת "דרוש מוצר" בחינם
+                                    </Button>
+                                </div>
                             </div>
-                        ))}
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {listings.map(listing => (
+                                <div key={listing.id} className="relative">
+                                    {/* Distance Badge if available */}
+                                    {listing.distanceKm !== undefined && listing.distanceKm !== null && (
+                                        <div className="absolute top-4 left-4 z-10 bg-black/70 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">
+                                            <MapPin className="w-3 h-3 text-purple-400" />
+                                            {listing.distanceKm < 1 ? "קרוב אליך (<1 ק״מ)" : `${Math.round(listing.distanceKm)} ק״מ ממך`}
+                                        </div>
+                                    )}
+                                    <ListingCard listing={listing} />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ) : (
                     <div className="text-center py-20 bg-gray-900/20 rounded-3xl border border-dashed border-gray-800">
                         <div className="text-6xl mb-4">🏜️</div>
                         <h3 className="text-2xl font-bold text-gray-400">לא מצאנו תוצאות מתאימות</h3>
-                        <p className="text-gray-500 mt-2">נסה לחפש במילים אחרות או לשנות את מרחק החיפוש.</p>
-                        <Button 
-                            variant="outline" 
-                            className="mt-6 border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
-                            onClick={() => {
-                                setSearchInput("");
-                                setLat(null);
-                                setLng(null);
-                                setLocationName("");
-                                fetchSmartSearch();
-                            }}
-                        >
-                            נקה את כל הסינונים
-                        </Button>
+                        <p className="text-gray-500 mt-2 mb-6">אין במערכת שום דבר שאפילו קרוב למה שחיפשת.</p>
+                        
+                        <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+                            <Button 
+                                variant="outline" 
+                                className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 h-12"
+                                onClick={() => {
+                                    setSearchInput("");
+                                    setLat(null);
+                                    setLng(null);
+                                    setLocationName("");
+                                    fetchSmartSearch();
+                                }}
+                            >
+                                نקה את כל הסינונים
+                            </Button>
+                            
+                            <Button 
+                                className="bg-purple-600 hover:bg-purple-700 text-white h-12 shadow-lg shadow-purple-900/50"
+                                onClick={() => {
+                                    router.push(`/dashboard/marketplace/my-requests?query=${encodeURIComponent(searchInput)}`);
+                                }}
+                            >
+                                <Search className="w-4 h-4 ml-2" />
+                                פתח מודעת "דרוש מוצר"
+                            </Button>
+                        </div>
                     </div>
                 )}
             </div>

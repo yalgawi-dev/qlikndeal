@@ -16,6 +16,8 @@ export const metadata: Metadata = {
 };
 
 import { ClerkProvider } from '@clerk/nextjs';
+import { Toaster } from 'sonner';
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -31,6 +33,7 @@ export default function RootLayout({
                 </head>
                 <body className="min-h-screen bg-background font-sans antialiased selection:bg-primary selection:text-white">
                     {children}
+                    <Toaster richColors position="bottom-right" />
                 </body>
             </html>
         </ClerkProvider>

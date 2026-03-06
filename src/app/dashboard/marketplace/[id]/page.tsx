@@ -11,6 +11,9 @@ import { MessageCircle, ShoppingBag, ArrowRight, MapPin, Calendar, Truck, Shield
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
+import { toast } from "sonner";
+import { ShareModal } from "@/components/marketplace/ShareModal";
+import { useUser } from "@clerk/nextjs";
 
 export default function ListingPage() {
     const params = useParams();
@@ -19,6 +22,10 @@ export default function ListingPage() {
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [creatingShipment, setCreatingShipment] = useState(false);
+    const [shareModalOpen, setShareModalOpen] = useState(false);
+    
+    const { user, isLoaded } = useUser();
+    const isOwner = isLoaded && user && listing?.seller?.clerkId === user.id;
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -61,6 +68,10 @@ export default function ListingPage() {
         } finally {
             setCreatingShipment(false);
         }
+    };
+
+    const handleShareClick = () => {
+        setShareModalOpen(true);
     };
 
     if (loading) {
@@ -191,7 +202,7 @@ export default function ListingPage() {
                                     <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-800 text-gray-400 hover:text-red-500">
                                         <Heart className="w-6 h-6" />
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-800 text-gray-400 hover:text-blue-500">
+                                    <Button variant="ghost" size="icon" onClick={handleShareClick} className="rounded-full hover:bg-gray-800 text-gray-400 hover:text-blue-500">
                                         <Share2 className="w-6 h-6" />
                                     </Button>
                                 </div>
@@ -199,13 +210,22 @@ export default function ListingPage() {
 
                             {/* Action Buttons */}
                             <div className="space-y-3 pt-2">
-                                <Button
-                                    onClick={handleBuyNow}
-                                    disabled={creatingShipment}
-                                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold h-14 text-lg rounded-xl shadow-lg shadow-purple-900/20"
-                                >
-                                    {creatingShipment ? "מעבד נתונים..." : "קנה בטוח עכשיו 🛡️"}
-                                </Button>
+                                {isOwner ? (
+                                    <Button
+                                        onClick={() => router.push(`/dashboard/marketplace/my-listings`)}
+                                        className="w-full bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-bold h-14 text-lg rounded-xl shadow-lg border border-slate-600"
+                                    >
+                                        צפה במודעות שלי ובבקשות 📊
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={handleBuyNow}
+                                        disabled={creatingShipment}
+                                        className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-bold h-14 text-lg rounded-xl shadow-lg shadow-emerald-900/20"
+                                    >
+                                        {creatingShipment ? "פותח זירה..." : "לפתיחת זירת סחר ומשא ומתן 🤝"}
+                                    </Button>
+                                )}
                                 <Button variant="outline" className="w-full border-gray-700 hover:bg-gray-800 h-12 text-gray-300">
                                     <MessageCircle className="w-4 h-4 ml-2" /> שלח הודעה למוכר
                                 </Button>
@@ -314,6 +334,16 @@ export default function ListingPage() {
                     </div>
                 </div>
             </div>
+
+            {listing && (
+                <ShareModal
+                    isOpen={shareModalOpen}
+                    onClose={() => setShareModalOpen(false)}
+                    url={typeof window !== "undefined" ? window.location.href : ""}
+                    title={`Qlikndeal - ${listing.title}`}
+                    text={`כנסו לראות את ${listing.title} ב-Qlikndeal! המקום הבטוח לקנות ולמכור.`}
+                />
+            )}
         </div>
     );
 }

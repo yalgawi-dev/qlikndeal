@@ -6,6 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { User, ShoppingBag, MessageCircle, Edit, Trash2, Loader2 } from "lucide-react";
 import { createShipmentFromListing } from "@/app/actions/marketplace";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 interface ListingCardProps {
     listing: any;
@@ -18,7 +19,10 @@ interface ListingCardProps {
 
 export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete, isDeleting }: ListingCardProps) {
     const router = useRouter();
+    const { user, isLoaded } = useUser();
     const [loading, setLoading] = useState(false);
+
+    const actualIsOwner = isOwner || (isLoaded && user && listing?.seller?.clerkId === user.id);
 
     const handleBuyNow = async () => {
         setLoading(true);
@@ -172,6 +176,16 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                     >
                         צפה בפייסבוק 🌐
                     </Button>
+                ) : actualIsOwner ? (
+                    <Button
+                        onClick={(e) => {
+                            e.stopPropagation(); 
+                            router.push(`/dashboard/marketplace/my-listings`);
+                        }}
+                        className="flex-1 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-bold border-0 shadow-md"
+                    >
+                        צפה במודעות שלי ובבקשות 📊
+                    </Button>
                 ) : (
                     <Button
                         onClick={(e) => {
@@ -179,9 +193,9 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                             handleBuyNow();
                         }}
                         disabled={loading}
-                        className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold border-0"
+                        className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-bold border-0 shadow-md shadow-teal-900/20"
                     >
-                        {loading ? "יוצר לינק..." : "קנה בטוח 🛡️"}
+                        {loading ? "פותח זירה..." : "לפתיחת זירת סחר ומשא ומתן 🤝"}
                     </Button>
                 )}
                 

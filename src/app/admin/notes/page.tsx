@@ -1,6 +1,8 @@
 import { getAdminNotes } from "../collaboration-actions";
 import AdminNotesClient from "./AdminNotesClient";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminNotesPage() {
     const notes = await getAdminNotes();
 

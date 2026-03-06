@@ -95,6 +95,7 @@ export async function getListings() {
             include: {
                 seller: {
                     select: {
+                        clerkId: true,
                         firstName: true,
                         lastName: true,
                         imageUrl: true,
@@ -162,6 +163,7 @@ export async function getListingById(id: string) {
                 seller: {
                     select: {
                         id: true,
+                        clerkId: true,
                         firstName: true,
                         lastName: true,
                         imageUrl: true,
@@ -197,7 +199,21 @@ export async function getMyListings() {
                 sellerId: dbUser.id,
                 status: { not: "ARCHIVED" } // Show ACTIVE and SOLD
             },
-            include: { seller: true },
+            include: { 
+                seller: true,
+                shipments: {
+                    where: {
+                        status: { notIn: ["CANCELLED", "DRAFT"] }
+                    },
+                    orderBy: {
+                        updatedAt: "desc"
+                    },
+                    include: {
+                        buyer: true,
+                        details: true
+                    }
+                }
+            },
             orderBy: { createdAt: "desc" }
         });
 

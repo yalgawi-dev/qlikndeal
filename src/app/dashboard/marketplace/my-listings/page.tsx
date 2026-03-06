@@ -8,9 +8,10 @@ import { ListingForm } from "@/components/marketplace/ListingForm";
 import { ComputerListingForm } from "@/components/marketplace/ComputerListingForm";
 import { MobileListingForm } from "@/components/marketplace/MobileListingForm";
 import { getMyListings, deleteListing } from "@/app/actions/marketplace";
-import { Loader2, Plus, ArrowRight, ArrowLeft, Pencil, Trash2, ShoppingBag, Tag } from "lucide-react";
+import { Loader2, Plus, ArrowRight, ArrowLeft, Pencil, Trash2, ShoppingBag, Tag, Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ShareModal } from "@/components/marketplace/ShareModal";
 
 // Parse listing data safely for use in edit forms
 function prepareInitialData(listing: any) {
@@ -51,6 +52,9 @@ export default function MyListingsPage() {
     const [editingListing, setEditingListing] = useState<any>(null);
     const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
+    const [shareModalOpen, setShareModalOpen] = useState(false);
+    const [shareData, setShareData] = useState({ url: "", title: "" });
+
     const fetchMyListings = async () => {
         setLoading(true);
         const res = await getMyListings();
@@ -79,6 +83,14 @@ export default function MyListingsPage() {
             toast.error("שגיאה במחיקת המודעה");
         }
         setIsDeleting(null);
+    };
+
+    const handleShareClick = (id: string, title: string) => {
+        setShareData({
+            url: `${window.location.origin}/dashboard/marketplace/${id}`,
+            title
+        });
+        setShareModalOpen(true);
     };
 
     const handleEditComplete = () => {
@@ -265,10 +277,60 @@ export default function MyListingsPage() {
                                                 )}
                                                 מחק
                                             </button>
+                                            <button
+                                                onClick={() => handleShareClick(listing.id, listing.title)}
+                                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-xl hover:bg-purple-500/20 transition-colors"
+                                            >
+                                                <Share2 className="w-4 h-4" />
+                                                שתף לינק
+                                            </button>
                                             <span className="text-xs text-gray-600 mr-auto">
                                                 {new Date(listing.createdAt).toLocaleDateString("he-IL")}
                                             </span>
                                         </div>
+
+                                        {/* Offers Display */}
+                                        {listing.shipments && listing.shipments.length > 0 && (
+                                            <div className="mt-4 border-t border-white/10 pt-4" dir="rtl">
+                                                <h4 className="text-sm font-bold text-gray-300 mb-2 flex items-center gap-2">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                                    הצעות פעילות ({listing.shipments.length})
+                                                </h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {listing.shipments.map((shipment: any) => {
+                                                        const buyerName = shipment.buyer?.firstName || "קונה נסתר";
+                                                        // Attempt to find latest offer
+                                                        let latestOffer = null;
+                                                        try {
+                                                            const flex = JSON.parse(shipment.details?.flexibleData || "{}");
+                                                            if (flex.offers && flex.offers.length > 1) { // 1 means only starting price
+                                                                latestOffer = flex.offers[flex.offers.length - 1].amount;
+                                                            }
+                                                        } catch (e) {}
+
+                                                        return (
+                                                            <button
+                                                                key={shipment.id}
+                                                                onClick={() => router.push(`/link/${shipment.shortId}`)}
+                                                                className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 rounded-xl p-2 pr-3 pl-4 text-right transition-all flex items-center gap-3 group shadow-sm"
+                                                            >
+                                                                <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shadow-inner group-hover:scale-110 transition-transform">
+                                                                    {buyerName.charAt(0)}
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-sm font-bold text-white leading-tight">{buyerName}</span>
+                                                                    {latestOffer ? (
+                                                                        <span className="text-xs font-bold text-emerald-400">הצעה: ₪{latestOffer}</span>
+                                                                    ) : (
+                                                                        <span className="text-xs text-gray-400">טרם הציע נגדית</span>
+                                                                    )}
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             );
@@ -276,6 +338,14 @@ export default function MyListingsPage() {
                     </div>
                 )}
             </div>
+            
+            <ShareModal
+                isOpen={shareModalOpen}
+                onClose={() => setShareModalOpen(false)}
+                url={shareData.url}
+                title={`Qlikndeal - ${shareData.title}`}
+                text={`כנסו לראות את ${shareData.title} ב-Qlikndeal! המקום הבטוח לקנות ולמכור.`}
+            />
         </div>
     );
 }
