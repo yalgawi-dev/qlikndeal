@@ -302,7 +302,10 @@ export async function POST(req: Request) {
                     similarWhere.AND = [
                         ...(similarWhere.AND || []),
                         ...detectedSegment.forbiddenWords.map(word => ({
-                            title: { not: { contains: word, mode: "insensitive" as const } }
+                            title: { 
+                                not: { contains: word },
+                                mode: "insensitive" as const
+                            }
                         }))
                     ];
                 }
