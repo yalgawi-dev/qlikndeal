@@ -17,6 +17,63 @@ interface ListingCardProps {
     isDeleting?: boolean;
 }
 
+
+// Map English/mixed category values → Hebrew display labels (null = hide the badge)
+const CATEGORY_HE: Record<string, string | null> = {
+    // Computers
+    "computers": "מחשבים",
+    "laptop": "מחשב נייד",
+    "desktop": "מחשב שולחני",
+    "מחשב נייד": "מחשב נייד",
+    "מחשב נייח": "מחשב שולחני",
+    "מחשבים": "מחשבים",
+    // Phones
+    "phones": "סלולרי",
+    "mobile": "סלולרי",
+    "סלולרי": "סלולרי",
+    "פלאפלים": "סלולרי",
+    // Electronics
+    "electronics": "אלקטרוניקה",
+    "audio": "שמע ואוזניות",
+    "tv": "טלוויזיות",
+    "gaming": "גיימינג",
+    "אלקטרוניקה": "אלקטרוניקה",
+    "גיימינג": "גיימינג",
+    "טלוויזיות": "טלוויזיות",
+    // Cars
+    "cars": "רכבים",
+    "car": "רכבים",
+    "רכבים": "רכבים",
+    "רכב": "רכבים",
+    // Home & Furniture
+    "furniture": "ריהוט",
+    "home": "בית",
+    "appliances": "מוצרי חשמל",
+    "חשמל": "מוצרי חשמל",
+    "ריהוט": "ריהוט",
+    "בית": "בית",
+    // Real Estate
+    "real estate": "נדלן",
+    "נדלן": "נדלן",
+    "דירות": "נדלן",
+    // Fashion
+    "fashion": "אופנה",
+    "אופנה": "אופנה",
+    // General
+    "general": null, // hide "General"
+    "כללי": null,    // hide "כללי"
+};
+
+function translateCategory(cat: string | null | undefined): string | null {
+    if (!cat) return null;
+    const lower = cat.toLowerCase().trim();
+    if (lower in CATEGORY_HE) return CATEGORY_HE[lower];
+    // Check if value exists in map directly (Hebrew keys)
+    if (cat in CATEGORY_HE) return CATEGORY_HE[cat];
+    // Return as-is if not in map (already Hebrew or unknown)
+    return cat;
+}
+
 export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete, isDeleting }: ListingCardProps) {
     const router = useRouter();
     const { user, isLoaded } = useUser();
@@ -90,11 +147,14 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                            פייסבוק 🌐
                         </div>
                     )}
-                    {listing.category && listing.category !== "General" && (
-                        <div className="bg-purple-600/80 backdrop-blur-md border border-purple-400/30 text-white px-2 py-1 rounded text-xs">
-                            {listing.category}
-                        </div>
-                    )}
+                    {(() => {
+                        const displayCat = translateCategory(listing.category);
+                        return displayCat ? (
+                            <div className="bg-purple-600/80 backdrop-blur-md border border-purple-400/30 text-white px-2 py-1 rounded text-xs">
+                                {displayCat}
+                            </div>
+                        ) : null;
+                    })()}
                 </div>
 
                 {/* Owner Controls */}
