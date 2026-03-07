@@ -40,10 +40,34 @@ function MyRequestsContent() {
     // Form State
     const [showForm, setShowForm] = useState(!!initialQuery);
     const [submitting, setSubmitting] = useState(false);
+    const [editId, setEditId] = useState<string | null>(null);
     const [query, setQuery] = useState(initialQuery);
     const [budget, setBudget] = useState("");
     const [category, setCategory] = useState("");
     const [details, setDetails] = useState("");
+
+    const resetForm = () => {
+        setQuery("");
+        setBudget("");
+        setCategory("");
+        setDetails("");
+        setEditId(null);
+        setShowForm(false);
+    };
+
+    const handleEdit = (req: any) => {
+        setEditId(req.id);
+        setQuery(req.query);
+        try {
+            const extra = JSON.parse(req.extraData || "{}");
+            setBudget(extra.budget ? String(extra.budget) : "");
+            setCategory(extra.category !== "General" ? extra.category : "");
+            setDetails(extra.details || "");
+        } catch(e) {}
+        setShowForm(true);
+        // Scroll to form (optional UX improvement)
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
     const fetchRequests = async () => {
         try {
@@ -71,8 +95,11 @@ function MyRequestsContent() {
 
         setSubmitting(true);
         try {
-            const res = await fetch("/api/marketplace/request", {
-                method: "POST",
+            const url = editId ? `/api/marketplace/request/${editId}` : "/api/marketplace/request";
+            const method = editId ? "PUT" : "POST";
+            
+            const res = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     query,
@@ -85,12 +112,8 @@ function MyRequestsContent() {
             });
 
             if (res.ok) {
-                toast.success("הבקשה נרשמה בהצלחה! נודיע לך כשיימצא המוצר");
-                setShowForm(false);
-                setQuery("");
-                setBudget("");
-                setCategory("");
-                setDetails("");
+                toast.success(editId ? "הבקשה עודכנה בהצלחה!" : "הבקשה נרשמה בהצלחה! נודיע לך כשיימצא המוצר");
+                resetForm();
                 fetchRequests();
             } else {
                 toast.error("חיבור נכשל, נסה שוב");
@@ -150,8 +173,8 @@ function MyRequestsContent() {
                                         <BellRing className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-bold">בקשה חדשה לראדאר</h2>
-                                        <p className="text-sm text-gray-400">נשמח לכמה שיותר פרטים כדי לדייק את ההתראה.</p>
+                                        <h2 className="text-xl font-bold">{editId ? "עדכון בקשת ראדאר" : "בקשה חדשה לראדאר"}</h2>
+                                        <p className="text-sm text-gray-400">{editId ? "עדכן את פרטי החיפוש עבור בקשה זו." : "נשמח לכמה שיותר פרטים כדי לדייק את ההתראה."}</p>
                                     </div>
                                 </div>
 
@@ -207,7 +230,7 @@ function MyRequestsContent() {
                                         <Button 
                                             type="button" 
                                             variant="ghost" 
-                                            onClick={() => setShowForm(false)}
+                                            onClick={resetForm}
                                             className="text-gray-400 hover:text-white"
                                         >
                                             ביטול
@@ -217,7 +240,7 @@ function MyRequestsContent() {
                                             disabled={submitting}
                                             className="bg-purple-600 hover:bg-purple-700 text-white min-w-[120px]"
                                         >
-                                            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "הפעל ראדאר 🎯"}
+                                            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : (editId ? "שמור שינויים" : "הפעל ראדאר 🎯")}
                                         </Button>
                                     </div>
                                 </form>
@@ -265,6 +288,7 @@ function MyRequestsContent() {
                                     <BuyerRequestCard 
                                         key={req.id} 
                                         request={req} 
+                                        onEdit={handleEdit}
                                         onDelete={handleDelete}
                                     />
                                 ))}

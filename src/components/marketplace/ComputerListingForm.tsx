@@ -283,6 +283,7 @@ export function ComputerListingForm({ onComplete, onCancel, initialData, isEditi
     const [dynamicFamilies, setDynamicFamilies] = useState<string[]>([]);
     const [dynamicModels, setDynamicModels] = useState<any[]>([]);
     const [fetchingDynamic, setFetchingDynamic] = useState(false);
+    const [customFields, setCustomFields] = useState({ brand: false, family: false, subModel: false });
 
     // Normalize extraData: DB stores it as array [{key,value}], form expects object {key: value}
     const normalizeExtraData = (raw: any): Record<string, string> => {
@@ -1165,23 +1166,31 @@ const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSub
                                                         disabled={fetchingBrands}
                                                         placeholder={fetchingBrands ? "טוען מותגים..." : "בחר יצרן..."}
                                                         options={[...dbBrands, "אחר / לא ברשימה"]}
-                                                        value={spec.brand}
+                                                        value={customFields.brand ? "אחר / לא ברשימה" : spec.brand}
                                                         onChange={v => {
+                                                            if (v === "אחר / לא ברשימה") {
+                                                                setCustomFields(p => ({ ...p, brand: true }));
+                                                                setSpec(s => ({ ...s, brand: "", family: "", subModel: "", sku: "" }));
+                                                                return;
+                                                            }
                                                             // Clear family and submodel when brand changes to prevent invalid state
+                                                            setCustomFields(p => ({ ...p, brand: false }));
                                                             setSpec(s => ({ ...s, brand: v, family: "", subModel: "", sku: "" }));
                                                         }}
                                                     />
                                                      <SpecSelector
                                                          label="סדרה (Family)"
                                                          options={[...dynamicFamilies, "אחר / לא ברשימה"]}
-                                                         value={spec.family}
+                                                         value={customFields.family ? "אחר / לא ברשימה" : spec.family}
                                                          disabled={fetchingDynamic}
                                                          placeholder={fetchingDynamic ? "טוען סדרות..." : "בחר סדרה..."}
                                                          onChange={v => {
                                                              if (v === "אחר / לא ברשימה") {
-                                                                 setSpec(s => ({ ...s, family: v, subModel: "", sku: "" }));
+                                                                 setCustomFields(p => ({ ...p, family: true }));
+                                                                 setSpec(s => ({ ...s, family: "", subModel: "", sku: "" }));
                                                                  return;
                                                              }
+                                                             setCustomFields(p => ({ ...p, family: false }));
                                                              // Clear submodel when family changes
                                                              setSpec(s => ({ ...s, family: v, subModel: "", sku: "" }));
                                                              // If we chose a family that has a known brand, and brand is empty, fill it
@@ -1210,32 +1219,40 @@ const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSub
                                                             ...dynamicModels.map(m => m.sku ? `${m.name} (מק"ט: ${m.sku})` : m.name).sort(),
                                                             "אחר / לא ברשימה"
                                                         ]}
-                                                        value={spec.subModel}
+                                                        value={customFields.subModel ? "אחר / לא ברשימה" : spec.subModel}
                                                         disabled={fetchingDynamic}
                                                         placeholder={fetchingDynamic ? "טוען דגמים..." : "בחר דגם..."}
-                                                        onChange={handleSubModelPick}
+                                                        onChange={v => {
+                                                            if (v === "אחר / לא ברשימה") {
+                                                                setCustomFields(p => ({ ...p, subModel: true }));
+                                                                setSpec(s => ({ ...s, subModel: "", sku: "" }));
+                                                                return;
+                                                            }
+                                                            setCustomFields(p => ({ ...p, subModel: false }));
+                                                            handleSubModelPick(v);
+                                                        }}
                                                     />
                                                 </div>
                                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    {spec.brand === "אחר / לא ברשימה" ? (
+                                                    {customFields.brand ? (
                                                         <Input
-                                                            value={spec.brand === "אחר / לא ברשימה" ? "" : spec.brand}
+                                                            value={spec.brand}
                                                             onChange={e => setSpec(s => ({ ...s, brand: e.target.value }))}
                                                             placeholder="הקלד שם יצרן..."
                                                             className="bg-gray-800 border-gray-700 mt-2"
                                                         />
                                                     ) : <div />}
-                                                    {spec.family === "אחר / לא ברשימה" ? (
+                                                    {customFields.family ? (
                                                         <Input
-                                                            value={spec.family === "אחר / לא ברשימה" ? "" : spec.family}
+                                                            value={spec.family}
                                                             onChange={e => setSpec(s => ({ ...s, family: e.target.value }))}
                                                             placeholder="הקלד שם סדרה..."
                                                             className="bg-gray-800 border-gray-700 mt-2"
                                                         />
                                                     ) : <div />}
-                                                    {spec.subModel === "אחר / לא ברשימה" ? (
+                                                    {customFields.subModel ? (
                                                         <Input
-                                                            value={spec.subModel === "אחר / לא ברשימה" ? "" : spec.subModel}
+                                                            value={spec.subModel}
                                                             onChange={e => setSpec(s => ({ ...s, subModel: e.target.value }))}
                                                             placeholder="הקלד את הדגם המלא ידנית..."
                                                             className="bg-gray-800 border-gray-700 mt-2"

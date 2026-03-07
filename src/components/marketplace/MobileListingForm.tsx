@@ -173,6 +173,7 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
     const [dynamicModels, setDynamicModels] = useState<any[]>([]);
     const [fetchingBrands, setFetchingBrands] = useState(false);
     const [fetchingDynamic, setFetchingDynamic] = useState(false);
+    const [isCustomModel, setIsCustomModel] = useState(false);
 
     const [spec, setSpec] = useState<MobileSpec>({
         brand: initialData?.extraData?.יצרן || "",
@@ -421,8 +422,14 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                                 <Label className="text-gray-300">דגם מלא</Label>
                                 <SearchableDropdown
                                     options={MODELS_FOR_LIST}
-                                    value={spec.model}
+                                    value={isCustomModel ? "אחר / לא ברשימה" : spec.model}
                                     onChange={async val => {
+                                        if (val === "אחר / לא ברשימה") {
+                                            setIsCustomModel(true);
+                                            setSpec(s => ({ ...s, model: "" }));
+                                            return;
+                                        }
+                                        setIsCustomModel(false);
                                         console.log("DEBUG: Mobile model selected:", val);
                                         let modelObj = dynamicModels.find(m => m.name === val);
                                         
@@ -474,10 +481,10 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                                     disabled={fetchingDynamic}
                                 />
                             </div>
-                            {spec.model === "אחר / לא ברשימה" && (
+                            {isCustomModel && (
                                 <div className="space-y-1.5 md:col-span-2">
                                     <Input
-                                        value={spec.model === "אחר / לא ברשימה" ? "" : spec.model}
+                                        value={spec.model}
                                         onChange={e => setSpec(s => ({ ...s, model: e.target.value }))}
                                         placeholder="הקלד את הדגם המלא ידנית..."
                                         className="bg-gray-800 border-gray-700"

@@ -325,7 +325,7 @@ function DashboardContent() {
                     <div className="space-y-8">
 
                         {/* 🌟 NEW: Quick Action Cards 🌟 */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Primary Action: Marketplace */}
                             <button
                                 onClick={() => router.push('/dashboard/marketplace')}
@@ -361,6 +361,18 @@ function DashboardContent() {
                                 </div>
                                 <h3 className="text-xl font-bold text-white mb-1">יצירת עסקה</h3>
                                 <p className="text-xs text-gray-500">שלח לינק ישיר לתשלום ומשלוח</p>
+                            </button>
+
+                            {/* Fourth Action: Radar Requests */}
+                            <button
+                                onClick={() => router.push('/dashboard/marketplace/my-requests')}
+                                className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl p-5 text-right transition-all group"
+                            >
+                                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <Search className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-1">סוכן חכם</h3>
+                                <p className="text-xs text-gray-500">ניהול בקשות חיפוש (ראדאר)</p>
                             </button>
                         </div>
 

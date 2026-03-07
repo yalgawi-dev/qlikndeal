@@ -1,13 +1,14 @@
-import { Trash2, Clock, CheckCircle, Search } from "lucide-react";
+import { Trash2, Clock, CheckCircle, Search, Edit2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 interface BuyerRequestCardProps {
     request: any;
     onDelete?: (id: string) => void;
+    onEdit?: (request: any) => void;
 }
 
-export function BuyerRequestCard({ request, onDelete }: BuyerRequestCardProps) {
+export function BuyerRequestCard({ request, onDelete, onEdit }: BuyerRequestCardProps) {
     const statusColor = request.status === 'ACTIVE' ? 'text-blue-400 bg-blue-400/10 border-blue-400/20' :
         request.status === 'FULFILLED' ? 'text-green-400 bg-green-400/10 border-green-400/20' :
             'text-gray-400 bg-gray-400/10 border-gray-400/20';
@@ -54,11 +55,18 @@ export function BuyerRequestCard({ request, onDelete }: BuyerRequestCardProps) {
                     </div>
                 </div>
 
-                {onDelete && (
-                    <Button variant="ghost" size="sm" onClick={() => onDelete(request.id)} className="text-gray-500 hover:text-red-400 hover:bg-red-400/10">
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
-                )}
+                <div className="flex flex-col sm:flex-row gap-2">
+                    {onEdit && (
+                        <Button variant="ghost" size="sm" onClick={() => onEdit(request)} className="text-gray-500 hover:text-blue-400 hover:bg-blue-400/10">
+                            <Edit2 className="w-4 h-4" />
+                        </Button>
+                    )}
+                    {onDelete && (
+                        <Button variant="ghost" size="sm" onClick={() => onDelete(request.id)} className="text-gray-500 hover:text-red-400 hover:bg-red-400/10">
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    )}
+                </div>
             </CardContent>
         </Card>
     );
