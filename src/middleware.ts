@@ -7,7 +7,14 @@ const isPublicRoute = createRouteMatcher([
     "/api/webhooks(.*)",
     "/api/user/set-city(.*)",
     "/link(.*)",
-    "/api/shadow-lead(.*)"
+    "/api/shadow-lead(.*)",
+    // Marketplace APIs - publicly accessible listing data
+    "/api/marketplace/smart-search(.*)",
+    "/api/marketplace/search(.*)",
+    "/api/marketplace/premium-search(.*)",
+    "/api/marketplace/request(.*)",
+    "/api/marketplace/my-requests(.*)",
+    "/api/marketplace/analyze(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
