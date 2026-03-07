@@ -1216,15 +1216,33 @@ const applySmartModelPick = (brand: string, familyName: string, sub: ComputerSub
                                                         onChange={handleSubModelPick}
                                                     />
                                                 </div>
-                                                {spec.subModel === "אחר / לא ברשימה" && (
-                                                    <Input
-                                                        value={spec.subModel === "אחר / לא ברשימה" ? "" : spec.subModel}
-                                                        onChange={e => setSpec(s => ({ ...s, subModel: e.target.value }))}
-                                                        placeholder="הקלד את הדגם המלא ידנית..."
-                                                        className="bg-gray-800 border-gray-700"
-                                                        dir="ltr"
-                                                    />
-                                                )}
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    {spec.brand === "אחר / לא ברשימה" ? (
+                                                        <Input
+                                                            value={spec.brand === "אחר / לא ברשימה" ? "" : spec.brand}
+                                                            onChange={e => setSpec(s => ({ ...s, brand: e.target.value }))}
+                                                            placeholder="הקלד שם יצרן..."
+                                                            className="bg-gray-800 border-gray-700 mt-2"
+                                                        />
+                                                    ) : <div />}
+                                                    {spec.family === "אחר / לא ברשימה" ? (
+                                                        <Input
+                                                            value={spec.family === "אחר / לא ברשימה" ? "" : spec.family}
+                                                            onChange={e => setSpec(s => ({ ...s, family: e.target.value }))}
+                                                            placeholder="הקלד שם סדרה..."
+                                                            className="bg-gray-800 border-gray-700 mt-2"
+                                                        />
+                                                    ) : <div />}
+                                                    {spec.subModel === "אחר / לא ברשימה" ? (
+                                                        <Input
+                                                            value={spec.subModel === "אחר / לא ברשימה" ? "" : spec.subModel}
+                                                            onChange={e => setSpec(s => ({ ...s, subModel: e.target.value }))}
+                                                            placeholder="הקלד את הדגם המלא ידנית..."
+                                                            className="bg-gray-800 border-gray-700 mt-2"
+                                                            dir="ltr"
+                                                        />
+                                                    ) : <div />}
+                                                </div>
                                             </div>
 
                                             {/* ==== SECTION: SPECS ==== */}

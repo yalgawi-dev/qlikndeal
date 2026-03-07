@@ -474,6 +474,17 @@ export function MobileListingForm({ onComplete, onCancel, initialData, isEditing
                                     disabled={fetchingDynamic}
                                 />
                             </div>
+                            {spec.model === "אחר / לא ברשימה" && (
+                                <div className="space-y-1.5 md:col-span-2">
+                                    <Input
+                                        value={spec.model === "אחר / לא ברשימה" ? "" : spec.model}
+                                        onChange={e => setSpec(s => ({ ...s, model: e.target.value }))}
+                                        placeholder="הקלד את הדגם המלא ידנית..."
+                                        className="bg-gray-800 border-gray-700"
+                                        dir="ltr"
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
 

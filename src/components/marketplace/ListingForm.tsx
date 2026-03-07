@@ -91,6 +91,43 @@ const COMPUTER_FIELDS = [
     { key: "החרגות", label: "החרגות (שריטות/נזקים)" },
 ];
 
+const VEHICLE_FIELDS = [
+    { key: "יצרן", label: "יצרן / מותג" },
+    { key: "דגם", label: "דגם" },
+    { key: "שנת ייצור", label: "שנת ייצור" },
+    { key: "יד", label: "יד" },
+    { key: "קילומטראז'", label: "קילומטראז' (ק\"מ)" },
+    { key: "סוג רכב", label: "סוג רכב (פרטי, מסחרי, רכב שטח...)" },
+    { key: "סוג מנוע", label: "סוג מנוע (בנזין, דיזל, חשמלי, היברידי)" },
+    { key: "תיבת הילוכים", label: "תיבת הילוכים (אוטומטית, ידנית)" },
+    { key: "נפח מנוע", label: "נפח מנוע (סמ\"ק)" },
+    { key: "כוחות סוס", label: "כוחות סוס (כ\"ס)" },
+    { key: "הערות נוספות", label: "הערות" },
+    { key: "החרגות", label: "נזקים / תקלות ידועות (השאר ריק אם תקין)" }
+];
+
+const ELECTRONICS_FIELDS = [
+    { key: "יצרן", label: "יצרן / מותג" },
+    { key: "דגם", label: "דגם / מספר דגם" },
+    { key: "קטגוריה", label: "סוג המוצר (טלוויזיה, אוזניות, קונסולה...)" },
+    { key: "מפרט", label: "מפרט טכני (לדוגמה: 4K, 55 אינץ', 500GB)" },
+    { key: "חיבורים", label: "חיבורים (HDMI, USB, אלחוטי)" },
+    { key: "שנת השקה", label: "שנת ייצור / קנייה" },
+    { key: "הערות נוספות", label: "הערות" },
+    { key: "החרגות", label: "נזקים / תקלות ידועות (השאר ריק אם תקין)" }
+];
+
+const APPLIANCE_FIELDS = [
+    { key: "יצרן", label: "יצרן / מותג" },
+    { key: "דגם", label: "דגם / מספר דגם" },
+    { key: "קטגוריה", label: "סוג המוצר (מקרר, מכונת כביסה, תנור...)" },
+    { key: "קיבולת", label: "קיבולת / נפח (למשל: 500 ליטר, 8 ק\"ג)" },
+    { key: "דירוג אנרגטי", label: "דירוג אנרגטי (A, B, C...)" },
+    { key: "שנת השקה", label: "שנת ייצור / קנייה" },
+    { key: "הערות נוספות", label: "הערות" },
+    { key: "החרגות", label: "נזקים / תקלות ידועות (השאר ריק אם תקין)" }
+];
+
 // Fields for custom build desktop
 const CUSTOM_BUILD_FIELDS = [
     { key: "מעבד", label: "מעבד (CPU)", dataKey: "cpu" as const },
@@ -1507,15 +1544,21 @@ export function ListingForm({ onComplete, onCancel, initialData, initialMagicTex
                                 </>
                             ) : (
                                 <>
-                                    {/* Standard fields for brand computers / phones */}
-                                    {(formData.category === "Phones" ? PHONE_FIELDS : COMPUTER_FIELDS).map(field => (
+                                    {/* Standard fields for brand computers / phones / vehicles / electronics / appliances */}
+                                    {(
+                                        formData.category === "Phones" ? PHONE_FIELDS :
+                                        formData.category === "Vehicles" ? VEHICLE_FIELDS :
+                                        formData.category === "Electronics" ? ELECTRONICS_FIELDS :
+                                        formData.category === "Appliances" ? APPLIANCE_FIELDS :
+                                        COMPUTER_FIELDS
+                                    ).map(field => (
                                         <div className="space-y-2" key={field.key}>
                                             <Label className={field.key === "החרגות" ? "text-orange-400" : ""}>{field.label}</Label>
                                             <Input
                                                 value={getExtraVal(field.key)}
                                                 onChange={e => handleExtraChange(field.key, e.target.value)}
-                                                placeholder={field.key === "החרגות" ? "השאר ריק אם תקין" : ""}
-                                                dir={/RAM|מעבד|GPU|מספר/.test(field.key) ? 'ltr' : 'rtl'}
+                                                placeholder={field.key === "החרגות" ? "השאר ריק אם תקין" : "אנא הזן ידנית (לדוגמה)..."}
+                                                dir={/RAM|מעבד|GPU|מספר|מפרט/.test(field.key) ? 'ltr' : 'rtl'}
                                                 className={`bg-gray-800 border-gray-700 ${field.key === "החרגות" ? "border-orange-500/30 text-orange-400 placeholder:text-gray-500" : ""}`}
                                             />
                                         </div>

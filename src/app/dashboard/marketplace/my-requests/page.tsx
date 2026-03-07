@@ -11,6 +11,24 @@ import { Search, BellRing, Sparkles, Loader2, Plus, ArrowRight } from "lucide-re
 import { toast } from "sonner";
 import Link from "next/link";
 
+// Categories array, sorted alphabetically to match the main search
+const CATEGORIES = [
+    "אוזניות ושמע",
+    "אופנועים וקטנועים",
+    "ביגוד ואופנה",
+    "טלוויזיות ומסכים",
+    "טאבלטים",
+    "מוצרי חשמל ביתיים",
+    "מחשבים ניידים",
+    "מחשבים שולחניים",
+    "מצלמות",
+    "נדל\"ן",
+    "קונסולות ומשחקים",
+    "ריהוט וצרכי בית",
+    "רכבים",
+    "טלפונים סלולריים"
+].sort();
+
 function MyRequestsContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -161,12 +179,17 @@ function MyRequestsContent() {
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-sm font-semibold text-gray-300">קטגוריה</label>
-                                            <Input 
-                                                placeholder="למשל: סלולר, רכב, ריהוט" 
+                                            <select 
                                                 value={category} 
                                                 onChange={e => setCategory(e.target.value)}
-                                                className="bg-black/50 border-gray-700 h-12 focus:ring-purple-500 rounded-xl"
-                                            />
+                                                className="w-full bg-black/50 border border-gray-700 h-12 focus:ring-purple-500 rounded-xl px-4 text-white appearance-none cursor-pointer"
+                                            >
+                                                <option value="" disabled>בחר קטגוריה מגזר...</option>
+                                                <option value="כללי">כללי / לא בטוח</option>
+                                                {CATEGORIES.map(cat => (
+                                                    <option key={cat} value={cat}>{cat}</option>
+                                                ))}
+                                            </select>
                                         </div>
                                     </div>
 

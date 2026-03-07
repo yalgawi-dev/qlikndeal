@@ -32,8 +32,27 @@ export default function MarketplacePage() {
     const [lng, setLng] = useState<number | null>(null);
     const [locationName, setLocationName] = useState("");
     const [radiusKm, setRadiusKm] = useState<number>(20);
+    const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [showFilters, setShowFilters] = useState(false);
     const [gettingLocation, setGettingLocation] = useState(false);
+
+    // Categories array, extracted and mapped for UI, sorted alphabetically
+    const CATEGORIES = [
+        "אוזניות ושמע",
+        "אופנועים וקטנועים",
+        "ביגוד ואופנה",
+        "טלוויזיות ומסכים",
+        "טאבלטים",
+        "מוצרי חשמל ביתיים",
+        "מחשבים ניידים",
+        "מחשבים שולחניים",
+        "מצלמות",
+        "נדל\"ן",
+        "קונסולות ומשחקים",
+        "ריהוט וצרכי בית",
+        "רכבים",
+        "טלפונים סלולריים"
+    ].sort();
 
     const { user } = useUser();
     const isAdmin = ["yalgawi@gmail.com", "darohadd@walla.com"].includes(
@@ -68,7 +87,8 @@ export default function MarketplacePage() {
                             query: val,
                             lat: lat,
                             lng: lng,
-                            radiusKm: (lat && lng) ? (radiusKm === 155 ? null : radiusKm) : null
+                            radiusKm: (lat && lng) ? (radiusKm === 155 ? null : radiusKm) : null,
+                            category: selectedCategory === "all" ? null : selectedCategory
                         })
                     });
                     const data = await res.json();
@@ -114,7 +134,8 @@ export default function MarketplacePage() {
                     query: searchInput,
                     lat: currentLat,
                     lng: currentLng,
-                    radiusKm: currentLat && currentLng ? (radiusKm === 155 ? null : radiusKm) : null
+                    radiusKm: currentLat && currentLng ? (radiusKm === 155 ? null : radiusKm) : null,
+                    category: selectedCategory === "all" ? null : selectedCategory
                 })
             });
             const data = await res.json();
@@ -341,14 +362,37 @@ export default function MarketplacePage() {
                         <Button type="button" variant="outline" onClick={() => setShowFilters(!showFilters)} className={`h-14 px-4 rounded-2xl border-gray-700 hover:bg-gray-800 ${showFilters ? 'bg-gray-800 text-purple-400 border-purple-500' : 'bg-gray-900'}`}>
                             <Filter className="w-5 h-5" />
                         </Button>
-                        <Button type="submit" disabled={loading} className="h-14 px-8 rounded-2xl bg-purple-600 hover:bg-purple-700 text-lg font-bold">
+                        <Button id="search-btn" type="submit" disabled={loading} className="h-14 px-8 rounded-2xl bg-purple-600 hover:bg-purple-700 text-lg font-bold">
                             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5 ml-2" />}
                             חפש
                         </Button>
                     </form>
 
                     {showFilters && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-800/30 rounded-2xl border border-gray-800/50 animate-in slide-in-from-top-2">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-gray-800/30 rounded-2xl border border-gray-800/50 animate-in slide-in-from-top-2">
+                            
+                            {/* Category Filter */}
+                            <div className="space-y-2 text-right" dir="rtl">
+                                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-purple-400" />
+                                    קטגוריה
+                                </label>
+                                <select
+                                    value={selectedCategory}
+                                    onChange={(e) => {
+                                        setSelectedCategory(e.target.value);
+                                        // Auto-trigger search when category changes
+                                        setTimeout(() => document.getElementById("search-btn")?.click(), 100);
+                                    }}
+                                    className="w-full h-11 bg-gray-900 border border-gray-700 rounded-xl px-4 text-white focus:ring-purple-500 focus:border-purple-500 appearance-none cursor-pointer"
+                                >
+                                    <option value="all">כל הקטגוריות</option>
+                                    {CATEGORIES.map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
+                            </div>
+
                             {/* Location Input */}
                             <div className="space-y-2 text-right" dir="rtl">
                                 <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
@@ -532,6 +576,7 @@ export default function MarketplacePage() {
                                     setLat(null);
                                     setLng(null);
                                     setLocationName("");
+                                    setSelectedCategory("all");
                                     fetchSmartSearch();
                                 }}
                             >
