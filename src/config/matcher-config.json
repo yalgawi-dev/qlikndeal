@@ -1,0 +1,35 @@
+{
+  "expertChangeStep": 0.1,
+  "extractionWeights": {
+    "modelName": 0.95,
+    "series": 0.8,
+    "hebrewAliases": 0.6,
+    "brand": 1.5,
+    "sku": 0.6,
+    "type": 0.4,
+    "make": 0.4,
+    "model": 0.2,
+    "category": 0.2,
+    "chipset": 0.5,
+    "price": 1.3,
+    "ram": 1,
+    "storage": 0.7,
+    "condition": 0.7,
+    "batteryPercent": 0.6,
+    "title": 0.6,
+    "subModel": 0.6,
+    "os": 0.6
+  },
+  "rankingWeights": {
+    "modelName": 0.95,
+    "series": 0.8,
+    "hebrewAliases": 0.6,
+    "brand": 0.2,
+    "sku": 0.6,
+    "type": 0.4,
+    "make": 0.4,
+    "model": 0.8,
+    "category": 0.2,
+    "chipset": 0.5
+  }
+}

@@ -65,7 +65,7 @@ export async function createShipment(formData: any) {
 
             // Determine Seller and Buyer IDs
             let sellerId = dbUser.id;
-            let buyerId = undefined;
+            let buyerId: string | null | undefined = undefined;
 
             if (isBuyerMode) {
                 // The logged in user is the BUYER
@@ -195,7 +195,7 @@ export async function finalizeShipment(shipmentId: string, guestDetails: any, pa
         // For simple MVP we just update the shipment with buyer info stored in JSON or a new User
         // Let's create a Guest User if needed
 
-        let buyerId = null;
+        let buyerId: string | null | undefined = null;
 
         // Try to find existing user by phone (if we had phone on User model as unique)
         // or just create a new Guest User

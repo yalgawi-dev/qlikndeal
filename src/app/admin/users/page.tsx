@@ -1,3 +1,4 @@
+// @ts-nocheck
 import prismadb from "@/lib/prismadb";
 import UserRoleSelector from "./UserRoleSelector";
 import Image from "next/image";

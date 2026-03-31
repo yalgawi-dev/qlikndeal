@@ -15,6 +15,7 @@ const isPublicRoute = createRouteMatcher([
     "/api/marketplace/request(.*)",
     "/api/marketplace/my-requests(.*)",
     "/api/marketplace/analyze(.*)",
+    "/api/marketplace/form-structure(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

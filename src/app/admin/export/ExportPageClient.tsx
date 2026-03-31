@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Laptop, Monitor, Tablet, Download, FileSpreadsheet, Loader2, Car, Settings, Tv, Package, Cpu, Database, RefreshCw, Clock, Check, User, TableProperties } from "lucide-react";
 import CatalogManagerModal from "./CatalogManagerModal";
 import type { CatalogType } from "../catalog-actions";
-import { 
-    exportComputersToCSV, 
-    exportPhonesToCSV, 
-    exportVehiclesToCSV, 
+import {
+    exportComputersToCSV,
+    exportPhonesToCSV,
+    exportVehiclesToCSV,
     exportCustomBuildsToCSV,
     exportElectronicsToCSV,
     exportAppliancesToCSV,
@@ -20,8 +20,8 @@ import {
     syncAio,
     getDatabaseStats
 } from "../export-actions";
-import { 
-    importLaptopsAction, 
+import {
+    importLaptopsAction,
     importDesktopsAction,
     importAioAction,
     importMobileAction,
@@ -30,14 +30,14 @@ import {
     importApplianceAction,
     importMotherboardAction,
     undoRecentInCategoryAction,
-    ImportResult 
+    ImportResult
 } from "../import-actions";
 import { toast } from "sonner";
-import { 
-    Dialog, 
-    DialogContent, 
-    DialogHeader, 
-    DialogTitle, 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
     DialogTrigger,
     DialogDescription
 } from "@/components/ui/dialog";
@@ -64,6 +64,7 @@ export default function ExportPageClient() {
     const [importPreview, setImportPreview] = useState<any[]>([]);
     const [importLoading, setImportLoading] = useState(false);
     const [importResult, setImportResult] = useState<ImportResult | null>(null);
+    const [detectedHeaders, setDetectedHeaders] = useState<string[]>([]);
 
     // Catalog Manager State
     const [managerOpen, setManagerOpen] = useState(false);
@@ -142,12 +143,12 @@ export default function ExportPageClient() {
     const handleSync = async (schema: string) => {
         console.log("DEBUG: Sync initiated for:", schema);
         let confirmMsg = "פעולה זו תמחק את כל הנתונים הקיימים בקטגוריה זו ותחליף אותם בנתוני המערכת. להמשיך?";
-        
+
         if (!confirm(confirmMsg)) {
             console.log("DEBUG: Sync cancelled by user");
             return;
         }
-        
+
         setSyncing(schema);
         try {
             console.log("DEBUG: Calling server action sync...");
@@ -228,16 +229,16 @@ export default function ExportPageClient() {
                         }
                     }
                 }
-            } 
+            }
             // ניסיון שלישי: CSV או TSV
             else {
                 const lines = trimmed.split(/\r?\n/);
                 if (lines.length >= 2) {
                     const firstLine = lines[0];
                     const delimiter = firstLine.includes("\t") ? "\t" : ",";
-                    
-                    const parseLine = (line: string, delim: string) => {
-                        const result = [];
+
+                    const parseLine = (line: string, delim: string): string[] => {
+                        const result: string[] = [];
                         let cur = '';
                         let inQuotes = false;
                         for (let i = 0; i < line.length; i++) {
@@ -256,7 +257,7 @@ export default function ExportPageClient() {
                     };
 
                     rawHeaders = parseLine(firstLine, delimiter);
-                    
+
                     for (let i = 1; i < lines.length; i++) {
                         if (lines[i].trim()) {
                             rowsRaw.push(parseLine(lines[i], delimiter));
@@ -317,7 +318,11 @@ export default function ExportPageClient() {
                 });
                 return obj;
             });
-            
+
+            // 🔍 Track detected headers for UI display
+            setDetectedHeaders(headers);
+            console.debug("[IMPORT DEBUG] Raw headers:", rawHeaders, "→ Mapped:", headers, "| First row brand:", rows[0]?.brand, "modelName:", rows[0]?.modelName);
+
             if (rows.length === 0) {
                 toast.error("לא נמצאו נתונים לייבוא בקובץ");
             }
@@ -389,7 +394,7 @@ export default function ExportPageClient() {
             }
 
             setImportResult(res);
-            
+
             if (res.added > 0) {
                 // Targeted refresh feel: update the specific stat locally first then fetch all
                 if (type && res.newTotal !== undefined) {
@@ -401,10 +406,10 @@ export default function ExportPageClient() {
                 fetchStats();
             }
 
-            const message = res.added > 0 
+            const message = res.added > 0
                 ? `✅ ייבוא הושלם! נוספו ${res.added} מוצרים חדשים. ${res.duplicatesInFile > 0 ? `(${res.duplicatesInFile} כפולים בקובץ סוננו)` : ''}`
                 : `הסנכרון הסתיים. כל הרשומות כבר קיימות במערכת (${res.duplicatesInFile} כפולים בקובץ, ${res.skipped} קיימים ב-DB).`;
-                
+
             toast.success(message);
         } catch (error: any) {
             toast.error("ייבוא נכשל: " + error.message);
@@ -416,7 +421,7 @@ export default function ExportPageClient() {
     const downloadTemplate = (id: string) => {
         let headers = "";
         let example = "";
-        
+
         if (id === "laptop") {
             headers = "brand,series,modelName,type,screenSize,cpu,ram,storage,os,releaseYear,sku,weight,ports,display";
             example = "Apple,MacBook Air,M3,Laptop,13.6/15,M3,8GB/16GB/24GB,256GB/512GB,macOS,2024,SKU123,1.24kg,2x Thunderbolt,Liquid Retina";
@@ -459,13 +464,13 @@ export default function ExportPageClient() {
         }).format(new Date(date));
     };
 
-    const CatalogCard = ({ 
-        id, title, desc, icon: Icon, color, neonColor, statsKey 
-    }: { 
-        id: string, title: string, desc: string, icon: any, color: string, neonColor: string, statsKey: string 
+    const CatalogCard = ({
+        id, title, desc, icon: Icon, color, neonColor, statsKey
+    }: {
+        id: string, title: string, desc: string, icon: any, color: string, neonColor: string, statsKey: string
     }) => {
         const itemStats = stats[statsKey] || { count: 0, lastUpdate: null };
-        
+
         // We only show the "Updated Now" badge if there's a MANUAL import log in the last 12 hours for this category
         const lastManualLog = recentLogs.find((l: any) => l.category === id);
         const isRecentlyUpdated = lastManualLog && lastManualLog.added > 0 && (new Date().getTime() - new Date(lastManualLog.createdAt).getTime()) < 1000 * 60 * 60 * 12;
@@ -513,7 +518,7 @@ export default function ExportPageClient() {
                     </div>
                 )}
                 <div className={`absolute -right-8 -top-8 w-40 h-40 ${isRecentlyUpdated ? 'bg-red-500/10' : bgColor} blur-3xl rounded-full group-hover:opacity-100 opacity-50 transition-all duration-700`} />
-                
+
                 <div className="relative flex flex-col h-full">
                     <div className="flex items-start justify-between mb-6">
                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${bgColor} ${textColor} shadow-inner`}>
@@ -542,16 +547,16 @@ export default function ExportPageClient() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-3 mb-3">
-                            <Button 
-                                onClick={() => handleExport(id)} 
+                            <Button
+                                onClick={() => handleExport(id)}
                                 disabled={!!loading}
                                 className={`w-full h-12 bg-white/5 hover:bg-white/10 text-white rounded-2xl border border-white/10 text-xs font-black transition-all active:scale-95`}
                             >
                                 {loading === id ? <Loader2 className="animate-spin" size={16} /> : <Download size={16} className="ml-2" />}
                                 ייצוא
                             </Button>
-                            
-                            <Button 
+
+                            <Button
                                 onClick={() => {
                                     setImportType(id);
                                     setImportModalOpen(true);
@@ -565,7 +570,18 @@ export default function ExportPageClient() {
                                 ייבוא חכם
                             </Button>
                         </div>
-                        
+
+                        {["desktop", "aio", "vehicle", "electronics", "appliance", "motherboard"].includes(id) && (
+                            <Button
+                                onClick={() => handleSync(id)}
+                                disabled={syncing === id}
+                                className={`w-full h-10 mb-3 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 rounded-2xl border border-amber-500/20 text-xs font-black transition-all active:scale-95`}
+                            >
+                                {syncing === id ? <Loader2 className="animate-spin" size={14} /> : <Database size={14} className="ml-2" />}
+                                סנכרון ושחזור נתוני מערכת
+                            </Button>
+                        )}
+
                         <Button
                             onClick={() => handleUndoImport(id)}
                             disabled={importLoading}
@@ -588,10 +604,10 @@ export default function ExportPageClient() {
                         </Button>
 
                         <div className="flex flex-col items-end gap-2 pt-4 border-t border-white/5 mt-4 opacity-50">
-                             <div className="flex items-center gap-2 text-[9px] font-mono text-slate-500">
+                            <div className="flex items-center gap-2 text-[9px] font-mono text-slate-500">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                 DATABASE SECURE
-                             </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -602,12 +618,12 @@ export default function ExportPageClient() {
     return (
         <div className="min-h-screen bg-[#050508] text-right" dir="rtl">
             <div className="p-6 lg:p-12 max-w-7xl mx-auto">
-                
+
                 {/* Header Section */}
                 <div className="relative mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="absolute -left-20 -top-20 w-64 h-64 bg-purple-600/10 blur-[100px] rounded-full" />
                     <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full" />
-                    
+
                     <div className="relative">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold mb-4 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
                             <Database size={14} />
@@ -622,8 +638,8 @@ export default function ExportPageClient() {
                     </div>
 
                     <div className="relative flex gap-3">
-                        <Button 
-                            variant="outline" 
+                        <Button
+                            variant="outline"
                             onClick={fetchStats}
                             disabled={statsLoading}
                             className="bg-white/5 border-white/10 text-white hover:bg-white/10 rounded-2xl px-6 h-14 font-bold"
@@ -636,31 +652,31 @@ export default function ExportPageClient() {
 
                 {/* Grid Grid - Premium Neon Style */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <CatalogCard 
+                    <CatalogCard
                         id="laptop" title="מחשבים ניידים" desc="מאגר Laptops מקיף הכולל מותגים וסדרות 2024-2025."
                         icon={Laptop} color="blue" neonColor="blue" statsKey="laptop"
                     />
-                    <CatalogCard 
+                    <CatalogCard
                         id="desktop" title="מחשבי מותג" desc="נייחים מסדרות Dell Optiplex, HP Elite/Pro ומרכזי עבודה."
                         icon={Monitor} color="indigo" neonColor="indigo" statsKey="desktop"
                     />
-                    <CatalogCard 
+                    <CatalogCard
                         id="aio" title="All-in-One" desc="מחשבי iMac, HP Pavilion AIO, Lenovo Yoga AIO ועוד."
                         icon={Monitor} color="cyan" neonColor="cyan" statsKey="aio"
                     />
-                    <CatalogCard 
+                    <CatalogCard
                         id="motherboard" title="לוחות אם" desc="מאגר לוחות אם (PC) לשימוש במנוע החיפוש החכם לבנייה."
                         icon={Cpu} color="slate" neonColor="slate" statsKey="motherboard"
                     />
-                    <CatalogCard 
+                    <CatalogCard
                         id="mobile" title="סלולריים" desc="סדרות iPhone, Samsung Galaxy, Xiaomi ו-Google Pixel."
                         icon={Tablet} color="purple" neonColor="purple" statsKey="mobile"
                     />
-                    <CatalogCard 
+                    <CatalogCard
                         id="electronics" title="אלקטרוניקה" desc="טלוויזיות, שעונים חכמים, אוזניות וגאדג'טים."
                         icon={Tv} color="amber" neonColor="amber" statsKey="electronics"
                     />
-                    <CatalogCard 
+                    <CatalogCard
                         id="appliance" title="מוצרי חשמל" desc="מקררים, מכונות כביסה, מזגנים ומדיחי כלים."
                         icon={Package} color="emerald" neonColor="emerald" statsKey="appliance"
                     />
@@ -679,12 +695,12 @@ export default function ExportPageClient() {
                             </div>
                         </div>
                         <div className="flex flex-col items-end gap-2">
-                             <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-xs font-mono">
+                            <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-xs font-mono">
                                 System Status: ONLINE
-                             </div>
-                             <div className="px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold">
+                            </div>
+                            <div className="px-4 py-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold">
                                 All Services Active
-                             </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -705,7 +721,7 @@ export default function ExportPageClient() {
                             {/* Input Column */}
                             <div className="space-y-4">
                                 <label className="text-sm font-bold text-slate-300">הדבקת נתונים (JSON או CSV)</label>
-                                <Textarea 
+                                <Textarea
                                     className="h-64 bg-black/40 border-white/10 font-mono text-xs leading-relaxed"
                                     placeholder='brand,modelName,cpu,ram,storage\nApple,MacBook Air,M3,16GB,512GB'
                                     value={importData}
@@ -717,8 +733,8 @@ export default function ExportPageClient() {
                                 <div className="flex items-center gap-4">
                                     <div className="flex-1">
                                         <label className="block text-xs font-bold text-slate-500 mb-2 uppercase">או העלה קובץ</label>
-                                        <Input 
-                                            type="file" 
+                                        <Input
+                                            type="file"
                                             accept=".csv,.json,.txt"
                                             onChange={handleFileUpload}
                                             className="bg-white/5 border-white/10 cursor-pointer"
@@ -809,14 +825,14 @@ export default function ExportPageClient() {
 
                     <div className="flex justify-end gap-2 p-6 border-t border-white/5">
                         <div className="flex-1 space-x-2 space-x-reverse flex">
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 onClick={() => setImportModalOpen(false)}
                                 className="bg-white/5 border-white/10"
                             >
                                 ביטול
                             </Button>
-                            <Button 
+                            <Button
                                 variant="outline"
                                 onClick={() => importType && downloadTemplate(importType)}
                                 className="bg-indigo-500/10 border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20"
@@ -826,7 +842,7 @@ export default function ExportPageClient() {
                             </Button>
                         </div>
                         {importResult ? (
-                            <Button 
+                            <Button
                                 onClick={() => {
                                     setImportModalOpen(false);
                                     setImportResult(null);
@@ -839,7 +855,7 @@ export default function ExportPageClient() {
                                 סגור וסיים
                             </Button>
                         ) : (
-                            <Button 
+                            <Button
                                 onClick={executeImport}
                                 disabled={importPreview.length === 0 || importLoading}
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 font-bold"
@@ -855,7 +871,7 @@ export default function ExportPageClient() {
             {/* Recent Activity Log */}
             <div className="mt-12 bg-white/5 border border-white/10 rounded-3xl p-6 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] -mr-32 -mt-32 transition-all duration-700 group-hover:bg-indigo-500/20" />
-                
+
                 <div className="flex items-center gap-3 mb-8 relative z-10">
                     <div className="p-2 bg-indigo-500/20 rounded-xl">
                         <Clock className="w-5 h-5 text-indigo-400" />
@@ -865,7 +881,7 @@ export default function ExportPageClient() {
                         <p className="text-xs text-slate-500">מעקב אחר ייבוא נתונים ושינויי קטלוג</p>
                     </div>
                 </div>
-                
+
                 <div className="space-y-4 relative z-10">
                     {recentLogs.length > 0 ? (
                         (() => {
@@ -894,9 +910,9 @@ export default function ExportPageClient() {
                                 // Determine index of this log within its day group (youngest first)
                                 const logDayIndex = logsThatDay.findIndex(l => l.id === log.id);
                                 const colorClass = logsThatDay.length > 1 ? dailyColors[logDayIndex % dailyColors.length] : "border-white/5";
-                                
+
                                 const isNew = (new Date().getTime() - date.getTime()) < 1000 * 60 * 60 * 24;
-                                
+
                                 return (
                                     <div key={log.id} className={`flex flex-col md:flex-row md:items-center justify-between p-4 bg-white/5 rounded-2xl border ${colorClass} hover:bg-white/[0.08] transition-all group/item mb-4`}>
                                         <div className="flex items-center gap-4">
@@ -914,7 +930,7 @@ export default function ExportPageClient() {
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="flex items-center gap-4 mt-4 md:mt-0">
                                             <div className="flex gap-2">
                                                 {log.added > 0 && (

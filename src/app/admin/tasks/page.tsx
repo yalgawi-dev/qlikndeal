@@ -2,6 +2,7 @@ import { getAdminTasks } from "../collaboration-actions";
 import AdminTasksClient from "./AdminTasksClient";
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Serve from cache for 60s on repeat visits
 
 export default async function AdminTasksPage() {
     const tasks = await getAdminTasks();

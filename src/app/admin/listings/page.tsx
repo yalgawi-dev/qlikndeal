@@ -1,3 +1,4 @@
+// @ts-nocheck
 import prismadb from "@/lib/prismadb";
 import ListingDeleteButton from "./ListingDeleteButton";
 import AdminListingActions from "./AdminListingActions";

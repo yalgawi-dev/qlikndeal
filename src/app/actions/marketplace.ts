@@ -6,7 +6,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import he from 'he';
 
 export async function createListing(data: {
-    title: string;
+    title: string; brand?: string; model?: string;
     description: string;
     price: number;
     condition: string;
@@ -16,7 +16,7 @@ export async function createListing(data: {
     extraData?: any;
 }) {
     console.log("createListing started", {
-        title: data.title,
+        title: data.title, brand: data.brand, model: data.model,
         price: data.price,
         imagesCount: data.images?.length,
         descLength: data.description?.length,
@@ -508,3 +508,4 @@ export async function getAiKnowledge() {
     }
     return {};
 }
+

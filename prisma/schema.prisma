@@ -1,5 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
 
 generator client {
   provider = "prisma-client-js"
@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enums
+// ─────────────────────────────────────────────────────────────
 enum UserRole {
   BUYER
   SELLER
@@ -57,8 +57,8 @@ enum AiStatus {
 }
 
 model User {
-  id          String  @id @default(uuid()) // Can map to Clerk ID if passed manually, or internal ID
-  clerkId     String? @unique // Optional: Link to Clerk
+  id          String  @id @default(uuid()) // ─────────────────────────────────────────────────────────────
+  clerkId     String? @unique // ─────────────────────────────────────────────────────────────
   email       String? @unique
   phone       String?
   firstName   String?
@@ -74,17 +74,17 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations
+  // ─────────────────────────────────────────────────────────────
   shipmentsAsSeller Shipment[]     @relation("SellerShipments")
   shipmentsAsBuyer  Shipment[]     @relation("BuyerShipments")
   buyerRequests     BuyerRequest[]
 
   serviceProfile ServiceProviderProfile?
 
-  // Marketplace Listings
+  // ─────────────────────────────────────────────────────────────
   listings MarketplaceListing[]
 
-  // Admin Collaboration
+  // ─────────────────────────────────────────────────────────────
   createdTasks AdminTask[]        @relation("CreatedTasks")
   writtenNotes AdminNote[]        @relation("WrittenNotes")
   taskComments AdminTaskComment[]
@@ -99,12 +99,12 @@ model ServiceProviderProfile {
   displayName  String?
   bio          String?
   rating       Float         @default(0)
-  reviewCount  Int           @default(0) // Total number of reviews
+  reviewCount  Int           @default(0) // ─────────────────────────────────────────────────────────────
 
   isFixedPrice Boolean @default(false)
   basePrice    Float?
 
-  // Relations
+  // ─────────────────────────────────────────────────────────────
   bids ServiceBid[]
 
   createdAt DateTime @default(now())
@@ -119,21 +119,21 @@ model MarketplaceListing {
   title       String
   description String
   price       Float
-  condition   String // New, Used, etc.
-  images      String // JSON string of image URLs
-  videos      String? // JSON string of video URLs
+  condition   String // ─────────────────────────────────────────────────────────────
+  images      String // ─────────────────────────────────────────────────────────────
+  videos      String? // ─────────────────────────────────────────────────────────────
   category    String?
   extraData   String?
 
-  // Location for search & distance
+  // ─────────────────────────────────────────────────────────────
   latitude     Float?
   longitude    Float?
   locationName String?
 
   status ListingStatus @default(ACTIVE)
 
-  // Relations
-  shipments Shipment[] // Deals created from this listing
+  // ─────────────────────────────────────────────────────────────
+  shipments Shipment[] // ─────────────────────────────────────────────────────────────
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -147,7 +147,7 @@ enum ListingStatus {
 
 model Shipment {
   id      String @id @default(uuid())
-  shortId String @unique // For the shareable link (e.g. "Ab3d9")
+  shortId String @unique // ─────────────────────────────────────────────────────────────
 
   sellerId String
   seller   User   @relation("SellerShipments", fields: [sellerId], references: [id])
@@ -155,13 +155,13 @@ model Shipment {
   buyerId String?
   buyer   User?   @relation("BuyerShipments", fields: [buyerId], references: [id])
 
-  // Optional link to original Marketplace Listing
+  // ─────────────────────────────────────────────────────────────
   listingId String?
   listing   MarketplaceListing? @relation(fields: [listingId], references: [id])
 
   status ShipmentStatus @default(DRAFT)
 
-  // Relations
+  // ─────────────────────────────────────────────────────────────
   details   ShipmentDetails?
   agreement Agreement?
 
@@ -178,16 +178,16 @@ model ShipmentDetails {
 
   itemName      String
   value         Float
-  itemCondition String // New, Used, etc.
+  itemCondition String // ─────────────────────────────────────────────────────────────
 
-  sellerNotes String? // Defects list
+  sellerNotes String? // ─────────────────────────────────────────────────────────────
 
   aiStatus AiStatus @default(PENDING)
 
-  images String // SQLite doesn't support String[]. We will store this as a JSON string.
-  videos String? // JSON string of video URLs
+  images String // ─────────────────────────────────────────────────────────────
+  videos String? // ─────────────────────────────────────────────────────────────
 
-  flexibleData String? // Flexible JSON data stored as string
+  flexibleData String? // ─────────────────────────────────────────────────────────────
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -214,7 +214,7 @@ model ServiceRequest {
   pickupLocation  String?
   dropoffLocation String?
 
-  // Relations
+  // ─────────────────────────────────────────────────────────────
   bids ServiceBid[]
 
   createdAt DateTime @default(now())
@@ -241,17 +241,17 @@ model ServiceBid {
 model ShadowLead {
   id String @id @default(uuid())
 
-  // Scraped Data
+  // ─────────────────────────────────────────────────────────────
   sellerName String?
   sellerLink String?
   postText   String?
   sourceUrl  String?
-  images     String? // JSON string of image URLs
-  videos     String? // JSON string of video URLs
+  images     String? // ─────────────────────────────────────────────────────────────
+  videos     String? // ─────────────────────────────────────────────────────────────
 
-  // Metadata
-  capturedBy String? // Admin ID (if we track who ran the bot)
-  status     String  @default("NEW") // NEW, CONTACTED, CONVERTED, IGNORED
+  // ─────────────────────────────────────────────────────────────
+  capturedBy String? // ─────────────────────────────────────────────────────────────
+  status     String  @default("NEW") // ─────────────────────────────────────────────────────────────
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -264,51 +264,51 @@ model BuyerRequest {
   user   User?   @relation(fields: [userId], references: [id])
 
   query  String
-  status String @default("ACTIVE") // ACTIVE, FULFILLED, CANCELLED
+  status String @default("ACTIVE") // ─────────────────────────────────────────────────────────────
 
-  extraData String? // JSON string for dynamic fields (e.g. { "mileage": 50000, "storage": "128GB" })
+  extraData String? // ─────────────────────────────────────────────────────────────
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 // ─────────────────────────────────────────────────────────────
-// AI Self-Learning: logs every parse attempt + user corrections
+// ─────────────────────────────────────────────────────────────
 // ─────────────────────────────────────────────────────────────
 model ParserLog {
   id String @id @default(uuid())
 
-  // The raw input text (from voice or typed)
-  originalText String
+  // ─────────────────────────────────────────────────────────────
+  originalText String @db.Text // שנה לזה
 
-  // What the AI parsed (JSON string of ListingAnalysisResult)
-  aiParsed String
+  // ─────────────────────────────────────────────────────────────
+  aiParsed String @db.Text // שנה לזה
 
-  // What the user actually submitted after corrections (JSON)
-  // null = user accepted AI result without changes
-  userFinal String?
+  // ─────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
+  userFinal String? @db.Text // שנה לזה
 
-  // Diff: only the fields that were changed (JSON)
-  // e.g. {"storage": {"ai": "56 GB", "user": "256 GB"}}
-  corrections String?
+  // ─────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
+  corrections String? @db.Text // שנה לזה
 
-  // Free-text note from the tester explaining what was wrong
-  testerNote String?
+  // ─────────────────────────────────────────────────────────────
+  testerNote String? @db.Text // שנה לזה
 
-  // Image upload for tester note (e.g., screenshot)
-  testerImage String?
+  // ─────────────────────────────────────────────────────────────
+  testerImage String? @db.Text // שנה לזה
 
-  // Metadata
-  testerName String? // who was testing (partner's name)
-  category   String? // detected category
-  inputMode  String? // "voice" | "text" | "paste"
-  sessionId  String? // group corrections from same session
+  // ─────────────────────────────────────────────────────────────
+  testerName String? // ─────────────────────────────────────────────────────────────
+  category   String? // ─────────────────────────────────────────────────────────────
+  inputMode  String? // ─────────────────────────────────────────────────────────────
+  sessionId  String? // ─────────────────────────────────────────────────────────────
 
-  // Was this a "good" parse? Set manually by admin after review
+  // ─────────────────────────────────────────────────────────────
   reviewed Boolean @default(false)
-  quality  String? // "good" | "partial" | "bad"
+  quality  String? // ─────────────────────────────────────────────────────────────
 
-  // Archive: moved to archive after AI treatment batch
+  // ─────────────────────────────────────────────────────────────
   archived   Boolean   @default(false)
   archivedAt DateTime?
 
@@ -316,7 +316,7 @@ model ParserLog {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Admin Collaboration Tools
+// ─────────────────────────────────────────────────────────────
 // ─────────────────────────────────────────────────────────────
 
 model AdminTask {
@@ -324,7 +324,7 @@ model AdminTask {
   title       String
   description String?
   completed   Boolean @default(false)
-  notes       String? // Deprecated in favor of comments, but keeping for now
+  notes       String? // ─────────────────────────────────────────────────────────────
 
   comments AdminTaskComment[]
 
@@ -348,8 +348,8 @@ model AdminTaskComment {
 
 model AdminNote {
   id      String  @id @default(uuid())
-  title   String? // Optional title for the note
-  content String // Markdown or plain text
+  title   String? // ─────────────────────────────────────────────────────────────
+  content String // ─────────────────────────────────────────────────────────────
 
   authorId String?
   author   User?   @relation("WrittenNotes", fields: [authorId], references: [id])
@@ -359,7 +359,7 @@ model AdminNote {
 }
 
 // ─────────────────────────────────────────────────────────────
-// Computer & Mobile Catalog - Separate Tables for each Category
+// ─────────────────────────────────────────────────────────────
 // ─────────────────────────────────────────────────────────────
 
 model LaptopCatalog {
@@ -368,7 +368,7 @@ model LaptopCatalog {
   series        String
   modelName     String
   type          String?
-  screenSize    String[] // Array of options or single value
+  screenSize    String[] // ─────────────────────────────────────────────────────────────
   cpu           String[]
   gpu           String[]
   ram           String[]
@@ -381,6 +381,8 @@ model LaptopCatalog {
   ports         String?
   display       String?
   importBatchId String?
+
+  constraints   Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -407,6 +409,8 @@ model BrandDesktopCatalog {
   isMini        Boolean  @default(false)
   importBatchId String?
 
+  constraints   Json?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -415,13 +419,15 @@ model BrandDesktopCatalog {
 
 model CustomBuildCatalog {
   id            String  @id @default(uuid())
-  category      String // Gaming, Office, Workstation
+  category      String // ─────────────────────────────────────────────────────────────
   subCategory   String?
   typicalCpu    String?
   typicalGpu    String?
   typicalRam    String?
   description   String?
   importBatchId String?
+
+  constraints   Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -444,6 +450,8 @@ model AioCatalog {
   display       String?
   ports         String?
   importBatchId String?
+
+  constraints   Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -471,6 +479,8 @@ model MobileCatalog {
   wirelessCharging Boolean  @default(false)
   importBatchId    String?
 
+  constraints      Json?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -482,12 +492,14 @@ model VehicleCatalog {
   make          String
   model         String
   year          Int?
-  type          String? // Sedan, SUV, etc.
+  type          String? // ─────────────────────────────────────────────────────────────
   fuelType      String?
   transmission  String?
   engineSize    String?
   hp            Int?
   importBatchId String?
+
+  constraints   Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -499,12 +511,14 @@ model VehicleCatalog {
 model ElectronicsCatalog {
   id            String   @id @default(uuid())
   brand         String
-  category      String // Smartwatch, TV, Headphones, etc.
+  category      String // ─────────────────────────────────────────────────────────────
   modelName     String
   hebrewAliases String[]
   releaseYear   Int?
-  specs         String? // JSON string for varied specs
+  specs         String? // ─────────────────────────────────────────────────────────────
   importBatchId String?
+
+  constraints   Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -517,12 +531,14 @@ model ElectronicsCatalog {
 model ApplianceCatalog {
   id            String   @id @default(uuid())
   brand         String
-  category      String // Refrigerator, Washing Machine, AC, etc.
+  category      String // ─────────────────────────────────────────────────────────────
   modelName     String
   hebrewAliases String[]
-  capacity      String? // Liters, KG, BTU
+  capacity      String? // ─────────────────────────────────────────────────────────────
   energyRating  String?
   importBatchId String?
+
+  constraints   Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -547,6 +563,8 @@ model MotherboardCatalog {
   wifi          String?
   releaseYear   String?
   importBatchId String?
+
+  constraints   Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -573,4 +591,156 @@ model CatalogImportLog {
 
   @@index([category])
   @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+
+model FieldValueReliability {
+  id              String   @id @default(uuid())
+  value           String
+  field           String
+  category        String
+  confidence      Float    @default(0.5)
+  occurrenceCount Int      @default(1)
+  isIgnored       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
+
+  @@unique(name: "value_field_category", [value, field, category])
+  @@index([category])
+  @@index([createdAt])  // ליעילות ה-Pruner (סריקת תאריך)
+}
+
+model ContextPattern {
+  id              String           @id @default(uuid())
+  patternPart     String // ─────────────────────────────────────────────────────────────
+  type            String // ─────────────────────────────────────────────────────────────
+  category        String
+  field           String // ─────────────────────────────────────────────────────────────
+  confidence      Float            @default(0.5)
+  occurrenceCount Int              @default(1)
+  isIgnored       Boolean          @default(false)
+  parentId        String? // ─────────────────────────────────────────────────────────────
+  parent          ContextPattern?  @relation("PatternHierarchy", fields: [parentId], references: [id])
+  children        ContextPattern[] @relation("PatternHierarchy")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
+
+  @@index([patternPart])
+  @@index([category])
+  @@index([createdAt])  // ליעילות ה-Pruner (סריקת תאריך)
+}
+
+model CategoryFieldThreshold {
+  id               String   @id @default(uuid())
+  category         String
+  field            String
+  threshold        Float    @default(0.8) // ─────────────────────────────────────────────────────────────
+  suggestionMargin Float    @default(0.2) // ─────────────────────────────────────────────────────────────
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+
+  @@unique([category, field])
+}
+
+model ThresholdLog {
+  id            String   @id @default(uuid())
+  field         String
+  value         String
+  confidence    Float
+  thresholdUsed Float
+  marginUsed    Float
+  actionTaken   String // ─────────────────────────────────────────────────────────────
+  sourceReason  String // ─────────────────────────────────────────────────────────────
+  category      String
+  createdAt     DateTime @default(now())
+}
+
+model UserCorrection {
+  id            String   @id @default(uuid())
+  originalText  String
+  predictedData Json?
+  correctedData Json?
+  category      String?
+  adminComments String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model WeightAuditLog {
+  id             String  @id @default(uuid())
+  category       String
+  field          String
+  oldWeight      Float
+  newWeight      Float
+  changeSource   String
+  adminName      String?
+  reason         String?
+  isAcknowledged Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+// Data-Driven Enterprise Catalog & Dynamic Forms
+// ─────────────────────────────────────────────────────────────
+
+model CategoryFormStructure {
+  id         String  @id @default(uuid())
+  category   String // e.g. "LAPTOPS", "SMARTPHONES"
+  fieldId    String // e.g. "ram", "cpu", "chassis_material"
+  labelHera  String // e.g. "זיכרון RAM", "חומר המארז"
+  fieldType  String // e.g. "select", "text", "number"
+  order      Int     @default(0)
+  isRequired Boolean @default(false)
+  isDynamic  Boolean @default(false) // true if AI automatically promoted this field
+
+  // Design Engine Columns:
+  sectionName String  @default("מפרט כללי")
+  sectionIcon String?  
+  icon        String?  
+  colSpan     Int     @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([category, fieldId])
+}
+
+model FormFieldOption {
+  id        String  @id @default(uuid())
+  category  String // e.g. "LAPTOPS"
+  fieldId   String // e.g. "ram"
+  value     String // e.g. "16GB", "32GB"
+  isDynamic Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@unique([category, fieldId, value])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Signal Engine: Unified Learning Signal Registry
+// Replaces: hardcoded regex rules, fragile NLP tags, static unit maps
+// Powers: extractSignals(), bindNumbersToUnits() in signal-engine.ts
+// ─────────────────────────────────────────────────────────────
+model FieldSignal {
+  id         String   @id @default(uuid())
+  category   String
+  field      String   // e.g. "ram", "storage", "screenSize"
+  rawValue   String   // e.g. "גיגה", "gb", "gigabyte", "אינץ"
+  normalized String   // e.g. "gb", "inch"
+  signalType String   // VALUE | UNIT | CONTEXT | NUMBER
+  weight     Float    @default(0.5)
+  isIgnored  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@unique([category, field, rawValue], name: "category_field_rawValue")
+  @@index([category])
+  @@index([field])
+  @@index([signalType])
 }

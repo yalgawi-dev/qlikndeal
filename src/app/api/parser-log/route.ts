@@ -1,3 +1,4 @@
+import { masterLearn, masterPenalize } from "@/lib/learning";
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
@@ -6,13 +7,13 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-
         const {
             originalText,
             aiParsed,
             userFinal,
             testerNote,
             testerName,
+            testerImage, // נוסף: תמיכה בתמונה
             category,
             inputMode,
             sessionId,
@@ -22,25 +23,20 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "originalText and aiParsed are required" }, { status: 400 });
         }
 
-        // Compute diff (corrections) between AI result and user final
-        let corrections: Record<string, { ai: unknown; user: unknown }> | null = null;
+        // חישוב תיקונים (Corrections) לצורך למידה עתידית
+        let corrections: any = null;
         if (userFinal && aiParsed) {
             try {
                 const ai = typeof aiParsed === "string" ? JSON.parse(aiParsed) : aiParsed;
                 const user = typeof userFinal === "string" ? JSON.parse(userFinal) : userFinal;
                 corrections = {};
                 for (const key of new Set([...Object.keys(ai), ...Object.keys(user)])) {
-                    const aiVal = ai[key];
-                    const userVal = user[key];
-                    // Compare as strings to catch type differences
-                    if (JSON.stringify(aiVal) !== JSON.stringify(userVal)) {
-                        corrections[key] = { ai: aiVal, user: userVal };
+                    if (JSON.stringify(ai[key]) !== JSON.stringify(user[key])) {
+                        corrections[key] = { ai: ai[key], user: user[key] };
                     }
                 }
                 if (Object.keys(corrections).length === 0) corrections = null;
-            } catch {
-                corrections = null;
-            }
+            } catch { corrections = null; }
         }
 
         const log = await prisma.parserLog.create({
@@ -51,6 +47,7 @@ export async function POST(req: NextRequest) {
                 corrections: corrections ? JSON.stringify(corrections) : null,
                 testerNote: testerNote || null,
                 testerName: testerName || null,
+                testerImage: testerImage || null, // שמירת התמונה
                 category: category || null,
                 inputMode: inputMode || "text",
                 sessionId: sessionId || null,
@@ -59,75 +56,46 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ success: true, id: log.id });
     } catch (err) {
-        console.error("[parser-log] Error:", err);
+        console.error("[parser-log] POST Error:", err);
         return NextResponse.json({ error: "Failed to save log" }, { status: 500 });
-    }
-}
-
-export async function GET(req: NextRequest) {
-    try {
-        const { searchParams } = new URL(req.url);
-        const limit = parseInt(searchParams.get("limit") || "100");
-        const quality = searchParams.get("quality");
-        const reviewed = searchParams.get("reviewed");
-        const showArchived = searchParams.get("archived") === "true";
-
-        const logs = await prisma.parserLog.findMany({
-            where: {
-                archived: showArchived, // new field — client will regenerate on build
-                ...(quality ? { quality } : {}),
-                ...(reviewed !== null ? { reviewed: reviewed === "true" } : {}),
-            } as any,
-            orderBy: { createdAt: "desc" },
-            take: limit,
-        });
-
-        return NextResponse.json({ success: true, logs, total: logs.length });
-    } catch (err) {
-        console.error("[parser-log] GET Error:", err);
-        return NextResponse.json({ error: "Failed to fetch logs" }, { status: 500 });
     }
 }
 
 export async function PATCH(req: NextRequest) {
     try {
-        const { id, quality, reviewed, testerNote, testerImage, archived, userFinal, computedCorrections } = await req.json();
+        const body = await req.json();
+        const { id, quality, reviewed, testerNote, testerImage, archived, userFinal, computedCorrections } = body;
+        
         if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
 
         let dataToUpdate: any = {
             ...(quality !== undefined ? { quality } : {}),
             ...(reviewed !== undefined ? { reviewed } : {}),
             ...(testerNote !== undefined ? { testerNote } : {}),
-            ...(testerImage !== undefined ? { testerImage } : {}),
+            ...(testerImage !== undefined ? { testerImage } : {}), // תמיכה בעדכון תמונה
             ...(archived !== undefined ? { archived, archivedAt: archived ? new Date() : null } : {}),
         };
 
         if (userFinal !== undefined) {
             dataToUpdate.userFinal = typeof userFinal === "string" ? userFinal : JSON.stringify(userFinal);
-
+            
+            // שחזור לוגיקת התיקונים המקורית למען הלמידה
             if (computedCorrections !== undefined) {
-                dataToUpdate.corrections = computedCorrections;
+                dataToUpdate.corrections = typeof computedCorrections === "string" ? computedCorrections : JSON.stringify(computedCorrections);
             } else {
-                // Fallback to legacy diff if client doesn't send computedCorrections
-                const existingLog = await prisma.parserLog.findUnique({ where: { id } });
-                if (existingLog && existingLog.aiParsed) {
-                    let corrections: Record<string, { ai: unknown; user: unknown }> | null = null;
+                const existing = await prisma.parserLog.findUnique({ where: { id } });
+                if (existing && existing.aiParsed) {
                     try {
-                        const ai = typeof existingLog.aiParsed === "string" ? JSON.parse(existingLog.aiParsed) : existingLog.aiParsed;
+                        const ai = JSON.parse(existing.aiParsed);
                         const user = typeof userFinal === "string" ? JSON.parse(userFinal) : userFinal;
-                        corrections = {};
-                        for (const key of new Set([...Object.keys(ai), ...Object.keys(user)])) {
-                            const aiVal = ai[key];
-                            const userVal = user[key];
-                            if (JSON.stringify(aiVal) !== JSON.stringify(userVal)) {
-                                corrections[key] = { ai: aiVal, user: userVal };
+                        let corr: any = {};
+                        for (const key in user) {
+                            if (JSON.stringify(ai[key]) !== JSON.stringify(user[key])) {
+                                corr[key] = { ai: ai[key], user: user[key] };
                             }
                         }
-                        if (Object.keys(corrections).length === 0) corrections = null;
-                    } catch {
-                        corrections = null;
-                    }
-                    dataToUpdate.corrections = corrections ? JSON.stringify(corrections) : null;
+                        dataToUpdate.corrections = JSON.stringify(corr);
+                    } catch (e) { console.error("Diff failed", e); }
                 }
             }
         }
@@ -137,22 +105,78 @@ export async function PATCH(req: NextRequest) {
             data: dataToUpdate,
         });
 
+        // --- לוגיקת הלמידה החיונית (masterLearn) ---
+        if (updated.userFinal && updated.category && updated.originalText) {
+            try {
+                // אנו רוצים ללמוד לא רק "תיקונים" (corrections) אלא את כל השדות שהמשתמש אישר!
+                // גם שדה שהיה בבועה צהובה ואושר (ללא שינוי שם) חייב לקבל בוסט למשקל, אחרת יישאר בועה צהובה לנצח.
+                const finalData = typeof updated.userFinal === "string" ? JSON.parse(updated.userFinal) : updated.userFinal;
+                // סנן שדות זבל לפני למידה (מנע זיהום בעתיד)
+                const GARBAGE_FIELDS = ['numeric', 'general', 'value', 'number', 'isCatalogMatch', 'sourceTable', 'batteryPercent', 'modelName', 'originalField'];
+                for (const field in finalData) {
+                    if (GARBAGE_FIELDS.includes(field.toLowerCase())) continue; // דלג שד זבל!
+                    const userValue = String(finalData[field]);
+                    if (userValue && userValue !== "null" && userValue !== "undefined" && userValue.length > 1) {
+                        try {
+                            await masterLearn(updated.originalText, field, userValue, updated.category);
+                        } catch(e) { /* ignore single learn errors */ }
+                    }
+                }
+
+                // --- ענישה (Penalty) ---
+                // אם ה-AI הציע ערך שגוי ומשתמש שינה אותו → נענוש את ערך ה-AI
+                if (updated.corrections && updated.corrections !== '{}') {
+                    try {
+                        const corrections = typeof updated.corrections === "string" 
+                            ? JSON.parse(updated.corrections) 
+                            : updated.corrections;
+                        for (const field in corrections) {
+                            const corr = corrections[field];
+                            // corr.ai = מה ה-AI הציע, corr.user = מה המשתמש כתב
+                            if (corr.ai && corr.ai !== corr.user) {
+                                await masterPenalize(field, String(corr.ai), updated.category);
+                            }
+                        }
+                    } catch(pe) { /* non-critical */ }
+                }
+            } catch (learnErr) {
+                console.error("[parser-log] masterLearn failed:", learnErr);
+            }
+        }
+
         return NextResponse.json({ success: true, log: updated });
     } catch (err) {
-        console.error("[parser-log] PATCH Error:", err);
+        console.error("[parser-log] PATCH Global Error:", err);
         return NextResponse.json({ error: "Failed to update log" }, { status: 500 });
+    }
+}
+
+export async function GET(req: NextRequest) {
+    try {
+        const { searchParams } = new URL(req.url);
+        const limit = parseInt(searchParams.get("limit") || "100");
+        const showArchived = searchParams.get("archived") === "true";
+
+        const logs = await prisma.parserLog.findMany({
+            where: { archived: showArchived },
+            orderBy: { createdAt: "desc" },
+            take: limit,
+        });
+
+        return NextResponse.json({ success: true, logs, total: logs.length });
+    } catch (err) {
+        return NextResponse.json({ error: "Failed to fetch logs" }, { status: 500 });
     }
 }
 
 export async function DELETE(req: NextRequest) {
     try {
-        const { id } = await req.json();
+        const { searchParams } = new URL(req.url);
+        const id = searchParams.get("id");
         if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
-
         await prisma.parserLog.delete({ where: { id } });
         return NextResponse.json({ success: true });
     } catch (err) {
-        console.error("[parser-log] DELETE Error:", err);
-        return NextResponse.json({ error: "Failed to delete log" }, { status: 500 });
+        return NextResponse.json({ error: "Failed" }, { status: 500 });
     }
 }

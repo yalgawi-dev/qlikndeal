@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
-// Assuming Inter is standard, but using generic sans if not installed or using Google Fonts via next/font
-// Using native font stack for now to avoid download issues if offline/slow
 import "./globals.css";
+import { Outfit } from "next/font/google";
+
+// ⚡ Self-hosted font via next/font — eliminates external network request per page
+const outfit = Outfit({
+    subsets: ["latin"],
+    weight: ["300", "400", "600", "800"],
+    display: "swap",
+    variable: "--font-outfit",
+});
 
 export const metadata: Metadata = {
     title: "Qlikndeal - המהפכה בעסקאות יד-שנייה",
@@ -25,12 +32,7 @@ export default function RootLayout({
 }>) {
     return (
         <ClerkProvider>
-            <html lang="he" dir="rtl" className="dark">
-                <head>
-                    <link rel="preconnect" href="https://fonts.googleapis.com" />
-                    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet" />
-                </head>
+            <html lang="he" dir="rtl" className={`dark ${outfit.variable}`}>
                 <body className="min-h-screen bg-background font-sans antialiased selection:bg-primary selection:text-white">
                     {children}
                     <Toaster richColors position="bottom-right" />
@@ -39,3 +41,4 @@ export default function RootLayout({
         </ClerkProvider>
     );
 }
+

@@ -1,0 +1,60 @@
+// ─────────────────────────────────────────────────────────────
+// AI 3D Logic Models
+// ─────────────────────────────────────────────────────────────
+
+model FieldValueReliability {
+  id              String   @id @default(uuid())
+  value           String
+  field           String
+  category        String
+  confidence      Float    @default(0.5)
+  occurrenceCount Int      @default(1)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique(name: "value_field_category", [value, field, category])
+  @@index([category])
+}
+
+model ContextPattern {
+  id              String   @id @default(uuid())
+  patternPart     String   // The word or phrase
+  type            String   // "ROOT", "CONTEXT", "FIELD"
+  category        String
+  field           String   // Which field this pattern indicates (e.g. "brand", "model")
+  confidence      Float    @default(0.5)
+  occurrenceCount Int      @default(1)
+  parentId        String?  // Links Context back to Root, Field back to Context
+  parent          ContextPattern?   @relation("PatternHierarchy", fields: [parentId], references: [id])
+  children        ContextPattern[]  @relation("PatternHierarchy")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([patternPart])
+  @@index([category])
+}
+
+model CategoryFieldThreshold {
+  id               String   @id @default(uuid())
+  category         String
+  field            String
+  threshold        Float    @default(0.8) // Score needed to auto-fill
+  suggestionMargin Float    @default(0.2) // Range below threshold to show suggestion
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([category, field])
+}
+
+model ThresholdLog {
+  id            String   @id @default(uuid())
+  field         String
+  value         String
+  confidence    Float
+  thresholdUsed Float
+  marginUsed    Float
+  actionTaken   String   // "FILL", "SUGGEST", "NONE"
+  sourceReason  String   // "מילון", "זיקוק", "שושלת"
+  category      String
+  createdAt     DateTime @default(now())
+}

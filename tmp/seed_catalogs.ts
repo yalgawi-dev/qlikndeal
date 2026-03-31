@@ -1,105 +1,119 @@
-
-import { PrismaClient } from "@prisma/client";
-import { CAR_MODELS } from "../src/lib/car-data";
-import { ALL_ELECTRONICS } from "../src/lib/electronics-data";
-import { MOTHERBOARD_DATABASE } from "../src/lib/motherboard-database";
+import { PrismaClient } from '@prisma/client';
+import { 
+    LAPTOP_DATABASE, 
+    RAM_OPTIONS,
+    STORAGE_OPTIONS,
+    CPU_OPTIONS,
+    ComputerModelFamily
+} from '../src/lib/computer-data';
+import { 
+    BRAND_DESKTOPS_DATABASE, 
+    AIO_DATABASE 
+} from '../src/lib/desktops-aio-data';
 
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log("Starting seeding...");
+    console.log("🚀 מתחיל בהעברת קטלוג המחשבים למסד הנתונים!");
 
-    // 1. Seed Vehicles
-    console.log("Seeding Vehicles...");
-    for (const [make, models] of Object.entries(CAR_MODELS)) {
-        for (const model of models) {
-            await prisma.vehicleCatalog.create({
-                data: { make, model }
+    // 1. העברת מותגי מחשבים ניידים (Laptops)
+    for (const [brand, families] of Object.entries(LAPTOP_DATABASE)) {
+        for (const familyObj of families) {
+            const familyName = familyObj.name;
+            for (const sub of familyObj.subModels) {
+                await prisma.computerCatalog.createMany({
+                    data: [{ brand, category: "LAPTOPS", family: familyName, modelName: sub.name, specs: JSON.stringify(sub), hebrewAliases: [] }],
+                    skipDuplicates: true
+                });
+            }
+        }
+    }
+    console.log("✅ קטלוג Laptops הועבר!");
+
+    // 2. העברת Desktop & AIO
+    for (const [brand, families] of Object.entries(BRAND_DESKTOPS_DATABASE)) {
+        for (const familyObj of families) {
+            const familyName = familyObj.name;
+            for (const sub of familyObj.subModels) {
+                await prisma.computerCatalog.createMany({
+                    data: [{ brand, category: "DESKTOPS", family: familyName, modelName: sub.name, specs: JSON.stringify(sub), hebrewAliases: [] }],
+                    skipDuplicates: true
+                });
+            }
+        }
+    }
+    
+    for (const [brand, families] of Object.entries(AIO_DATABASE)) {
+        for (const familyObj of families) {
+            const familyName = familyObj.name;
+            for (const sub of familyObj.subModels) {
+                await prisma.computerCatalog.createMany({
+                    data: [{ brand, category: "AIO", family: familyName, modelName: sub.name, specs: JSON.stringify(sub), hebrewAliases: [] }],
+                    skipDuplicates: true
+                });
+            }
+        }
+    }
+    console.log("✅ קטלוג Desktops & AIO הועבר!");
+
+    // 3. הגדרת שדות הטופס למחשבים ניידים ב-DB
+    const laptopFields = [
+        { fieldId: "brand", labelHera: "יצרן", fieldType: "select", order: 10, isRequired: true },
+        { fieldId: "family", labelHera: "סדרת יצרן", fieldType: "select", order: 20 },
+        { fieldId: "cpu", labelHera: "סדרת מעבד", fieldType: "select", order: 30, isRequired: true },
+        { fieldId: "ram", labelHera: "זיכרון RAM", fieldType: "select", order: 40, isRequired: true },
+        { fieldId: "storage", labelHera: "נפח אחסון", fieldType: "select", order: 50, isRequired: true },
+        { fieldId: "os", labelHera: "מערכת הפעלה", fieldType: "select", order: 60 },
+        { fieldId: "screen", labelHera: "גודל מסך", fieldType: "select", order: 70 },
+        { fieldId: "gpu", labelHera: "כרטיס מסך", fieldType: "text", order: 80 }
+    ];
+
+    console.log("🚀 בונה שלד טפסים (CategoryFormStructure)...");
+    for (const field of laptopFields) {
+        await prisma.categoryFormStructure.upsert({
+            where: { category_fieldId: { category: "LAPTOPS", fieldId: field.fieldId } },
+            update: { ...field },
+            create: { category: "LAPTOPS", ...field }
+        });
+    }
+
+    // 4. הזנת האפשרויות השמרניות (RAM, Storage, CPU) אל ה-DB
+    console.log("🚀 טוען אפשרויות (FieldOptions)...");
+    
+    // RAM
+    for (const ram of RAM_OPTIONS) {
+        await prisma.formFieldOption.upsert({
+            where: { category_fieldId_value: { category: "LAPTOPS", fieldId: "ram", value: ram } },
+            update: {}, create: { category: "LAPTOPS", fieldId: "ram", value: ram }
+        });
+    }
+    
+    // Storage
+    for (const storage of STORAGE_OPTIONS) {
+        await prisma.formFieldOption.upsert({
+            where: { category_fieldId_value: { category: "LAPTOPS", fieldId: "storage", value: storage } },
+            update: {}, create: { category: "LAPTOPS", fieldId: "storage", value: storage }
+        });
+    }
+
+    // CPU Options (nested by Brand)
+    for (const [cpuBrand, cpus] of Object.entries(CPU_OPTIONS)) {
+        for (const cpu of cpus) {
+            await prisma.formFieldOption.upsert({
+                where: { category_fieldId_value: { category: "LAPTOPS", fieldId: "cpu", value: cpu } },
+                update: {}, create: { category: "LAPTOPS", fieldId: "cpu", value: cpu }
             });
         }
     }
 
-    // 2. Seed Electronics & Appliances
-    console.log("Seeding Electronics & Appliances...");
-    for (const item of ALL_ELECTRONICS) {
-        const isAppliance = ["מקרר", "מכונת כביסה", "מזגן", "מדיח"].includes(item.category);
-        if (isAppliance) {
-            await prisma.applianceCatalog.create({
-                data: {
-                    brand: item.brand,
-                    category: item.category,
-                    modelName: item.model,
-                    hebrewAliases: item.hebrewAliases || [],
-                    capacity: item.validSizes ? item.validSizes.join("/") : null
-                }
-            });
-        } else {
-            await prisma.electronicsCatalog.create({
-                data: {
-                    brand: item.brand,
-                    category: item.category,
-                    modelName: item.model,
-                    hebrewAliases: item.hebrewAliases || [],
-                    releaseYear: item.releaseYear,
-                    specs: item.specs ? JSON.stringify(item.specs) : null
-                }
-            });
-        }
-    }
-
-    // 3. Seed Motherboards (Limit for now to avoid timeout if it's huge, or just do all)
-    console.log(`Seeding Motherboards (${MOTHERBOARD_DATABASE.length} items)...`);
-    console.log(`Seeding ${MOTHERBOARD_DATABASE.length} motherboards...`);
-    for (const mb of MOTHERBOARD_DATABASE) {
-        try {
-            await prisma.motherboardCatalog.upsert({
-                where: { 
-                    brand_model: {
-                        brand: mb.brand,
-                        model: mb.model
-                    }
-                },
-                update: {
-                    chipset: mb.chipset,
-                    socket: mb.socket,
-                    formFactor: mb.formFactor,
-                    ramType: mb.ramType,
-                    maxRam: mb.maxRam,
-                    pcie: mb.pcie,
-                    m2: mb.m2,
-                    lan: mb.lan,
-                    wifi: mb.wifi,
-                    releaseYear: mb.releaseYear
-                },
-                create: {
-                    brand: mb.brand,
-                    model: mb.model,
-                    chipset: mb.chipset,
-                    socket: mb.socket,
-                    formFactor: mb.formFactor,
-                    ramType: mb.ramType,
-                    maxRam: mb.maxRam,
-                    pcie: mb.pcie,
-                    m2: mb.m2,
-                    lan: mb.lan,
-                    wifi: mb.wifi,
-                    releaseYear: mb.releaseYear
-                }
-            });
-        } catch (e) {
-            console.error(`Error seeding MB ${mb.model}:`, e);
-        }
-    }
-    console.log("Motherboards seeded.");
-
-    console.log("Seeding finished successfully!");
+    console.log("✅ ההגירה הסתיימה בהצלחה! התשתית הדינמית ב-DB מוכנה לפעולה!");
 }
 
 main()
-    .catch((e) => {
-        console.error(e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+  .catch(e => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

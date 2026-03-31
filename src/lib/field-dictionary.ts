@@ -1,0 +1,1 @@
+export const SEED_DICTIONARY: Record<string, string[]> = { price: ['מחיר', 'עלות', '₪', 'שקל', 'שח', 'Price'], kilometrage: ['קילומטראז', 'קמ', 'קמש', 'נסע', 'KM'], ram: ['זיכרון', 'ראם', 'RAM', 'GB', 'גיגה'], year: ['שנה', 'שנת', 'יד', 'Year', 'Model'], screenSize: ['מסך', 'אינץ', 'גודל', 'Screen'] };

@@ -4,7 +4,7 @@ import { dbCache } from "@/lib/db-cache";
 import nlp from "compromise";
 
 
-const CACHE_TTL_MS = 60 * 1000 * 5; // 5 המינימום המתבקש לארכיטקטורה (5 דקות)
+const CACHE_TTL_MS = 60 * 1000 * 30; // ⚡ 30 min - NLP lexicon is stable during a session
 let cachedLexicon: Record<string, string[]> | null = null;
 let lastFetchTime = 0;
 

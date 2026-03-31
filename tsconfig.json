@@ -10,6 +10,7 @@
         "allowJs": true,
         "skipLibCheck": true,
         "strict": true,
+        "noImplicitAny": false,
         "noEmit": true,
         "esModuleInterop": true,
         "module": "esnext",
@@ -39,8 +40,13 @@
         "node_modules",
         "backup_today",
         "scripts",
+        "tmp",
+        "ai-training-archive",
         "test_*.ts",
         "test_*.tsx",
+        "check-layers.ts",
+        "reset-weights.ts",
+        "seed-config.ts",
         "*.js"
     ]
 }

@@ -77,3 +77,12 @@ export const COMPUTER_MODELS: Record<string, string[]> = {};
 export function getSpecOptionsForSubModel(brand: string, family: string, sub: string) {
     return { ram: RAM_OPTIONS, storage: STORAGE_OPTIONS, screen: SCREEN_SIZE_OPTIONS, cpu: [], gpu: [] };
 }
+export const CUSTOM_BUILD_FIELDS = [
+    { key: "cpu", label: "מעבד" },
+    { key: "gpu", label: "כרטיס מסך" },
+    { key: "motherboard", label: "לוח אם" },
+    { key: "ram", label: "זיכרון RAM" },
+    { key: "storage", label: "אחסון" },
+    { key: "psu", label: "ספק כוח" },
+    { key: "case", label: "מארז" }
+];

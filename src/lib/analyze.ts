@@ -134,9 +134,18 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
             dbCache.getOrFetch<any[]>(`rel_${category}`, () =>
                 (prismadb as any).fieldValueReliability.findMany({ where: { category, isIgnored: false } })
             ),
-            dbCache.getOrFetch<any[]>(`ctx_${category}`, () =>
-                (prismadb as any).contextPattern.findMany({ where: { category, isIgnored: false }, include: { children: true } })
-            ),
+            dbCache.getOrFetch<any[]>(`ctx_${category}`, async () => {
+            // ⚡ FLAT FETCH (1 SQL) + in-memory tree → eliminates Prisma's costly 2nd SELECT for children
+            const allFlat = await (prismadb as any).contextPattern.findMany({ where: { category } });
+            const byId = new Map<string, any>();
+            allFlat.forEach((p: any) => byId.set(p.id, { ...p, children: [] }));
+            allFlat.forEach((p: any) => {
+                if (p.parentId && byId.has(p.parentId)) {
+                    byId.get(p.parentId).children.push(byId.get(p.id));
+                }
+            });
+            return [...byId.values()].filter((p: any) => !p.isIgnored);
+        }),
             dbCache.getOrFetch<any[]>(`sig_${category}`, () =>
                 (prismadb as any).fieldSignal.findMany({ where: { category, isIgnored: false } })
             )

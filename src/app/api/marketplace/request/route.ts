@@ -13,7 +13,7 @@ export async function POST(req: Request) {
         }
 
         // Try to find local user ID if logged in
-        let userId = null;
+        let userId: string | null = null;
         if (user) {
             const dbUser = await prismadb.user.findUnique({
                 where: { clerkId: user.id },

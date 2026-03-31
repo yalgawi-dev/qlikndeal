@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { ListingCard } from "@/components/marketplace/ListingCard";
-import { ListingForm } from "@/components/marketplace/ListingForm";
-import { ComputerListingForm } from "@/components/marketplace/ComputerListingForm";
-import { MobileListingForm } from "@/components/marketplace/MobileListingForm";
+import { DynamicListingForm } from "@/components/marketplace/DynamicListingForm";
 import { getMyListings, deleteListing } from "@/app/actions/marketplace";
 import { Loader2, Plus, ArrowRight, ArrowLeft, Pencil, Trash2, ShoppingBag, Tag, Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -123,33 +121,19 @@ export default function MyListingsPage() {
                         </div>
                     </div>
 
-                    {/* Edit Form based on category */}
                     <div className="bg-gray-900/50 border border-white/10 rounded-2xl p-4">
-                        {editingListing.category === "Computers" ? (
-                            <ComputerListingForm
-                                initialData={editingListing}
-                                onComplete={handleEditComplete}
-                                onCancel={() => setEditingListing(null)}
-                                isEditing={true}
-                                listingId={editingListing.id}
-                            />
-                        ) : editingListing.category === "Mobile" ? (
-                            <MobileListingForm
-                                initialData={editingListing}
-                                onComplete={handleEditComplete}
-                                onCancel={() => setEditingListing(null)}
-                                isEditing={true}
-                                listingId={editingListing.id}
-                            />
-                        ) : (
-                            <ListingForm
-                                initialData={editingListing}
-                                onComplete={handleEditComplete}
-                                onCancel={() => setEditingListing(null)}
-                                isEditing={true}
-                                listingId={editingListing.id}
-                            />
-                        )}
+                        <DynamicListingForm
+                            initialData={editingListing}
+                            onComplete={handleEditComplete}
+                            onCancel={() => setEditingListing(null)}
+                            isEditing={true}
+                            listingId={editingListing.id}
+                            initialCategory={
+                                editingListing.category === "Computers" ? "LAPTOPS" : // Laptops is default, we can add logic later if they want
+                                ["PHONES", "MOBILE"].includes(editingListing.category?.toUpperCase()) ? "SMARTPHONES" : 
+                                "GENERAL"
+                            }
+                        />
                     </div>
                 </div>
             </div>
