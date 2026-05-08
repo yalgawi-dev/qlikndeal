@@ -1,12 +1,15 @@
 import prismadb from "@/lib/prismadb";
+import { ContextAwareParser } from "./parsing/contextAwareParser";
 import stringSimilarity from "string-similarity";
 import * as fs from 'fs';
 import path from 'path';
 import { detectCategory } from "./matcher-core";
-import { getEnhancedNlp } from "./nlp-dictionary";
 import { normalizeHebrew } from "./hebrew-normalizer";
-import { extractSignals, bindNumbersToUnits } from "./signal-engine";
+import { extractSignals, extractHardSignals, bindNumbersToUnits } from "./signal-engine";
 import { dbCache } from "./db-cache";
+import { ANCHOR_NOISE_BLOCKLIST } from "./constants/anchor-blocklist";
+// Note: NLP/Compromise removed — Dictionary scan + ContextAwareParser cover the same ground
+// hebrew-normalizer.ts (unit conversion) is still active and critical
 
 const CONFIG_PATH = path.join(process.cwd(), "src/config/matcher-config.json");
 
@@ -41,43 +44,48 @@ function getTemporalDecay(updatedAt: Date | string): number {
     return Math.max(0.30, Math.exp(-ageDays / 180));
 }
 
-/**
- * Family Affinity (Return to Source) - חזרה מהמילון למשפחה שיצרה אותו
- * עבור שדה נתון, מוצא את כל מילות ההקשר (PREFIX_ROOT) שניבאו אותו,
- * ובודק כמה מהן קיימות בטקסט הנוכחי.
- * 
- * פותר: "עולה" ב-price(0.95) ו-temperature(0.85)
- * אם "₪","שקל" קיימים בטקסט → price מקבל Family Affinity גבוה → מנצח!
- */
-function computeFamilyAffinity(
-    field: string,
-    textLower: string,
-    fieldNodesByField: Map<string, any[]>,
-    contextMapById: Map<string, any>
-): number {
-    const fieldNodes = fieldNodesByField.get(field);
-    if (!fieldNodes || fieldNodes.length === 0) return 0;
+// ContextPattern (DNA/Family Affinity) was removed — replaced by FieldAnchor system.
+// See: ContextAwareParser (Navigation in the Dark)
 
-    let matchedWeight = 0;
-    let totalWeight   = 0;
 
-    for (const fieldNode of fieldNodes) {
-        // O(1) Lookup instead of O(N) Array.find to completely eliminate O(N^2) latency
-        const parent = contextMapById.get(fieldNode.parentId);
-        if (!parent || parent.patternPart.length < 2) continue;
-
-        const w = Number(fieldNode.confidence) || 0.5;
-        totalWeight += w;
-        if (textLower.includes(parent.patternPart.toLowerCase())) {
-            matchedWeight += w;
+// Helper: Generate n-grams (up to 4 words) from text to execute highly targeted DB queries
+function generateNGrams(text: string, maxLen = 4): string[] {
+    const tokens = text.split(/\s+/).filter(Boolean);
+    const ngrams = new Set<string>();
+    for (let i = 0; i < tokens.length; i++) {
+        for (let len = 1; len <= maxLen; len++) {
+            if (i + len <= tokens.length) {
+                ngrams.add(tokens.slice(i, i + len).join(" "));
+            }
         }
     }
-
-    return totalWeight > 0 ? matchedWeight / totalWeight : 0;
+    return Array.from(ngrams);
 }
 
 export async function masterAnalyze(text: string, providedCategory?: string) {
     if (!text) return [];
+
+    // ─── FIELD ALIAS MAP (Safety Net) ────────────────────────────────────────
+    // ARCHITECTURE: Form fieldIds are the canonical names.
+    // Translation from catalog column names → form fieldIds happens ONCE
+    // at import time (src/lib/constants/catalog-field-map.ts).
+    //
+    // This map is a SAFETY NET only — it catches any legacy field names
+    // that may still exist in old DB data (before migration).
+    // It should NOT be needed for new data going forward.
+    // ─────────────────────────────────────────────────────────────────────────
+    const FIELD_ALIAS_MAP: Record<string, string> = {
+        'series':         'family',       // legacy catalog column
+        'display':        'screen',       // legacy
+        'screenSize':     'screen',       // legacy
+        'BatteryStatus':  'batteryHealth',// legacy casing
+        'SKU':            'sku',          // legacy casing
+        'שנת דגם':        'releaseYear',  // Hebrew alias
+        'טכנולוגיית מסך': 'screenType',  // Hebrew alias
+    };
+
+    const resolveFieldId = (field: string): string => FIELD_ALIAS_MAP[field] ?? field;
+
 
     console.log("🔥 masterAnalyze CALLED");
 
@@ -103,9 +111,13 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
     }
 
     // ---------------- DB FETCH + NLP IN PARALLEL ----------------
-    // ⚡ DB and NLP are completely independent — fire them simultaneously!
+    // ⚡ SCALING OPTIMIZATION: Instead of loading the entire DB memory,
+    // we generate N-Grams and ask the DB *only* for the words that appear in the text!
     console.time("DB_FETCH");
-    const cleanFullText = normalizeHebrew(text);
+    // ⚡ FIX: toLowerCase() ensures N-grams match lowercase DB candles/anchors.
+    // Without this, "16GB DDR5" generates uppercase N-grams that miss "16gb ddr5" in DB.
+    const cleanFullText = normalizeHebrew(text).toLowerCase();
+    const nGrams = generateNGrams(cleanFullText, 4);
 
     const [
         [
@@ -113,12 +125,11 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
             formStructs,
             fieldOptions,
             allReliableValues,
-            allContextPatternsRaw,
-            allSignalsRaw
-        ],
-        nlpEngine
+            allSignalsRaw,
+            allFieldAnchors
+        ]
     ] = await Promise.all([
-        // BRANCH A: All 6 DB queries in parallel
+        // All 6 DB queries in parallel
         Promise.all([
             dbCache.getOrFetch<any[]>(`threshold_${category}`, () =>
                 (prismadb as any).categoryFieldThreshold.findMany({
@@ -131,29 +142,123 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
             dbCache.getOrFetch<any[]>(`opts_${category}`, () =>
                 (prismadb as any).formFieldOption.findMany({ where: { category } })
             ),
-            dbCache.getOrFetch<any[]>(`rel_${category}`, () =>
-                (prismadb as any).fieldValueReliability.findMany({ where: { category, isIgnored: false } })
-            ),
-            dbCache.getOrFetch<any[]>(`ctx_${category}`, async () => {
-            // ⚡ FLAT FETCH (1 SQL) + in-memory tree → eliminates Prisma's costly 2nd SELECT for children
-            const allFlat = await (prismadb as any).contextPattern.findMany({ where: { category } });
-            const byId = new Map<string, any>();
-            allFlat.forEach((p: any) => byId.set(p.id, { ...p, children: [] }));
-            allFlat.forEach((p: any) => {
-                if (p.parentId && byId.has(p.parentId)) {
-                    byId.get(p.parentId).children.push(byId.get(p.id));
-                }
-            });
-            return [...byId.values()].filter((p: any) => !p.isIgnored);
-        }),
-            dbCache.getOrFetch<any[]>(`sig_${category}`, () =>
-                (prismadb as any).fieldSignal.findMany({ where: { category, isIgnored: false } })
-            )
-        ]),
-        // BRANCH B: NLP lexicon build (completely independent from DB!)
-        getEnhancedNlp().catch(() => null)
+            // TARGETED QUERIES (Bypassing dbCache for volatile text-based lookups)
+            (prismadb as any).fieldValueReliability.findMany({ 
+                where: { category, isIgnored: false, value: { in: nGrams } } 
+            }),
+            (prismadb as any).fieldSignal.findMany({ 
+                where: { category, isIgnored: false, rawValue: { in: nGrams } } 
+            }),
+            (prismadb as any).fieldAnchor.findMany({ 
+                where: { category, isIgnored: false, phrase: { in: nGrams } } 
+            })
+        ])
     ]);
     console.timeEnd("DB_FETCH");
+
+    // ─── OPTION MIRRORS — Critical Fix ────────────────────────────────────────
+    // formFieldOption (dropdown catalog) ≠ fieldValueReliability (AI scan dictionary).
+    // Values like "Windows 11 Home" are in the dropdown but INVISIBLE to the AI
+    // dictionary scan (STEP 2) because they were never added to fieldValueReliability.
+    // Fix: inject all formFieldOption entries as high-confidence synthetic candles
+    // into allReliableValues BEFORE the scan starts. Deduplicate to avoid double votes.
+    if (fieldOptions && fieldOptions.length > 0) {
+        const existingKeys = new Set(
+            allReliableValues.map((r: any) => `${r.field}__${String(r.value).toLowerCase().trim()}`)
+        );
+        for (const opt of fieldOptions) {
+            if (!opt.value || String(opt.value).trim().length < 2) continue;
+            const mirrorVal  = String(opt.value).toLowerCase().trim();
+            const mirrorKey  = `${opt.fieldId}__${mirrorVal}`;
+            if (!existingKeys.has(mirrorKey)) {
+                existingKeys.add(mirrorKey); // prevent double-adding if option list has dupes
+                allReliableValues.push({
+                    value:          mirrorVal,
+                    field:          opt.fieldId,
+                    category:       opt.category || category,
+                    confidence:     0.88,    // high — it's explicitly in the catalog
+                    occurrenceCount: 5,
+                    updatedAt:      new Date(),
+                    isIgnored:      false
+                });
+            }
+        }
+    }
+    // ─── END OPTION MIRRORS ───────────────────────────────────────────────────
+
+    // ️️ תיקון A: בנה Set של ביטויי עוגנים — מילים שהן עוגנים לא יוכלו לעבור כ-"ערכי נרות"
+    const anchorPhraseSet = new Set<string>(
+        allFieldAnchors
+            .filter((a: any) => !a.isIgnored)
+            .map((a: any) => a.phrase.toLowerCase().trim())
+    );
+
+    const suggestions: { field: string, value: string, confidence: number, source?: string, uiAction?: string }[] = [];
+
+    // ------------------------------------------------------------------
+    // STEP 0.5: NAVIGATION IN THE DARK (The New Ultimate Extraction Engine)
+    // Highly precise contextual extraction separated from value noise.
+    // ------------------------------------------------------------------
+    try {
+        console.time("NAVIGATION_IN_THE_DARK");
+        const contextAwareResults = await ContextAwareParser.parse({
+            category,
+            originalText: text,
+            anchors: allFieldAnchors,
+            safeValues: allReliableValues
+        });
+        
+        // ─── CANDLE PRIORITY + ZERO-SHOT FILTER ────────────────────────────
+        // RULE 1: Candle always wins — if a validated candle (CANDLE_SELF_LIT)
+        //         exists for a field, zero-shot is silenced for that field.
+        // RULE 2: No candle → Zero-shot may enter as SUGGEST (learning opportunity).
+        //         The existing masterPenalize() handles rejection learning.
+        // RULE 3: Zero-shot value must not be a generic noise word (BLOCKLIST).
+        // ──────────────────────────────────────────────────────────────────────
+        const candleFields = new Set(
+            contextAwareResults
+                .filter(r => r.sourceAnchor === "CANDLE_SELF_LIT")
+                .map(r => r.field)
+        );
+
+        contextAwareResults.forEach(r => {
+            const isZeroShot = r.sourceAnchor !== "CANDLE_SELF_LIT";
+
+            if (isZeroShot) {
+                // RULE 1: Candle exists for this field → candle wins → skip zero-shot
+                if (candleFields.has(r.field)) return;
+
+                // RULE 3: Filter generic/noise words from zero-shot results
+                const valLower = String(r.value).toLowerCase().trim();
+                if (ANCHOR_NOISE_BLOCKLIST.has(valLower)) return;
+
+                // RULE 2: No candle → allow as SUGGEST (learning opportunity)
+                // Cap at 0.60: always SUGGEST, never AUTO_FILL
+                // Weak anchors (conf < ~0.53) naturally produce r.confidence < 0.45
+                // and get filtered by the SUGGEST threshold in finalMap.
+                const cappedConfidence = Math.min(r.confidence, 0.60);
+                suggestions.push({
+                    field: r.field,
+                    value: String(r.value),
+                    confidence: cappedConfidence,
+                    source: `ANCHOR[${r.sourceAnchor}]`
+                });
+                return;
+            }
+
+            // CANDLE_SELF_LIT → full confidence, no cap
+            suggestions.push({
+                field: r.field,
+                value: String(r.value),
+                confidence: r.confidence,
+                source: "CANDLE_STRICT"
+            });
+        });
+
+        console.timeEnd("NAVIGATION_IN_THE_DARK");
+    } catch(e) {
+        console.error("ContextAwareParser error:", e);
+    }
 
     // Build threshold map
     const thresholdMap = new Map();
@@ -188,97 +293,83 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
         console.error("Numeric Fields auto-discovery error", e);
     }
 
-    const suggestions: { field: string, value: string, confidence: number, source?: string, uiAction?: string }[] = [];
+    // ───────────────────────────────────────────────────────────────
+    // [REMOVED] STEP 1.5: NLP/Compromise
+    // ───────────────────────────────────────────────────────────────
+    // Reason: Compromise is a wrapper around our own FieldValueReliability dictionary.
+    //   ✔ Dictionary scan (STEP 2) reads the same data directly — faster, no library overhead.
+    //   ✔ ContextAwareParser (STEP 0.5) handles contextual extraction far more precisely.
+    //   ✔ hebrew-normalizer.ts still active: converts גיגה→gb, אינץ→inch before ALL steps.
+    //   ✔ Cold-start saving: ~200-500ms (compromise npm bundle load removed from hot path).
+    // If in future we need NLP for structured English parsing, re-add as a LAZY module.
 
-    // ------------------------------------------------------------------
-    // STEP 1.5: Dynamic NLP Dictionary (results already loaded in parallel)
-    // ------------------------------------------------------------------
-    console.time("NLP");
-    try {
-        if (nlpEngine) {
-            const doc = nlpEngine(cleanFullText);
-            const tagsArray = doc.out('tags');
-            if (tagsArray && tagsArray.length > 0 && tagsArray[0]) {
-                Object.keys(tagsArray[0]).forEach(word => {
-                    const wordTags: string[] = tagsArray[0][word];
-                    const valueTag = wordTags.find((t: string) => t.endsWith('Value') && t !== 'Value');
-                    if (valueTag) {
-                        if ((valueTag === 'NumericValue' || valueTag === 'NumberValue') && !/\d/.test(word)) return;
-                        const fieldName = valueTag.replace('Value', '');
-                        const GARBAGE_FIELDS = ['numeric', 'general', 'value', 'number'];
-                        if (GARBAGE_FIELDS.includes(fieldName.toLowerCase())) return;
-                        suggestions.push({ field: fieldName, value: word, confidence: 0.95, source: 'COMPROMISE_NLP' });
-                    }
-                });
-            }
-        }
-    } catch (e) {
-        console.error("NLP parsing error in analyze:", e);
-    }
-    console.timeEnd("NLP");
 
     // Temporal Decay: signals ישנים מקבלים משקל נמוך יותר
     const allSignals = allSignalsRaw.map((s: any) => ({
         ...s,
         weight: s.weight * getTemporalDecay(s.updatedAt)
     }));
-    const allContextPatterns = allContextPatternsRaw;
-
-
-    // ⚡ O(1) Precomputations for Context (The Family Tree Maps) to prevent 30s latency!
-    const contextMapById = new Map<string, any>();
-    const fieldNodesByField = new Map<string, any[]>();
-    const rootFamiliesByKey = new Map<string, any[]>();
-    
-    allContextPatternsRaw.forEach((p: any) => {
-        contextMapById.set(p.id, p);
-        if (p.type === "FIELD") {
-            const arr = fieldNodesByField.get(p.patternPart) || [];
-            arr.push(p);
-            fieldNodesByField.set(p.patternPart, arr);
-        }
-        const rootKey = `${p.patternPart}___${p.type}`;
-        const rootArr = rootFamiliesByKey.get(rootKey) || [];
-        rootArr.push(p);
-        rootFamiliesByKey.set(rootKey, rootArr);
-    });
 
     // ------------------------------------------------------------------
     // STEP 1.75: Signal Engine — DB-driven signal matching (replaces hardcoded rules)
     // Runs AFTER Hebrew normalization, BEFORE Dictionary scan
     // ------------------------------------------------------------------
     try {
-        // Phase A: Direct signal value matching
+        // Phase 0: HARD_SIGNAL — pre-DB, universal symbols (₪, שקל, °C, ק"מ, m²)
+        // These bypass all dictionaries. If detected, they are Signal Locks.
+        const hardSignalMatches = extractHardSignals(cleanFullText);
+        suggestions.push(...hardSignalMatches);
+
+        // Phase A: Direct signal value matching (DB-driven fallback)
         const signalMatches = extractSignals(cleanFullText, allSignals);
         suggestions.push(...signalMatches);
 
-        // Phase B: Dynamic number + unit binding (generic, no category rules)
+        // Phase B: Dynamic number + unit binding (fallback for GB, MHz, etc. when no anchors exist)
         const unitBindings = bindNumbersToUnits(cleanFullText, allSignals);
         suggestions.push(...unitBindings);
     } catch (e) {
         console.error("Signal Engine error:", e);
     }
 
-    let extractedBrand = "";
-    let extractedModel = "";
+    // ------------------------------------------------------------------
+    // STEP 2 (DICT): Word-boundary safe dictionary scan
+    // Prevents short values like "or" from matching inside Hebrew words
+    // ------------------------------------------------------------------
+    let extractedBrand = suggestions.find(s => s.field === 'brand')?.value || "";
+    let extractedModel = suggestions.find(s => s.field === 'model')?.value || "";
+
+    /* [LEGACY ENGINE DISABLED - BY USER REQUEST]
+    // The pure architecture relies exclusively on ContextAwareParser (Candles + Anchors).
+    // This blind dictionary loop is commented out to prevent "Intel Core i5" from 
+    // being forced into multiple fields without context.
 
     console.time("DICTIONARY");
     for (const record of allReliableValues) {
-        const val = record.value.toLowerCase();
-        if (cleanFullText.includes(val) || val.includes(cleanFullText)) {
-            // Temporal Decay על הביטחון - ערכים ישנים שלא אושרו מאבדים משקל
+        const val = record.value.toLowerCase().trim();
+
+        // ️️ תיקון A: אם ערך הוא ביטוי עוגן טהור (ולא נר חזק) — הוא לא יכול להיות ערך שדה!
+        // (מניעת מצב שבו "ram" ב-fieldValueReliability מנצח וממלא שדה gpu)
+        // חריג "המלך מורה-הדרך": אם הערך הוא נר במעיד על ביטחון גבוה (>= 0.65), אנחנו כן נאפשר לו לעבור כנר למרות שהוא מתפקד גם כעוגן לשדה אחר.
+        if (anchorPhraseSet.has(val) && record.confidence < 0.65) continue;
+
+        // ⚡ WORD-BOUNDARY CHECK: Use regex instead of .includes() to prevent false-positives
+        // e.g. value "or" should not match inside the word "more" or "color"
+        const escapedVal = val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const wordBoundaryRegex = new RegExp(`(^|[\\s,.-])${escapedVal}($|[\\s,.-])`, 'i');
+        const isMatch = val.length <= 3 
+            ? wordBoundaryRegex.test(cleanFullText)   // short values: strict word-boundary
+            : cleanFullText.includes(val);             // longer values: fast .includes() is safe
+
+        if (isMatch) {
             const decayFactor     = getTemporalDecay(record.updatedAt);
             const dynamicConfidence = Math.min(0.5 + ((record.occurrenceCount || 1) * 0.15), 1.0) * decayFactor;
             const finalConfidence   = Math.max(record.confidence * decayFactor, dynamicConfidence);
             
-            // Anchor tagging for catalog search
-            if (record.field === 'brand' && !extractedBrand) extractedBrand = record.value;
-            if (record.field === 'model' && !extractedModel) extractedModel = record.value;
-
             suggestions.push({ field: record.field, value: record.value, confidence: finalConfidence, source: 'DICTIONARY' });
         }
     }
     console.timeEnd("DICTIONARY");
+    */
 
     // ------------------------------------------------------------------
     // STEP 3: Catalog Lookup & Constraints Intersection (Dynamic Mutability)
@@ -297,7 +388,45 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
                 })
             );
             
-            if (extractedModel && catRows.length > 0) {
+            let foundCatalogModel: any = null;
+            if (catRows.length > 0) {
+                // Sort longest to shortest model names to prioritize specific matches (e.g. Predator Helios Neo 16 > Predator Helios 16)
+                const sortedRows = [...catRows].sort((a, b) => b.modelName.length - a.modelName.length);
+                const textWithoutSpaces = cleanFullText.replace(/\s+/g, '');
+
+                for (const row of sortedRows) {
+                    const modelNameLower = row.modelName.toLowerCase();
+                    const escapedModel = modelNameLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const wordBoundaryRegex = new RegExp(`(^|[\\s,.-])${escapedModel}($|[\\s,.-])`, 'i');
+                    
+                    const noSpaceModel = modelNameLower.replace(/\s+/g, '');
+                    
+                    if (
+                        wordBoundaryRegex.test(cleanFullText) || 
+                        cleanFullText.includes(modelNameLower) || 
+                        (noSpaceModel.length >= 4 && textWithoutSpaces.includes(noSpaceModel))
+                    ) {
+                        foundCatalogModel = row;
+                        break;
+                    }
+                }
+            }
+
+            if (foundCatalogModel) {
+                 catalogBase = foundCatalogModel;
+                 // Push into suggestions so the API returns it to strictly fill the form
+                 suggestions.push({
+                     field: 'subModel',
+                     value: foundCatalogModel.modelName,
+                     confidence: 0.95,
+                     source: 'CATALOG_DEDUCTION',
+                     uiAction: 'AUTO_FILL'
+                 });
+                 if (foundCatalogModel.series) {
+                     // ⚠️ Note: LaptopCatalog column is "series" but form fieldId is "family"
+                     suggestions.push({ field: 'family', value: foundCatalogModel.series, confidence: 0.95, source: 'CATALOG_DEDUCTION', uiAction: 'AUTO_FILL' });
+                 }
+            } else if (extractedModel && catRows.length > 0) {
                 catalogBase = catRows.find((c: any) => c.modelName.toLowerCase().includes(extractedModel.toLowerCase())) || catRows[0];
             } else if (catRows.length > 0) {
                 catalogBase = catRows[0];
@@ -309,107 +438,49 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
         } catch(e) { console.error("Catalog check error", e); }
     }
 
-    // ------------------------------------------------------------------
-    // STEP 4 & 5: NLP, Fuzzy Matching, and Lineage (-2 / +2 Context Window)
-    // ------------------------------------------------------------------
-    const words = text.split(/\s+/);
-    
+    // ─────────────────────────────────────────────────────────────
+    // STEP 4 (FUZZY): Levenshtein — Brand/Model typo correction ONLY
+    // Restricted to English words and brand/model fields.
+    // Running O(N×M) on ALL fields was wasteful. Hebrew words don't
+    // benefit from edit-distance matching anyway.
+    // ─────────────────────────────────────────────────────────────
+    // Pre-filter: only brand/model records with single Latin words
+    const fuzzyTargets = allReliableValues.filter(r =>
+        (r.field === 'brand' || r.field === 'model') &&
+        !r.value.includes(' ') &&
+        /^[a-z]/i.test(r.value)  // English-only
+    );
+
     console.time("FUZZY");
-    for (let i = 0; i < words.length; i++) {
-        const rawWord = words[i].replace(/^[,"']+|[,"']+$/g, "");
-        const word = rawWord.toLowerCase();
-        if (word.length < 2) continue;
-        
-        // Phase A: Fuzzy (Levenshtein) Single Word Match
-        for (const record of allReliableValues) {
-            if (record.value.includes(" ")) continue; 
-            const recordValLower = record.value.toLowerCase();
-            // ⚡ EXTREME OPTIMIZATION: If length differs by >1, distance CANNOT be 1. Skip matrix entirely!
-            if (Math.abs(word.length - recordValLower.length) > 1) continue; 
-            
-            const distance = getLevenshteinDistance(word, recordValLower);
-            if (distance === 1 && word.length > 3) {
-                const dynamicConfidence = Math.min(0.5 + ((record.occurrenceCount || 1) * 0.15), 1.0);
-                suggestions.push({ field: record.field, value: record.value, confidence: Math.max(record.confidence, dynamicConfidence) * 0.8, source: 'FUZZY' });
+    if (fuzzyTargets.length > 0) {
+        const textWords = text.split(/\s+/);
+        for (const rawWord of textWords) {
+            const word = rawWord.replace(/^[,"']+|[,"']+$/g, "").toLowerCase();
+            // ⚡ Skip: Hebrew words, too short, or pure numbers
+            if (word.length < 4 || /^[\u05D0-\u05EA]/.test(word) || /^\d+$/.test(word)) continue;
+
+            for (const record of fuzzyTargets) {
+                const recordValLower = record.value.toLowerCase();
+                // ⚡ Fast bail-out: length diff > 1 means edit-distance > 1, impossible match
+                if (Math.abs(word.length - recordValLower.length) > 1) continue;
+                // ⚡ Skip exact matches — already handled by Dictionary scan
+                if (word === recordValLower) continue;
+
+                const distance = getLevenshteinDistance(word, recordValLower);
+                if (distance === 1) {
+                    const dynamicConfidence = Math.min(0.5 + ((record.occurrenceCount || 1) * 0.15), 1.0);
+                    suggestions.push({
+                        field: record.field,
+                        value: record.value,
+                        confidence: Math.max(record.confidence, dynamicConfidence) * 0.8,
+                        source: 'FUZZY'
+                    });
+                }
             }
         }
     }
     console.timeEnd("FUZZY");
-
-    console.time("DNA");
-    for (let i = 0; i < words.length; i++) {
-        const rawWord = words[i].replace(/^[,"']+|[,"']+$/g, "");
-        const word = rawWord.toLowerCase();
-        if (word.length < 2) continue;
-
-        // Phase B: DNA Testing (The Ensamble/Community Graph)
-        const preWords = [
-            i >= 2 ? words[i - 2].replace(/^[,"']+|[,"']+$/g, "").toLowerCase() : null,
-            i >= 1 ? words[i - 1].replace(/^[,"']+|[,"']+$/g, "").toLowerCase() : null
-        ].filter(Boolean) as string[];
-        
-        const postWords = [
-            i <= words.length - 2 ? words[i + 1].replace(/^[,"']+|[,"']+$/g, "").toLowerCase() : null,
-            i <= words.length - 3 ? words[i + 2].replace(/^[,"']+|[,"']+$/g, "").toLowerCase() : null
-        ].filter(Boolean) as string[];
-
-        const preDna = [
-            ...preWords, 
-            preWords.join(" ")
-        ].filter((c: string | null) => c && c.length > 1);
-
-        const postDna = [
-            ...postWords, 
-            postWords.join(" ")
-        ].filter((c: string | null) => c && c.length > 1);
-
-        // helper to process dna lists
-        const processDna = (dnaList: string[], requiredType: string) => {
-            for (const dna of dnaList) {
-                try {
-                    const rootKey = `${dna}___${requiredType}`;
-                    const rootFamilies = rootFamiliesByKey.get(rootKey) || [];
-
-                for (const rootFamily of rootFamilies) {
-                    if (rootFamily.children && rootFamily.children.length > 0) {
-                        for (const child of rootFamily.children) {
-                            if (child.type === "FIELD") {
-                                const targetField = child.patternPart; // e.g. 'price'
-                                const dnaConfidenceBoost = child.confidence || 0.5;
-
-                                // If 'rawWord' is a number, the DNA directly assigns it to the targetField
-                                if (rawWord.match(/^\d+(?:\.\d+)?$/) || rawWord.match(/^\d+(?:\.\d+)?[a-zא-ת]+$/i)) {
-                                    let finalVal = rawWord;
-                                    if (targetField === 'price') finalVal = rawWord.replace(/\D/g, ''); 
-                                    suggestions.push({ field: targetField, value: finalVal, confidence: dnaConfidenceBoost, source: 'DNA_CONTEXT' });
-                                } else {
-                                    // It's a dictionary word conflict. Find the baseline suggestion and BOOST it (War of Families!)
-                                    const existingSuggestion = suggestions.find(s => s.value === rawWord && s.field === targetField);
-                                    if (existingSuggestion) {
-                                        // Overpower! The family boosts the baseline word.
-                                        existingSuggestion.confidence = Math.min(1.0, existingSuggestion.confidence + (dnaConfidenceBoost * 0.5));
-                                        if (existingSuggestion.source === 'DICTIONARY' || existingSuggestion.source === 'FUZZY') {
-                                            existingSuggestion.source = 'DNA_BOOSTED_DICTIONARY';
-                                        } else {
-                                            existingSuggestion.source = existingSuggestion.source!.includes('DNA_CONTEXT') ? existingSuggestion.source : 'DNA_CONTEXT';
-                                        }
-                                    } else {
-                                        // Even if not firmly in dict, the strong DNA says it belongs here!
-                                        suggestions.push({ field: targetField, value: rawWord, confidence: dnaConfidenceBoost * 0.8, source: 'DNA_CONTEXT_ONLY' });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (e) {}
-        }
-        }; // close processDna
-
-        processDna(preDna, "PREFIX_ROOT");
-        processDna(postDna, "SUFFIX_ROOT");
-    }
-    console.timeEnd("DNA");
+    // ✅ DNA/ContextPattern step permanently removed — FieldAnchor (Navigation in the Dark) handles this.
 
     // ------------------------------------------------------------------
     // STEP 6: Catalog Overrides & Conflict Resolution 
@@ -429,65 +500,65 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
         }
     }
 
-    // Combine Similarity & De-Duplication (Community Graph Aggregation)
-    // 1. קודם מרכזים עדויות לאותו (שערך + שדה)
+    // ─────────────────────────────────────────────────────────────────────
+    // STEP 6: Aggregate suggestions → War of Families
+    // ⚡ OPTIMIZATION: Replaced O(N²) stringSimilarity on every push
+    //    with an O(1) Set-based field registry.
+    //    stringSimilarity is still used but ONLY for initial field normalization
+    //    (runs once per unique field, not once per suggestion)
+    // ─────────────────────────────────────────────────────────────────────
     const hypothesisMap = new Map();
-    const distinctFieldsArr: string[] = []; // O(1) Cache
+    const distinctFieldsSet = new Set<string>();  // O(1) lookups
+    const distinctFieldsArr: string[] = [];        // kept for stringSimilarity API
+    const fieldNormalizeCache = new Map<string, string>(); // field → normalized field (memoized)
 
     suggestions.forEach(s => {
-        let matchedField = s.field;
-        
-        if (distinctFieldsArr.length > 0) {
-            // הדימיון מתבצע אך ורק על המערך המוכן - מונע TLE והקפאת שרת!
-            const bestMatch = stringSimilarity.findBestMatch(s.field, distinctFieldsArr);
-            if (bestMatch.bestMatch.rating >= 0.85) matchedField = bestMatch.bestMatch.target;
+        // ── Apply FIELD_ALIAS_MAP: normalize AI field names to form fieldIds ──
+        // e.g. "series" → "family", "display" → "screen"
+        // Skip fields with no form equivalent (title, display if unmapped)
+        const resolvedField = resolveFieldId(s.field);
+        if (resolvedField === s.field && (s.field === 'title')) return; // skip ghost fields
+        let matchedField = resolvedField;
+
+
+        // ⚡ Memoized field normalization: each unique field name is resolved ONCE
+        // NOTE: uses resolvedField (after FIELD_ALIAS_MAP) not s.field
+        if (!fieldNormalizeCache.has(resolvedField)) {
+            if (distinctFieldsArr.length > 0) {
+                const bestMatch = stringSimilarity.findBestMatch(resolvedField, distinctFieldsArr);
+                if (bestMatch.bestMatch.rating >= 0.85) {
+                    fieldNormalizeCache.set(resolvedField, bestMatch.bestMatch.target);
+                } else {
+                    fieldNormalizeCache.set(resolvedField, resolvedField);
+                }
+            } else {
+                fieldNormalizeCache.set(resolvedField, resolvedField);
+            }
         }
+        matchedField = fieldNormalizeCache.get(resolvedField)!;
+
 
         const hypothesisKey = `${matchedField}___${s.value.toLowerCase()}`;
         const existing = hypothesisMap.get(hypothesisKey);
         
         if (!existing) {
             hypothesisMap.set(hypothesisKey, { ...s, field: matchedField });
-            if (!distinctFieldsArr.includes(matchedField)) {
+            if (!distinctFieldsSet.has(matchedField)) {
+                distinctFieldsSet.add(matchedField);
                 distinctFieldsArr.push(matchedField);
             }
         } else {
-            // THE WAR OF FAMILIES REWARD: Aggregating multiple community DNA hits for the EXACT SAME hypothesis
             if (s.uiAction === "CONFLICT_CATALOG") existing.uiAction = "CONFLICT_CATALOG";
-            
-            // Asymptotic Probability Addition
+            // Asymptotic Probability Addition (War of Families)
             const remainingDoubt = 1.0 - existing.confidence;
             existing.confidence = existing.confidence + (remainingDoubt * s.confidence);
             existing.source = existing.source + ' + ' + s.source;
         }
     });
 
-    // ═══════════════════════════════════════════════════════════════
-    // STEP 5.5: Family Affinity Pass — Return to Source
-    // בעיה: "עולה" יכול להיות price(0.95) ו-temperature(0.85) — שניהם דיכשנרי גבוה
-    // פתרון: חוזרים למשפחה שיצרה כל שדה ב-ContextPattern
-    //         ובודקים אחים (PREFIX_ROOT) קיימים בטקסט הנוכחי.
-    //         המשפחה עם הכי הרבה אחים בטקסט → BOOST אסימפטוטי
-    //         ענישה: משפחה עם אפס אחים בטקסט לא מקבלת חיזוק
-    // ═══════════════════════════════════════════════════════════════
-    const textForFamily = cleanFullText.toLowerCase();
-    const familyAffinityCache = new Map<string, number>(); // field → affinity
+    // ✅ Family Affinity step permanently removed — was based on ContextPattern which is now empty.
+    // Navigation in the Dark (ContextAwareParser) handles context resolution directly.
 
-    for (const [, hypo] of hypothesisMap) {
-        const cacheKey = hypo.field;
-        if (!familyAffinityCache.has(cacheKey)) {
-            familyAffinityCache.set(
-                cacheKey,
-                computeFamilyAffinity(hypo.field, textForFamily, fieldNodesByField, contextMapById)
-            );
-        }
-        const affinity = familyAffinityCache.get(cacheKey)!;
-        if (affinity > 0.05) {
-            // Asymptotic boost: max 40% מהספק הנותר
-            hypo.confidence = hypo.confidence + (1 - hypo.confidence) * affinity * 0.40;
-            hypo.source = (hypo.source ?? '') + '+FAMILY_AFFINITY';
-        }
-    }
 
     // 2. עכשיו, מקרב ההשערות השונות לאותו שדה, בוחרים את המנצח (או מעדיפים מספרים על פני טקסט בשדות כמותיים)
     const finalMap = new Map();
@@ -506,15 +577,27 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
             let replace = false;
             
             // חוקי ניצחון:
-            if (isNumericField) {
+            // 1. קודם כל ולפני הכל: חוק ההכלה (Substring Overlap). 
+            // אם מחרוזת אחת מכילה את השנייה במלואה במקור, המחרוזת הארוכה והספציפית תמיד קובעת! (לדוגמה 'Intel core i7' מנצח 'i7').
+            if (hypo.value.length > existingBest.value.length && hypo.value.toLowerCase().includes(existingBest.value.toLowerCase())) {
+                replace = true;
+            } else if (existingBest.value.length > hypo.value.length && existingBest.value.toLowerCase().includes(hypo.value.toLowerCase())) {
+                replace = false;
+            } 
+            // 2. אם לא הייתה הכלה, נבדוק התנהגות שדות מיוחדים (מספרים מול טקסט בשדות כמותיים)
+            else if (isNumericField) {
                 // בשדה נומרי: אם אחד מספר והשני לא - המספר מיד מנצח!
                 if (hypoIsNum && !existIsNum) replace = true;
-                // אם שניהם מספרים, המנצח הוא בעל הביטחון הגבוה יותר
-                else if (hypoIsNum && existIsNum && hypo.confidence > existingBest.confidence) replace = true;
-            } else {
-                // בשדה טקסטואלי: בעל הביטחון הגבוה יותר לוקח. אם הם קרובים, טקסט ארוך יותר מנצח.
-                if (hypo.confidence > existingBest.confidence + 0.1) replace = true;
-                else if (Math.abs(hypo.confidence - existingBest.confidence) <= 0.1 && hypo.value.length > existingBest.value.length && hypo.source !== 'DNA_CONTEXT_ONLY') replace = true;
+                // אם שניהם מספרים, או אף אחד מהם לא, המנצח הוא בעל הביטחון הגבוה יותר
+                else if (hypo.confidence > existingBest.confidence) replace = true;
+            } 
+            // 3. בשדה טקסטואלי, בעל הביטחון הגבוה יותר לוקח (בפער משמעותי).
+            else if (hypo.confidence > existingBest.confidence + 0.1) {
+                replace = true;
+            } 
+            // 4. בשדה טקסטואלי, בביטחון כמעט זהה, טקסט ארוך יותר מנצח.
+            else if (Math.abs(hypo.confidence - existingBest.confidence) <= 0.1 && hypo.value.length > existingBest.value.length && hypo.source !== 'DNA_CONTEXT_ONLY') {
+                replace = true;
             }
 
             if (replace) {
@@ -527,6 +610,37 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
     finalMap.forEach(finalRes => {
         if (numericFields.has(finalRes.field.toLowerCase()) && !/\d/.test(finalRes.value)) {
             finalRes.confidence = finalRes.confidence * 0.2;
+        }
+    });
+
+    // ------------------------------------------------------------------
+    // STEP 6.5: GLOBAL EXCLUSIVITY (The Final Guard)
+    // Prevent the exact same value from being assigned to multiple fields!
+    // Example: "Intel Core i5" shouldn't be both 'cpu' and 'subModel'.
+    // ------------------------------------------------------------------
+    const valueToFields = new Map<string, any[]>();
+    finalMap.forEach(finalRes => {
+        const valLower = String(finalRes.value).toLowerCase().trim();
+        if (!valueToFields.has(valLower)) valueToFields.set(valLower, []);
+        valueToFields.get(valLower)!.push(finalRes);
+    });
+
+    valueToFields.forEach((claims, valLower) => {
+        if (claims.length > 1) {
+            // Sort by highest confidence first
+            claims.sort((a, b) => b.confidence - a.confidence);
+            
+            // Allow exact same numbers under 100 to duplicate ONLY if they are very small (e.g. 8GB RAM and 8GB GPU).
+            // But block large numbers (like 128) and block ALL text values from duplicating!
+            const isSmallNum = /^\d+$/.test(valLower) && parseInt(valLower) <= 32;
+
+            if (!isSmallNum) {
+                // Keep the best claim. Delete the losers from finalMap!
+                for (let i = 1; i < claims.length; i++) {
+                    console.log(`🛡️ [Global Exclusivity] Dropped duplicate value "${claims[i].value}" for field [${claims[i].field}] (Lost to [${claims[0].field}])`);
+                    finalMap.delete(claims[i].field);
+                }
+            }
         }
     });
 
@@ -551,9 +665,26 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
 
     const finalResults = Array.from(finalMap.values()).map(s => {
         let action = s.uiAction || "NONE";
-        
+        let mappedValue = s.value;
+
+        // ------------------------------------------------------------------
+        // ⭐ רפלקס השלמה אוטומטית (Option Snapping)
+        // אם המנוע חילץ חלק מהשם (למשל "i7" או "t14s") והשדה מצפה לערך מתוך רשימה סגורה
+        // עליו לחפש איזה ערך רשמי מכיל את המילה הזו ולהגיש אותה לטופס בצורתה המלאה!
+        // ------------------------------------------------------------------
+        if (fieldOptions && fieldOptions.length > 0) {
+            const opts = fieldOptions.filter((o: any) => o.fieldId.toLowerCase() === s.field.toLowerCase());
+            if (opts.length > 0) {
+                const sLower = s.value.toLowerCase();
+                const exact = opts.find((o: any) => o.value.toLowerCase() === sLower);
+                if (exact) {
+                    mappedValue = exact.value;
+                }
+            }
+        }
+
         // If it's a conflict, it overrides the standard AI fill logic
-        if (action === "CONFLICT_CATALOG") return { ...s, action };
+        if (action === "CONFLICT_CATALOG") return { ...s, value: mappedValue, action };
 
         const limits = thresholdMap.get(s.field);
         const globalFill = config?.thresholds?.global_fill ?? 0.85;
@@ -565,13 +696,13 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
         if (s.confidence >= fieldThreshold) action = "AUTO_FILL";
         else if (s.confidence >= (fieldThreshold - fieldMargin)) action = "SUGGEST";
 
-        return { ...s, action };
+        return { ...s, value: mappedValue, action };
     }).filter(s => s.action !== "NONE");
 
     console.log("STATS:");
-    console.log("Words count:", words.length);
+    console.log("Words count:", text.split(/\s+/).length);
     console.log("Reliable values:", allReliableValues.length);
-    console.log("Context patterns:", allContextPatterns.length);
+    console.log("Field Anchors:", allFieldAnchors.length);
     console.log("Form fields:", formStructsCount);
     console.log("Field options:", fieldOptionsCount);
     

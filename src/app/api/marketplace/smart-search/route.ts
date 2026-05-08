@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { query, lat, lng, radiusKm, category } = body;
+        const { query, lat, lng, radiusKm, category, listingType = "SELL" } = body;
 
         let aiFilters: any = {};
         let searchKeywords: string[] = [];
@@ -160,6 +160,7 @@ export async function POST(req: Request) {
         // 3. Construct Where Clause - ONLY published MarketplaceListings
         const whereClause: any = {
             status: "ACTIVE",
+            listingType: listingType,
             ...latLngFilter
         };
 

@@ -328,7 +328,7 @@ function DashboardContent() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Primary Action: Marketplace */}
                             <button
-                                onClick={() => router.push('/dashboard/marketplace')}
+                                onClick={() => router.push('/')}
                                 className="relative overflow-hidden bg-gradient-to-br from-indigo-500/20 to-purple-500/10 hover:from-indigo-500/30 hover:to-purple-500/20 border border-indigo-500/30 rounded-3xl p-5 text-right transition-all group shadow-[0_0_20px_rgba(99,102,241,0.1)] hover:shadow-[0_0_30px_rgba(99,102,241,0.2)]"
                             >
                                 <div className="absolute top-0 left-0 w-24 h-24 bg-indigo-500/20 rounded-br-full -ml-4 -mt-4 transition-transform group-hover:scale-110" />

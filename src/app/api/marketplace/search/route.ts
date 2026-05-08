@@ -17,10 +17,10 @@ export async function GET(req: Request) {
 
         const terms = query.split(' ').filter(t => t.trim().length > 0);
 
-        // 1. Search ShadowLeads (Facebook Scrape) - Relaxed OR search
+        // 1. Search ShadowLeads (Facebook Scrape) - Strict AND search for terms
         const shadowLeads = await prismadb.shadowLead.findMany({
             where: {
-                OR: terms.map(term => ({
+                AND: terms.map(term => ({
                     OR: [
                         { postText: { contains: term, mode: "insensitive" as const } },
                         { sellerName: { contains: term, mode: "insensitive" as const } },
@@ -45,18 +45,16 @@ export async function GET(req: Request) {
             sourceUrl: lead.sourceUrl
         }));
 
-        // 2. Search Internal Shipments - Relaxed search
+        // 2. Search Internal Shipments - Strict AND search for terms
         const shipments = await prismadb.shipment.findMany({
             where: {
-                OR: [
-                    ...terms.map(term => ({
-                        details: {
-                            is: {
-                                itemName: { contains: term, mode: "insensitive" as const }
-                            }
+                AND: terms.map(term => ({
+                    details: {
+                        is: {
+                            itemName: { contains: term, mode: "insensitive" as const }
                         }
-                    }))
-                ],
+                    }
+                })),
                 status: { not: "DELIVERED" }
             },
             include: {

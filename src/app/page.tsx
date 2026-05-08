@@ -1,351 +1,586 @@
-import Link from "next/link";
-import { Navbar } from "@/components/Navbar";
+"use client";
+import { useEffect, useState, useRef, Suspense } from "react";
+import { useUser, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Logo } from "@/components/Logo";
+import { ListingCard } from "@/components/marketplace/ListingCard";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Search, Filter, Plus, Sparkles, ScanSearch, Settings, MapPin, LocateFixed, Loader2, User, Tag, ShieldCheck, Zap, Package, Map as MapIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Package, Shield, Truck } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import { toast } from "sonner";
+import dynamic from 'next/dynamic';
 
-export default function Home() {
-    return (
-        <main className="flex min-h-screen flex-col">
-            <Navbar />
+const LocationMap = dynamic(() => import('@/components/marketplace/LocationMap'), {
+  ssr: false,
+  loading: () => <div className="h-full w-full bg-gray-800 animate-pulse rounded-xl flex items-center justify-center text-gray-500">טוען מפה...</div>
+});
 
-            {/* Hero Section */}
-            <section className="flex-1 flex flex-col items-center justify-start pt-2 pb-12 md:pt-8 md:pb-24 relative overflow-hidden min-h-[calc(100vh-4rem)]">
-                {/* Background Gradients */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] -z-10 opacity-50 animate-pulse" />
-                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-[80px] -z-10" />
-                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-[80px] -z-10" />
+const ISRAELI_CITIES: Record<string, { lat: number, lng: number }> = {
+  "תל אביב": { lat: 32.0853, lng: 34.7818 },
+  "ירושלים": { lat: 31.7683, lng: 35.2137 },
+  "חיפה": { lat: 32.7940, lng: 34.9896 },
+  "ראשון לציון": { lat: 31.9730, lng: 34.7925 },
+  "פתח תקווה": { lat: 32.0840, lng: 34.8878 },
+  "אשדוד": { lat: 31.8014, lng: 34.6435 },
+  "נתניה": { lat: 32.3215, lng: 34.8532 },
+  "באר שבע": { lat: 31.2518, lng: 34.7913 },
+  "בני ברק": { lat: 32.0849, lng: 34.8352 },
+  "חולון": { lat: 32.0158, lng: 34.7733 },
+  "רמת גן": { lat: 32.0684, lng: 34.8248 },
+  "הרצליה": { lat: 32.1624, lng: 34.8447 },
+  "רעננה": { lat: 32.1848, lng: 34.8708 },
+  "מודיעין": { lat: 31.8903, lng: 35.0104 },
+};
 
-                <div className="container px-4 text-center max-w-5xl space-y-8 relative z-10 flex flex-col h-full">
+const ADMIN_EMAILS = ["yalgawi@gmail.com", "darohadd@walla.com", "itay@qlikndeal.com", "dpccomp@gmail.com"];
+const CATEGORIES = ["אוזניות ושמע","אופנועים וקטנועים","ביגוד ואופנה","טלוויזיות ומסכים","טאבלטים","מוצרי חשמל ביתיים","מחשבים ניידים","מחשבים שולחניים","מצלמות","נדל\"ן","קונסולות ומשחקים","ריהוט וצרכי בית","רכבים","טלפונים סלולריים"].sort();
 
-                    {/* Revolution Badge */}
-                    <div className="flex justify-center">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold tracking-wider uppercase text-sm mb-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                            </span>
-                            המהפכה בעסקאות יד-שנייה
-                        </div>
+function TopNav() {
+  const { user } = useUser();
+  const isAdmin = ADMIN_EMAILS.includes(user?.primaryEmailAddress?.emailAddress || "");
+  return (
+    <nav className="sticky top-0 z-50 border-b border-white/5 bg-black/80 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <Logo />
+        <div className="flex items-center gap-3">
+          <SignedOut>
+            <SignInButton mode="modal">
+              <div className="cursor-pointer text-sm px-4 py-2 bg-blue-600 hover:bg-blue-500 font-bold rounded-md text-white inline-flex items-center justify-center transition-colors">כניסה / הרשמה</div>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            {isAdmin && (
+              <>
+                <Button asChild variant="ghost" size="sm" className="text-purple-400"><Link href="/admin"><Settings className="w-4 h-4 ml-1"/>ניהול</Link></Button>
+              </>
+            )}
+            <Button asChild variant="ghost" size="sm" className="text-gray-300 hover:text-white"><Link href="/dashboard/marketplace/my-listings"><Package className="w-4 h-4 ml-1"/>המודעות שלי</Link></Button>
+            <Button asChild variant="outline" size="sm" className="border-white/10 text-white hover:bg-white/10 gap-2"><Link href="/dashboard"><User className="w-4 h-4"/>האזור שלי</Link></Button>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function MarketplaceContent() {
+  const searchParams = useSearchParams();
+  const [listings, setListings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isFallback, setIsFallback] = useState(false);
+  const [aiInsight, setAiInsight] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState(searchParams.get("q") || "");
+  const [autocompleteResults, setAutocompleteResults] = useState<any[]>([]);
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [isAutocompleteLoading, setIsAutocompleteLoading] = useState(false);
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
+  const [locationName, setLocationName] = useState("");
+  const [locationMode, setLocationMode] = useState<"LIVE" | "HOME" | "">("");
+  const [radiusKm, setRadiusKm] = useState(155);
+  const [showMap, setShowMap] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("cat") || "all");
+  const [listingType, setListingType] = useState<"SELL" | "BUY">("SELL"); // NEW TOGGLE
+  const [showFilters, setShowFilters] = useState(false);
+  const [gettingLocation, setGettingLocation] = useState(false);
+  const [showCityDialog, setShowCityDialog] = useState(false);
+  const [citySearch, setCitySearch] = useState("");
+  const [cityResults, setCityResults] = useState<any[]>([]);
+  const [isNavigatingTo, setIsNavigatingTo] = useState<string | null>(null);
+  const cityDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const autocompleteRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const { user } = useUser();
+  const isAdmin = ADMIN_EMAILS.includes(user?.primaryEmailAddress?.emailAddress || "");
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (autocompleteRef.current && !autocompleteRef.current.contains(e.target as Node)) setShowAutocomplete(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const fetchSearch = async (q = searchInput, latV = lat, lngV = lng, type = listingType) => {
+    setLoading(true); setShowAutocomplete(false);
+    try {
+      const res = await fetch("/api/marketplace/smart-search", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: q, lat: latV, lng: lngV, radiusKm: latV && lngV ? (radiusKm === 155 ? null : radiusKm) : null, category: selectedCategory === "all" ? null : selectedCategory, listingType: type })
+      });
+      const data = await res.json();
+      if (data.success) { setListings(data.results || []); setIsFallback(data.isFallback || false); setAiInsight(data.aiInsight || null); }
+    } catch { toast.error("שגיאה בחיפוש"); }
+    setLoading(false);
+  };
+
+  useEffect(() => { 
+    fetchSearch(""); 
+    
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (p) => { 
+            const newLat = p.coords.latitude; const newLng = p.coords.longitude;
+            setLat(newLat); setLng(newLng); setLocationMode("LIVE");
+            try {
+              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLat}&lon=${newLng}&zoom=10&accept-language=he`);
+              const data = await res.json();
+              const city = data.address?.city || data.address?.town || data.address?.village || data.name;
+              if (city) { setLocationName(`${city} 📍`); return; }
+            } catch {}
+            setLocationName("מיקום נוכחי 📍");
+        },
+        () => {}, 
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    if (showCreateModal) {
+      router.prefetch("/dashboard/marketplace/create-ai");
+      router.prefetch("/dashboard/marketplace/create");
+    }
+  }, [showCreateModal, router]);
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value; setSearchInput(val); setShowAutocomplete(true);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (val.trim().length > 1) {
+      setIsAutocompleteLoading(true);
+      debounceRef.current = setTimeout(async () => {
+        try {
+          const res = await fetch("/api/marketplace/smart-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: val, lat, lng, radiusKm: lat && lng ? (radiusKm === 155 ? null : radiusKm) : null, category: selectedCategory === "all" ? null : selectedCategory, listingType }) });
+          const data = await res.json();
+          if (data.success) setAutocompleteResults((data.results || []).slice(0, 5));
+        } catch {}
+        setIsAutocompleteLoading(false);
+      }, 300);
+    } else { setAutocompleteResults([]); setIsAutocompleteLoading(false); }
+  };
+
+  const geocodeCity = async (cityName: string) => {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1&accept-language=he`);
+      const data = await res.json();
+      if (data && data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    } catch {}
+    return null;
+  };
+
+
+  const getDeviceLocation = () => {
+    setLocationMode("LIVE");
+    setGettingLocation(true);
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (p) => { 
+            const newLat = p.coords.latitude; const newLng = p.coords.longitude;
+            setLat(newLat); setLng(newLng); 
+            try {
+              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLat}&lon=${newLng}&zoom=10&accept-language=he`);
+              const data = await res.json();
+              const city = data.address?.city || data.address?.town || data.address?.village || data.name;
+              if (city) { setLocationName(`${city} 📍`); setGettingLocation(false); return; }
+            } catch {}
+            setLocationName("מיקום נוכחי 📍");
+            setGettingLocation(false);
+        },
+        () => { toast.error("לא ניתן לקבל מיקום, בדוק הרשאות דפדפן"); setGettingLocation(false); setLocationMode(""); },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    } else { toast.error("הדפדפן לא תומך במיקום"); setGettingLocation(false); setLocationMode(""); }
+  };
+
+  return (
+    <main className="min-h-screen bg-black text-white" dir="rtl">
+      <TopNav />
+
+      {/* ══ HERO ══════════════════════════════════════════════════ */}
+      <div className="relative border-b border-white/5">
+        {/* Ambient background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-blue-700/10 rounded-full blur-3xl" />
+          <div className="absolute top-10 right-1/4 w-64 h-64 bg-purple-700/8 rounded-full blur-3xl" />
+        </div>
+
+        <div className="relative max-w-5xl mx-auto px-4 pt-12 pb-4 text-center">
+
+          {/* Trust badge */}
+          <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 mb-4">
+            <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
+            <span className="text-gray-300 text-xs font-semibold">מרקטפלייס ישראלי — קנייה ומכירה בטוחה</span>
+          </div>
+
+          {/* Main title */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight tracking-tight">
+            פשוט לעשות <span className="text-blue-500">QLIK</span> ולסגור <span className="bg-gradient-to-l from-purple-400 to-pink-400 bg-clip-text text-transparent">DEAL</span>
+          </h1>
+          <p className="text-gray-400 text-base md:text-lg mb-6 max-w-xl mx-auto leading-relaxed">
+            פרסם מה יש לך למכור, או הצהר שאתה מחפש — המוכרים יגיעו אליך ישירות
+          </p>
+
+          {/* ── Dual CTA Buttons ── */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+
+            {/* SELLER CTA */}
+            <SignedIn>
+              <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+                <DialogTrigger asChild>
+                  <button className="group relative flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-base transition-all hover:shadow-lg hover:shadow-blue-600/30 active:scale-95">
+                    <Plus className="w-5 h-5" />
+                    <div className="text-right leading-tight">
+                      <div>פרסם כמוכר</div>
+                      <div className="text-[11px] font-normal text-blue-200 opacity-80">יש לי מוצר למכירה</div>
                     </div>
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-2xl p-0 overflow-hidden">
+                  <div className="p-6 text-center border-b border-gray-800"><DialogTitle className="text-2xl font-bold">איך תרצה לפרסם?</DialogTitle><p className="text-gray-400 mt-2">בחר את הדרך הנוחה לך ביותר</p></div>
+                  <div className="grid md:grid-cols-2 gap-4 p-6">
+                    <button onClick={() => { setIsNavigatingTo("/dashboard/marketplace/create-ai"); router.push("/dashboard/marketplace/create-ai"); }} disabled={!!isNavigatingTo} className={`group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all cursor-pointer ${isNavigatingTo === "/dashboard/marketplace/create-ai" ? "border-indigo-500 bg-indigo-500/20 opacity-80 cursor-wait" : "border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 hover:border-indigo-500"}`}>
+                      {isNavigatingTo === "/dashboard/marketplace/create-ai" ? (
+                         <div className="h-16 w-16 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4"><Loader2 className="w-8 h-8 text-indigo-400 animate-spin" /></div>
+                      ) : (
+                         <>
+                           <div className="absolute top-3 left-3 bg-indigo-500 text-xs px-2 py-1 rounded-full font-bold animate-pulse">מומלץ ✨</div>
+                           <div className="h-16 w-16 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Sparkles className="w-8 h-8 text-indigo-400" /></div>
+                         </>
+                      )}
+                      <h3 className="text-xl font-bold mb-2">יצירה חכמה עם AI</h3>
+                      <p className="text-sm text-gray-400 text-center">
+                        {isNavigatingTo === "/dashboard/marketplace/create-ai" ? "טוען מערכת חכמה..." : "ספר לנו במילים פשוטות — ה-AI יבנה מודעה מושלמת."}
+                      </p>
+                    </button>
+                    <button onClick={() => { setIsNavigatingTo("/dashboard/marketplace/create"); router.push("/dashboard/marketplace/create"); }} disabled={!!isNavigatingTo} className={`group flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all cursor-pointer ${isNavigatingTo === "/dashboard/marketplace/create" ? "border-gray-500 bg-gray-800 opacity-80 cursor-wait" : "border-gray-700 bg-gray-800/50 hover:bg-gray-800 hover:border-gray-600"}`}>
+                      {isNavigatingTo === "/dashboard/marketplace/create" ? (
+                         <div className="h-16 w-16 bg-gray-700/50 rounded-full flex items-center justify-center mb-4"><Loader2 className="w-8 h-8 text-gray-400 animate-spin" /></div>
+                      ) : (
+                         <div className="h-16 w-16 bg-gray-700/50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Plus className="w-8 h-8 text-gray-400" /></div>
+                      )}
+                      <h3 className="text-xl font-bold mb-2">יצירה ידנית</h3>
+                      <p className="text-sm text-gray-400 text-center">
+                        {isNavigatingTo === "/dashboard/marketplace/create" ? "פותח טופס ידני..." : "מילוי ידני מלא לכל הקטגוריות."}
+                      </p>
+                    </button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <div className="cursor-pointer group relative flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-base transition-all hover:shadow-lg hover:shadow-blue-600/30 active:scale-95">
+                  <Plus className="w-5 h-5" />
+                  <div className="text-right leading-tight">
+                    <div>פרסם כמוכר</div>
+                    <div className="text-[11px] font-normal text-blue-200 opacity-80">יש לי מוצר למכירה</div>
+                  </div>
+                </div>
+              </SignInButton>
+            </SignedOut>
 
-                    <h1 className="text-5xl md:text-8xl font-extrabold tracking-tight bg-gradient-to-br from-white via-white/90 to-white/50 bg-clip-text text-transparent drop-shadow-sm font-['Outfit'] leading-tight">
-                        Qlik<span className="text-primary font-light">n</span>deal
-                        <br />
-                        <span className="font-sans text-4xl md:text-7xl mt-4 block bg-none text-white font-black tracking-normal">
-                            הצלע החסרה<br className="md:hidden" /> לכל עסקה
+            {/* BUYER CTA */}
+            <SignedIn>
+              <button onClick={() => { setIsNavigatingTo("/dashboard/marketplace/my-requests"); router.push("/dashboard/marketplace/my-requests"); }} disabled={!!isNavigatingTo} className="group relative flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-bold text-base transition-all hover:shadow-lg hover:shadow-purple-600/30 active:scale-95">
+                  {isNavigatingTo === "/dashboard/marketplace/my-requests" ? <Loader2 className="w-5 h-5 animate-spin" /> : <Tag className="w-5 h-5" />}
+                  <div className="text-right leading-tight">
+                    <div>פרסם כקונה</div>
+                    <div className="text-[11px] font-normal text-purple-200 opacity-80">
+                      {isNavigatingTo === "/dashboard/marketplace/my-requests" ? "מעביר..." : "אני מחפש מוצר"}
+                    </div>
+                  </div>
+              </button>
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <div className="cursor-pointer group relative flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-bold text-base transition-all hover:shadow-lg hover:shadow-purple-600/30 active:scale-95">
+                  <Tag className="w-5 h-5" />
+                  <div className="text-right leading-tight">
+                    <div>פרסם כקונה</div>
+                    <div className="text-[11px] font-normal text-purple-200 opacity-80">אני מחפש מוצר</div>
+                  </div>
+                </div>
+              </SignInButton>
+            </SignedOut>
+          </div>
+
+          {/* Trust strip */}
+          <div className="flex justify-center gap-6 text-gray-600 text-xs flex-wrap mb-4">
+            {[{icon: <Zap className="w-3.5 h-3.5 text-yellow-500"/>, label: "AI חיפוש חכם"}, {icon: <ShieldCheck className="w-3.5 h-3.5 text-green-500"/>, label: "תשלום מאובטח"}, {icon: <Sparkles className="w-3.5 h-3.5 text-purple-400"/>, label: "מוכרים וקונים בישראל"}].map(({icon, label}) => (
+              <div key={label} className="flex items-center gap-1.5">{icon}<span>{label}</span></div>
+            ))}
+          </div>
+
+        </div>
+
+        {/* Divider label */}
+        <div className="relative max-w-5xl mx-auto px-4 pb-6">
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-px bg-white/5" />
+            <span className="text-gray-600 text-xs font-semibold tracking-widest uppercase">מה יש עכשיו במרקטפלייס</span>
+            <div className="flex-1 h-px bg-white/5" />
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative max-w-5xl mx-auto px-4 pb-8">
+          <div className="flex justify-center mb-6">
+            <div className="bg-gray-900/50 p-1 rounded-2xl border border-gray-800 flex gap-1">
+              <button onClick={() => { setListingType("SELL"); fetchSearch(searchInput, lat, lng, "SELL"); }} className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${listingType === "SELL" ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
+                📦 אני מחפש לקנות מוצרים
+              </button>
+              <button onClick={() => { setListingType("BUY"); fetchSearch(searchInput, lat, lng, "BUY"); }} className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${listingType === "BUY" ? "bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
+                🏷️ מה קונים מחפשים?
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-gray-900/40 p-4 rounded-3xl border border-gray-800 backdrop-blur-sm space-y-4">
+            <form onSubmit={(e) => { e.preventDefault(); fetchSearch(); }} className="flex gap-2">
+              <div className="relative flex-1" ref={autocompleteRef}>
+                <Sparkles className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400 w-5 h-5 z-10 pointer-events-none"/>
+                <Input placeholder='נסה "לפטופ גיימינג מתחת ל-4000 שקל באיזור תל אביב"...' className="pl-4 pr-12 h-14 bg-gray-900/80 border-gray-700 rounded-2xl text-lg focus:ring-purple-500 focus:border-purple-500 z-10" value={searchInput} onChange={handleSearchInputChange} onFocus={() => { if (searchInput.trim().length > 0) setShowAutocomplete(true); }}/>
+                {isAutocompleteLoading && <Loader2 className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400 w-5 h-5 animate-spin z-10 pointer-events-none"/>}
+                {showAutocomplete && searchInput.trim().length > 0 && (
+                  <div className="absolute top-[110%] left-0 right-0 bg-gray-900/95 backdrop-blur-md border border-gray-700 rounded-2xl shadow-xl z-[100] overflow-hidden max-h-[400px] overflow-y-auto">
+                    {autocompleteResults.length > 0 ? autocompleteResults.map(res => {
+                      const imgs = res.images ? (typeof res.images === "string" ? JSON.parse(res.images) : res.images) : [];
+                      return (
+                        <div key={res.id} onClick={() => { setShowAutocomplete(false); if (res.type === "external" && res.sourceUrl) window.open(res.sourceUrl, "_blank"); else if (res.type !== "catalog") router.push(`/dashboard/marketplace/${res.id}`); }} className="flex items-center gap-4 p-3 hover:bg-gray-800 cursor-pointer border-b border-gray-800 last:border-0">
+                          {imgs.length > 0 ? <img src={imgs[0]} className="w-12 h-12 object-cover rounded-lg" alt={res.title}/> : <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center"><ScanSearch className="w-6 h-6 text-gray-500"/></div>}
+                          <div className="flex-1 overflow-hidden">
+                            <div className="text-sm font-bold truncate text-white">{res.title}</div>
+                            <div className="text-xs text-gray-400 truncate mt-1"><span className="text-green-400 font-bold">{res.price > 0 ? `₪${res.price.toLocaleString()}` : "צור קשר"}</span>{res.category && <span className="mr-2">• {res.category}</span>}</div>
+                          </div>
+                        </div>
+                      );
+                    }) : !isAutocompleteLoading && <div className="p-4 text-center text-gray-500 text-sm">לא נמצאו תוצאות</div>}
+                  </div>
+                )}
+              </div>
+              <Button type="button" variant="outline" onClick={() => setShowFilters(!showFilters)} className={`h-14 px-4 rounded-2xl border-gray-700 hover:bg-gray-800 ${showFilters ? "bg-gray-800 text-purple-400 border-purple-500" : "bg-gray-900"}`}><Filter className="w-5 h-5"/></Button>
+              <Button id="search-btn" type="submit" disabled={loading} className="h-14 px-8 rounded-2xl bg-purple-600 hover:bg-purple-700 text-lg font-bold">
+                {loading ? <Loader2 className="w-5 h-5 animate-spin"/> : <Search className="w-5 h-5 ml-2"/>}חפש
+              </Button>
+            </form>
+
+            {showFilters && (
+              <div className="p-5 bg-gray-800/30 rounded-2xl border border-gray-800/50 animate-in slide-in-from-top-2">
+                <div className="max-w-xl mx-auto space-y-5 text-right" dir="rtl">
+                  <div className="flex items-center justify-between border-b border-gray-700/50 pb-3">
+                    <label className="text-base font-bold text-gray-200 flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-purple-400"/> רדיוס חיפוש מהמיקום שלך
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-md text-sm font-bold">{radiusKm === 155 ? "כל הארץ" : `עד ${radiusKm} ק"מ`}</span>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setShowMap(true)} disabled={!lat && !lng} className="h-7 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-900/30 px-2 gap-1 rounded-md transition-all"><MapIcon className="w-3.5 h-3.5"/> הצג מפה</Button>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-900/60 p-4 rounded-xl border border-gray-700/50">
+                     <div className="flex justify-between items-center mb-3">
+                        <span className="text-gray-400 text-sm">מרכז חיפוש נוכחי:</span>
+                        <div className="flex gap-3">
+                           {locationMode === 'HOME' && (
+                              <button type="button" onClick={getDeviceLocation} className="text-xs text-green-400 hover:text-green-300 transition-colors flex items-center gap-1">
+                                 <LocateFixed className="w-3 h-3"/> חזור ל-GPS
+                              </button>
+                           )}
+                           <button type="button" onClick={() => setShowCityDialog(true)} className="text-xs text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1">
+                              <MapPin className="w-3 h-3"/> בחר עיר אחרת
+                           </button>
+                        </div>
+                     </div>
+                     <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-full ${locationMode === 'LIVE' || !locationMode ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                           {gettingLocation ? <Loader2 className="w-5 h-5 animate-spin"/> : locationMode === 'LIVE' || !locationMode ? <LocateFixed className="w-5 h-5"/> : <MapPin className="w-5 h-5"/>}
+                        </div>
+                        <span className="text-xl font-bold text-white">
+                           {gettingLocation ? "מאתר מיקום..." : (locationName || "לא אותר מיקום")}
                         </span>
-                    </h1>
-
-                    <p className="text-muted-foreground text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed font-light">
-                        המהפכה שמשלימה את העסקה.
-                        <br />
-                        מצאתם מוצר בפייסבוק או ביד-2? אנחנו נדאג לכל השאר:
-                        <span className="font-medium text-foreground"> איסוף, בדיקה, תשלום מוגן ושילוח עד הבית.</span>
-                        <br />
-                        הופכים כל מודעה לעסקה בטוחה בלחיצת כפתור.
-                    </p>
-
-                    <div className="flex-1" /> {/* Spacer to push buttons down */}
-
-                    <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mt-auto pb-10">
-                        <Link href="/trust-link">
-                            <Button size="lg" className="h-16 px-10 text-xl shadow-[0_0_50px_-12px_hsl(var(--primary))] rounded-full">
-                                עסקה בקליק <ArrowRight className="mr-2 h-6 w-6" />
-                            </Button>
-                        </Link>
-                        <Link href="/dashboard">
-                            <Button size="lg" variant="outline" className="h-16 px-10 text-xl rounded-full border-2">
-                                כניסה לחשבון
-                            </Button>
-                        </Link>
+                     </div>
+                  </div>
+                  
+                  <div className="pt-2 border-t border-gray-700/50">
+                    <input type="range" min="5" max="155" step="5" value={radiusKm} onChange={e => {
+                      if (!lat && !lng) {
+                        toast.error("יש לבחור מיקום תחילה", { position: 'bottom-center' });
+                        return;
+                      }
+                      setRadiusKm(parseInt(e.target.value));
+                    }} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500" disabled={!lat && !lng} style={{ opacity: !lat && !lng ? 0.4 : 1 }}/>
+                    <div className="w-full flex justify-between mt-2 px-1">
+                      <span className="text-[10px] text-gray-500">5 ק"מ</span>
+                      <span className="text-[11px] text-purple-400 font-bold tracking-wide">155 (כל הארץ)</span>
                     </div>
+                  </div>
+                  
+                  {!lat && !lng && <p className="text-xs text-gray-500 text-center">יש לאתר מיקום נוכחי או בית כדי לחפש ברדיוס.</p>}
                 </div>
-            </section>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
-            {/* Mission & Vision Section (New) */}
-            <section className="py-24 bg-background border-t border-border/50 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-full h-[500px] bg-primary/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 -z-10" />
-                <div className="container px-4 max-w-5xl text-center space-y-12">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold tracking-wide mb-4">
-                        <span className="text-xl">🌟</span>
-                        <span>החזון שלנו</span>
-                    </div>
-
-                    <h2 className="text-4xl md:text-6xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent font-['Outfit']">
-                        להפוך את האינטרנט <br /> <span className="text-primary">למקום בטוח יותר</span>
-                    </h2>
-
-                    <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                        אנחנו לא עוד חברת שליחויות, ואנחנו לא עוד לוח מודעות. <br />
-                        <strong>Qlikndeal</strong> נולדה מתוך צורך אמיתי לשנות את חוקי המשחק בשוק היד-שנייה.
-                        אנחנו מאמינים שעסקה טובה היא עסקה שבה שני הצדדים ישנים בשקט.
-                        הטכנולוגיה שלנו מחליפה את החשש באמון, ואת הבירוקרטיה בחוויה בלחיצת כפתור.
-                    </p>
-
-                    <div className="grid md:grid-cols-3 gap-8 mt-16 text-right">
-                        <div className="bg-card p-8 rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                            <h3 className="text-2xl font-bold mb-4 text-primary">כוח הקנייה הקבוצתי</h3>
-                            <p className="text-muted-foreground">הקהילה שלנו היא הכוח שלכם. אנחנו מאגדים אלפי משתמשים כדי להשיג <strong className="text-foreground">מחירי משלוח שוברי שוק</strong> והטבות בלעדיות ששמורות רק לחברות ענק.</p>
-                        </div>
-                        <div className="bg-card p-8 rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                            <h3 className="text-2xl font-bold mb-4 text-primary">שקיפות מלאה</h3>
-                            <p className="text-muted-foreground">בלי אותיות קטנות ובלי הפתעות. כל שלב בעסקה מתועד, והכסף שלכם מוגן בנאמנות עד לרגע האישור הסופי.</p>
-                        </div>
-                        <div className="bg-card p-8 rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                            <h3 className="text-2xl font-bold mb-4 text-primary">חוויה מנצחת</h3>
-                            <p className="text-muted-foreground">אנחנו הופכים את &quot;הכאב ראש&quot; של יד-2 למשחק ילדים. הכל אוטומטי, הכל מהיר, והכל מהנייד.</p>
-                        </div>
-                    </div>
+      {showMap && lat && lng && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-4xl h-[70vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95">
+            <div className="h-14 border-b border-gray-800 flex items-center justify-between px-4" dir="rtl">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2"><MapPin className="w-5 h-5 text-purple-400"/> תצוגת מפה ורדיוס</h3>
+              <Button variant="ghost" size="icon" onClick={() => setShowMap(false)} className="text-gray-400 hover:text-white hover:bg-gray-800"><X className="w-5 h-5"/></Button>
+            </div>
+            <div className="flex-1 relative bg-gray-800">
+              <LocationMap lat={lat} lng={lng} radiusKm={radiusKm} />
+              
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-[400] bg-black/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 shadow-2xl" dir="rtl">
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-bold text-gray-200">כוון רדיוס:</span>
+                  <span className="text-purple-400 font-bold text-sm">{radiusKm === 155 ? 'כל הארץ' : `${radiusKm} ק"מ`}</span>
                 </div>
-            </section>
+                <input 
+                  type="range" min="5" max="155" step="5" 
+                  value={radiusKm} 
+                  onChange={e => setRadiusKm(parseInt(e.target.value))} 
+                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500" 
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-            {/* Member Benefits / Gamification Teaser (New) */}
-            <section className="py-24 bg-gradient-to-b from-black to-slate-950 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
-
-                <div className="container px-4 relative z-10">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
-                        <div className="space-y-8">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 font-bold tracking-wide text-sm">
-                                <span>👑</span>
-                                <span>מועדון ה-PRO</span>
-                            </div>
-                            <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-                                משחקים, צוברים <br />
-                                <span className="text-yellow-400">ומרוויחים בגדול!</span>
-                            </h2>
-                            <p className="text-lg text-slate-300 leading-relaxed">
-                                ב-Qlikndeal, נאמנות שווה כסף. ככל שתבצעו יותר עסקאות מוצלחות, תצברו נקודות ותעלו בדרגות האמינות.
-                            </p>
-
-                            <ul className="space-y-4">
-                                {[
-                                    "✨ צבירת נקודות על כל קנייה או מכירה",
-                                    "🛡️ תג 'מוכר מאומת' שמקפיץ את המודעות שלכם",
-                                    "🎁 המרת נקודות למשלוחים חינם והטבות",
-                                    "🏆 תחרויות חודשיות עם פרסים שווים"
-                                ].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-lg">
-                                        <div className="h-2 w-2 rounded-full bg-yellow-400 shadow-[0_0_10px_orange]" />
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <Button className="h-14 px-8 text-lg bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl shadow-[0_0_20px_rgba(234,179,8,0.3)] mt-4">
-                                הצטרפו למהפכה בחינם
-                            </Button>
-                        </div>
-
-                        <div className="relative">
-                            {/* Abstract 'Level Up' Visual */}
-                            <div className="relative aspect-square bg-gradient-to-tr from-yellow-500/20 to-purple-500/20 rounded-3xl border border-white/10 backdrop-blur-3xl overflow-hidden flex items-center justify-center">
-                                <div className="text-center space-y-4">
-                                    <div className="text-6xl font-black bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg">LVL 5</div>
-                                    <div className="text-2xl font-bold text-white">הילה של אמון</div>
-                                    <div className="flex gap-2 justify-center">
-                                        {[1, 2, 3, 4, 5].map(i => (
-                                            <span key={i} className="text-yellow-400 text-2xl">★</span>
-                                        ))}
-                                    </div>
-                                    <div className="w-64 h-3 bg-white/10 rounded-full mx-auto overflow-hidden mt-4">
-                                        <div className="h-full w-[85%] bg-yellow-500 shadow-[0_0_15px_orange]" />
-                                    </div>
-                                    <div className="text-sm text-slate-400 mt-2">המרחק שלך להטבה הבאה: 15%</div>
-                                </div>
-                            </div>
-
-                            {/* Floating decorative elements */}
-                            <div className="absolute -top-10 -right-10 w-24 h-24 bg-purple-500/30 rounded-full blur-2xl animate-pulse" />
-                            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-yellow-500/20 rounded-full blur-3xl animate-pulse delay-700" />
-                        </div>
-                    </div>
+      <Dialog open={showCityDialog} onOpenChange={setShowCityDialog}>
+        <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-md p-6" dir="rtl">
+          <DialogTitle className="text-xl font-bold mb-4 flex items-center gap-2">
+             <MapPin className="w-5 h-5 text-purple-400"/>בחר מרכז חיפוש
+          </DialogTitle>
+          
+          <div className="flex flex-col gap-4">
+             {typeof window !== "undefined" && localStorage.getItem("home_city") && (
+                <div className="bg-gray-800/50 p-3 rounded-xl border border-gray-700">
+                   <p className="text-xs text-gray-400 mb-2">חיפוש אחרון ששמרת:</p>
+                   <Button 
+                      variant="secondary" 
+                      className="w-full justify-start bg-gray-700 hover:bg-gray-600 text-white"
+                      onClick={() => {
+                         const savedCity = localStorage.getItem("home_city");
+                         const savedLat = localStorage.getItem("home_lat");
+                         const savedLng = localStorage.getItem("home_lng");
+                         if (savedCity && savedLat && savedLng) {
+                            setLat(parseFloat(savedLat)); setLng(parseFloat(savedLng));
+                            setLocationMode("HOME");
+                            setLocationName(savedCity + " 🏠");
+                            setShowCityDialog(false);
+                         }
+                      }}
+                   >
+                      <MapPin className="w-4 h-4 ml-2 text-blue-400"/>
+                      {localStorage.getItem("home_city")}
+                   </Button>
                 </div>
-            </section>
+             )}
 
-            {/* Premium Comparison Table */}
-            <section className="py-24 bg-muted/20 border-t border-border/50">
-                <div className="container px-4 max-w-6xl">
-                    <h2 className="text-3xl md:text-5xl font-bold text-center mb-16 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent font-['Outfit']">למה לבחור ב-Qlik<span className="text-primary font-light">n</span>deal?</h2>
+             <div className="relative">
+                <Input 
+                  placeholder="הקלד עיר חדשה לחיפוש..." 
+                  value={citySearch}
+                  onChange={(e) => {
+                    setCitySearch(e.target.value);
+                    if (cityDebounceRef.current) clearTimeout(cityDebounceRef.current);
+                    if (e.target.value.trim().length > 1) {
+                      cityDebounceRef.current = setTimeout(async () => {
+                        try {
+                          const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(e.target.value)}&countrycodes=il&format=json&limit=5&accept-language=he`);
+                          const data = await res.json();
+                          setCityResults(data || []);
+                        } catch { setCityResults([]); }
+                      }, 400);
+                    } else { setCityResults([]); }
+                  }}
+                  className="bg-gray-800 border-gray-700 text-white h-12 text-lg focus:ring-purple-500"
+                />
+                
+                {cityResults.length > 0 && (
+                  <div className="mt-2 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden max-h-[250px] overflow-y-auto">
+                    {cityResults.map(res => (
+                      <div 
+                        key={res.place_id} 
+                        className="p-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700/50 last:border-0"
+                        onClick={() => {
+                           const cityName = res.name || res.display_name.split(",")[0];
+                           localStorage.setItem("home_city", cityName);
+                           localStorage.setItem("home_lat", res.lat);
+                           localStorage.setItem("home_lng", res.lon);
+                           setShowCityDialog(false);
+                           setLat(parseFloat(res.lat));
+                           setLng(parseFloat(res.lon));
+                           setLocationMode("HOME");
+                           setLocationName(cityName + " 🏠");
+                        }}
+                      >
+                        <div className="font-bold text-white">{res.name}</div>
+                        <div className="text-xs text-gray-400 truncate">{res.display_name}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-                    <div className="bg-card/40 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl ring-1 ring-white/5">
-                        <div className="grid grid-cols-1 md:grid-cols-12 md:divide-x md:divide-x-reverse divide-white/5">
-
-                            {/* Labels Column (Middle on Desktop for balance, or side?) - Let's do Side (3 cols: 3, 4.5, 4.5) */}
-                            <div className="hidden md:flex md:col-span-2 flex-col bg-muted/30">
-                                <div className="h-20 border-b border-white/5"></div> {/* Spacer */}
-                                <div className="p-6 font-bold text-lg flex items-center justify-center h-28 border-b border-white/5">בדיקת המוצר</div>
-                                <div className="p-6 font-bold text-lg flex items-center justify-center h-28 border-b border-white/5">ביטחון לכסף</div>
-                                <div className="p-6 font-bold text-lg flex items-center justify-center h-28 border-b border-white/5">אמינות המוכר</div>
-                                <div className="p-6 font-bold text-lg flex items-center justify-center h-28 border-b border-white/5">תשלום</div>
-                                <div className="p-6 font-bold text-lg flex items-center justify-center h-28">נוחות</div>
-                            </div>
-
-                            {/* "Old Way" Column */}
-                            <div className="md:col-span-5 flex flex-col relative group">
-                                <div className="h-20 flex items-center justify-center bg-red-500/10 text-red-400 font-black text-2xl border-b border-white/5 tracking-wide">
-                                    המצב כיום ❌
-                                </div>
-
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center text-muted-foreground hover:bg-white/5 transition-colors border-b border-white/5">
-                                    <span className="md:hidden font-bold text-white mb-2 text-lg">בדיקת המוצר:</span>
-                                    לחץ ברחוב, בחושך או בבית זר. <br />אין באמת דרך לבדוק.
-                                </div>
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center text-muted-foreground bg-white/5 md:bg-transparent md:group-hover:bg-white/5 transition-colors border-b border-white/5">
-                                    <span className="md:hidden font-bold text-white mb-2 text-lg">ביטחון לכסף:</span>
-                                    העברת בביט/מזומן? <br />אם רמו אותך, הכסף הלך.
-                                </div>
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center text-muted-foreground hover:bg-white/5 transition-colors border-b border-white/5">
-                                    <span className="md:hidden font-bold text-white mb-2 text-lg">אמינות המוכר:</span>
-                                    המוצר פגום? הפסדת את הנסיעה ואת הזמן. <br />שום פיצוי.
-                                </div>
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center text-muted-foreground bg-white/5 md:bg-transparent md:group-hover:bg-white/5 transition-colors border-b border-white/5">
-                                    <span className="md:hidden font-bold text-white mb-2 text-lg">תשלום:</span>
-                                    הכל במכה אחת (מזומן/העברה). <br />כבד על הכיס.
-                                </div>
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center text-muted-foreground hover:bg-white/5 transition-colors">
-                                    <span className="md:hidden font-bold text-white mb-2 text-lg">נוחות:</span>
-                                    תיאומים מעייפים, פקקים, דלק, <br />בזבוז זמן יקר.
-                                </div>
-                            </div>
-
-                            {/* "Qlikndeal Way" Column */}
-                            <div className="md:col-span-5 flex flex-col relative bg-gradient-to-b from-primary/5 to-transparent">
-                                <div className="absolute inset-0 bg-primary/5 blur-3xl -z-10" />
-                                <div className="h-20 flex items-center justify-center bg-primary/20 text-primary font-black text-2xl border-b border-primary/20 shadow-[0_0_30px_rgba(34,211,238,0.15)] tracking-wide">
-                                    עם Qlikndeal ✅
-                                </div>
-
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center font-medium text-white hover:bg-primary/10 transition-colors border-b border-primary/10 relative overflow-hidden">
-                                    <span className="md:hidden font-bold text-primary mb-2 text-lg">בדיקת המוצר:</span>
-                                    <span className="text-lg">24 שעות של בדיקה שקטה ורגועה אצלך בבית.</span>
-                                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_15px_var(--primary)]" />
-                                </div>
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center font-medium text-white bg-primary/5 md:bg-transparent md:hover:bg-primary/10 transition-colors border-b border-primary/10 relative overflow-hidden">
-                                    <span className="md:hidden font-bold text-primary mb-2 text-lg">ביטחון לכסף:</span>
-                                    <span className="text-lg">כסף בנאמנות. המוכר מקבל תשלום רק אחרי שאישרתם.</span>
-                                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_15px_var(--primary)]" />
-                                </div>
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center font-medium text-white hover:bg-primary/10 transition-colors border-b border-primary/10 relative overflow-hidden">
-                                    <span className="md:hidden font-bold text-primary mb-2 text-lg">אמינות המוכר:</span>
-                                    <span className="text-lg">המוכר מתחייב. שיקר? הוא משלם את המשלוח.</span>
-                                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_15px_var(--primary)]" />
-                                </div>
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center font-medium text-white bg-primary/5 md:bg-transparent md:hover:bg-primary/10 transition-colors border-b border-primary/10 relative overflow-hidden">
-                                    <span className="md:hidden font-bold text-primary mb-2 text-lg">תשלום:</span>
-                                    <span className="text-lg font-bold text-primary">כרטיס אשראי עד 12 תשלומים!</span>
-                                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_15px_var(--primary)]" />
-                                </div>
-                                <div className="p-8 flex flex-col justify-center h-auto md:h-28 text-center font-medium text-white hover:bg-primary/10 transition-colors relative overflow-hidden">
-                                    <span className="md:hidden font-bold text-primary mb-2 text-lg">נוחות:</span>
-                                    <span className="text-lg">לחיצת כפתור מהספה. השליח כבר בדרך.</span>
-                                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_15px_var(--primary)]" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+      {/* ── Listings ── */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{[1,2,3,4,5,6].map(i => <div key={i} className="h-96 bg-gray-900/30 rounded-3xl animate-pulse"/>)}</div>
+        ) : listings.length > 0 ? (
+          <div className="space-y-6">
+            {aiInsight && !isFallback && <div className="bg-indigo-900/30 border border-indigo-500/50 rounded-2xl p-4 flex gap-4"><div className="bg-indigo-500/20 p-2 rounded-full hidden sm:block"><Sparkles className="w-6 h-6 text-indigo-400"/></div><div><h4 className="text-indigo-300 font-bold mb-1">המלצת AI</h4><p className="text-indigo-100">{aiInsight}</p></div></div>}
+            {isFallback && searchInput.trim().length > 0 && (
+              <div className="bg-gradient-to-r from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-2xl p-5">
+                <div className="flex items-start gap-4"><div className="bg-amber-500/20 p-2.5 rounded-xl shrink-0 hidden sm:block"><Sparkles className="w-5 h-5 text-amber-400"/></div>
+                  <div className="flex-1 text-right" dir="rtl"><h3 className="text-base font-bold text-amber-200 mb-1">לא נמצא &quot;{searchInput}&quot; — מציג הצעות דומות</h3>{aiInsight && <p className="text-amber-100/80 text-sm">{aiInsight}</p>}</div>
                 </div>
-            </section>
-
-            {/* How It Works Steps */}
-            <section className="py-20 bg-background border-t border-border/50">
-                <div className="container px-4">
-                    <h2 className="text-3xl font-bold text-center mb-12">איך זה עובד?</h2>
-                    <div className="grid md:grid-cols-4 gap-8 relative">
-                        {/* Connecting Line (Desktop) */}
-                        <div className="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-border -z-10 -translate-y-1/2" />
-
-                        {[
-                            { step: 1, title: "מוצאים וסוגרים", desc: "מצאתם מציאה בפייסבוק או ביד-2? סכמו מחיר וצרו לינק בטוח." },
-                            { step: 2, title: "בדיקת AI ותשלום", desc: "המערכת בודקת את תמונות המוצר. התשלום מוחזק בנאמנות." },
-                            { step: 3, title: "משלוח מהיר", desc: "שליח אוסף את החבילה ומעביר אותה לקונה." },
-                            { step: 4, title: "בדיקה ושחרור", desc: "לקונה יש 24 שעות לבדוק את המוצר לפני שחרור הכסף." }
-                        ].map((item) => (
-                            <div key={item.step} className="flex flex-col items-center text-center bg-background p-4">
-                                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xl mb-4 shadow-lg ring-4 ring-background">
-                                    {item.step}
-                                </div>
-                                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                                <p className="text-muted-foreground text-sm">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
+                <div className="mt-4 pt-4 border-t border-amber-800/30 flex gap-2 justify-end" dir="rtl">
+                  <Button size="sm" className="bg-amber-600 hover:bg-amber-700" onClick={() => router.push(`/dashboard/marketplace/my-requests?query=${encodeURIComponent(searchInput)}`)}><Search className="w-3.5 h-3.5 ml-1.5"/>פתח מודעת &quot;דרוש מוצר&quot;</Button>
                 </div>
-            </section>
-
-            {/* Features Grid */}
-            <section className="py-20 bg-muted/30 border-t border-border/50">
-                <div className="container px-4">
-                    <div className="grid md:grid-cols-3 gap-8">
-                        <div className="p-6 rounded-2xl bg-card border border-border/50">
-                            <Shield className="h-10 w-10 text-primary mb-4" />
-                            <h3 className="text-xl font-bold mb-2">נאמנות 24 שעות</h3>
-                            <p className="text-muted-foreground">הכסף משוחרר למוכר רק אחרי שקיבלת את המוצר, בדקת אותו במשך יממה ואישרת שהכל תקין.</p>
-                        </div>
-                        <div className="p-6 rounded-2xl bg-card border border-border/50">
-                            <Truck className="h-10 w-10 text-primary mb-4" />
-                            <h3 className="text-xl font-bold mb-2">משלוח חברתי</h3>
-                            <p className="text-muted-foreground">אנחנו מאגדים אלפי משלוחים יחד כדי להשיג לכם את המחירים הטובים ביותר מול חברות השילוח.</p>
-                        </div>
-                        <div className="p-6 rounded-2xl bg-card border border-border/50">
-                            <Package className="h-10 w-10 text-primary mb-4" />
-                            <h3 className="text-xl font-bold mb-2">פריסת תשלומים</h3>
-                            <p className="text-muted-foreground">הקונה יכול לשלם בכרטיס אשראי עד 12 תשלומים נוחים, והמוכר מקבל את הכסף כרגיל.</p>
-                        </div>
-                    </div>
+              </div>
+            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {listings.map(listing => (
+                <div key={listing.id} className="relative">
+                  {listing.distanceKm != null && <div className="absolute top-4 left-4 z-10 bg-black/70 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1"><MapPin className="w-3 h-3 text-purple-400"/>{listing.distanceKm < 1 ? "קרוב אליך" : `${Math.round(listing.distanceKm)} ק״מ`}</div>}
+                  <ListingCard listing={listing}/>
                 </div>
-            </section>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-gray-900/20 rounded-3xl border border-dashed border-gray-800">
+            <div className="text-6xl mb-4">🏜️</div>
+            <h3 className="text-2xl font-bold text-gray-400">לא מצאנו תוצאות מתאימות</h3>
+            <p className="text-gray-500 mt-2 mb-6">נסה מילות חיפוש שונות</p>
+            <div className="flex flex-col md:flex-row gap-4 justify-center">
+              <Button variant="outline" className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 h-12" onClick={() => { setSearchInput(""); setLat(null); setLng(null); setLocationName(""); setSelectedCategory("all"); fetchSearch(""); }}>נקה סינונים</Button>
+              <Button className="bg-purple-600 hover:bg-purple-700 h-12" onClick={() => router.push(`/dashboard/marketplace/my-requests?query=${encodeURIComponent(searchInput)}`)}><Search className="w-4 h-4 ml-2"/>פתח מודעת &quot;דרוש מוצר&quot;</Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
 
-            {/* FAQ Section */}
-            <section className="py-20 bg-background border-t border-border/50">
-                <div className="container px-4 max-w-4xl text-center">
-                    <h2 className="text-3xl font-bold mb-4">שאלות נפוצות</h2>
-                    <p className="text-muted-foreground mb-12">כל מה שרציתם לדעת על קנייה ומכירה בטוחה</p>
-
-                    <div className="space-y-4 text-right">
-                        {[
-                            {
-                                q: "למה אני באמת צריך את השירות שלכם?",
-                                a: "אנחנו הפתרון לכאב הראש של קנייה מיד שנייה. במקום לבזבז זמן בדרכים, להסתכן ברמאויות או לקנות 'חתול בשק', אנחנו דואגים לכל השרשרת: בודקים את המוכר, מאבטחים את הכסף שלכם, דואגים למשלוח מהיר ומאפשרים לכם לבדוק את המוצר בנחת בבית. זה לא רק שירות משלוחים, זה שקט נפשי."
-                            },
-                            {
-                                q: "כמה עולה המשלוח?",
-                                a: "אנחנו מפעילים 'משלוחים חברתיים' – בזכות כוח הקנייה המשותף של אלפי המשתמשים שלנו, אנחנו משיגים מחירים קבוצתיים שוברי שוק מול חברות השליחויות הגדולות, ומעבירים את ההנחה הזו ישירות אליכם."
-                            },
-                            {
-                                q: "האם כל אחד יכול להשתמש בשירות?",
-                                a: "בהחלט! השירות פתוח לכולם - בין אם אתם אנשים פרטיים שמוכרים ספה, בעלי עסק ששולחים מוצרים ללקוחות, או סתם מעבירים חבילה למשפחה."
-                            },
-                            {
-                                q: "האם יש יתרון למי ששולח הרבה?",
-                                a: "כן. האלגוריתם שלנו מזהה לקוחות חוזרים וכבדים, ומתאים להם מחירון VIP מיוחד אוטומטית. ככל שתשלחו יותר, תשלמו פחות."
-                            },
-                            {
-                                q: "למה כדאי לי להירשם עם פרטים מלאים?",
-                                a: "הרשמה מלאה הופכת אתכם ל'חברי מועדון'. זה נותן לכם גישה להטבות בלעדיות, מעקב משלוחים מתקדם, היסטוריית עסקאות מסודרת וצבירת נקודות לשימוש עתידי."
-                            },
-                            {
-                                q: "מה זה 'חבר מביא חבר'?",
-                                a: "פשוט מאוד: שלחו לינק לחבר. אם הוא יבצע משלוח דרכנו, אתם תקבלו מיידית זיכוי למשלוח חינם לכל יעד בארץ. שווה לשתף!"
-                            }
-                        ].map((item, i) => (
-                            <div key={i} className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl overflow-hidden hover:border-primary/50 transition-colors text-right">
-                                <details className="group">
-                                    <summary className="flex justify-between items-center font-medium cursor-pointer list-none p-6">
-                                        <span className="font-bold text-lg text-foreground/90">{item.q}</span>
-                                        <span className="transition-transform duration-300 group-open:rotate-180 p-1 bg-primary/10 rounded-full text-primary">
-                                            <svg fill="none" height="20" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="20"><path d="M6 9l6 6 6-6"></path></svg>
-                                        </span>
-                                    </summary>
-                                    <div className="text-muted-foreground p-6 pt-0 leading-relaxed bg-muted/10 animate-in slide-in-from-top-2 duration-200">
-                                        {item.a}
-                                    </div>
-                                </details>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-        </main>
-    );
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-white bg-black">טוען...</div>}>
+      <MarketplaceContent/>
+    </Suspense>
+  );
 }

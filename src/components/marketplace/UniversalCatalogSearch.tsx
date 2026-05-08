@@ -1,18 +1,17 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Sparkles, Search, Loader2, CheckCircle2, Database, X, ChevronDown, AlertTriangle } from "lucide-react";
-import { getAutocomplete } from "@/app/actions/hardware-search";
+import { Sparkles, Search, Loader2, CheckCircle2, Database, X, AlertTriangle } from "lucide-react";
 
 // ─── Category → Catalog configuration ────────────────────────────────────────
 // Maps the DynamicListingForm `category` value  →  internal catalog key + field mapper
 export const CATEGORY_CATALOG_CONFIG: Record<string, {
-    catalogKey: string;          // key passed to getAutocomplete + premium-search
-    subCategory?: string;        // optional sub-filter for computer subCategory
+    catalogKey: string;
+    subCategory?: string;
     placeholder: string;
     icon: string;
-    premiumCategory: string;     // passed to /api/marketplace/premium-search
-    mapFields: (d: any) => Record<string, string>; // maps catalog result → form extraData keys
+    premiumCategory: string;
+    mapFields: (d: any) => Record<string, string>;
 }> = {
     LAPTOPS: {
         catalogKey: "Computers",
@@ -29,7 +28,8 @@ export const CATEGORY_CATALOG_CONFIG: Record<string, {
             gpu:          Array.isArray(d.gpu) ? d.gpu[0] : (d.gpu || ""),
             ram:          Array.isArray(d.ram) ? d.ram[0] : (d.ram || d.RAM || ""),
             storage:      Array.isArray(d.storage) ? d.storage[0] : (d.storage || d["נפח אחסון"] || ""),
-            screen:       d.display || d.screenSize || (Array.isArray(d.screenSize) ? d.screenSize[0] : "") || d["גודל מסך"] || "",
+            // תיקון: screenSize הוא Array (["16"]) — חלץ [0] והוסף סימן "
+            screen:       (Array.isArray(d.screenSize) ? d.screenSize[0] + '"' : (d.screenSize ? d.screenSize + '"' : "")) || d.display || d["גודל מסך"] || "",
             os:           Array.isArray(d.os) ? d.os[0] : (d.os || d["מערכת הפעלה"] || ""),
             battery:      d.battery || d.battery_info || "",
             weight:       d.weight || d.משקל || "",
@@ -72,7 +72,7 @@ export const CATEGORY_CATALOG_CONFIG: Record<string, {
             gpu:          Array.isArray(d.gpu) ? d.gpu[0] : (d.gpu || ""),
             ram:          Array.isArray(d.ram) ? d.ram[0] : (d.ram || ""),
             storage:      Array.isArray(d.storage) ? d.storage[0] : (d.storage || ""),
-            screen:       d.display || d.screenSize || "",
+            screen:       (Array.isArray(d.screenSize) ? d.screenSize[0] + '"' : (d.screenSize ? d.screenSize + '"' : "")) || d.display || "",
             os:           Array.isArray(d.os) ? d.os[0] : (d.os || ""),
             release_year: d.releaseYear || d.release_year || "",
         })
@@ -101,7 +101,31 @@ export const CATEGORY_CATALOG_CONFIG: Record<string, {
             colors:        d.צבעים || "",
         })
     },
-    MOBILES: {  // alias
+    // ⚡ תיקון קריטי: הטופס שולח category="SMARTPHONES" אבל הcconfig לא הכיר את הvalue הזה
+    // → בלי הזה UniversalCatalogSearch מחזיר null ולא מרונדר כלל עבור קטגוריית סמארטפונים
+    SMARTPHONES: {
+        catalogKey: "Phones",
+        placeholder: "הקלד שם דגם, יצרן, SKU... (לדוגמה: iPhone 15 Pro, Samsung S24)",
+        icon: "📱",
+        premiumCategory: "mobile",
+        mapFields: (d) => ({
+            brand:         d.brand || d.יצרן || "",
+            family:        d.series || d.family || "",
+            subModel:      d.modelName || d.model_name || d.model || d.דגם || "",
+            sku:           d.sku || d.model_number || d["מספר דגם"] || "",
+            cpu:           d.cpu || d.מעבד || "",
+            ram:           d.ramG ? `${d.ramG}GB` : (d.ram || d.RAM || ""),
+            storage:       Array.isArray(d.storages) ? d.storages.join(" / ") : (d.storage || d["נפח אחסון"] || ""),
+            screen:        d.screenSize ? `${d.screenSize}"` : (d.display || d.מסך || ""),
+            battery:       d.battery || d.סוללה || "",
+            rear_camera:   d.rearCamera || d["מצלמה אחורית"] || "",
+            front_camera:  d.frontCamera || d["מצלמה קדמית"] || "",
+            os:            d.os || d["מערכת הפעלה"] || "",
+            release_year:  d.releaseYear?.toString() || d["שנת השקה"] || "",
+            network:       d.network || d.קישוריות || "",
+        })
+    },
+    MOBILES: {
         catalogKey: "Phones",
         placeholder: "הקלד שם דגם, יצרן, SKU... (לדוגמה: iPhone 15 Pro)",
         icon: "📱",
@@ -162,14 +186,14 @@ export const CATEGORY_CATALOG_CONFIG: Record<string, {
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
 interface UniversalCatalogSearchProps {
-    category: string;  // e.g. "LAPTOPS", "PHONES", "VEHICLES"
+    category: string;
     onApplySpecs: (mappedFields: Record<string, string>) => void;
 }
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCatalogSearchProps) {
     const config = CATEGORY_CATALOG_CONFIG[category];
-    
+
     // ─── ALL hooks must be called unconditionally (React Rules of Hooks) ─────
     const [query, setQuery] = useState("");
     const [suggestions, setSuggestions] = useState<{ label: string; data: any; isCatalog?: boolean }[]>([]);
@@ -180,13 +204,25 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
     const [error, setError] = useState<string | null>(null);
     const [appliedLabel, setAppliedLabel] = useState<string>("");
     const [premiumLoading, setPremiumLoading] = useState(false);
+    // תיקון overflow clipping: שמירת מיקום בסיס viewport ל-dropdown
+    const [ddCoords, setDdCoords] = useState({ top: 0, left: 0, width: 0 });
 
     const containerRef = useRef<HTMLDivElement>(null);
+    const searchBarRef = useRef<HTMLDivElement>(null);
     const debounceRef = useRef<NodeJS.Timeout | null>(null);
+    // מונע re-search לאחר בחירת פריט מהקטלוג
+    const justAppliedRef = useRef(false);
 
     // ─── Autocomplete from DB ────────────────────────────────────────────────
     useEffect(() => {
         if (!config) return;
+        // אם זה עניין שהוגדר מקידום — בלום re-search
+        if (justAppliedRef.current) {
+            justAppliedRef.current = false;
+            setSuggestions([]);
+            setShowSug(false);
+            return;
+        }
         if (debounceRef.current) clearTimeout(debounceRef.current);
         const q = query.trim();
         if (q.length < 1) { setSuggestions([]); setShowSug(false); return; }
@@ -194,21 +230,29 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
         debounceRef.current = setTimeout(async () => {
             setLoading(true);
             try {
-                const dbResults = await getAutocomplete(q, config.catalogKey, config.subCategory) as any[];
+                // Use REST API instead of server action (avoids middleware edge cases)
+                const params = new URLSearchParams({
+                    q,
+                    cat: config.catalogKey,
+                    ...(config.subCategory ? { sub: config.subCategory } : {})
+                });
+                const res = await fetch(`/api/marketplace/catalog-search?${params}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const dbResults: { label: string; details: any }[] = await res.json();
+
                 if (dbResults.length > 0) {
                     setSuggestions(dbResults.map(item => ({
                         label: item.label,
                         data: item.details || item,
-                        isCatalog: true  // ✅ GOLD STANDARD badge
+                        isCatalog: true
                     })));
                     setShowSug(true);
                 } else {
                     setSuggestions([]);
-                    // Show "not found" only after user types enough
                     if (q.length >= 3) setShowSug(true); else setShowSug(false);
                 }
             } catch (e) {
-                console.error("Autocomplete error", e);
+                console.error("[CatalogSearch] fetch error", e);
                 setSuggestions([]);
             } finally {
                 setLoading(false);
@@ -225,17 +269,37 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
         return () => document.removeEventListener("mousedown", h);
     }, []);
 
+    // ─── Reset כשמחליפים קטגוריה ────────────────────────────────────────────
+    useEffect(() => {
+        setQuery("");
+        setSuggestions([]);
+        setShowSug(false);
+        setApplied(false);
+        setAppliedLabel("");
+        setError(null);
+        justAppliedRef.current = false;
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+    }, [category]);
+
+    // חישוב מיקום ה-dropdown בסיס viewport (להימנע clipping על ידי overflow ב-parent)
+    useEffect(() => {
+        if (showSug && searchBarRef.current) {
+            const rect = searchBarRef.current.getBoundingClientRect();
+            setDdCoords({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+        }
+    }, [showSug, query]);
+
     // ─── Apply a catalog result → form fields ───────────────────────────────
     const applyResult = useCallback((rawData: any, label: string) => {
         if (!config) return;
         const mapped = config.mapFields(rawData);
-        // Filter out empty strings so we don't overwrite existing values with blank
         const filtered = Object.fromEntries(Object.entries(mapped).filter(([_, v]) => v !== ""));
         onApplySpecs(filtered);
         setAppliedLabel(label);
         setApplied(true);
         setShowSug(false);
         setError(null);
+        justAppliedRef.current = true;  // חסום re-search בגלל setQuery
         setQuery(label);
     }, [config, onApplySpecs]);
 
@@ -368,7 +432,7 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
                 )}
 
                 {/* ── Search bar ── */}
-                <div style={{ position: "relative", marginBottom: 8 }}>
+                <div ref={searchBarRef} style={{ position: "relative", marginBottom: 8 }}>
                     <div style={{ display: "flex", gap: 8 }}>
                         <div style={{ flex: 1, position: "relative" }}>
                             <input
@@ -384,7 +448,6 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
                                     fontSize: "0.88rem", outline: "none", boxSizing: "border-box"
                                 }}
                             />
-                            {/* Search icon inside input */}
                             {loading ? (
                                 <Loader2 style={{
                                     position: "absolute", right: 12, top: "50%",
@@ -421,10 +484,14 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
                         )}
                     </div>
 
-                    {/* ── Autocomplete dropdown ── */}
+                    {/* דרופדאון ב-position:fixed כדי להימלט מחיתוך overflow ב-parent */}
                     {showSug && query.trim().length >= 1 && (
                         <div style={{
-                            position: "absolute", top: "calc(100% + 4px)", right: 0, left: 0, zIndex: 9999,
+                            position: "fixed",
+                            top: ddCoords.top,
+                            left: ddCoords.left,
+                            width: ddCoords.width,
+                            zIndex: 9999,
                             background: "#0d1117", border: "1px solid #1e3a5f",
                             borderRadius: 10, overflow: "hidden",
                             boxShadow: "0 16px 48px rgba(0,0,0,.85)",
@@ -432,7 +499,6 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
                         }}>
                             {suggestions.length > 0 ? (
                                 <>
-                                    {/* Catalog label header */}
                                     <div style={{
                                         padding: "6px 14px",
                                         borderBottom: "1px solid #1e3a5f40",
@@ -460,7 +526,6 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
                                         >
                                             <span style={{ fontSize: "1rem", flexShrink: 0 }}>{config.icon}</span>
                                             <span style={{ flex: 1 }}>{sug.label}</span>
-                                            {/* Gold Standard badge */}
                                             <span style={{
                                                 fontSize: "0.6rem", fontWeight: 700,
                                                 padding: "2px 6px", borderRadius: 8,
@@ -474,7 +539,6 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
                                         </button>
                                     ))}
 
-                                    {/* Premium CTA at bottom of list */}
                                     {!isPremium && (
                                         <div style={{
                                             padding: "10px 14px",
@@ -488,7 +552,6 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
                                     )}
                                 </>
                             ) : (
-                                // Not found in catalog
                                 <div style={{ padding: "16px 14px" }}>
                                     <div style={{
                                         display: "flex", alignItems: "flex-start", gap: 10,
@@ -500,7 +563,7 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
                                                 לא נמצא בקטלוג הרשמי
                                             </div>
                                             <div style={{ color: "#64748b", fontSize: "0.78rem", lineHeight: 1.5 }}>
-                                                הדגם שחיפשת אינו נמצא בקטלוג שלנו. שים לב: הוספת מוצר ידנית תסומן כ"מפרסם" (ללא אימות קטלוג).
+                                                הדגם שחיפשת אינו נמצא בקטלוג שלנו. שים לב: הוספת מוצר ידנית תסומן כ&quot;מפרסם&quot; (ללא אימות קטלוג).
                                             </div>
                                         </div>
                                     </div>

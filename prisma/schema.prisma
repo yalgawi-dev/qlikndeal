@@ -2,7 +2,8 @@
 // ─────────────────────────────────────────────────────────────
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -131,12 +132,18 @@ model MarketplaceListing {
   locationName String?
 
   status ListingStatus @default(ACTIVE)
+  listingType ListingType @default(SELL)
 
   // ─────────────────────────────────────────────────────────────
   shipments Shipment[] // ─────────────────────────────────────────────────────────────
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum ListingType {
+  SELL
+  BUY
 }
 
 enum ListingStatus {
@@ -382,7 +389,7 @@ model LaptopCatalog {
   display       String?
   importBatchId String?
 
-  constraints   Json?
+  constraints Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -409,7 +416,7 @@ model BrandDesktopCatalog {
   isMini        Boolean  @default(false)
   importBatchId String?
 
-  constraints   Json?
+  constraints Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -427,7 +434,7 @@ model CustomBuildCatalog {
   description   String?
   importBatchId String?
 
-  constraints   Json?
+  constraints Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -451,7 +458,7 @@ model AioCatalog {
   ports         String?
   importBatchId String?
 
-  constraints   Json?
+  constraints Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -464,6 +471,7 @@ model MobileCatalog {
   brand            String
   series           String
   modelName        String
+  sku              String?  @unique
   hebrewAliases    String[]
   storages         Int[]
   screenSize       Float?
@@ -479,7 +487,7 @@ model MobileCatalog {
   wirelessCharging Boolean  @default(false)
   importBatchId    String?
 
-  constraints      Json?
+  constraints Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -499,7 +507,7 @@ model VehicleCatalog {
   hp            Int?
   importBatchId String?
 
-  constraints   Json?
+  constraints Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -518,7 +526,7 @@ model ElectronicsCatalog {
   specs         String? // ─────────────────────────────────────────────────────────────
   importBatchId String?
 
-  constraints   Json?
+  constraints Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -538,7 +546,7 @@ model ApplianceCatalog {
   energyRating  String?
   importBatchId String?
 
-  constraints   Json?
+  constraints Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -564,7 +572,7 @@ model MotherboardCatalog {
   releaseYear   String?
   importBatchId String?
 
-  constraints   Json?
+  constraints Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -610,28 +618,10 @@ model FieldValueReliability {
 
   @@unique(name: "value_field_category", [value, field, category])
   @@index([category])
-  @@index([createdAt])  // ליעילות ה-Pruner (סריקת תאריך)
+  @@index([createdAt]) // ליעילות ה-Pruner (סריקת תאריך)
 }
 
-model ContextPattern {
-  id              String           @id @default(uuid())
-  patternPart     String // ─────────────────────────────────────────────────────────────
-  type            String // ─────────────────────────────────────────────────────────────
-  category        String
-  field           String // ─────────────────────────────────────────────────────────────
-  confidence      Float            @default(0.5)
-  occurrenceCount Int              @default(1)
-  isIgnored       Boolean          @default(false)
-  parentId        String? // ─────────────────────────────────────────────────────────────
-  parent          ContextPattern?  @relation("PatternHierarchy", fields: [parentId], references: [id])
-  children        ContextPattern[] @relation("PatternHierarchy")
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @default(now()) @updatedAt
 
-  @@index([patternPart])
-  @@index([category])
-  @@index([createdAt])  // ליעילות ה-Pruner (סריקת תאריך)
-}
 
 model CategoryFieldThreshold {
   id               String   @id @default(uuid())
@@ -700,8 +690,8 @@ model CategoryFormStructure {
 
   // Design Engine Columns:
   sectionName String  @default("מפרט כללי")
-  sectionIcon String?  
-  icon        String?  
+  sectionIcon String?
+  icon        String?
   colSpan     Int     @default(1)
 
   createdAt DateTime @default(now())
@@ -730,10 +720,10 @@ model FormFieldOption {
 model FieldSignal {
   id         String   @id @default(uuid())
   category   String
-  field      String   // e.g. "ram", "storage", "screenSize"
-  rawValue   String   // e.g. "גיגה", "gb", "gigabyte", "אינץ"
-  normalized String   // e.g. "gb", "inch"
-  signalType String   // VALUE | UNIT | CONTEXT | NUMBER
+  field      String // e.g. "ram", "storage", "screenSize"
+  rawValue   String // e.g. "גיגה", "gb", "gigabyte", "אינץ"
+  normalized String // e.g. "gb", "inch"
+  signalType String // VALUE | UNIT | CONTEXT | NUMBER
   weight     Float    @default(0.5)
   isIgnored  Boolean  @default(false)
   createdAt  DateTime @default(now())
@@ -743,4 +733,81 @@ model FieldSignal {
   @@index([category])
   @@index([field])
   @@index([signalType])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Dynamic Categories Registry (Zero Code Maintenance)
+// ─────────────────────────────────────────────────────────────
+model DynamicCategory {
+  id          String   @id @default(uuid())
+  code        String   @unique // e.g., "DRONES", "LAPTOPS"
+  nameHebrew  String // e.g., "רחפנים", "לפטופים"
+  prismaModel String // e.g., "electronicsCatalog"
+  nlpKeywords String[] // e.g., ["drone", "drones", "רחפן"]
+  regex       String // e.g., "רחפן|רחפנים|dji|mavic"
+  learnFields String[] // e.g., ["brand", "modelName"]
+  uniqueKeys  String[] // e.g., ["brand", "modelName"]
+
+  translationMap Json? // e.g., { "Lenovo": ["לנובו", "Lenovo"] }
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([code])
+}
+
+// ─────────────────────────────────────────────────────────────
+// The "Navigation in the Dark" AI Learning Engine
+// ─────────────────────────────────────────────────────────────
+
+// Layer 1 & 3: Anchors and Compasses (הפנסים והמצפן + הצימודים)
+model FieldAnchor {
+  id            String   @id @default(uuid())
+  phrase        String // e.g. "עולה", "עולה רק", "שח"
+  category      String // e.g. "LAPTOPS" 
+  relatedFields String[] // e.g. ["price", "discount"]
+
+  // Per-field confidence — the correct solution for multi-field anchors
+  // e.g. { "price": 0.82, "temperature": 0.31 }
+  // The global `confidence` below is kept for backward compatibility only
+  fieldConfidences Json @default("{}")
+
+  // The Compass
+  expectedType      String? // e.g. "NUMBER", "TEXT"
+  expectedDirection String  @default("FORWARD") // FORWARD, BACKWARD, BOTH
+  minDistance       Int     @default(1)
+  maxDistance       Int     @default(5)
+
+  // Legacy global confidence (used as fallback when fieldConfidences is empty)
+  confidence      Float   @default(0.5)
+  occurrenceCount Int     @default(1)
+  isIgnored       Boolean @default(false)
+
+  // Suffix/Prefix indicators
+  isSuffix Boolean @default(false)
+  isPrefix Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([category, phrase])
+  @@index([category])
+  @@index([phrase])
+}
+
+// Marker for Category Fingerprinting (למידת קטגוריות מונחית)
+model CategoryLearningMarker {
+  id              String  @id @default(uuid())
+  category        String // e.g. "VEHICLES"
+  markerWord      String // e.g. "טסט", "יד ראשונה"
+  confidence      Float   @default(0.5)
+  occurrenceCount Int     @default(1)
+  isIgnored       Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([category, markerWord])
+  @@index([category])
 }

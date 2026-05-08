@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus, Save, Trash2 } from "lucide-react";
 
-const CATEGORIES = ["PHONES", "LAPTOPS", "DESKTOPS", "AIO", "CUSTOM_DESKTOPS", "MOTHERBOARDS", "VEHICLES", "GENERAL"];
+const CATEGORIES = ["SMARTPHONES", "LAPTOPS", "DESKTOPS", "AIO", "CUSTOM_DESKTOPS", "MOTHERBOARDS", "VEHICLES", "GENERAL"];
 
 interface Threshold {
   id: string | null;

@@ -18,9 +18,10 @@ export function Navbar() {
                     <Logo />
                 </Link>
                 <div className="flex items-center gap-4">
-                    <Link href="/trust-link">
-                        <Button variant="glass" size="sm" className="hidden sm:inline-flex">
-                            צור לינק בטוח
+
+                    <Link href="/">
+                        <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white font-bold text-base">
+                            מרקטפלייס
                         </Button>
                     </Link>
                     <Link href="/provider/register" className="hidden md:block">
@@ -30,8 +31,8 @@ export function Navbar() {
                     </Link>
                     <SignedOut>
                         <SignInButton mode="modal">
-                            <Button variant="default" size="sm">
-                                כניסה
+                            <Button variant="default" size="sm" className="font-bold">
+                                כניסה לאזור האישי
                             </Button>
                         </SignInButton>
                     </SignedOut>
@@ -67,8 +68,8 @@ function DashboardLink() {
 
     return (
         <Link href="/dashboard" className="mr-2">
-            <Button variant="ghost" size="sm">
-                לוח בקרה
+            <Button variant="ghost" size="sm" className="font-semibold">
+                לאזור האישי
             </Button>
         </Link>
     );

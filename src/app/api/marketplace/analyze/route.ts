@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { expertFeedbackPipeline } from "@/lib/expert-pipeline";
 import prismadb from "@/lib/prismadb";
 import { dbCache } from "@/lib/db-cache";
+import { detectConditionFromText } from "@/lib/computer-data";
 
 /**
  * מפת הקטגוריות המלאה לפי ה-Schema שלך.
  */
 const CATEGORY_MAP: Record<string, any> = {
-    PHONES: {
+    SMARTPHONES: {
         table: 'mobileCatalog',
         brandField: 'brand',
         modelField: 'modelName'
@@ -57,9 +58,12 @@ export async function POST(req: Request) {
         console.log("🧠 PIPELINE DONE:", t2 - t1, "ms");
 
         // 2. נרמול קטגוריות - יישור קו יסודי
-        let finalCategory = aiResult?.category?.toUpperCase() || "GENERAL";
+        // לבקשתך: השבתנו את החלפת הקטגוריה האוטומטית כרגע.
+        // תמיד ניתן עדיפות לקטגוריה שהמשתמש בחר ידנית (body.category).
+        let rawCategory = body.category || aiResult?.category || "GENERAL";
+        let finalCategory = rawCategory.toUpperCase();
         const normalizationRules: Record<string, string> = {
-            "MOBILES": "PHONES", "MOBILE": "PHONES", "PHONE": "PHONES",
+            "MOBILES": "SMARTPHONES", "MOBILE": "SMARTPHONES", "PHONE": "SMARTPHONES", "PHONES": "SMARTPHONES",
             "LAPTOP": "LAPTOPS",
             "COMPUTER": "DESKTOPS", "DESKTOP": "DESKTOPS", "PC": "DESKTOPS",
             "AIO": "AIO", "CUSTOM": "CUSTOM_DESKTOPS", "CUSTOM_DESKTOP": "CUSTOM_DESKTOPS",
@@ -97,8 +101,7 @@ export async function POST(req: Request) {
                     if (match) {
                         catalogData = {
                             brand: match[conf.brandField] || match.brand,
-                            model: match[conf.modelField] || match.modelName,
-                            modelName: match[conf.modelField] || match.modelName,
+                            // הוסר: לא משלימים דגם עיוור (model) רק בגלל שמצאנו מותג. זה יצר הלוצינציות (ThinkPad X1).
                             isCatalogMatch: true,
                             sourceTable: conf.table
                         };
@@ -113,12 +116,31 @@ export async function POST(req: Request) {
         // 4. ⚡ שכבת Regex חכמה — ממלאת שדות שה-AI המילוני עדיין לא למד
         const regexExtracted: any = {};
 
-        // מחיר — תומך ב"מבקש", "₪", "שח", "ש\"ח"
-        const priceMatch = text.match(/(?:מבקש|מחיר|מחירו|עולה|ב-?|₪|שח|ש"ח)\s*([\d,]+)/i)
-            || text.match(/([\d,]+)\s*(?:₪|שח|ש"ח)/i);
-        if (priceMatch) {
-            regexExtracted.price = priceMatch[1].replace(/,/g, "");
+        // מחיר — סדר הפטרנים: ספציפי → כללי
+        // 1. "מחיר: 6500" / "מבקש 6500" / "מחירו 3000"
+        // 2. "6500 ₪" / "6,500 ₪" / "6500 שח"
+        // 3. "₪ 6500" / "₪6500"
+        // 4. "ב-6500" / "ב 6500"  (זהיר: "ב-2024" הוא שנה, לא מחיר!)
+        const pricePatterns = [
+            /(?:מחיר|מחירו|מבקש|עולה|ב-?|תמורת)[:\s]*([\d,]{2,})/i,
+            /([\d,]{2,})\s*(?:₪|\u20AA|שח|ש"ח|שקל|שקלים)/i,
+            /(?:₪|\u20AA)\s*([\d,]{2,})/i,
+            /(?:^|\n|\s)([\d]{3,})(?:\s*₪|\s*שח|\s*ש"ח|\s*שקל|,|\s|$)/m,
+        ];
+        let foundPrice = "";
+        for (const pattern of pricePatterns) {
+            const m = text.match(pattern);
+            if (m) {
+                foundPrice = m[1].replace(/,/g, "");
+                const numVal = parseInt(foundPrice);
+                // מנע טעות: שנים (2000-2099) לעולם לא יהיו מחיר (מנע המקרה "ב-2024" → price=2024)
+                if (numVal >= 2000 && numVal <= 2099) { foundPrice = ""; continue; }
+                // Sanity check: price should be reasonable (200 – 10,000,000)
+                if (numVal >= 200 && numVal <= 10000000) break;
+                foundPrice = "";
+            }
         }
+        if (foundPrice) regexExtracted.price = foundPrice;
 
         // כותרת — חיפוש שם מוצר (מותג + דגם)
         const KNOWN_BRANDS = ["אייפון", "iPhone", "Samsung", "סמסונג", "Xiaomi", "שיאומי",
@@ -162,12 +184,12 @@ export async function POST(req: Request) {
             regexExtracted.storage = num + unit + (isHDD ? " HDD" : " SSD"); // e.g. "1TB SSD" / "512GB SSD"
         }
 
-        // RAM — supports: '32GB RAM', '32 גיגה זיכרון', 'זיכרון: 32', 'RAM: 32'
+        // RAM — supports: '32GB RAM', '32 גיגה זיכרון', 'זיכרון: 32', 'RAM: 32', '32 ג'יגה ראם'
         const ramMatch = 
-            text.match(/(\d{1,3})\s*(?:GB|גיגה)?\s*RAM/i) ||        // 32GB RAM
-            text.match(/(\d{1,3})\s*(?:GB|גיגה)?\s*זיכרון/i) ||    // 16 גיגה זיכרון
-            text.match(/זיכרון[:\s]*(\d{1,3})\s*(?:GB|גיגה)?/i) ||  // זיכרון: 32 גיגה
-            text.match(/RAM[:\s]*(\d{1,3})\s*(?:GB|גיגה)?/i);        // RAM: 16
+            text.match(/(\d{1,3})\s*(?:GB|ג'?יגה)?\s*(?:RAM|ראם)/i) ||        // 32GB RAM
+            text.match(/(\d{1,3})\s*(?:GB|ג'?יגה)?\s*זיכרון/i) ||    // 16 גיגה זיכרון
+            text.match(/זיכרון[:\s]*(\d{1,3})\s*(?:GB|ג'?יגה)?/i) ||  // זיכרון: 32 גיגה
+            text.match(/(?:RAM|ראם)[:\s]*(\d{1,3})\s*(?:GB|ג'?יגה)?/i);        // RAM: 16
         if (ramMatch) regexExtracted.ram = ramMatch[1] + "GB";
 
         // מעבד (CPU) - קודם נסה לחלץ משורה מובנה ("מעבד: Intel Core...") — דורש נקודותיים
@@ -175,40 +197,92 @@ export async function POST(req: Request) {
         if (cpuStructuredMatch) {
             regexExtracted.cpu = cpuStructuredMatch[1].trim().replace(/\s*\([^)]*\)/, "").trim();
         } else {
-            const cpuMatch = text.match(/(?:Intel\s+Core\s+Ultra\s+\d+\s+\d+\w*|Intel\s+Core\s+[im]\d[\d-][\w-]*|AMD\s+Ryzen\s+\d+\s+\d+\w*|Apple\s+M\d+(?:\s+(?:Pro|Max|Ultra))?|Snapdragon\s+X[\w\s]*)/i) ||
-                text.match(/(?:i[3579]-[\w]+|M[1234]\s+(?:Pro|Max|Ultra)?|Ryzen\s*[3579]\s*[\w]+|Core\s*Ultra\s*\d+)[^,\n]*/i);
-            if (cpuMatch) regexExtracted.cpu = cpuMatch[0].trim();
+            // מעבד (CPU) — חילוץ מהטקסט בלבד. תוקן פילטר רחב לזיהוי 'מעבד i7'.
+            const cpuStopChar = /[,.(\n\u05D0-\u05EA]/; // stop at: comma, period, paren, newline, Hebrew word
+            const cpuMatch =
+                text.match(/מעבד\s+(i\d|m\d|Ryzen\s\d+|Ultra\s\d+)/i) ||
+                text.match(/Intel\s+Core\s+Ultra\s+\d+(?:\s+[A-Z0-9]{3,6})?(?=[,.(\s\n]|$)/i) ||
+                text.match(/Intel\s+Core\s+[im]\d[\d-][\w-]*(?=-|\s|,|\.|$)/i) ||
+                text.match(/AMD\s+Ryzen\s+\d+\s+[\w-]+(?=[,.(\s\n]|$)/i) ||
+                text.match(/Apple\s+M\d+(?:\s+(?:Pro|Max|Ultra))?(?=[,.(\s\n]|$)/i) ||
+                text.match(/Snapdragon\s+X\s*[\w]+(?=[,.(\s\n]|$)/i) ||
+                text.match(/\b(i3|i5|i7|i9|m1|m2|m3|Ryzen\s*[3579])\b/i);
+            if (cpuMatch) regexExtracted.cpu = cpuMatch[1] || cpuMatch[0].trim().replace(/\s+/g, ' ');
         }
 
-        // מצב סוללה — אחוזים. נאפשר מרחק של עד 35 תווים בין המילה לאחוז
-        const batteryMatch = text.match(/(?:סוללה|battery|בטרי|בריאות)[\s\S]{0,35}?(\d{2,3})\s*%/i);
+        // מצב סוללה — אחוזים (תומך גם בסמל % וגם במילה 'אחוז'). נאפשר מרחק תווים למילים כמו "בטריה נמצאת ב 98 אחוז".
+        const batteryMatch = text.match(/(?:סוללה|battery|בטרי|בריאות)[\s\S]{0,35}?(\d{2,3})\s*(?:%|אחוז)/i);
         if (batteryMatch) regexExtracted.batteryHealth = batteryMatch[1] + "%";
 
-        // גודל מסך - מחפש '14"' או 'מסך: 14' או '14 אינץ'
+        // גודל מסך — מבדיל בין כל פורמטי האינץ:
+        //   '14"'  / '14 אינץ\'' / '14 אינץ' / '14 inch' / 'מסך: 14'
         const screenStructured = text.match(/מסך[:\s]+(\d{1,2}(?:\.\d)?)/i);
-        const screenInline = text.match(/(\d{1,2}(?:\.\d)?)\s*(?:"|\u05d0ינץ|inch)(?:[\s]|OLED|LCD|IPS|AMOLED|Touch|$)/i);
+        // טיפול בגרש אחרי אינץ: (?:['\'\u05f3]?) = אופציונלי מבלי דרשת
+        const screenInline = text.match(/(\d{1,2}(?:\.\d)?)\s*(?:"|\u05d0ינץ['\'\u05f3]?|\u05d0ינצ['\'\u05f3]?|inch)(?=[^0-9]|$)/i);
         const screenMatch = screenStructured || screenInline;
         if (screenMatch) regexExtracted.screen = screenMatch[1] + '"';
 
-        // מצב מכשיר
-        // מצב מכשיר - סדר הבדיקה חשוב (קודם חיפושים מורכבים כמו "כמו חדש")
-        const conditionKeywords: Record<string, string> = {
-            "כמו חדש": "כמו חדש", "like new": "כמו חדש",
-            "חדש": "חדש", "new": "חדש",
-            "מחודש": "מחודש", "refurb": "מחודש", "renewed": "מחודש",
-            "משומש": "משומש", "used": "משומש"
-        };
-        for (const [kw, cond] of Object.entries(conditionKeywords)) {
-            if (text.toLowerCase().includes(kw.toLowerCase())) {
-                regexExtracted.condition = cond;
-                break;
+        // סוג פאנל — OLED / QLED / IPS / LCD / AMOLED
+        // זה לא פלסטר: זה בתנאי עד ש-Signal Engine ילמד על סוגי פאנלים דרך תיקוני משתמש.
+        // לאחר שדאטה יתמלא ב-FieldSignal, שעה זו תוסר אוטומטית — אבל טרם, היא הבסיסלכך.
+        const panelTypeMatch = text.match(/\b(OLED|QLED|AMOLED|Super\s*AMOLED|IPS|TN|VA|NANO\s*IPS|Mini\s*LED)\b/i);
+        if (panelTypeMatch) regexExtracted.screenType = panelTypeMatch[1].toUpperCase().replace(/\s+/g, ' ');
+
+        // מק"ט / SKU — חילוץ מספר מוצר/קטלוג מהטקסט
+        // מזהה: 'המק"ט שלו זה DT-ASU-ROG-423' | 'sku: ABC-123' | 'מספר מוצר XYZ-456'
+        // [^\u05d0-\u05ea]{0,25} = עד 25 תווים שאינם עברית בין הטריגר לערך (מכסה "שלו זה" וכו')
+        const skuRawMatch = text.match(
+            /(?:מק['"״]?ט|sku|מספר\s*(?:מוצר|דגם|קטלוג(?:י)?)|מקט|serial\s*number)[^\u05d0-\u05ea]{0,25}([A-Z0-9][A-Z0-9\-_.\/]{2,30})/i
+        );
+        if (skuRawMatch) regexExtracted.sku = skuRawMatch[1].toUpperCase();
+
+        // מערכת הפעלה (OS) — Regex ייעודי: מבטיח זיהוי גם אם ה-AI לא לומד מספיק מהר
+        // רץ מהספציפי לכללי (Windows 11 Home לפני Windows 11)
+        if (!regexExtracted.os) {
+            const osPatterns: { r: RegExp; val: string }[] = [
+                { r: /windows\s*11\s*home/i,            val: "Windows 11 Home" },
+                { r: /windows\s*11\s*pro/i,             val: "Windows 11 Pro" },
+                { r: /windows\s*11/i,                   val: "Windows 11" },
+                { r: /windows\s*10\s*home/i,            val: "Windows 10 Home" },
+                { r: /windows\s*10\s*pro/i,             val: "Windows 10 Pro" },
+                { r: /windows\s*10/i,                   val: "Windows 10" },
+                { r: /mac\s*os|macos/i,                 val: "macOS" },
+                { r: /ubuntu|debian|fedora|linux/i,     val: "Linux" },
+                { r: /ללא\s*מערכת\s*הפעלה|dos\b/i,    val: "ללא מערכת הפעלה" },
+            ];
+            for (const { r, val } of osPatterns) {
+                if (r.test(text)) { regexExtracted.os = val; break; }
             }
         }
 
+        // גודל מסך משם הדגם (G16→16", X14→14") — כאשר לא נמצא ממפרט מפורש
+        // לוגיקה: שם דגם שמסתיים בשתי ספרות בטווח 13-18 = כנראה גודל המסך באינץ'
+        if (!regexExtracted.screen) {
+            const modelTokens = text.match(/\b[A-Z][A-Z0-9]*(\d{2})\b/g) || [];
+            for (const token of modelTokens) {
+                const d = /(\d{2})$/.exec(token);
+                if (d) {
+                    const sz = parseInt(d[1]);
+                    if (sz >= 13 && sz <= 18) { regexExtracted.screen = sz + '"'; break; }
+                }
+            }
+        }
+
+        // מצב מכשיר - זיהוי סמכותי וקנוני באמצעות detectConditionFromText
+        // זה מונע באגים של includes() שבהם "חדש" מחליף "כמו חדש"
+        regexExtracted.condition = detectConditionFromText(text);
+
         // 5. תשובה סופית — Regex wins on price if AI is only SUGGEST-level
-        // Find AI suggestion confidence for price
-        const aiPriceSuggestion = aiResult.suggestions?.find((s: any) => s.field === 'price');
-        const aiPriceIsHighConfidence = aiPriceSuggestion?.action === 'AUTO_FILL';
+        // Find AI suggestion confidence for price (it lives inside suggestions[], not as a top-level key)
+        const priceSuggestion = (aiResult.suggestions || []).find((s: any) =>
+            s.field === 'price' || s.field === 'מחיר'
+        );
+        const aiPriceValue = priceSuggestion?.value ? String(priceSuggestion.value) : "";
+        const aiPriceIsHighConfidence = priceSuggestion?.action === 'AUTO_FILL';
+        // Final winner: HIGH confidence AI > Regex > LOW confidence AI
+        const finalPrice = (aiPriceIsHighConfidence && aiPriceValue)
+            ? aiPriceValue
+            : (regexExtracted.price || aiPriceValue || "");
 
         const response = NextResponse.json({
             success: true,
@@ -217,9 +291,10 @@ export async function POST(req: Request) {
                 ...aiResult,
                 // אל לדרוס שדות שכבר חולצו ב-regexExtracted:
                 title: aiResult.title || regexExtracted.title || "",
-                // Price: regex wins unless AI has AUTO_FILL confidence
-                price: (aiPriceIsHighConfidence ? aiResult.price : null) || regexExtracted.price || aiResult.price || "",
-                condition: aiResult.condition || regexExtracted.condition || "",
+                // Price: finalPrice already resolves: HIGH-confidence AI > Regex > LOW-confidence AI
+                price: finalPrice,
+                // Condition: Regex is strictly ordered (longest to shortest) so it prevents "חדש" from crushing "כמו חדש"
+                condition: regexExtracted.condition || aiResult.condition || "",
                 // ✅ מיפוי שמות שדות ל-fieldId של ה-DB:
                 batteryHealth: aiResult.batteryHealth || regexExtracted.batteryHealth || "", // batteryHealth = DB fieldId
                 storage: aiResult.storage || regexExtracted.storage || "",
@@ -227,8 +302,8 @@ export async function POST(req: Request) {
                 cpu: aiResult.cpu || regexExtracted.cpu || "",
                 screen: aiResult.screen || regexExtracted.screen || "",
                 brand: aiResult.brand || catalogData.brand || regexExtracted.brand || "",
-                // subModel = DB fieldId (instead of modelName)
-                subModel: aiResult.subModel || catalogData.model || catalogData.modelName || "",
+                // subModel = DB fieldId
+                subModel: aiResult.subModel || "",
                 category: finalCategory,
                 // לא להעביר שדות פנימיים (isCatalogMatch / sourceTable) לטופס
                 suggestions: aiResult.suggestions

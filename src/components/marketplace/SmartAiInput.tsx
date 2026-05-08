@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2, SendHorizontal } from "lucide-react";
+import { WordWeightDebugger } from "./WordWeightDebugger";
 
 interface SmartAiInputProps {
     isAnalyzing?: boolean;
@@ -70,7 +71,7 @@ export function SmartAiInput({ isAnalyzing: externalLoading, onResult, category 
     };
 
     return (
-        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 shadow-2xl relative overflow-hidden group">
+        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 shadow-2xl relative overflow-visible group">
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all" />
 
             <div className="flex items-center gap-3 mb-4 text-right justify-end" dir="rtl">
@@ -109,6 +110,8 @@ export function SmartAiInput({ isAnalyzing: externalLoading, onResult, category 
                     </Button>
                 </div>
             </div>
+            {/* Added system testing Word Weights debugger tooltip engine */}
+            <WordWeightDebugger text={text} category={category} />
         </div>
     );
 }

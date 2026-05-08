@@ -4,6 +4,8 @@
 import prismadb from "@/lib/prismadb";
 import { revalidatePath } from "next/cache";
 import { currentUser } from "@clerk/nextjs/server";
+import { learnFromImport } from "@/lib/learning";
+import { getCategoryRegistry } from "@/lib/config/categoryRegistry";
 
 export type ImportResult = {
     total: number;
@@ -127,7 +129,6 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
                 }
                 if (existing) { result.skipped++; continue; }
 
-                // 3. הוספה ל-DB
                 await prismadb.laptopCatalog.create({
                     data: {
                         brand: item.brand,
@@ -149,6 +150,15 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
                         importBatchId: batchId
                     }
                 });
+
+                // Auto-feed the AI Dictionary (Drop-lists)
+                const learnFields = ['brand', 'series', 'modelName', 'type', 'cpu', 'gpu', 'ram', 'storage', 'os', 'screenSize', 'display'];
+                for (const f of learnFields) {
+                    if (item[f] && item[f] !== 'לא ידוע' && item[f] !== 'מובנה') {
+                        await learnFromImport(f, item[f], "LAPTOPS");
+                    }
+                }
+
                 result.added++;
             } catch (err: any) {
                 result.errors.push(`שגיאה בדגם ${item.modelName || "?"}: ${err.message}`);
@@ -212,6 +222,14 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
                         importBatchId: batchId
                     }
                 });
+
+                const learnFields = ['brand', 'series', 'modelName', 'cpu', 'gpu', 'ram', 'storage', 'os'];
+                for (const f of learnFields) {
+                    if (item[f] && item[f] !== 'לא ידוע' && item[f] !== 'מובנה') {
+                        await learnFromImport(f, item[f], "DESKTOPS");
+                    }
+                }
+
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`); }
         }
@@ -267,6 +285,14 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
                         importBatchId: batchId
                     }
                 });
+
+                const learnFields = ['brand', 'series', 'modelName', 'screenSize', 'display', 'cpu', 'gpu', 'ram', 'storage', 'os'];
+                for (const f of learnFields) {
+                    if (item[f] && item[f] !== 'לא ידוע' && item[f] !== 'מובנה') {
+                        await learnFromImport(f, item[f], "AIO");
+                    }
+                }
+
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`); }
         }
@@ -315,10 +341,14 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
                 // Helper: normalize a value that might be array or string → always String
                 const str = (v: any) => Array.isArray(v) ? v.join(" / ") : (v ? String(v) : "");
 
+                const baseAliases = Array.isArray(item.hebrewAliases) ? item.hebrewAliases.filter(Boolean) : (typeof item.hebrewAliases === 'string' && item.hebrewAliases ? item.hebrewAliases.split(",").map((s: string) => s.trim()).filter(Boolean) : []);
+                if (item.nickname && !baseAliases.includes(item.nickname)) baseAliases.push(item.nickname.trim());
+                if (item.nicknameHe && !baseAliases.includes(item.nicknameHe)) baseAliases.push(item.nicknameHe.trim());
+
                 await prismadb.mobileCatalog.create({
                     data: {
                         brand: item.brand, series: str(item.series), modelName: item.modelName,
-                        hebrewAliases: Array.isArray(item.hebrewAliases) ? item.hebrewAliases.filter(Boolean) : (typeof item.hebrewAliases === 'string' && item.hebrewAliases ? item.hebrewAliases.split(",").map((s: string) => s.trim()).filter(Boolean) : []),
+                        hebrewAliases: baseAliases,
                         storages: parsedStorages.length > 0 ? parsedStorages : [],
                         screenSize: item.screenSize ? parseFloat(str(item.screenSize).replace(/[^0-9.]/g, "")) || null : null,
                         releaseYear: item.releaseYear ? parseInt(str(item.releaseYear).replace(/[^0-9]/g, "")) || null : null,
@@ -333,6 +363,18 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
                         importBatchId: batchId
                     }
                 });
+
+                // Auto-feed Mobile specific dictionary
+                const learnFields = ['brand', 'series', 'cpu', 'os', 'battery', 'rearCamera', 'frontCamera'];
+                for (const f of learnFields) {
+                    if (item[f] && item[f] !== 'לא ידוע') {
+                        await learnFromImport(f, item[f], "SMARTPHONES");
+                    }
+                }
+                // Numbers (RAM/Storage) might not need heavy AI learning, but handled if exists:
+                if (item.ramG || item.ram) await learnFromImport('ram', item.ramG || item.ram, "SMARTPHONES");
+                if (parsedStorages.length > 0) await learnFromImport('storage', parsedStorages, "SMARTPHONES");
+
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`); }
         }
@@ -377,6 +419,14 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult> {
                         importBatchId: batchId
                     }
                 });
+
+                const learnFields = ['make', 'model', 'type', 'fuelType', 'transmission', 'engineSize'];
+                for (const f of learnFields) {
+                    if (item[f] && item[f] !== 'לא ידוע') {
+                        await learnFromImport(f, item[f], "VEHICLES");
+                    }
+                }
+
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה ברכב ${item.make} ${item.model}: ${err.message}`); }
         }
@@ -419,6 +469,10 @@ export async function importElectronicsAction(data: any[]): Promise<ImportResult
                         importBatchId: batchId
                     }
                 });
+
+                if (item.brand) await learnFromImport('brand', item.brand, "ELECTRONICS");
+                if (item.category && item.category !== "General") await learnFromImport('categoryType', item.category, "ELECTRONICS");
+
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה במוצר ${item.modelName}: ${err.message}`); }
         }
@@ -460,6 +514,12 @@ export async function importApplianceAction(data: any[]): Promise<ImportResult> 
                         importBatchId: batchId
                     }
                 });
+
+                if (item.brand) await learnFromImport('brand', item.brand, "APPLIANCES");
+                if (item.category && item.category !== "General") await learnFromImport('type', item.category, "APPLIANCES");
+                if (item.capacity) await learnFromImport('capacity', item.capacity, "APPLIANCES");
+                if (item.energyRating) await learnFromImport('energyRating', item.energyRating, "APPLIANCES");
+
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה במוצר ${item.modelName}: ${err.message}`); }
         }
@@ -501,6 +561,14 @@ export async function importMotherboardAction(data: any[]): Promise<ImportResult
                         importBatchId: batchId
                     }
                 });
+
+                const learnFields = ['brand', 'chipset', 'socket', 'formFactor', 'ramType', 'maxRam', 'pcie', 'm2', 'lan', 'wifi'];
+                for (const f of learnFields) {
+                    if (item[f] && item[f] !== 'לא ידוע') {
+                        await learnFromImport(f, item[f], "MOTHERBOARDS");
+                    }
+                }
+
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה בלוח ${item.model}: ${err.message}`); }
         }
@@ -538,16 +606,37 @@ export async function undoRecentInCategoryAction(category: string): Promise<{ de
         const filter = { importBatchId: lastLog.batchId };
         let deletedCount = 0;
 
-        switch (category) {
-            case "laptop": deletedCount = (await prismadb.laptopCatalog.deleteMany({ where: filter })).count; break;
-            case "desktop": deletedCount = (await prismadb.brandDesktopCatalog.deleteMany({ where: filter })).count; break;
-            case "aio": deletedCount = (await prismadb.aioCatalog.deleteMany({ where: filter })).count; break;
-            case "mobile": case "phone": deletedCount = (await prismadb.mobileCatalog.deleteMany({ where: filter })).count; break;
-            case "electronics": deletedCount = (await prismadb.electronicsCatalog.deleteMany({ where: filter })).count; break;
-            case "appliance": deletedCount = (await prismadb.applianceCatalog.deleteMany({ where: filter })).count; break;
-            case "motherboard": deletedCount = (await prismadb.motherboardCatalog.deleteMany({ where: filter })).count; break;
-            default: throw new Error("קטגוריה לא נתמכת");
+        let resolvedModelName = "";
+        const legacyMapping: Record<string, string> = {
+            "laptop": "laptopCatalog",
+            "desktop": "brandDesktopCatalog",
+            "aio": "aioCatalog",
+            "mobile": "mobileCatalog",
+            "phone": "mobileCatalog",
+            "vehicle": "vehicleCatalog",
+            "electronics": "electronicsCatalog",
+            "appliance": "applianceCatalog",
+            "motherboard": "motherboardCatalog"
+        };
+        
+        if (legacyMapping[category]) {
+            resolvedModelName = legacyMapping[category];
+        } else {
+            const CategoryRegistry = await getCategoryRegistry();
+            for (const k of Object.keys(CategoryRegistry)) {
+                if (k.toLowerCase() === category) {
+                    resolvedModelName = CategoryRegistry[k].prismaModel;
+                    break;
+                }
+            }
         }
+        
+        if (!resolvedModelName) {
+            throw new Error("קטגוריה לא נתמכת: " + category);
+        }
+
+        const model = (prismadb as any)[resolvedModelName];
+        deletedCount = (await model.deleteMany({ where: filter })).count;
 
         // Mark the log as undone
         if (deletedCount > 0) {
@@ -580,5 +669,85 @@ export async function undoRecentInCategoryAction(category: string): Promise<{ de
         return { deletedCount };
     } catch (e: any) {
         throw new Error("מחיקה נכשלה: " + e.message);
+    }
+}
+
+/**
+ * פונקציית ייבוא גנרית דינמית (Zero Code Architecture)
+ */
+export async function importDynamicCategoryAction(categoryCode: string, data: any[]): Promise<ImportResult> {
+    const CategoryRegistry = await getCategoryRegistry();
+    const registryEntry = CategoryRegistry[categoryCode];
+    if (!registryEntry) {
+        throw new Error(`קטגוריה ${categoryCode} לא נמצאת במילון הדינמי.`);
+    }
+
+    const { prismaModel, uniqueKeys, learnFields } = registryEntry;
+    const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
+
+    try {
+        const { unique, duplicatesInFile } = deduplicateInFile(data, item => {
+            return uniqueKeys.map(k => {
+                const val = item[k];
+                if (Array.isArray(val)) return JSON.stringify(val);
+                return val ? String(val).toLowerCase() : "";
+            }).join("-");
+        });
+
+        result.duplicatesInFile = duplicatesInFile;
+        result.skipped += duplicatesInFile;
+
+        const model = (prismadb as any)[prismaModel];
+
+        for (const item of unique) {
+            try {
+                // Determine uniqueness in DB based on uniqueKeys
+                const whereClause: any = {};
+                let hasValidKey = false;
+                for (const key of uniqueKeys) {
+                    if (item[key]) {
+                        whereClause[key] = item[key];
+                        hasValidKey = true;
+                    }
+                }
+
+                if (!hasValidKey) {
+                    result.skipped++;
+                    continue;
+                }
+
+                const existingAndMatches = await model.findMany({ where: whereClause });
+                if (existingAndMatches.length > 0) {
+                    result.skipped++;
+                    continue;
+                }
+
+                const createData = { ...item, importBatchId: batchId };
+                await model.create({ data: createData });
+
+                for (const f of learnFields) {
+                    if (item[f] && item[f] !== 'לא ידוע' && item[f] !== 'מובנה') {
+                        await learnFromImport(f, item[f], categoryCode);
+                    }
+                }
+
+                result.added++;
+            } catch (err: any) {
+                result.errors.push(`שגיאה בייבוא שורה: ${err.message}`);
+            }
+        }
+
+        const finalCount = await model.count();
+        result.newTotal = finalCount;
+
+        revalidatePath("/", "layout"); 
+        revalidatePath("/admin/export"); 
+        revalidatePath("/admin/logs");
+
+        await logImport({ category: categoryCode.toLowerCase(), totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
+        return result;
+    } catch (error: any) {
+         throw new Error(`נכשל ייבוא גנרי עבור ${categoryCode}: ` + error.message);
     }
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { Navbar } from "@/components/Navbar";
 import { DynamicListingForm } from "@/components/marketplace/DynamicListingForm";
 
 function CreateListingContent() {
     const searchParams = useSearchParams();
+    const router = useRouter(); // Soft navigation initialized here
     const mode = searchParams.get("mode"); 
     const [initialSmartData, setInitialSmartData] = useState<any>(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -195,13 +196,13 @@ function CreateListingContent() {
                                 manualCategory === "custom" ? "CUSTOM_COMPUTERS" :
                                 "LAPTOPS"
                             }
-                            onComplete={() => window.location.href = "/dashboard/marketplace/my-listings"}
+                            onComplete={() => router.push("/dashboard/marketplace/my-listings")}
                         />
                     ) : (
                         <DynamicListingForm 
                             initialData={initialSmartData} 
                             initialCategory={manualCategory === "Phones" ? "SMARTPHONES" : "GENERAL"}
-                            onComplete={() => window.location.href = "/dashboard/marketplace/my-listings"}
+                            onComplete={() => router.push("/dashboard/marketplace/my-listings")}
                         />
                     )}
                 </div>

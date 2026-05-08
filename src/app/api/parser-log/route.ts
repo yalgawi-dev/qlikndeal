@@ -109,22 +109,24 @@ export async function PATCH(req: NextRequest) {
         if (updated.userFinal && updated.category && updated.originalText) {
             try {
                 // אנו רוצים ללמוד לא רק "תיקונים" (corrections) אלא את כל השדות שהמשתמש אישר!
-                // גם שדה שהיה בבועה צהובה ואושר (ללא שינוי שם) חייב לקבל בוסט למשקל, אחרת יישאר בועה צהובה לנצח.
                 const finalData = typeof updated.userFinal === "string" ? JSON.parse(updated.userFinal) : updated.userFinal;
                 // סנן שדות זבל לפני למידה (מנע זיהום בעתיד)
                 const GARBAGE_FIELDS = ['numeric', 'general', 'value', 'number', 'isCatalogMatch', 'sourceTable', 'batteryPercent', 'modelName', 'originalField'];
+                
+                const learnPromises: Promise<any>[] = [];
                 for (const field in finalData) {
                     if (GARBAGE_FIELDS.includes(field.toLowerCase())) continue; // דלג שד זבל!
                     const userValue = String(finalData[field]);
                     if (userValue && userValue !== "null" && userValue !== "undefined" && userValue.length > 1) {
-                        try {
-                            await masterLearn(updated.originalText, field, userValue, updated.category);
-                        } catch(e) { /* ignore single learn errors */ }
+                        learnPromises.push(
+                            masterLearn(updated.originalText, field, userValue, updated.category)
+                                .catch(e => { /* ignore single learn errors */ })
+                        );
                     }
                 }
 
                 // --- ענישה (Penalty) ---
-                // אם ה-AI הציע ערך שגוי ומשתמש שינה אותו → נענוש את ערך ה-AI
+                const penaltyPromises: Promise<any>[] = [];
                 if (updated.corrections && updated.corrections !== '{}') {
                     try {
                         const corrections = typeof updated.corrections === "string" 
@@ -132,13 +134,19 @@ export async function PATCH(req: NextRequest) {
                             : updated.corrections;
                         for (const field in corrections) {
                             const corr = corrections[field];
-                            // corr.ai = מה ה-AI הציע, corr.user = מה המשתמש כתב
                             if (corr.ai && corr.ai !== corr.user) {
-                                await masterPenalize(field, String(corr.ai), updated.category);
+                                penaltyPromises.push(
+                                    masterPenalize(field, String(corr.ai), updated.category)
+                                        .catch(e => {})
+                                );
                             }
                         }
                     } catch(pe) { /* non-critical */ }
                 }
+
+                // Execute all learning and penalizing concurrently!
+                await Promise.all([...learnPromises, ...penaltyPromises]);
+
             } catch (learnErr) {
                 console.error("[parser-log] masterLearn failed:", learnErr);
             }

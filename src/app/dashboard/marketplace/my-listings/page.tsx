@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { DynamicListingForm } from "@/components/marketplace/DynamicListingForm";
 import { getMyListings, deleteListing } from "@/app/actions/marketplace";
-import { Loader2, Plus, ArrowRight, ArrowLeft, Pencil, Trash2, ShoppingBag, Tag, Share2 } from "lucide-react";
+import { Loader2, Plus, ArrowRight, ArrowLeft, Pencil, Trash2, ShoppingBag, Tag, Share2, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ShareModal } from "@/components/marketplace/ShareModal";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import Link from "next/link";
 
 // Parse listing data safely for use in edit forms
 function prepareInitialData(listing: any) {
@@ -52,6 +54,7 @@ export default function MyListingsPage() {
 
     const [shareModalOpen, setShareModalOpen] = useState(false);
     const [shareData, setShareData] = useState({ url: "", title: "" });
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     const fetchMyListings = async () => {
         setLoading(true);
@@ -145,6 +148,27 @@ export default function MyListingsPage() {
         <div className="min-h-screen bg-black text-white pb-20">
             <Navbar />
             <div className="container mx-auto px-4 py-8 max-w-7xl">
+                <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+                    <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-2xl p-0 overflow-hidden" dir="rtl">
+                        <div className="p-6 text-center border-b border-gray-800">
+                            <DialogTitle className="text-2xl font-bold">איך תרצה לפרסם?</DialogTitle>
+                            <p className="text-gray-400 mt-2">בחר את הדרך הנוחה לך ביותר</p>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4 p-6">
+                            <Link href="/dashboard/marketplace/create-ai" className="group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 hover:border-indigo-500 transition-all cursor-pointer" onClick={() => setShowCreateModal(false)}>
+                                <div className="absolute top-3 right-3 bg-indigo-500 text-xs px-2 py-1 rounded-full font-bold animate-pulse">מומלץ ✨</div>
+                                <div className="h-16 w-16 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Sparkles className="w-8 h-8 text-indigo-400" /></div>
+                                <h3 className="text-xl font-bold mb-2">יצירה חכמה עם AI</h3>
+                                <p className="text-sm text-gray-400 text-center">ספר לנו במילים פשוטות — ה-AI יבנה מודעה מושלמת.</p>
+                            </Link>
+                            <Link href="/dashboard/marketplace/create" className="group flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-gray-700 bg-gray-800/50 hover:bg-gray-800 hover:border-gray-600 transition-all cursor-pointer" onClick={() => setShowCreateModal(false)}>
+                                <div className="h-16 w-16 bg-gray-700/50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Plus className="w-8 h-8 text-gray-400" /></div>
+                                <h3 className="text-xl font-bold mb-2">יצירה ידנית</h3>
+                                <p className="text-sm text-gray-400 text-center">מילוי ידני מלא לכל הקטגוריות.</p>
+                            </Link>
+                        </div>
+                    </DialogContent>
+                </Dialog>
 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
@@ -157,7 +181,7 @@ export default function MyListingsPage() {
                         </h1>
                     </div>
                     <Button
-                        onClick={() => router.push("/dashboard/marketplace")}
+                        onClick={() => setShowCreateModal(true)}
                         className="bg-purple-600 hover:bg-purple-700 gap-2"
                     >
                         <Plus className="w-4 h-4" />
@@ -176,7 +200,7 @@ export default function MyListingsPage() {
                         <h3 className="text-xl font-bold mb-2">אין לך מודעות פעילות עדיין</h3>
                         <p className="text-gray-400 mb-6">זה הזמן להתחיל למכור!</p>
                         <Button
-                            onClick={() => router.push("/dashboard/marketplace")}
+                            onClick={() => setShowCreateModal(true)}
                             className="bg-purple-600 hover:bg-purple-700"
                         >
                             פרסם מודעה חדשה

@@ -1,6 +1,7 @@
 import prismadb from "./prismadb";
+import { unstable_cache } from "next/cache";
 
-const CACHE_TTL = 1000 * 60 * 30; // ⚡ 30 minutes — AI training data is stable
+const CACHE_TTL = 1000 * 60; // ⚡ CACHING TTL 60s (Senior Architect Rule enforced)
 
 class GlobalDbCache {
     private cache: Record<string, { data: any, exp: number }> = {};
@@ -11,6 +12,7 @@ class GlobalDbCache {
             return this.cache[key].data;
         }
         
+        // Removed Next.js unstable_cache wrapper because it hangs for 20+ seconds in DEV MODE!
         const data = await fetcher();
         this.cache[key] = { data, exp: now + CACHE_TTL };
         return data;

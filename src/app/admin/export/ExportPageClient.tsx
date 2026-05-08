@@ -192,6 +192,48 @@ export default function ExportPageClient() {
         reader.readAsText(file);
     };
 
+    // מיפוי עברית לאנגלית (כולל אנגלית באותיות קטנות לטיפול בכפילויות ווריאציות)
+    const IMPORT_MAPPING: Record<string, string> = {
+        "יצרן": "brand", "מותג": "brand", "make": "brand", "brand": "brand",
+        "סדרה": "series", "series": "series",
+        "דגם": "modelName", "model": "modelName", "modelname": "modelName",
+        "סוג": "type", "type": "type",
+        "מסך": "screenSize", "screen": "screenSize", "גודל מסך": "screenSize", "screensize": "screenSize",
+        "מעבד": "cpu", "cpu": "cpu", "processor": "cpu",
+        "זיכרון ram": "ram", "זיכרון": "ram", "ram": "ram", "ramg": "ramG",
+        "אחסון": "storage", "storage": "storage", "אחסון (gb)": "storages", "storages": "storages", "storagegb": "storages",
+        "מאיץ גרפי": "gpu", "כרטיס מסך": "gpu", "gpu": "gpu",
+        "שנה": "releaseYear", "year": "releaseYear", "releaseyear": "releaseYear",
+        "הערות": "notes", "notes": "notes",
+        "מק\"ט": "sku", "sku": "sku",
+        "משקל": "weight", "weight": "weight",
+        "חיבורים": "ports", "ports": "ports", "connection": "ports", "connections": "ports",
+        "תצוגה": "display", "display": "display",
+        "כינויים (he)": "hebrewAliases", "hebrewaliases": "hebrewAliases", "כינויים": "hebrewAliases", "nickname": "nickname", "nicknamehe": "nicknameHe",
+        "סוללה": "battery", "battery": "battery",
+        "מצלמה אחורית": "rearCamera", "rearcamera": "rearCamera",
+        "מצלמה קדמית": "frontCamera", "frontcamera": "frontCamera",
+        "nfc": "nfc", "טעינה אלחוטית": "wirelessCharging", "wirelesscharging": "wirelessCharging",
+        "קטגוריה": "category", "category": "category",
+        "קיבולת": "capacity", "capacity": "capacity",
+        "דירוג אנרגטי": "energyRating", "energy rating": "energyRating", "energyrating": "energyRating",
+        "מערכת הפעלה": "os", "os": "os"
+    };
+
+    const checkUnrecognizedFields = (headers: string[]) => {
+        const recognizedVals = new Set(Object.values(IMPORT_MAPPING));
+        const unmapped: string[] = [];
+        headers.forEach(h => {
+            const lower = h.toLowerCase();
+            if (lower !== "id" && !recognizedVals.has(h)) {
+                unmapped.push(h);
+            }
+        });
+        if (unmapped.length > 0) {
+            toast.warning(`השדות הבאים לא זוהו במערכת וייתכן שישמרו בהערות או יתעלמו מהם: ${unmapped.join(", ")}`, { duration: 6000 });
+        }
+    };
+
     const tryParseImport = (text: string) => {
         try {
             // Remove BOM if present and trim
@@ -203,11 +245,41 @@ export default function ExportPageClient() {
 
             let rawHeaders: string[] = [];
             let rowsRaw: string[][] = [];
+            let finalHeaders: string[] = [];
 
             // ניסיון ראשון: JSON
             if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
-                const parsed = JSON.parse(trimmed);
-                setImportPreview(Array.isArray(parsed) ? parsed : [parsed]);
+                // תיקון פסיקים עודפים בסוף אובייקט או מערך (נפוץ מאוד בהדבקות של ChatGPT)
+                let safeJson = trimmed.replace(/,\s*([\]}])/g, "$1");
+                const parsed = JSON.parse(safeJson);
+                const rawArr = Array.isArray(parsed) ? parsed : [parsed];
+                
+                const rows = rawArr.map((item: any) => {
+                    const obj: any = {};
+                    if (item && typeof item === 'object') {
+                        Object.keys(item).forEach(k => {
+                            const normalized = k.trim().toLowerCase();
+                            const mappedKey = IMPORT_MAPPING[normalized] || k.trim();
+                            let val: any = item[k] || "";
+                            const arrayFields = ["cpu", "gpu", "ram", "storage", "os", "screenSize", "storages"];
+                            if (val && typeof val === 'string' && val.includes("/") && arrayFields.includes(mappedKey)) {
+                                val = val.split("/").map((v: string) => v.trim());
+                            }
+                            if (mappedKey === "nfc" || mappedKey === "wirelessCharging") {
+                                val = val === "V" || val === "v" || val === "true" || val === true || val === "כן" || val === "yes";
+                            }
+                            obj[mappedKey] = val;
+                        });
+                    }
+                    return obj;
+                });
+                
+                if (rows.length > 0) finalHeaders = Object.keys(rows[0]);
+                setDetectedHeaders(finalHeaders);
+                setImportPreview(rows);
+                
+                // בדיקת שדות לא מזוהים
+                checkUnrecognizedFields(finalHeaders);
                 return;
             }
 
@@ -244,7 +316,13 @@ export default function ExportPageClient() {
                         for (let i = 0; i < line.length; i++) {
                             const char = line[i];
                             if (char === '"') {
-                                inQuotes = !inQuotes;
+                                if (inQuotes) {
+                                    inQuotes = false;
+                                } else if (cur.trim() === '') {
+                                    inQuotes = true;
+                                } else {
+                                    cur += char;
+                                }
                             } else if (char === delim && !inQuotes) {
                                 result.push(cur);
                                 cur = '';
@@ -271,37 +349,9 @@ export default function ExportPageClient() {
                 return;
             }
 
-            // מיפוי עברית לאנגלית (כולל אנגלית באותיות קטנות לטיפול בכפילויות ווריאציות)
-            const mapping: Record<string, string> = {
-                "יצרן": "brand", "מותג": "brand", "make": "brand", "brand": "brand",
-                "סדרה": "series", "series": "series",
-                "דגם": "modelName", "model": "modelName", "modelname": "modelName",
-                "סוג": "type", "type": "type",
-                "מסך": "screenSize", "גודל מסך": "screenSize", "screensize": "screenSize",
-                "מעבד": "cpu", "cpu": "cpu",
-                "זיכרון ram": "ram", "זיכרון": "ram", "ram": "ram", "ramg": "ramG",
-                "אחסון": "storage", "storage": "storage", "אחסון (gb)": "storages", "storages": "storages",
-                "מאיץ גרפי": "gpu", "כרטיס מסך": "gpu", "gpu": "gpu",
-                "שנה": "releaseYear", "year": "releaseYear", "releaseyear": "releaseYear",
-                "הערות": "notes", "notes": "notes",
-                "מק\"ט": "sku", "sku": "sku",
-                "משקל": "weight", "weight": "weight",
-                "חיבורים": "ports", "ports": "ports",
-                "תצוגה": "display", "display": "display",
-                "כינויים (he)": "hebrewAliases", "hebrewaliases": "hebrewAliases", "כינויים": "hebrewAliases",
-                "סוללה": "battery", "battery": "battery",
-                "מצלמה אחורית": "rearCamera", "rearcamera": "rearCamera",
-                "מצלמה קדמית": "frontCamera", "frontcamera": "frontCamera",
-                "nfc": "nfc", "טעינה אלחוטית": "wirelessCharging", "wirelesscharging": "wirelessCharging",
-                "קטגוריה": "category", "category": "category",
-                "קיבולת": "capacity", "capacity": "capacity",
-                "דירוג אנרגטי": "energyRating", "energy rating": "energyRating", "energyrating": "energyRating",
-                "מערכת הפעלה": "os", "os": "os"
-            };
-
             const headers = rawHeaders.map(h => {
                 const normalized = h.trim().toLowerCase();
-                return mapping[normalized] || h.trim();
+                return IMPORT_MAPPING[normalized] || h.trim();
             });
 
             const rows = rowsRaw.map((values) => {
@@ -321,6 +371,7 @@ export default function ExportPageClient() {
 
             // 🔍 Track detected headers for UI display
             setDetectedHeaders(headers);
+            checkUnrecognizedFields(headers);
             console.debug("[IMPORT DEBUG] Raw headers:", rawHeaders, "→ Mapped:", headers, "| First row brand:", rows[0]?.brand, "modelName:", rows[0]?.modelName);
 
             if (rows.length === 0) {
@@ -328,10 +379,10 @@ export default function ExportPageClient() {
             }
 
             setImportPreview(rows);
-        } catch (err) {
+        } catch (err: any) {
             console.error("Parse error:", err);
             setImportPreview([]);
-            toast.error("שגיאה בפענוח הקובץ. וודא שהוא בפורמט CSV או JSON תקין.");
+            toast.error(`שגיאה בפענוח: ${err.message || "פורמט לא תקין"}. אנא ודא שהקובץ בפורמט JSON/CSV תקני ואין סוגריים חסרים בסוף.`);
         }
     };
 

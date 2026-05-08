@@ -5,6 +5,73 @@ import { revalidatePath } from "next/cache";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import he from 'he';
 
+// 🛡️ Constraint Enforcement Engine (Architect Rules: Safe Transactions & Data Accuracy)
+async function validateConstraints(category: string | undefined, brand: string | undefined, modelName: string | undefined, extraData: any) {
+    if (!category || !modelName || !extraData) return { valid: true };
+
+    let catalogRecord: any = null;
+    const catUpper = category.toUpperCase();
+    
+    if (catUpper === "LAPTOPS") {
+        catalogRecord = await prismadb.laptopCatalog.findFirst({
+            where: { modelName: { equals: modelName, mode: 'insensitive' } }
+        });
+    } else if (catUpper === "SMARTPHONES" || catUpper === "MOBILE" || catUpper === "PHONE") {
+        catalogRecord = await prismadb.mobileCatalog.findFirst({
+            where: { modelName: { equals: modelName, mode: 'insensitive' } }
+        });
+    }
+
+    if (!catalogRecord || !catalogRecord.constraints) return { valid: true };
+
+    const constraints = catalogRecord.constraints as any;
+    if (!constraints.limits) return { valid: true };
+
+    // 1. RAM LIMIT ENFORCEMENT
+    if (constraints.limits.ram?.max && extraData.ram) {
+        const userRamStr = String(extraData.ram);
+        // Ignore parsing if they typed string without numbers
+        if (/\d/.test(userRamStr)) {
+             const userRamVal = parseInt(userRamStr.replace(/\D/g, ""), 10);
+             if (userRamVal > constraints.limits.ram.max) {
+                 return { valid: false, error: `🚨 המערכת זיהתה חריגה: סדרת המחשבים "${modelName}" תומכת בעד ${constraints.limits.ram.max}GB RAM לפי נתוני יצרן. אנא תקן את המפרט שהזנת.` };
+             }
+        }
+    }
+
+    // 2. STORAGE LIMIT ENFORCEMENT
+    if (constraints.limits.storage?.max && (extraData.storage || extraData.storages)) {
+        const userStorageStr = String(extraData.storage || extraData.storages).toLowerCase();
+        if (/\d/.test(userStorageStr)) {
+             let userStorageVal = parseInt(userStorageStr.replace(/\D/g, ""), 10);
+             if (userStorageStr.includes("tb")) {
+                 userStorageVal *= 1024; // Convert TB to GB for accurate comparison
+             }
+             if (userStorageVal > constraints.limits.storage.max) {
+                 // Convert max back to a friendly display
+                 const maxDisplay = constraints.limits.storage.max >= 1000 ? `${constraints.limits.storage.max / 1024}TB` : `${constraints.limits.storage.max}GB`;
+                 return { valid: false, error: `🚨 המערכת זיהתה חריגה: מודל זה תומך בנפח אחסון מקסימלי של ${maxDisplay}. סומן שהוזן נפח שגוי (זיוף אפשרי).` };
+             }
+        }
+    }
+
+    // 3. GPU WHITELIST ENFORCEMENT
+    if (constraints.limits.gpu && Array.isArray(constraints.limits.gpu) && extraData.gpu) {
+        const allowedGpus = constraints.limits.gpu.map((g: string) => g.toLowerCase());
+        const userGpu = String(extraData.gpu).toLowerCase();
+        
+        // Exclude generic inputs from verification
+        if (userGpu !== "לא ידוע" && userGpu !== "מובנה") {
+             const isValidGpu = allowedGpus.some((allowed: string) => userGpu.includes(allowed) || allowed.includes(userGpu));
+             if (!isValidGpu) {
+                 return { valid: false, error: `🚨 אזהרת אמינות: רכיב התצוגה (GPU) שבחרת לא קיים במפרטי היצרן עבור הדגם הנ"ל. אנא בחר כרטיס תקין מהרשימה או מחק ערך זה.` };
+             }
+        }
+    }
+
+    return { valid: true };
+}
+
 export async function createListing(data: {
     title: string; brand?: string; model?: string;
     description: string;
@@ -13,6 +80,8 @@ export async function createListing(data: {
     images: string[];
     videos?: string[];
     category?: string;
+    latitude?: number;
+    longitude?: number;
     extraData?: any;
 }) {
     console.log("createListing started", {
@@ -29,27 +98,48 @@ export async function createListing(data: {
     }
 
     try {
-        const user = await currentUser();
-        if (!user) {
-            console.log("Unauthorized: No user");
+        // ⚡ PERF: auth() validates JWT locally (~2ms) — no HTTP call to Clerk.
+        // currentUser() was making an HTTP request to Clerk servers on every save (~700ms).
+        const { userId: clerkId } = await auth();
+        if (!clerkId) {
+            console.log("Unauthorized: No session");
             return { success: false, error: "Unauthorized" };
         }
 
-        // Find local user
-        let dbUser = await prismadb.user.findUnique({
-            where: { clerkId: user.id }
-        });
+        // --- Execute Safety Constraints Validation AND User lookup in Parallel ---
+        const [vResult, initialDbUser] = await Promise.all([
+            validateConstraints(
+                data.category, 
+                data.brand || data.extraData?.brand, 
+                data.model || data.extraData?.modelName || data.extraData?.model, 
+                data.extraData
+            ),
+            prismadb.user.findUnique({
+                where: { clerkId }
+            })
+        ]);
+
+        if (!vResult.valid) {
+            console.warn("Validation Constraint Blocked Listing:", vResult.error);
+            return { success: false, error: vResult.error };
+        }
+        // ---------------------------------------------
+
+        let dbUser = initialDbUser;
 
         if (!dbUser) {
-            console.log("User not found in DB, creating new user record from Clerk data...");
+            // Only fetch full user data from Clerk when we need to create a new DB record (rare path)
+            console.log("User not found in DB, fetching from Clerk to create record...");
+            const fullUser = await currentUser();
+            if (!fullUser) return { success: false, error: "Unauthorized" };
             dbUser = await prismadb.user.create({
                 data: {
-                    clerkId: user.id,
-                    email: user.emailAddresses[0]?.emailAddress,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    imageUrl: user.imageUrl,
-                    phone: user.phoneNumbers[0]?.phoneNumber,
+                    clerkId,
+                    email: fullUser.emailAddresses[0]?.emailAddress,
+                    firstName: fullUser.firstName,
+                    lastName: fullUser.lastName,
+                    imageUrl: fullUser.imageUrl,
+                    phone: fullUser.phoneNumbers[0]?.phoneNumber,
                 }
             });
         }
@@ -65,6 +155,8 @@ export async function createListing(data: {
                 images: JSON.stringify(data.images),
                 videos: JSON.stringify(data.videos || []),
                 category: data.category || "General",
+                latitude: data.latitude,
+                longitude: data.longitude,
                 status: "ACTIVE",
                 extraData: data.extraData ? JSON.stringify(data.extraData) : null
             }
@@ -226,17 +318,33 @@ export async function getMyListings() {
 
 export async function updateListing(id: string, data: any) {
     try {
-        const user = await currentUser();
-        if (!user) return { success: false, error: "Unauthorized" };
+        // ⚡ PERF: auth() — local JWT validation, no Clerk HTTP call
+        const { userId: clerkId } = await auth();
+        if (!clerkId) return { success: false, error: "Unauthorized" };
 
-        const dbUser = await prismadb.user.findUnique({ where: { clerkId: user.id } });
+        // --- Parallelize Validation, User Lookup, and Listing Ownership Check ---
+        const [dbUser, existing, vResult] = await Promise.all([
+            prismadb.user.findUnique({ where: { clerkId } }),
+            prismadb.marketplaceListing.findUnique({ where: { id } }),
+            validateConstraints(
+                data.category, 
+                data.brand || data.extraData?.brand, 
+                data.model || data.extraData?.modelName || data.extraData?.model, 
+                data.extraData
+            )
+        ]);
+
         if (!dbUser) return { success: false, error: "User not found" };
 
-        // Verify ownership
-        const existing = await prismadb.marketplaceListing.findUnique({ where: { id } });
         if (!existing || existing.sellerId !== dbUser.id) {
             return { success: false, error: "Unauthorized or listing not found" };
         }
+
+        if (!vResult.valid) {
+            console.warn("Validation Constraint Blocked Update:", vResult.error);
+            return { success: false, error: vResult.error };
+        }
+        // ---------------------------------------------
 
         const listing = await prismadb.marketplaceListing.update({
             where: { id },
@@ -246,6 +354,8 @@ export async function updateListing(id: string, data: any) {
                 price: parseFloat(data.price.toString()) || 0,
                 condition: data.condition,
                 category: data.category,
+                latitude: data.latitude,
+                longitude: data.longitude,
                 images: JSON.stringify(data.images),
                 videos: JSON.stringify(data.videos || []),
                 extraData: data.extraData ? JSON.stringify(data.extraData) : null

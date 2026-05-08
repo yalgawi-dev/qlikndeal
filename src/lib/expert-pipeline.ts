@@ -15,7 +15,7 @@ const CONFIG_PATH = path.join(process.cwd(), "src/config/matcher-config.json");
 async function mapFieldToSchema(aiField: string, category: string, preloadedDbFields?: string[]): Promise<string> {
     let normalizedCategory = category.toUpperCase();
     
-    if (normalizedCategory === "MOBILES" || normalizedCategory === "MOBILE") normalizedCategory = "PHONES";
+    if (normalizedCategory === "MOBILES" || normalizedCategory === "MOBILE" || normalizedCategory === "PHONES" || normalizedCategory === "PHONE") normalizedCategory = "SMARTPHONES";
     if (normalizedCategory === "LAPTOP") normalizedCategory = "LAPTOPS";
     if (normalizedCategory === "COMPUTER" || normalizedCategory === "PC") normalizedCategory = "DESKTOPS";
 
@@ -100,19 +100,28 @@ export async function expertFeedbackPipeline(query: any, existingCategory?: stri
 
     // שלב הניקוי ויישור הקו (Normalization)
     const t1 = Date.now();
-    if (!category || category === "" || category === "undefined" || category === "UNKNOWN") {
-        // Use the smarter detectCategory (Hebrew regex heuristics) over the weak Bayesian classifier
+    
+    // CRITICAL FIX: If the user explicitly chose a category (e.g. LAPTOPS), respect it!
+    // Only run detectCategory when no category is provided or it's UNKNOWN/GENERAL.
+    const userHasCategory = existingCategory && existingCategory !== '' && existingCategory !== 'undefined' && existingCategory !== 'UNKNOWN' && existingCategory !== 'GENERAL';
+    if (!userHasCategory) {
         const detected = await detectCategory(safeQuery);
-        category = detected !== "UNKNOWN" ? detected : await classifyCategory(safeQuery);
+        if (detected !== "UNKNOWN") {
+            category = detected;
+        } else {
+            category = await classifyCategory(safeQuery);
+        }
     }
-    console.log("📂 CATEGORY:", Date.now() - t1, "ms");
+    console.log("📂 CATEGORY:", Date.now() - t1, "ms", "→", category);
 
 
-    // יישור קו גורף לקטגוריות המערכת
+    // יישור קו גורף (UI to DB Translation Pipeline)
+    // The UI uses 'SMARTPHONES', but the Dictionary / Candles use 'PHONES'
     const normalizationMap: Record<string, string> = {
-        "MOBILES": "PHONES",
-        "MOBILE": "PHONES",
-        "PHONE": "PHONES",
+        "MOBILES": "SMARTPHONES",
+        "MOBILE": "SMARTPHONES",
+        "PHONE": "SMARTPHONES",
+        "PHONES": "SMARTPHONES",
         "LAPTOP": "LAPTOPS",
         "COMPUTER": "DESKTOPS",
         "PC": "DESKTOPS",
@@ -121,15 +130,19 @@ export async function expertFeedbackPipeline(query: any, existingCategory?: stri
         "VEHICLE": "VEHICLES"
     };
 
-    if (category && normalizationMap[category.toUpperCase()]) {
-        category = normalizationMap[category.toUpperCase()];
+    let targetDbCategory = category;
+    if (targetDbCategory && normalizationMap[targetDbCategory.toUpperCase()]) {
+        targetDbCategory = normalizationMap[targetDbCategory.toUpperCase()];
     }
 
-    // קריאה לניתוח הנתונים
+    // קריאה לניתוח הנתונים באמצעות הקטגוריה המותאמת ל-DB (למשל PHONES)
     const t2 = Date.now();
-    const aiResults = await masterAnalyze(safeQuery, category || "UNKNOWN");
+    const aiResults = await masterAnalyze(safeQuery, targetDbCategory || "UNKNOWN");
     console.log("🧠 ANALYZE:", Date.now() - t2, "ms");
-    const result: any = { category, suggestions: aiResults };
+    
+    // החזרה לפרונטאנד במונחי UI
+    const uiReturnCategory = targetDbCategory;
+    const result: any = { category: uiReturnCategory, suggestions: aiResults };
 
     // הזרקת השדות לתוצאה הסופית + סנכרון עם התפריט הנגלל (Dropdown Snapping)
     const t3 = Date.now();
@@ -141,10 +154,7 @@ export async function expertFeedbackPipeline(query: any, existingCategory?: stri
     // ⚡ PRELOAD FIELDS (Performance Optimization to avoid N DB queries blocking the loop for 25s)
     let preloadedDbFields: string[] = [];
     try {
-        let preCategory = (category || "GENERAL").toUpperCase();
-        if (preCategory === "MOBILES" || preCategory === "MOBILE") preCategory = "PHONES";
-        if (preCategory === "LAPTOP") preCategory = "LAPTOPS";
-        if (preCategory === "COMPUTER" || preCategory === "PC") preCategory = "DESKTOPS";
+        let preCategory = (targetDbCategory || "GENERAL").toUpperCase();
         const preFieldsRaw = await dbCache.getOrFetch<any[]>(`fields_${preCategory}`, () => 
             prismadb.fieldValueReliability.findMany({
                 where: { category: preCategory },
@@ -155,35 +165,187 @@ export async function expertFeedbackPipeline(query: any, existingCategory?: stri
         preloadedDbFields = preFieldsRaw.map((f: any) => f.field);
     } catch(e) {}
 
+    // ── CROSS-LANGUAGE FIELD ALIASES (Pipeline Level) ───────────────────────
+    // ה-AI לומד שמות שדות כמו "series" / "סדרה", אבל ה-formStructure משתמש
+    // ב-fieldId שונה (ערך "family" ב-LAPTOPS). טוענים ה-formStructure fieldIds מה-Cache
+    // (memoized - כבר נטען על ידי masterAnalyze, אפס hits חדשים) ומבצעים Alias-Resolve דינמי.
+    let formStructFieldIds: string[] = [];
+    try {
+        const formStructRaw = await dbCache.getOrFetch<any[]>(`structs_${targetDbCategory || 'GENERAL'}`, () =>
+            prismadb.categoryFormStructure.findMany({ where: { category: targetDbCategory || 'GENERAL' } })
+        );
+        formStructFieldIds = formStructRaw.map((r: any) => r.fieldId);
+    } catch(e) { console.warn('[pipeline] Could not load formStruct fieldIds:', e); }
+
+    // מפד כינויים רב-לשוני ורב-שמותי: אנגלית/עברית → fieldId קנוני בטופס
+    const GLOBAL_FIELD_ALIASES: Record<string, string> = {
+        "series":  "family",       // EN anchor → "family" (LAPTOPS: סדרת יצרן)
+        "סדרה":   "family",        // HE anchor → אותו fieldId
+        "model":   "subModel",     // AI internal field → UI field
+        "modelname": "subModel",   // AI internal field → UI field
+        "דגם":     "subModel",     // HE anchor → UI field
+    };
+    // helper: מחיל alias רק אם ה-targetFieldId קיים ב-formStructure
+    const resolveFieldAlias = (fieldName: string): string => {
+        const alias = GLOBAL_FIELD_ALIASES[fieldName] ?? GLOBAL_FIELD_ALIASES[fieldName.toLowerCase()];
+        if (alias && formStructFieldIds.includes(alias)) return alias;
+        return fieldName;
+    };
+
+    // Load dynamically learned ALIASes from FieldSignal
+    let dynamicAliases: any[] = [];
+    try {
+        const catOrGen = category || "GENERAL";
+        dynamicAliases = await dbCache.getOrFetch<any[]>(`ai_alias_${catOrGen}`, () => 
+            prismadb.fieldSignal.findMany({ 
+                where: { category: catOrGen, signalType: "ALIAS", isIgnored: false }
+            })
+        );
+    } catch(e) { console.warn("[pipeline] Could not load dynamic aliases:", e); }
+
+    const dynamicAliasMap: Record<string, string> = {};
+    for (const a of dynamicAliases) {
+        if (a.rawValue && a.normalized) {
+            dynamicAliasMap[a.rawValue.toLowerCase().trim()] = a.normalized.trim();
+        }
+    }
+
     // 🔑 KEY FIX: build mapped suggestions so frontend fieldId matching works
     const t4 = Date.now();
     const mappedSuggestions: any[] = [];
 
     for (const res of aiResults) {
         if ((res.action === "AUTO_FILL" || res.action === "SUGGEST") && res.field) {
-            const targetField = await mapFieldToSchema(res.field, category || "GENERAL", preloadedDbFields);
+            // GUARD: skip non-product meta-fields – they cause Fuse false-positives
+            const META_FIELDS = ['price', 'title', 'description', 'category', 'contactPhone', 'suggestions', 'success'];
+            if (META_FIELDS.includes(res.field.toLowerCase())) continue;
+
+            // נורמליזציה ערב-אנגלית: "series"/"סדרה" → "family" (כאשר קיים ב-formStructure)
+            const normalizedResField = resolveFieldAlias(res.field);
+            const targetField = await mapFieldToSchema(normalizedResField, category || "GENERAL", preloadedDbFields);
             let finalValue = res.value;
+
+            // AI (like Claude/OpenAI) often replaces spaces with underscores in JSON values (e.g. "Windows_11_Home")
+            // This breaks exact string matching with DB options ("Windows 11 Home")
+            if (typeof finalValue === 'string') {
+                finalValue = finalValue.replace(/_/g, ' ');
+            }
+
+            // ─── CROSS-LANGUAGE VALUE ALIASES (DB Canonicalization) ────────────────
+            // Translates Hebrew spoken brands/OS directly into English DB catalog keys
+            // solving the "catalog cascade break" when UI gets "לנובו" instead of "Lenovo"
+            const GLOBAL_VALUE_ALIASES: Record<string, string> = {
+                "לנובו": "Lenovo",
+                "אסוס": "Asus",
+                "דל": "Dell",
+                "סמסונג": "Samsung",
+                "הייסנס": "Hisense",
+                "אלגי": "LG",
+                "אלג'י": "LG",
+                "אל ג'י": "LG",
+                "שיאומי": "Xiaomi",
+                "סוני": "Sony",
+                "פיליפס": "Philips",
+                "פנסוניק": "Panasonic",
+                "איסר": "Acer",
+                "אייסר": "Acer",
+                "מייקרוסופט": "Microsoft",
+                "רייזר": "Razer",
+                "גיגבייט": "Gigabyte",
+                "msi": "MSI",
+                "חלונות": "Windows",
+                "וינדוס": "Windows",
+                "ווינדוס": "Windows",
+                "מק": "macOS",
+            };
+
+            const rawLower = String(finalValue).toLowerCase().trim();
+            if (dynamicAliasMap[rawLower]) {
+                // Self-learning dynamic DB aliases override manual list!
+                finalValue = dynamicAliasMap[rawLower];
+            } else if (GLOBAL_VALUE_ALIASES[rawLower]) {
+                finalValue = GLOBAL_VALUE_ALIASES[rawLower];
+            } else if (rawLower === 'אפל' || rawLower === 'מקינטוש') {
+                finalValue = targetField === 'os' ? 'macOS' : 'Apple';
+            }
 
             // בדיקה האם קיים תפריט נגלל לשדה הזה
             const optionsForField = categoryOptions.filter(o => o.fieldId === targetField);
             if (optionsForField.length > 0) {
-                // Snap to option's ORIGINAL case — e.g. "32gb" → "32GB", "intel core ultra 7 258v" → "Intel Core Ultra 7 258V"
+                // Snap to option's ORIGINAL case — e.g. "32gb" → "32GB"
                 const exactMatch = optionsForField.find(o => o.value.toLowerCase() === String(finalValue).toLowerCase());
                 if (exactMatch) {
-                    // ✅ CRITICAL: use the option's original case, not the lowercase AI value!
                     finalValue = exactMatch.value;
                 } else {
-                    // Partial numeric match: "1tb" → "1TB SSD", "512" → "512GB SSD"
+                    // ─── ANTI-HALLUCINATION CONTRACT ─────────────────────────────────
+                    // The snap layer may ONLY normalize form — it must NEVER add information
+                    // that was not explicitly present in the original text.
+                    //
+                    // ✅ ALLOWED (canonical form reduction):
+                    //   extracted "1tb"  → option "1TB SSD"    (adds unit suffix only, not a new spec)
+                    //   extracted "32gb" → option "32GB RAM"   (adds unit suffix only)
+                    //   extracted "Intel Core Ultra 7 165H" → option "Intel Core Ultra 7 165H" (exact)
+                    //
+                    // ❌ PROHIBITED (hallucination / expansion to more-specific):
+                    //   extracted "Intel Core Ultra 7" → option "Intel Core Ultra 7 165H"  ← NEVER
+                    //   extracted "32" → option "32GB RAM"  (too ambiguous — 32 could be anything)
+                    //
+                    // RULE: an option is acceptable only if:
+                    //   (a) what we extracted CONTAINS the option text (we are more specific), OR
+                    //   (b) what we extracted is a SHORT numeric code (≤6 chars like "1tb", "32gb")
+                    //       AND the option merely adds a unit suffix (first token matches).
+                    // ─────────────────────────────────────────────────────────────────
                     const partialMatch = optionsForField.find(o => {
                         const optLower = o.value.toLowerCase();
                         const valLower = String(finalValue).toLowerCase();
-                        if (/\d/.test(valLower) && /\d/.test(optLower)) {
-                            return optLower.includes(valLower) || valLower.includes(optLower);
+
+                        // (a) Extracted ⊇ Option  (we compress to canonical base form)
+                        if (valLower.length > 0 && optLower.length > 0 && valLower.includes(optLower)) {
+                            // 🚨 ANTI HALLUCINATION SHIELD (Single Letters)
+                            // Prevent "G15" from partially matching the family "G" 
+                            if (optLower.length <= 2 && optLower !== valLower) return false;
+                            return true;
                         }
-                        // Text match for fields like condition: "חדש" inside "חדש באריזה"
-                        if (valLower.length >= 2) {
-                            return optLower.startsWith(valLower) || valLower.startsWith(optLower);
+
+                        // (b) Short numeric shorthand → unit expansion
+                        //     Allow: "1tb" → "1TB SSD", "32gb" → "32GB RAM"
+                        if (
+                            valLower.length >= 2 &&
+                            valLower.length <= 6 &&
+                            /^\d+[a-z]{1,3}$/i.test(valLower) && // must have unit letters (gb, tb, mb…)
+                            /\d/.test(optLower) &&
+                            optLower.includes(valLower)
+                        ) return true;
+
+                        // (c) ContextAwareParser (Navigation in the Dark)
+                        // It extracts pure numbers highly confidently because it uses anchors.
+                        // If it extracted "32" (for RAM field), it is safe to snap to "32GB RAM".
+                        // MUST ensure "32" doesn't falsely snap to "320GB" (use lookahead for non-digit).
+                        if (/^\d+$/.test(valLower)) {
+                            const exactNumberMatch = new RegExp(`(?:^|\\D)${valLower}(?!\\d)`, 'i');
+                            if (exactNumberMatch.test(optLower)) return true;
                         }
+
+                        // (d) Substring overlap with word bounds (e.g. "i7" -> "Intel Core i7")
+                        // "valLower" is text. We check if the DB option contains it as a distinct word.
+                        if (!/^\d+$/.test(valLower) && valLower.length >= 2) {
+                            const escapedVal = valLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                            const wordBoundRegex = new RegExp(`(^|[\\s,.-])${escapedVal}($|[\\s,.-])`, 'i');
+                            if (wordBoundRegex.test(optLower)) return true;
+                        }
+
+                        // (e) Screen/size numeric prefix match: "14 full hd" → "14""
+                        // Extracts numeric prefix and compares to size option ignoring the inch mark
+                        if (/^\d/.test(valLower)) {
+                            const numMatch = valLower.match(/^(\d+(?:\.\d+)?)/);
+                            if (numMatch) {
+                                const numPart = numMatch[1];
+                                // Strip all quote/inch chars and compare
+                                const cleanOpt = optLower.replace(/["\u201c\u201d\u2019\u2018]/g, '').trim();
+                                if (cleanOpt === numPart) return true;
+                            }
+                        }
+
                         return false;
                     });
                     if (partialMatch) finalValue = partialMatch.value;

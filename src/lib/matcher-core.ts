@@ -3,17 +3,20 @@ import Fuse from "fuse.js";
 // @ts-ignore
 import { getEnhancedNlp } from "./nlp-dictionary";
 import { normalizeHebrewLight } from "./hebrew-normalizer";
+import { getCategoryRegistry } from "./config/categoryRegistry";
 
 // Configuration for Efficiency (Vercel Latency Prevention)
 const CACHE_TTL_MS = 60 * 1000; // 60 seconds
 
 export type CategoryKey = 
   | "LAPTOPS"
-  | "MOBILES"
+  | "SMARTPHONES"
   | "VEHICLES"
   | "APPLIANCES"
   | "ELECTRONICS"
   | "DESKTOPS"
+  | "AIO"
+  | "CUSTOM_COMPUTERS"
   | "MOTHERBOARDS"
   | "UNKNOWN";
 
@@ -34,22 +37,20 @@ export async function detectCategory(query: string): Promise<CategoryKey> {
   const normalizedQuery = normalizeHebrewLight(query);
   const doc = nlp(normalizedQuery);
   const text = normalizedQuery;
+  const CategoryRegistry = await getCategoryRegistry();
 
-  // Basic Heuristics + NLP using compromise
-  if (doc.has('(laptop|laptops|מחשב נייד|נייד|macbook|thinkpad)')) return "LAPTOPS";
-  if (doc.has('(mobile|phone|smartphone|טלפון|סלולר|סמארטפון|iphone|galaxy)')) return "MOBILES";
-  if (doc.has('(car|vehicle|רכב|מכונית|jeep|sedan)')) return "VEHICLES";
-  if (doc.has('(appliance|fridge|washing machine|מקרר|מכונת כביסה|מזגן|ac)')) return "APPLIANCES";
-  if (doc.has('(tv|smartwatch|headphones|טלויזיה|אוזניות|שעון חכם)')) return "ELECTRONICS";
-  if (doc.has('(desktop|pc|מחשב נייח|מחשב|aio)')) return "DESKTOPS";
+  // Basic Heuristics + NLP using dynamic Category Registry
+  for (const key of Object.keys(CategoryRegistry)) {
+    const entry = CategoryRegistry[key];
+    const nlpStr = `(${entry.nlpKeywords.join('|')})`;
+    if (doc.has(nlpStr)) return entry.code as CategoryKey;
+  }
 
-  // Fallback Regex for Hebrew terminology (NLP sometimes misses right-to-left complexity)
-  if (/מחשב נייד|לפטופ|נייד|macbook/i.test(text)) return "LAPTOPS";
-  if (/טלפון|סלולרי|אייפון|גלקסי|iphone|galaxy|smartphone/i.test(text)) return "MOBILES";
-  if (/רכב|מכונית|רכבים|אוטו/i.test(text)) return "VEHICLES";
-  if (/מקרר|מזגן|כביסה|תנור/i.test(text)) return "APPLIANCES";
-  if (/מסך|אוזניות|טלוויזיה|שעון/i.test(text)) return "ELECTRONICS";
-  if (/מחשב נייח|פיסי|pc/i.test(text)) return "DESKTOPS";
+  // Fallback Regex for Hebrew terminology
+  for (const key of Object.keys(CategoryRegistry)) {
+    const entry = CategoryRegistry[key];
+    if (entry.regex.test(text)) return entry.code as CategoryKey;
+  }
 
   // As a generic fallback, default to unknown instead of fetching 10,000s of rows
   return "UNKNOWN";
@@ -68,56 +69,25 @@ async function loadCategoryData(category: CategoryKey): Promise<any[]> {
   }
 
   let data: any[] = [];
+  let CategoryRegistry: any = {};
   try {
-    switch (category) {
-      case "LAPTOPS":
-        data = await prismadb.laptopCatalog.findMany();
-        break;
-      case "MOBILES":
-        data = await prismadb.mobileCatalog.findMany();
-        break;
-      case "VEHICLES":
-        data = await prismadb.vehicleCatalog.findMany();
-        break;
-      case "APPLIANCES":
-        data = await prismadb.applianceCatalog.findMany();
-        break;
-      case "ELECTRONICS":
-        data = await prismadb.electronicsCatalog.findMany();
-        break;
-      case "DESKTOPS":
-        const [brandDesktops, aioDesktops] = await Promise.all([
-          prismadb.brandDesktopCatalog.findMany(),
-          prismadb.aioCatalog.findMany()
-        ]);
-        data = [...brandDesktops, ...aioDesktops];
-        break;
-      case "MOTHERBOARDS":
-        data = await prismadb.motherboardCatalog.findMany();
-        break;
-      case "UNKNOWN":
-      default:
-        return [];
+    CategoryRegistry = await getCategoryRegistry();
+    const registryEntry = CategoryRegistry[category];
+    if (!registryEntry) return [];
+
+    // Safe dynamic query via mapped model string
+    const model = (prismadb as any)[registryEntry.prismaModel];
+    if (model) {
+      data = await model.findMany();
     }
   } catch (error) {
     console.error(`[SmartMatcher] Architecture Issue: Failed to load ${category}`, error);
     return cached ? cached.data : []; // Stale fallback pattern
   }
 
-  // Pre-process data for fuse to allow translation search (e.g. לנובו matches Lenovo)
-  const translationMap: Record<string, string[]> = {
-    // Laptops
-    "Lenovo": ["לנובו"],
-    "Dell": ["דל"],
-    "Apple": ["אפל", "אייפון", "iPhone", "MacBook", "מקבוק"],
-    "Asus": ["אסוס"],
-    "HP": ["אייצ' פי", "אייץ פי", "HP"],
-    // Mobiles
-    "Samsung": ["סמסונג", "גלקסי", "Galaxy"],
-    "Xiaomi": ["שיאומי"],
-    "Google": ["גוגל"],
-    "OnePlus": ["וואן פלוס", "ואן פלוס"]
-  };
+  // Pre-process data using the Registry translation map if available
+  const registryEntry = CategoryRegistry[category];
+  const translationMap: Record<string, string[]> = registryEntry?.translationMap || {};
 
   const enhancedData = data.map((item) => {
     let hebrewAliases = item.hebrewAliases || [];
@@ -138,49 +108,24 @@ async function loadCategoryData(category: CategoryKey): Promise<any[]> {
  */
 async function loadFilteredCategoryData(category: CategoryKey, dbWhere: any): Promise<any[]> {
   let data: any[] = [];
+  let CategoryRegistry: any = {};
   try {
-    switch (category) {
-      case "LAPTOPS":
-        data = await prismadb.laptopCatalog.findMany({ where: dbWhere });
-        break;
-      case "MOBILES":
-        data = await prismadb.mobileCatalog.findMany({ where: dbWhere });
-        break;
-      case "VEHICLES":
-        data = await prismadb.vehicleCatalog.findMany({ where: dbWhere });
-        break;
-      case "APPLIANCES":
-        data = await prismadb.applianceCatalog.findMany({ where: dbWhere });
-        break;
-      case "ELECTRONICS":
-        data = await prismadb.electronicsCatalog.findMany({ where: dbWhere });
-        break;
-      case "DESKTOPS":
-        const [brandDesktops, aioDesktops] = await Promise.all([
-          prismadb.brandDesktopCatalog.findMany({ where: dbWhere }),
-          prismadb.aioCatalog.findMany({ where: dbWhere })
-        ]);
-        data = [...brandDesktops, ...aioDesktops];
-        break;
-      case "MOTHERBOARDS":
-        data = await prismadb.motherboardCatalog.findMany({ where: dbWhere });
-        break;
-      case "UNKNOWN":
-      default:
-        return [];
+    CategoryRegistry = await getCategoryRegistry();
+    const registryEntry = CategoryRegistry[category];
+    if (!registryEntry) return [];
+
+    const model = (prismadb as any)[registryEntry.prismaModel];
+    if (model) {
+      data = await model.findMany({ where: dbWhere });
     }
   } catch (error) {
     console.error(`[SmartMatcher] Architecture Issue: Failed to load filtered ${category}`, error);
     return []; 
   }
 
-  // Pre-process data for fuse to allow translation search (e.g. לנובו matches Lenovo)
-  const translationMap: Record<string, string[]> = {
-    "Lenovo": ["לנובו"], "Dell": ["דל"], "Apple": ["אפל", "אייפון", "iPhone", "MacBook", "מקבוק"],
-    "Asus": ["אסוס"], "HP": ["אייצ' פי", "אייץ פי", "HP"],
-    "Samsung": ["סמסונג", "גלקסי", "Galaxy"], "Xiaomi": ["שיאומי"],
-    "Google": ["גוגל"], "OnePlus": ["וואן פלוס", "ואן פלוס"]
-  };
+  // Pre-process data using the Registry translation map if available
+  const registryEntry = CategoryRegistry[category];
+  const translationMap: Record<string, string[]> = registryEntry?.translationMap || {};
 
   const enhancedData = data.map((item) => {
     let hebrewAliases = item.hebrewAliases || [];
@@ -297,20 +242,21 @@ export async function smartMatch(
   // 6. Data Fetching Strategy (Filtered DB vs Full Cache)
   let datasets: any[] = [];
   if (category !== "UNKNOWN") {
-      if (isPreFiltered) {
-          console.log(`[SmartMatcher] 🚀 PRE-FILTER ACTIVE DB QUERY. Bypassing Cache for speed:`, dbWhere);
-          datasets = await loadFilteredCategoryData(category, dbWhere);
-          // Fallback to cache if 0 results despite filters
-          if (datasets.length === 0) {
-              console.log(`[SmartMatcher] ⚠️ Pre-Filter yielded 0 results, falling back to full cached load.`);
-              datasets = await loadCategoryData(category);
-          }
-      } else {
-          console.log(`[SmartMatcher] 🐢 FULL LOAD (Cached) for ${category}. No strict filters found.`);
-          datasets = await loadCategoryData(category);
+    if (isPreFiltered) {
+      console.log(`[SmartMatcher] ⚡ PRE-FILTER ACTIVE DB QUERY. Bypassing Cache for speed:`, dbWhere);
+      datasets = await loadFilteredCategoryData(category, dbWhere);
+      
+      // Fallback to cache if 0 results despite filters
+      if (datasets.length === 0) {
+        console.log(`[SmartMatcher] ⚠️ Pre-Filter yielded 0 results, falling back to full cached load.`);
+        datasets = await loadCategoryData(category);
       }
+    } else {
+      console.log(`[SmartMatcher] 🚀 FULL LOAD (Cached) for ${category}. No strict filters found.`);
+      datasets = await loadCategoryData(category);
+    }
   } else {
-      datasets = await loadCategoryData("MOBILES");
+    datasets = await loadCategoryData("SMARTPHONES");
   }
 
   console.log(`[SmartMatcher] Loaded ${datasets.length} items for category ${category}`);
