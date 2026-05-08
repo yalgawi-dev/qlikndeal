@@ -115,6 +115,32 @@ export async function masterPenalize(field: string, wrongValue: string, category
  */
 export async function learnFromImport(field: string, value: any, category: string) {
   if (!value) return;
+
+  // ─── CANONICAL FIELD NAME GATE (Safety net) ────────────────────────────────
+  // Same map as masterLearn + catalog-specific aliases.
+  // Ensures FVR is NEVER contaminated with legacy names regardless of caller.
+  const CANONICAL: Record<string, string | null> = {
+    'series':        'family',
+    'modelName':     'subModel',
+    'model':         'subModel',
+    'screenSize':    'screen',
+    'display':       'screen',
+    'rearCamera':    'cameraMain',
+    'frontCamera':   'cameraSystem',
+    'make':          'brand',
+    'release_year':  'releaseYear',
+    'battery_health':'batteryHealth',
+    'screen_type':   'screenType',
+    'categoryType':  'type',
+    'title':         null,   // ghost field — never store
+  };
+  if (CANONICAL.hasOwnProperty(field)) {
+    const mapped = CANONICAL[field];
+    if (!mapped) return; // ghost field blocked
+    field = mapped;
+  }
+  // ─────────────────────────────────────────────────────────────────────────────
+
   const values = Array.isArray(value) ? value : [value];
 
   for (const v of values) {

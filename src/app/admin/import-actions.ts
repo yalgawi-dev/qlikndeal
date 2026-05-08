@@ -7,6 +7,28 @@ import { currentUser } from "@clerk/nextjs/server";
 import { learnFromImport } from "@/lib/learning";
 import { getCategoryRegistry } from "@/lib/config/categoryRegistry";
 
+/**
+ * Maps catalog DB column names → canonical AI fieldIds used in FVR / FormFieldStructure.
+ * This ensures that importing new catalog data always feeds the AI with correct canonical names.
+ */
+const CATALOG_TO_CANONICAL: Record<string, string> = {
+    'series':       'family',      // laptopCatalog.series → FVR.field="family"
+    'modelName':    'subModel',    // laptopCatalog.modelName → FVR.field="subModel"
+    'screenSize':   'screen',      // catalog.screenSize → FVR.field="screen"
+    'display':      'screen',      // catalog.display → FVR.field="screen"
+    'rearCamera':   'cameraMain',  // mobileCatalog.rearCamera → FVR.field="cameraMain"
+    'frontCamera':  'cameraSystem',// mobileCatalog.frontCamera → FVR.field="cameraSystem"
+    'make':         'brand',       // vehicleCatalog.make → FVR.field="brand"
+    'model':        'subModel',    // vehicleCatalog.model / motherboardCatalog.model
+    'categoryType': 'type',
+};
+
+/** Calls learnFromImport with the canonical fieldId (auto-mapped from catalog column name) */
+async function learnCanonical(catalogField: string, value: any, category: string) {
+    const canonicalField = CATALOG_TO_CANONICAL[catalogField] ?? catalogField;
+    await learnFromImport(canonicalField, value, category);
+}
+
 export type ImportResult = {
     total: number;
     added: number;
@@ -151,11 +173,11 @@ export async function importLaptopsAction(data: any[]): Promise<ImportResult> {
                     }
                 });
 
-                // Auto-feed the AI Dictionary (Drop-lists)
+                // Auto-feed the AI Dictionary with CANONICAL field names
                 const learnFields = ['brand', 'series', 'modelName', 'type', 'cpu', 'gpu', 'ram', 'storage', 'os', 'screenSize', 'display'];
                 for (const f of learnFields) {
                     if (item[f] && item[f] !== 'לא ידוע' && item[f] !== 'מובנה') {
-                        await learnFromImport(f, item[f], "LAPTOPS");
+                        await learnCanonical(f, item[f], "LAPTOPS");
                     }
                 }
 
@@ -226,7 +248,7 @@ export async function importDesktopsAction(data: any[]): Promise<ImportResult> {
                 const learnFields = ['brand', 'series', 'modelName', 'cpu', 'gpu', 'ram', 'storage', 'os'];
                 for (const f of learnFields) {
                     if (item[f] && item[f] !== 'לא ידוע' && item[f] !== 'מובנה') {
-                        await learnFromImport(f, item[f], "DESKTOPS");
+                        await learnCanonical(f, item[f], "DESKTOPS");
                     }
                 }
 
@@ -289,7 +311,7 @@ export async function importAioAction(data: any[]): Promise<ImportResult> {
                 const learnFields = ['brand', 'series', 'modelName', 'screenSize', 'display', 'cpu', 'gpu', 'ram', 'storage', 'os'];
                 for (const f of learnFields) {
                     if (item[f] && item[f] !== 'לא ידוע' && item[f] !== 'מובנה') {
-                        await learnFromImport(f, item[f], "AIO");
+                        await learnCanonical(f, item[f], "AIO");
                     }
                 }
 
@@ -364,16 +386,16 @@ export async function importMobileAction(data: any[]): Promise<ImportResult> {
                     }
                 });
 
-                // Auto-feed Mobile specific dictionary
+                // Auto-feed Mobile specific dictionary with CANONICAL field names
                 const learnFields = ['brand', 'series', 'cpu', 'os', 'battery', 'rearCamera', 'frontCamera'];
                 for (const f of learnFields) {
                     if (item[f] && item[f] !== 'לא ידוע') {
-                        await learnFromImport(f, item[f], "SMARTPHONES");
+                        await learnCanonical(f, item[f], "SMARTPHONES");
                     }
                 }
-                // Numbers (RAM/Storage) might not need heavy AI learning, but handled if exists:
-                if (item.ramG || item.ram) await learnFromImport('ram', item.ramG || item.ram, "SMARTPHONES");
-                if (parsedStorages.length > 0) await learnFromImport('storage', parsedStorages, "SMARTPHONES");
+                // Numbers (RAM/Storage)
+                if (item.ramG || item.ram) await learnCanonical('ram', item.ramG || item.ram, "SMARTPHONES");
+                if (parsedStorages.length > 0) await learnCanonical('storage', parsedStorages, "SMARTPHONES");
 
                 result.added++;
             } catch (err: any) { result.errors.push(`שגיאה בדגם ${item.modelName}: ${err.message}`); }
@@ -423,7 +445,7 @@ export async function importVehicleAction(data: any[]): Promise<ImportResult> {
                 const learnFields = ['make', 'model', 'type', 'fuelType', 'transmission', 'engineSize'];
                 for (const f of learnFields) {
                     if (item[f] && item[f] !== 'לא ידוע') {
-                        await learnFromImport(f, item[f], "VEHICLES");
+                        await learnCanonical(f, item[f], "VEHICLES");
                     }
                 }
 
@@ -728,7 +750,7 @@ export async function importDynamicCategoryAction(categoryCode: string, data: an
 
                 for (const f of learnFields) {
                     if (item[f] && item[f] !== 'לא ידוע' && item[f] !== 'מובנה') {
-                        await learnFromImport(f, item[f], categoryCode);
+                        await learnCanonical(f, item[f], categoryCode);
                     }
                 }
 

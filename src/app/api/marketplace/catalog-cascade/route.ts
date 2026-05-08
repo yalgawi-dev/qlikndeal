@@ -58,16 +58,16 @@ export async function GET(req: Request) {
                 const exact = await table.findFirst({ where });
                 if (exact) {
                     result.autoFill = {
-                        brand:        exact.brand || "",
-                        family:       exact.series || "",
-                        subModel:     exact.modelName || "",
-                        cpu:          Array.isArray(exact.cpu) ? exact.cpu[0] : (exact.cpu || ""),
-                        gpu:          Array.isArray(exact.gpu) ? exact.gpu[0] : (exact.gpu || ""),
-                        ram:          Array.isArray(exact.ram) ? exact.ram[0] : (exact.ram || ""),
-                        storage:      Array.isArray(exact.storage) ? exact.storage[0] : (exact.storage || ""),
-                        screen:       Array.isArray(exact.screenSize) ? exact.screenSize[0] + '"' : (exact.screenSize ? exact.screenSize + '"' : ""),
-                        os:           Array.isArray(exact.os) ? exact.os[0] : (exact.os || ""),
-                        release_year: exact.releaseYear?.toString() || "",
+                        brand:       exact.brand || "",
+                        family:      exact.series || "",
+                        subModel:    exact.modelName || "",
+                        cpu:         Array.isArray(exact.cpu) ? exact.cpu[0] : (exact.cpu || ""),
+                        gpu:         Array.isArray(exact.gpu) ? exact.gpu[0] : (exact.gpu || ""),
+                        ram:         Array.isArray(exact.ram) ? exact.ram[0] : (exact.ram || ""),
+                        storage:     Array.isArray(exact.storage) ? exact.storage[0] : (exact.storage || ""),
+                        screen:      Array.isArray(exact.screenSize) ? exact.screenSize[0] + '"' : (exact.screenSize ? exact.screenSize + '"' : ""),
+                        os:          Array.isArray(exact.os) ? exact.os[0] : (exact.os || ""),
+                        releaseYear: exact.releaseYear?.toString() || "",  // ← canonical camelCase
                     };
                 }
             }
@@ -93,17 +93,16 @@ export async function GET(req: Request) {
                 const exact = await prismadb.mobileCatalog.findFirst({ where });
                 if (exact) {
                     result.autoFill = {
-                        brand:        exact.brand || "",
-                        family:       exact.series || "",
-                        model:        exact.modelName || "",
-                        cpu:          exact.cpu || "",
-                        ram:          exact.ramG ? `${exact.ramG}GB` : "",
-                        storage:      Array.isArray((exact as any).storages) ? (exact as any).storages.join(" / ") : ((exact as any).storage || ""),
-                        screen:       exact.screenSize ? `${exact.screenSize}"` : "",
-                        battery:      exact.battery || "",
-                        release_year: exact.releaseYear?.toString() || "",
-                        os:           exact.os || "",
-                        rear_camera:  exact.rearCamera || "",
+                        brand:       exact.brand || "",
+                        family:      exact.series || "",
+                        subModel:    exact.modelName || "",   // ← canonical (was "model")
+                        cpu:         exact.cpu || "",
+                        ram:         exact.ramG ? `${exact.ramG}GB` : "",
+                        storage:     Array.isArray((exact as any).storages) ? (exact as any).storages.join(" / ") : ((exact as any).storage || ""),
+                        screen:      exact.screenSize ? `${exact.screenSize}"` : "",
+                        os:          exact.os || "",
+                        releaseYear: exact.releaseYear?.toString() || "",  // ← canonical (was "release_year")
+                        cameraMain:  exact.rearCamera || "",               // ← canonical (was "rear_camera")
                     };
                 }
             }
