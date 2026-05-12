@@ -269,31 +269,31 @@ export default function MyListingsPage() {
                                         <div className="flex items-center gap-2 mt-2">
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleEdit(listing); }}
-                                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-xl hover:bg-blue-500/20 transition-colors"
+                                                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-xl hover:bg-blue-500/20 transition-colors"
                                             >
-                                                <Pencil className="w-4 h-4" />
-                                                ערוך מודעה
+                                                <Pencil className="w-4 h-4 shrink-0" />
+                                                <span className="hidden sm:inline">ערוך מודעה</span>
                                             </button>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleDelete(listing.id); }}
                                                 disabled={isDeleting === listing.id}
-                                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                                                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition-colors disabled:opacity-50"
                                             >
                                                 {isDeleting === listing.id ? (
                                                     <Loader2 className="w-4 h-4 animate-spin" />
                                                 ) : (
-                                                    <Trash2 className="w-4 h-4" />
+                                                    <Trash2 className="w-4 h-4 shrink-0" />
                                                 )}
-                                                מחק
+                                                <span className="hidden sm:inline">מחק</span>
                                             </button>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleShareClick(listing.id, listing.title); }}
-                                                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-xl hover:bg-purple-500/20 transition-colors"
+                                                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-xl hover:bg-purple-500/20 transition-colors"
                                             >
-                                                <Share2 className="w-4 h-4" />
-                                                שתף לינק
+                                                <Share2 className="w-4 h-4 shrink-0" />
+                                                <span className="hidden sm:inline">שתף לינק</span>
                                             </button>
-                                            <span className="text-xs text-gray-600 mr-auto">
+                                            <span className="text-xs text-gray-600 mr-auto hidden sm:inline">
                                                 {new Date(listing.createdAt).toLocaleDateString("he-IL")}
                                             </span>
                                         </div>

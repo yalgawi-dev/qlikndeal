@@ -263,7 +263,7 @@ function DashboardContent() {
                 {/* HERO SECTION: Profile & Actions */}
                 <div className="flex flex-col md:flex-row gap-6 mb-10 items-center md:items-start">
                     {/* Compact Profile Card */}
-                    <div className="bg-card border rounded-3xl p-6 shadow-sm flex items-center gap-5 w-full md:w-auto min-w-[300px] relative overflow-hidden group">
+                    <div className="bg-card border rounded-3xl p-5 shadow-sm flex items-center gap-4 w-full md:min-w-[300px] md:w-auto relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
 
                         <div className="relative shrink-0">
@@ -300,32 +300,32 @@ function DashboardContent() {
                     </div>
 
                     {/* Quick Stats / Switcher */}
-                    <div className="flex-1 w-full bg-card border rounded-3xl p-1.5 shadow-sm flex items-center justify-between">
+                    <div className="flex-1 w-full bg-card border rounded-3xl p-1.5 shadow-sm flex items-center">
                         <div className="flex gap-1 p-1 bg-muted/50 rounded-2xl w-full">
                             <button
                                 onClick={() => setUserMode("seller")}
-                                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${userMode === "seller" ? "bg-background text-primary shadow-sm ring-1 ring-border/5" : "text-muted-foreground hover:bg-background/50"}`}
+                                className={`flex-1 py-3 px-2 sm:px-4 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${userMode === "seller" ? "bg-background text-primary shadow-sm ring-1 ring-border/5" : "text-muted-foreground hover:bg-background/50"}`}
                             >
-                                <span>🏷️</span> אני מוכר
+                                <span>🏷️</span> <span className="hidden xs:inline">אני </span>מוכר
                             </button>
                             <button
                                 onClick={() => setUserMode("buyer")}
-                                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${userMode === "buyer" ? "bg-background text-primary shadow-sm ring-1 ring-border/5" : "text-muted-foreground hover:bg-background/50"}`}
+                                className={`flex-1 py-3 px-2 sm:px-4 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${userMode === "buyer" ? "bg-background text-primary shadow-sm ring-1 ring-border/5" : "text-muted-foreground hover:bg-background/50"}`}
                             >
-                                <span>📦</span> אני קונה
+                                <span>📦</span> <span className="hidden xs:inline">אני </span>קונה
                             </button>
                         </div>
                     </div>
                 </div>
 
                 {/* MAIN DASHBOARD CONTENT */}
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
 
                     {/* Left Column: Main Area */}
-                    <div className="space-y-8">
+                    <div className="space-y-6">
 
-                        {/* 🌟 NEW: Quick Action Cards 🌟 */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* Quick Action Cards */}
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                             {/* Primary Action: Marketplace */}
                             <button
                                 onClick={() => router.push('/')}

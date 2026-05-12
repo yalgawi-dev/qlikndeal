@@ -101,7 +101,7 @@ export default function ListingPage() {
     const highlights = extraData["דגשים"] ? extraData["דגשים"].split(", ") : [];
 
     return (
-        <div className="min-h-screen bg-black text-white pb-20">
+        <div className="min-h-screen bg-black text-white pb-32 md:pb-20">
             <Navbar />
 
             <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -114,12 +114,12 @@ export default function ListingPage() {
                     <ArrowRight className="w-4 h-4" /> חזור למרקטפלייס
                 </Button>
 
-                <div className="grid md:grid-cols-12 gap-8">
+                <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
 
-                    {/* Left Column: Images (7 columns) */}
-                    <div className="md:col-span-12 lg:col-span-7 space-y-4">
+                    {/* Mobile-first: Price + Actions shown FIRST on mobile, moves right on desktop */}
+                    <div className="lg:col-span-5 lg:order-2 space-y-4">
                         {/* Main Image */}
-                        <div className="aspect-video w-full bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 relative group">
+                        <div className="aspect-[4/3] sm:aspect-video w-full bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 relative group">
                             {selectedImage ? (
                                 <img
                                     src={selectedImage}
@@ -174,13 +174,13 @@ export default function ListingPage() {
 
                     </div>
 
-                    {/* Right Column: Details & Actions (5 columns) */}
-                    <div className="md:col-span-12 lg:col-span-5 space-y-6">
+                    {/* Images column: below price on mobile, left on desktop */}
+                    <div className="lg:col-span-7 lg:order-1 space-y-4">
 
-                        {/* Summary Card */}
-                        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl shadow-purple-900/10">
+                        {/* Summary Card - hidden on mobile (shown at top via order) */}
+                        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-5 md:p-8 space-y-5 shadow-xl shadow-purple-900/10">
                             <div>
-                                <h1 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-2">
+                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-2">
                                     {listing.title}
                                 </h1>
                                 <div className="text-gray-400 text-sm flex items-center gap-2">
@@ -344,6 +344,33 @@ export default function ListingPage() {
                     text={`כנסו לראות את ${listing.title} ב-Qlikndeal! המקום הבטוח לקנות ולמכור.`}
                 />
             )}
+
+            {/* Sticky Bottom CTA — mobile only */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 p-4 bg-black/95 backdrop-blur-xl border-t border-gray-800 flex gap-3">
+                {isOwner ? (
+                    <button
+                        onClick={() => router.push('/dashboard/marketplace/my-listings')}
+                        className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold text-base rounded-xl py-3.5 transition-all active:scale-95"
+                    >
+                        📊 המודעות שלי
+                    </button>
+                ) : (
+                    <button
+                        onClick={handleBuyNow}
+                        disabled={creatingShipment}
+                        className="flex-1 bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-black text-base rounded-xl py-3.5 shadow-lg disabled:opacity-50 transition-all active:scale-95"
+                    >
+                        {creatingShipment ? "פותח זירה..." : "🤝 לזירת סחר ומשא ומתן"}
+                    </button>
+                )}
+                <button
+                    onClick={handleShareClick}
+                    className="w-14 h-14 rounded-xl bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-300 transition-all active:scale-95"
+                >
+                    <Share2 className="w-5 h-5" />
+                </button>
+            </div>
         </div>
     );
 }
+

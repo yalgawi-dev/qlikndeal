@@ -124,7 +124,7 @@ export default function OnboardingPage() {
 
             <div className="relative w-full max-w-md">
                 {/* Card */}
-                <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2rem] p-10 shadow-2xl shadow-black/40">
+                <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 sm:p-10 shadow-2xl shadow-black/40">
                     {/* Icon */}
                     <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center mb-6 mx-auto">
                         <MapPin className="w-8 h-8 text-indigo-400" />

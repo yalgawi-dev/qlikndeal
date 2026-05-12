@@ -133,12 +133,12 @@ export default function CreateAiPage() {
             </Link>
 
             <div className="max-w-3xl w-full relative z-10">
-                <div className="text-center mb-12 space-y-4">
+                <div className="text-center mb-6 sm:mb-12 space-y-3">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-sm font-medium mb-4 animate-pulse">
                         <Sparkles size={14} />
                         <span>AI Powered Listing</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
                         מה תרצה למכור היום?
                     </h1>
                 </div>
