@@ -811,3 +811,62 @@ model CategoryLearningMarker {
   @@unique([category, markerWord])
   @@index([category])
 }
+
+// ─────────────────────────────────────────────────────────────
+// KNOWLEDGE BASE (LEARNING AGENT)
+// ─────────────────────────────────────────────────────────────
+
+model CapabilityMapping {
+  keyword            String   @id
+  keywordId          String?
+  minRam             Int?
+  minCpuTier         Int?
+  minGpuTier         Int?
+  recRam             Int?     // Recommended (not minimum) RAM from consensus
+  recCpuTier         Int?     // Recommended CPU tier from consensus  
+  recGpuTier         Int?     // Recommended GPU tier from consensus
+  category           String?
+  sourceUrl          String?  // Primary source (legacy)
+  sourceUrls         String?  // JSON array of all source URLs used in consensus
+  consensusScore     Float    @default(0) // 0.0-1.0 how many sources agreed
+  verificationStatus String   @default("PENDING_REVIEW")
+  lastUpdated        DateTime @default(now()) @updatedAt
+}
+
+model ScrapingSource {
+  id          String   @id @default(uuid())
+  url         String   @unique
+  name        String?
+  urlPattern  String?  // URL template with {query} placeholder e.g. "https://example.com/search?q={query}"
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SearchFilterConfig {
+  id          String   @id @default(uuid())
+  filterType  String   // "STOP_WORD", "UNIT_PATTERN", "SYNONYM"
+  value       String   
+  replacement String?  // עבור מילים נרדפות או תבניות (למשל לנקות "GB" מ-"16GB")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([filterType, value])
+}
+
+model UnrecognizedKeyword {
+  id            String   @id @default(uuid())
+  keyword       String   @unique
+  occurrences   Int      @default(1)
+  lastSeen      DateTime @default(now())
+  resolved      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SearchLog {
+  id        String   @id @default(uuid())
+  query     String
+  createdAt DateTime @default(now())
+}

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Search, Filter, Plus, Sparkles, ScanSearch, Settings, MapPin, LocateFixed, Loader2, User, Tag, ShieldCheck, Zap, Package, Map as MapIcon, X } from "lucide-react";
+import { Search, Filter, Plus, Sparkles, ScanSearch, Settings, MapPin, LocateFixed, Loader2, User, Tag, ShieldCheck, Zap, Package, Map as MapIcon, X, BrainCircuit, Cpu, MonitorPlay } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -52,12 +52,10 @@ function TopNav() {
           </SignedOut>
           <SignedIn>
             {isAdmin && (
-              <>
-                <Button asChild variant="ghost" size="sm" className="text-purple-400"><Link href="/admin"><Settings className="w-4 h-4 ml-1"/>ניהול</Link></Button>
-              </>
+              <Button asChild variant="ghost" size="sm" className="text-purple-400 px-2 sm:px-3"><Link href="/admin"><Settings className="w-4 h-4 sm:ml-1"/><span className="hidden sm:inline">ניהול</span></Link></Button>
             )}
-            <Button asChild variant="ghost" size="sm" className="text-gray-300 hover:text-white"><Link href="/dashboard/marketplace/my-listings"><Package className="w-4 h-4 ml-1"/>המודעות שלי</Link></Button>
-            <Button asChild variant="outline" size="sm" className="border-white/10 text-white hover:bg-white/10 gap-2"><Link href="/dashboard"><User className="w-4 h-4"/>האזור שלי</Link></Button>
+            <Button asChild variant="ghost" size="sm" className="text-gray-300 hover:text-white px-2 sm:px-3"><Link href="/dashboard/marketplace/my-listings"><Package className="w-4 h-4 sm:ml-1"/><span className="hidden sm:inline">המודעות שלי</span></Link></Button>
+            <Button asChild variant="outline" size="sm" className="border-white/10 text-white hover:bg-white/10 gap-2 px-2 sm:px-3"><Link href="/dashboard"><User className="w-4 h-4"/><span className="hidden sm:inline">האזור שלי</span></Link></Button>
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
         </div>
@@ -73,6 +71,10 @@ function MarketplaceContent() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isFallback, setIsFallback] = useState(false);
   const [aiInsight, setAiInsight] = useState<string | null>(null);
+  const [capabilityMatch, setCapabilityMatch] = useState<any>(null);
+  const [adviceCard, setAdviceCard] = useState<any>(null);
+  const [showAdviceModal, setShowAdviceModal] = useState(false);
+  const [smartFallbackMessage, setSmartFallbackMessage] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState(searchParams.get("q") || "");
   const [autocompleteResults, setAutocompleteResults] = useState<any[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
@@ -108,13 +110,24 @@ function MarketplaceContent() {
 
   const fetchSearch = async (q = searchInput, latV = lat, lngV = lng, type = listingType) => {
     setLoading(true); setShowAutocomplete(false);
+    setAdviceCard(null); setShowAdviceModal(false); setSmartFallbackMessage(null);
     try {
       const res = await fetch("/api/marketplace/smart-search", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: q, lat: latV, lng: lngV, radiusKm: latV && lngV ? (radiusKm === 155 ? null : radiusKm) : null, category: selectedCategory === "all" ? null : selectedCategory, listingType: type })
       });
       const data = await res.json();
-      if (data.success) { setListings(data.results || []); setIsFallback(data.isFallback || false); setAiInsight(data.aiInsight || null); }
+      if (data.success) { 
+        setListings(data.results || []); 
+        setIsFallback(data.isFallback || false); 
+        setAiInsight(data.aiInsight || null); 
+        setCapabilityMatch(data.capabilityMatch || null);
+        if (data.adviceCard) {
+          setAdviceCard(data.adviceCard);
+          setShowAdviceModal(true); // Auto-pop the advice modal
+        }
+        if (data.smartFallbackMessage) setSmartFallbackMessage(data.smartFallbackMessage);
+      }
     } catch { toast.error("שגיאה בחיפוש"); }
     setLoading(false);
   };
@@ -155,7 +168,7 @@ function MarketplaceContent() {
       setIsAutocompleteLoading(true);
       debounceRef.current = setTimeout(async () => {
         try {
-          const res = await fetch("/api/marketplace/smart-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: val, lat, lng, radiusKm: lat && lng ? (radiusKm === 155 ? null : radiusKm) : null, category: selectedCategory === "all" ? null : selectedCategory, listingType }) });
+          const res = await fetch("/api/marketplace/smart-search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: val, lat, lng, radiusKm: lat && lng ? (radiusKm === 155 ? null : radiusKm) : null, category: selectedCategory === "all" ? null : selectedCategory, listingType, isAutocomplete: true }) });
           const data = await res.json();
           if (data.success) setAutocompleteResults((data.results || []).slice(0, 5));
         } catch {}
@@ -218,10 +231,10 @@ function MarketplaceContent() {
           </div>
 
           {/* Main title */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight tracking-tight">
-            פשוט לעשות <span className="text-blue-500">QLIK</span> ולסגור <span className="bg-gradient-to-l from-purple-400 to-pink-400 bg-clip-text text-transparent">DEAL</span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight tracking-tight">
+            פשוט לעשות <br className="sm:hidden" /> <span className="text-blue-500">QLIK</span> ולסגור <span className="bg-gradient-to-l from-purple-400 to-pink-400 bg-clip-text text-transparent">DEAL</span>
           </h1>
-          <p className="text-gray-400 text-base md:text-lg mb-6 max-w-xl mx-auto leading-relaxed">
+          <p className="text-gray-400 text-sm sm:text-base md:text-lg mb-6 max-w-xl mx-auto leading-relaxed px-2">
             פרסם מה יש לך למכור, או הצהר שאתה מחפש — המוכרים יגיעו אליך ישירות
           </p>
 
@@ -330,21 +343,21 @@ function MarketplaceContent() {
         {/* Search Bar */}
         <div className="relative max-w-5xl mx-auto px-4 pb-8">
           <div className="flex justify-center mb-6">
-            <div className="bg-gray-900/50 p-1 rounded-2xl border border-gray-800 flex gap-1">
-              <button onClick={() => { setListingType("SELL"); fetchSearch(searchInput, lat, lng, "SELL"); }} className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${listingType === "SELL" ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
-                📦 אני מחפש לקנות מוצרים
+            <div className="bg-gray-900/50 p-1 rounded-2xl border border-gray-800 flex flex-col sm:flex-row gap-1 w-full sm:w-auto">
+              <button onClick={() => { setListingType("SELL"); fetchSearch(searchInput, lat, lng, "SELL"); }} className={`px-3 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex-1 ${listingType === "SELL" ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
+                📦 מיון לפי מוכרים
               </button>
-              <button onClick={() => { setListingType("BUY"); fetchSearch(searchInput, lat, lng, "BUY"); }} className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${listingType === "BUY" ? "bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
-                🏷️ מה קונים מחפשים?
+              <button onClick={() => { setListingType("BUY"); fetchSearch(searchInput, lat, lng, "BUY"); }} className={`px-3 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex-1 ${listingType === "BUY" ? "bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
+                🏷️ מיון לפי קונים
               </button>
             </div>
           </div>
 
-          <div className="bg-gray-900/40 p-4 rounded-3xl border border-gray-800 backdrop-blur-sm space-y-4">
-            <form onSubmit={(e) => { e.preventDefault(); fetchSearch(); }} className="flex gap-2">
-              <div className="relative flex-1" ref={autocompleteRef}>
-                <Sparkles className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400 w-5 h-5 z-10 pointer-events-none"/>
-                <Input placeholder='נסה "לפטופ גיימינג מתחת ל-4000 שקל באיזור תל אביב"...' className="pl-4 pr-12 h-14 bg-gray-900/80 border-gray-700 rounded-2xl text-lg focus:ring-purple-500 focus:border-purple-500 z-10" value={searchInput} onChange={handleSearchInputChange} onFocus={() => { if (searchInput.trim().length > 0) setShowAutocomplete(true); }}/>
+          <div className="bg-gray-900/40 p-4 rounded-3xl border border-gray-800 backdrop-blur-sm space-y-4 relative z-50">
+            <form onSubmit={(e) => { e.preventDefault(); fetchSearch(); }} className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1 w-full" ref={autocompleteRef}>
+                <Sparkles className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-purple-400 w-5 h-5 z-10 pointer-events-none"/>
+                <Input placeholder='לפטופ גיימינג...' className="pl-4 pr-10 sm:pr-12 h-12 sm:h-14 bg-gray-900/80 border-gray-700 rounded-2xl text-base sm:text-lg focus:ring-purple-500 focus:border-purple-500 z-10" value={searchInput} onChange={handleSearchInputChange} onFocus={() => { if (searchInput.trim().length > 0) setShowAutocomplete(true); }}/>
                 {isAutocompleteLoading && <Loader2 className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400 w-5 h-5 animate-spin z-10 pointer-events-none"/>}
                 {showAutocomplete && searchInput.trim().length > 0 && (
                   <div className="absolute top-[110%] left-0 right-0 bg-gray-900/95 backdrop-blur-md border border-gray-700 rounded-2xl shadow-xl z-[100] overflow-hidden max-h-[400px] overflow-y-auto">
@@ -363,10 +376,12 @@ function MarketplaceContent() {
                   </div>
                 )}
               </div>
-              <Button type="button" variant="outline" onClick={() => setShowFilters(!showFilters)} className={`h-14 px-4 rounded-2xl border-gray-700 hover:bg-gray-800 ${showFilters ? "bg-gray-800 text-purple-400 border-purple-500" : "bg-gray-900"}`}><Filter className="w-5 h-5"/></Button>
-              <Button id="search-btn" type="submit" disabled={loading} className="h-14 px-8 rounded-2xl bg-purple-600 hover:bg-purple-700 text-lg font-bold">
-                {loading ? <Loader2 className="w-5 h-5 animate-spin"/> : <Search className="w-5 h-5 ml-2"/>}חפש
-              </Button>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button type="button" variant="outline" onClick={() => setShowFilters(!showFilters)} className={`flex-1 sm:flex-none h-12 sm:h-14 px-4 rounded-2xl border-gray-700 hover:bg-gray-800 ${showFilters ? "bg-gray-800 text-purple-400 border-purple-500" : "bg-gray-900"}`}><Filter className="w-5 h-5"/></Button>
+                <Button id="search-btn" type="submit" disabled={loading} className={`flex-[2] sm:flex-none h-12 sm:h-14 px-4 sm:px-8 rounded-2xl ${loading ? 'bg-indigo-600/80 shadow-[0_0_15px_rgba(79,70,229,0.5)]' : 'bg-purple-600 hover:bg-purple-700'} text-base sm:text-lg font-bold transition-all`}>
+                  {loading ? <span className="flex items-center gap-2 animate-pulse"><Loader2 className="w-5 h-5 animate-spin text-indigo-300"/> <span className="text-sm sm:text-base text-indigo-100">המוח הלומד חושב...</span></span> : <span className="flex items-center"><Search className="w-4 h-4 sm:w-5 sm:h-5 ml-2"/>חפש</span>}
+                </Button>
+              </div>
             </form>
 
             {showFilters && (
@@ -429,8 +444,8 @@ function MarketplaceContent() {
       </div>
 
       {showMap && lat && lng && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-4xl h-[70vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-4xl h-[80vh] sm:h-[70vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95">
             <div className="h-14 border-b border-gray-800 flex items-center justify-between px-4" dir="rtl">
               <h3 className="text-lg font-bold text-white flex items-center gap-2"><MapPin className="w-5 h-5 text-purple-400"/> תצוגת מפה ורדיוס</h3>
               <Button variant="ghost" size="icon" onClick={() => setShowMap(false)} className="text-gray-400 hover:text-white hover:bg-gray-800"><X className="w-5 h-5"/></Button>
@@ -541,7 +556,124 @@ function MarketplaceContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{[1,2,3,4,5,6].map(i => <div key={i} className="h-96 bg-gray-900/30 rounded-3xl animate-pulse"/>)}</div>
         ) : listings.length > 0 ? (
           <div className="space-y-6">
-            {aiInsight && !isFallback && <div className="bg-indigo-900/30 border border-indigo-500/50 rounded-2xl p-4 flex gap-4"><div className="bg-indigo-500/20 p-2 rounded-full hidden sm:block"><Sparkles className="w-6 h-6 text-indigo-400"/></div><div><h4 className="text-indigo-300 font-bold mb-1">המלצת AI</h4><p className="text-indigo-100">{aiInsight}</p></div></div>}
+            {/* Neon Advice Modal */}
+            {showAdviceModal && adviceCard && (
+              <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowAdviceModal(false)}>
+                <div
+                  className="relative w-full max-w-lg bg-[#07071a] border-2 border-indigo-500 rounded-3xl p-6 shadow-[0_0_60px_rgba(99,102,241,0.4)] animate-in slide-in-from-bottom-4 duration-300"
+                  onClick={e => e.stopPropagation()}
+                  dir="rtl"
+                >
+                  {/* Glow background */}
+                  <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-600/20 rounded-full blur-3xl" />
+                    <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-600/20 rounded-full blur-3xl" />
+                  </div>
+
+                  <button onClick={() => setShowAdviceModal(false)} className="absolute top-4 left-4 p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all">
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2.5 rounded-xl bg-indigo-500/20">
+                        <BrainCircuit className="w-7 h-7 text-indigo-400" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-indigo-400 font-semibold uppercase tracking-widest">יועץ חכם פעיל</p>
+                        <h3 className="text-xl font-black text-white">מומלץ עבור {adviceCard.keyword}</h3>
+                      </div>
+                    </div>
+
+                    <p className="text-gray-300 text-sm mb-5 leading-relaxed">
+                      כדי להריץ את <strong className="text-white">{adviceCard.keyword}</strong> באופן חלק וללא בעיות, המכשיר צריך:
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-3 mb-5">
+                      <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-3 text-center">
+                        <div className="text-2xl font-black text-indigo-300">{adviceCard.recRam}<span className="text-sm">GB</span></div>
+                        <div className="text-[11px] text-gray-400 mt-1">RAM מומלץ</div>
+                      </div>
+                      <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-3 text-center">
+                        <div className="text-sm font-black text-indigo-300 leading-tight">{adviceCard.cpuLabel}</div>
+                        <div className="text-[11px] text-gray-400 mt-1">מעבד מומלץ</div>
+                      </div>
+                      <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-3 text-center">
+                        <div className="text-xs font-black text-indigo-300 leading-tight">{adviceCard.gpuLabel || 'לא נדרש'}</div>
+                        <div className="text-[11px] text-gray-400 mt-1">כרטיס מסך</div>
+                      </div>
+                    </div>
+
+                    {adviceCard.consensusScore > 0 && (
+                      <div className="flex items-center gap-2 text-xs text-gray-500 mb-4">
+                        <div className="w-2 h-2 rounded-full bg-green-400" />
+                        מבוסס על {Math.round(adviceCard.consensusScore * 100)}% הסכמה בין מקורות
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() => setShowAdviceModal(false)}
+                      className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-black text-base transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)] active:scale-95"
+                    >
+                      סנן תוצאות עבורי ↓
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Smart Fallback Banner */}
+            {smartFallbackMessage && (
+              <div className="bg-gradient-to-r from-emerald-900/30 to-teal-900/30 border border-emerald-500/30 rounded-2xl p-4 flex items-start gap-3" dir="rtl">
+                <Sparkles className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <p className="text-emerald-200 text-sm">{smartFallbackMessage}</p>
+              </div>
+            )}
+            {capabilityMatch ? (
+                <div className="bg-gradient-to-br from-indigo-900/80 to-[#0a0a1a] border-2 border-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.2)] rounded-3xl p-6 relative overflow-hidden animate-in slide-in-from-top-4 fade-in duration-500" dir="rtl">
+                    <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
+                    <div className="absolute top-1/2 left-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-[80px] -translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+                    <div className="relative flex flex-col md:flex-row items-center md:items-start gap-6 z-10">
+                        <div className="bg-indigo-500/20 p-4 rounded-2xl shrink-0 mt-1">
+                            <BrainCircuit className="w-10 h-10 text-indigo-400"/>
+                        </div>
+                        <div className="flex-1 text-center md:text-right">
+                            <h3 className="text-2xl font-black text-white mb-2 tracking-tight">
+                                סרקתי את התוצאות עבור <span className="text-transparent bg-clip-text bg-gradient-to-l from-indigo-400 to-cyan-400">{capabilityMatch.keyword}</span>
+                            </h3>
+                            <p className="text-indigo-100/90 text-sm md:text-base leading-relaxed mb-4 max-w-3xl">
+                                זיהיתי שאתה מחפש ציוד שיוכל להריץ את התוכנה. כדי שתוכל לעבוד בצורה חלקה וללא תקיעות, 
+                                בחרתי עבורך רק תוצאות שעומדות בדרישות הבאות (או למעלה מכך):
+                            </p>
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                                {capabilityMatch.minRam ? (
+                                    <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 px-3 py-1.5 rounded-xl text-indigo-200 font-medium shadow-[0_0_10px_rgba(99,102,241,0.3)]">
+                                        <Cpu className="w-4 h-4 text-indigo-400"/> 
+                                        לפחות {capabilityMatch.minRam}GB זיכרון (RAM)
+                                    </div>
+                                ) : null}
+                                {capabilityMatch.minCpuTier ? (
+                                    <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 px-3 py-1.5 rounded-xl text-indigo-200 font-medium shadow-[0_0_10px_rgba(99,102,241,0.3)]">
+                                        <Zap className="w-4 h-4 text-indigo-400"/> 
+                                        מעבד: {{ 1: "i3 / Ryzen 3", 2: "i5 / Ryzen 5", 3: "i7 / Ryzen 7", 4: "i9 / Ryzen 9" }[capabilityMatch.minCpuTier as 1|2|3|4] || `רמה ${capabilityMatch.minCpuTier}`}
+                                    </div>
+                                ) : null}
+                                {capabilityMatch.minGpuTier ? (
+                                    <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 px-3 py-1.5 rounded-xl text-indigo-200 font-medium shadow-[0_0_10px_rgba(99,102,241,0.3)]">
+                                        <MonitorPlay className="w-4 h-4 text-indigo-400"/> 
+                                        כרטיס מסך ייעודי למשחקים/עיבוד
+                                    </div>
+                                ) : null}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : aiInsight && !isFallback ? (
+                <div className="bg-indigo-900/30 border border-indigo-500/50 rounded-2xl p-4 flex gap-4">
+                    <div className="bg-indigo-500/20 p-2 rounded-full hidden sm:block"><Sparkles className="w-6 h-6 text-indigo-400"/></div>
+                    <div><h4 className="text-indigo-300 font-bold mb-1">המלצת AI</h4><p className="text-indigo-100">{aiInsight}</p></div>
+                </div>
+            ) : null}
             {isFallback && searchInput.trim().length > 0 && (
               <div className="bg-gradient-to-r from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-2xl p-5">
                 <div className="flex items-start gap-4"><div className="bg-amber-500/20 p-2.5 rounded-xl shrink-0 hidden sm:block"><Sparkles className="w-5 h-5 text-amber-400"/></div>
@@ -566,7 +698,7 @@ function MarketplaceContent() {
             <div className="text-6xl mb-4">🏜️</div>
             <h3 className="text-2xl font-bold text-gray-400">לא מצאנו תוצאות מתאימות</h3>
             <p className="text-gray-500 mt-2 mb-6">נסה מילות חיפוש שונות</p>
-            <div className="flex flex-col md:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button variant="outline" className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 h-12" onClick={() => { setSearchInput(""); setLat(null); setLng(null); setLocationName(""); setSelectedCategory("all"); fetchSearch(""); }}>נקה סינונים</Button>
               <Button className="bg-purple-600 hover:bg-purple-700 h-12" onClick={() => router.push(`/dashboard/marketplace/my-requests?query=${encodeURIComponent(searchInput)}`)}><Search className="w-4 h-4 ml-2"/>פתח מודעת &quot;דרוש מוצר&quot;</Button>
             </div>

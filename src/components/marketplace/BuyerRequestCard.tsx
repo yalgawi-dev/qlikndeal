@@ -17,7 +17,10 @@ export function BuyerRequestCard({ request, onDelete, onEdit }: BuyerRequestCard
         request.status === 'FULFILLED' ? 'נמצא!' : 'בוטל';
 
     return (
-        <Card className="bg-gray-900 border-gray-800 hover:border-gray-700 transition-colors group relative overflow-hidden">
+        <Card 
+            className="bg-gray-900 border-gray-800 hover:border-gray-700 transition-colors group relative overflow-hidden cursor-pointer"
+            onClick={() => onEdit && onEdit(request)}
+        >
             <div className={`absolute top-0 right-0 w-1 h-full ${request.status === 'ACTIVE' ? 'bg-blue-500' : 'bg-gray-700'}`} />
             <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -38,8 +41,13 @@ export function BuyerRequestCard({ request, onDelete, onEdit }: BuyerRequestCard
                             </div>
                             
                             {request.extraData && (
-                                <div className="text-xs text-gray-400 mt-1 flex gap-2">
-                                    {JSON.parse(request.extraData)?.budget && (
+                                <div className="text-xs text-gray-400 mt-2 flex flex-wrap gap-2">
+                                    {JSON.parse(request.extraData)?.budgetRange && (
+                                        <span className="bg-gray-800 px-2 py-0.5 rounded text-cyan-400 border border-cyan-500/20">
+                                            ₪{JSON.parse(request.extraData).budgetRange[0]} - ₪{JSON.parse(request.extraData).budgetRange[1]}
+                                        </span>
+                                    )}
+                                    {!JSON.parse(request.extraData)?.budgetRange && JSON.parse(request.extraData)?.budget && (
                                         <span className="bg-gray-800 px-2 py-0.5 rounded">
                                             עד ₪{JSON.parse(request.extraData).budget}
                                         </span>
@@ -49,6 +57,11 @@ export function BuyerRequestCard({ request, onDelete, onEdit }: BuyerRequestCard
                                             {JSON.parse(request.extraData).category}
                                         </span>
                                     )}
+                                    {JSON.parse(request.extraData)?.chips && JSON.parse(request.extraData).chips.map((chip: string) => (
+                                        <span key={chip} className="bg-cyan-900/30 text-cyan-300 px-2 py-0.5 rounded">
+                                            {chip}
+                                        </span>
+                                    ))}
                                 </div>
                             )}
                         </div>

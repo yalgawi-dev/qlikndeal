@@ -215,7 +215,8 @@ export default function MyListingsPage() {
                             return (
                                 <div
                                     key={listing.id}
-                                    className="bg-gray-900/50 border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-all flex gap-0"
+                                    onClick={() => router.push(`/dashboard/marketplace/${listing.id}`)}
+                                    className="bg-gray-900/50 border border-white/10 rounded-2xl overflow-hidden hover:border-white/30 hover:bg-gray-900/70 transition-all flex gap-0 cursor-pointer group"
                                 >
                                     {/* Image */}
                                     <div className="w-32 md:w-48 flex-shrink-0 bg-gray-800">
@@ -267,14 +268,14 @@ export default function MyListingsPage() {
                                         {/* Actions */}
                                         <div className="flex items-center gap-2 mt-2">
                                             <button
-                                                onClick={() => handleEdit(listing)}
+                                                onClick={(e) => { e.stopPropagation(); handleEdit(listing); }}
                                                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-xl hover:bg-blue-500/20 transition-colors"
                                             >
                                                 <Pencil className="w-4 h-4" />
                                                 ערוך מודעה
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(listing.id)}
+                                                onClick={(e) => { e.stopPropagation(); handleDelete(listing.id); }}
                                                 disabled={isDeleting === listing.id}
                                                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition-colors disabled:opacity-50"
                                             >
@@ -286,7 +287,7 @@ export default function MyListingsPage() {
                                                 מחק
                                             </button>
                                             <button
-                                                onClick={() => handleShareClick(listing.id, listing.title)}
+                                                onClick={(e) => { e.stopPropagation(); handleShareClick(listing.id, listing.title); }}
                                                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-xl hover:bg-purple-500/20 transition-colors"
                                             >
                                                 <Share2 className="w-4 h-4" />

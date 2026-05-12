@@ -5,8 +5,9 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { createListing, updateListing, getMyPhone } from "@/app/actions/marketplace";
-import { Loader2, Sparkles, Box, HardDrive, Cpu, Monitor, Maximize2, MemoryStick, AlertCircle, Check, X, ImagePlus, Video } from "lucide-react";
+import { Loader2, Sparkles, Box, HardDrive, Cpu, Monitor, Maximize2, MemoryStick, AlertCircle, Check, X, ImagePlus, Video, MapPin, LocateFixed } from "lucide-react";
 import { SmartAiInput } from "./SmartAiInput";
 import { UniversalCatalogSearch } from "@/components/marketplace/UniversalCatalogSearch";
 import Script from "next/script";
@@ -219,6 +220,66 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
             getMyPhone().then(res => { if (res.phone) setFormData(p => ({ ...p, contactPhone: res.phone })); });
         }
     }, [formData.contactPhone]);
+
+    const [lat, setLat] = useState<number | null>(null);
+    const [lng, setLng] = useState<number | null>(null);
+    const [locationName, setLocationName] = useState("");
+    const [locationMode, setLocationMode] = useState<"LIVE" | "HOME" | "">("");
+    const [gettingLocation, setGettingLocation] = useState(false);
+
+    // City Dialog State
+    const [showCityDialog, setShowCityDialog] = useState(false);
+    const [citySearch, setCitySearch] = useState("");
+    const [cityResults, setCityResults] = useState<any[]>([]);
+    const cityDebounceRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    const loadHomeLocation = () => {
+        const savedLat = localStorage.getItem("home_lat");
+        const savedLng = localStorage.getItem("home_lng");
+        const savedCity = localStorage.getItem("home_city");
+        if (savedLat && savedLng && savedCity) {
+            setLat(parseFloat(savedLat));
+            setLng(parseFloat(savedLng));
+            setLocationName(savedCity + " 🏠");
+            setLocationMode("HOME");
+        } else {
+            setLocationName("לא אותר מיקום");
+            setLocationMode("");
+        }
+    };
+
+    const getDeviceLocation = () => {
+        setLocationMode("LIVE");
+        setGettingLocation(true);
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                async (p) => {
+                    const newLat = p.coords.latitude; const newLng = p.coords.longitude;
+                    setLat(newLat); setLng(newLng);
+                    try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLat}&lon=${newLng}&zoom=10&accept-language=he`);
+                        const data = await res.json();
+                        const city = data.address?.city || data.address?.town || data.address?.village || data.name;
+                        if (city) { setLocationName(`${city} 📍`); setGettingLocation(false); return; }
+                    } catch {}
+                    setLocationName("מיקום נוכחי 📍");
+                    setGettingLocation(false);
+                },
+                () => { 
+                    setGettingLocation(false); 
+                    loadHomeLocation(); 
+                },
+                { enableHighAccuracy: true, timeout: 5000 }
+            );
+        } else { 
+            setGettingLocation(false); 
+            loadHomeLocation(); 
+        }
+    };
+
+    useEffect(() => {
+        getDeviceLocation();
+    }, []);
 
     // ⚡ שאיבת מבנה חכם מהשרת לפי הקטגוריה הנוכחית
     useEffect(() => {
@@ -605,8 +666,9 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
                 return;
             }
 
-            let finalLat = initialData?.latitude || null;
-            let finalLng = initialData?.longitude || null;
+            let finalLat = lat || initialData?.latitude || null;
+            let finalLng = lng || initialData?.longitude || null;
+            let finalCity = locationName.replace(/📍|🏠/g, "").trim() || "";
 
             // בדיקת מיקום חכמה ומהירה - ללא המתנה ל-GPS וללא עצירת המשתמש!
             if (!isSimulation && !finalLat) {
@@ -621,6 +683,9 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
                         extraDataObject["city"] = savedCity;
                     }
                 }
+            }
+            if (finalCity && !extraDataObject["city"]) {
+                extraDataObject["city"] = finalCity;
             }
 
             const payload = {
@@ -1000,6 +1065,38 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
                 {/* ✨ המנוע הדינמי שמצייר את הקלפים והשדות ספציפית לקטגוריה */}
                 {renderSections()}
 
+                <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-4 shadow-lg border-t-green-500/20">
+                    <div className="flex flex-col gap-1 mb-2 border-b border-gray-800 pb-3">
+                        <Label className="text-green-400 font-bold flex items-center gap-2 text-lg">
+                            <MapPin className="w-5 h-5" /> כתובת לאיסוף המוצר
+                        </Label>
+                        <p className="text-gray-400 text-xs mt-1 leading-relaxed">
+                            כאן נכנסת הכתובת המדויקת שממנה אתה מוכר את המוצר.<br/>
+                            זהו המיקום אליו הקונים יצטרכו להגיע (או המיקום ממנו אנו נחשב את עלויות ההובלה במידת הצורך).
+                        </p>
+                    </div>
+                    <div className="bg-gray-900/60 p-4 rounded-xl border border-gray-700/50 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-full ${locationMode === 'LIVE' || !locationMode ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                               {gettingLocation ? <Loader2 className="w-5 h-5 animate-spin"/> : locationMode === 'LIVE' || !locationMode ? <LocateFixed className="w-5 h-5"/> : <MapPin className="w-5 h-5"/>}
+                            </div>
+                            <span className="text-xl font-bold text-white">
+                               {gettingLocation ? "מאתר מיקום..." : (locationName || "לא אותר מיקום")}
+                            </span>
+                        </div>
+                        <div className="flex gap-3">
+                           {locationMode === 'HOME' && (
+                              <button type="button" onClick={getDeviceLocation} className="text-xs text-green-400 border border-green-500/30 hover:bg-green-500/10 px-3 py-2 rounded-lg flex items-center gap-2 transition-all">
+                                 <LocateFixed className="w-3.5 h-3.5"/> אתר אותי כעת
+                              </button>
+                           )}
+                           <button type="button" onClick={() => setShowCityDialog(true)} className="text-xs text-blue-400 border border-blue-500/30 hover:bg-blue-500/10 px-3 py-2 rounded-lg flex items-center gap-2 transition-all">
+                              <MapPin className="w-3.5 h-3.5"/> בחר עיר ידנית
+                           </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-4">
                      <Label className="text-gray-400 text-xs block mb-1">תיאור העסקה / פגמים (אופציונלי)</Label>
                      <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}
@@ -1130,6 +1227,61 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
                     </Button>
                 </div>
             </form>
+
+            <Dialog open={showCityDialog} onOpenChange={setShowCityDialog}>
+                <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-md p-6" dir="rtl">
+                    <DialogTitle className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-cyan-400"/> בחר מרכז חיפוש
+                    </DialogTitle>
+                    <div className="flex flex-col gap-4">
+                        <div className="relative">
+                            <Input 
+                                placeholder="הקלד עיר לחפש..." 
+                                value={citySearch}
+                                onChange={(e) => {
+                                    setCitySearch(e.target.value);
+                                    if (cityDebounceRef.current) clearTimeout(cityDebounceRef.current);
+                                    if (e.target.value.trim().length > 1) {
+                                        cityDebounceRef.current = setTimeout(async () => {
+                                            try {
+                                                const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(e.target.value)}&countrycodes=il&format=json&limit=5&accept-language=he`);
+                                                const data = await res.json();
+                                                setCityResults(data || []);
+                                            } catch { setCityResults([]); }
+                                        }, 400);
+                                    } else { setCityResults([]); }
+                                }}
+                                className="bg-gray-800 border-gray-700 text-white h-12 text-lg focus:ring-cyan-500"
+                            />
+                            {cityResults.length > 0 && (
+                                <div className="mt-2 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden max-h-[250px] overflow-y-auto">
+                                    {cityResults.map(res => (
+                                        <div 
+                                            key={res.place_id} 
+                                            className="p-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700/50 last:border-0"
+                                            onClick={() => {
+                                                const cityName = res.name || res.display_name.split(",")[0];
+                                                localStorage.setItem("home_city", cityName);
+                                                localStorage.setItem("home_lat", res.lat);
+                                                localStorage.setItem("home_lng", res.lon);
+                                                setShowCityDialog(false);
+                                                setLat(parseFloat(res.lat));
+                                                setLng(parseFloat(res.lon));
+                                                setLocationMode("HOME");
+                                                setLocationName(cityName + " 🏠");
+                                            }}
+                                        >
+                                            <div className="font-bold text-white">{res.name}</div>
+                                            <div className="text-xs text-gray-400 truncate">{res.display_name}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 }

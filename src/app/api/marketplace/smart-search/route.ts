@@ -8,16 +8,29 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { query, lat, lng, radiusKm, category, listingType = "SELL" } = body;
+        const { query, lat, lng, radiusKm, category, listingType = "SELL", isAutocomplete = false } = body;
 
         let aiFilters: any = {};
         let searchKeywords: string[] = [];
         let keywordGroups: string[][] = [];
         let aiInsight = "";
+        let capabilityMatch: any = null;
+
+        // DB-Driven Smart Semantic Filtering (The Lean Brain)
+        const searchConfigs = await prismadb.searchFilterConfig.findMany({ where: { isActive: true } });
+        const stopWords = searchConfigs.filter(c => c.filterType === "STOP_WORD").map(c => c.value.toLowerCase());
+        const unitPatterns = searchConfigs.filter(c => c.filterType === "UNIT_PATTERN");
+
+        let processedQuery = query || "";
+        stopWords.forEach(sw => { processedQuery = processedQuery.replace(new RegExp(`\\b${sw}\\b`, "gi"), ""); });
+        unitPatterns.forEach(up => { processedQuery = processedQuery.replace(new RegExp(up.value, "gi"), up.replacement || ""); });
+
+        // Unrecognized Keywords Tracking Array
+        let detectedKeywords: string[] = [];
 
         // 1. Smart "AI" Query Parsing
-        if (query && query.trim().length > 0) {
-            const analysis = analyzeListingText(query);
+        if (processedQuery.trim().length > 0) {
+            const analysis = analyzeListingText(processedQuery);
             
             if (analysis.price) aiFilters.maxPrice = analysis.price;
             if (analysis.category && analysis.category !== "כללי") aiFilters.aiCategory = analysis.category;
@@ -144,6 +157,71 @@ export async function POST(req: Request) {
             });
             searchKeywords = Array.from(new Set(expandedKeywords)); // keep flat list for fallback scoring
 
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // KNOWLEDGE BASE (LEARNING AGENT) - CAPABILITY MAPPING + ADVICE CARD
+        // ─────────────────────────────────────────────────────────────
+        let capabilityApplied = false;
+        let adviceCard: any = null;
+
+        if (processedQuery.trim().length > 0) {
+            const capabilities = await prismadb.capabilityMapping.findMany();
+            const queryLowerStr = processedQuery.toLowerCase();
+            
+            for (const cap of capabilities) {
+                if (queryLowerStr.includes(cap.keyword.toLowerCase()) || 
+                   (cap.keywordId && queryLowerStr.includes(cap.keywordId.toLowerCase()))) {
+                    capabilityMatch = cap;
+                    break;
+                }
+            }
+
+            if (capabilityMatch) {
+                capabilityApplied = true;
+                const cpuTierMap: Record<number, string> = { 1: "i3 / Ryzen 3", 2: "i5 / Ryzen 5", 3: "i7 / Ryzen 7", 4: "i9 / Ryzen 9" };
+                const gpuTierMap: Record<number, string> = { 1: "GTX 1050", 2: "GTX 1660 / RTX 3050", 3: "RTX 3060 / RX 6700", 4: "RTX 3080+" };
+
+                // Use recommended specs for advice, minimums for filtering
+                const displayRam = (capabilityMatch as any).recRam || capabilityMatch.minRam || 8;
+                const displayCpu = (capabilityMatch as any).recCpuTier || capabilityMatch.minCpuTier || 2;
+                const displayGpu = (capabilityMatch as any).recGpuTier || capabilityMatch.minGpuTier || 0;
+                
+                const cpuLabel = cpuTierMap[displayCpu] || "i5";
+                const gpuLabel = gpuTierMap[displayGpu];
+
+                aiInsight = `המלצת מומחה: עבור **${capabilityMatch.keyword}**, מומלץ לחפש מכשיר עם לפחות ${displayRam}GB RAM ומעבד ${cpuLabel}${gpuLabel ? ` + כרטיס מסך ${gpuLabel}` : ''}.`;
+
+                // Build the Advice Card for the Advice Modal
+                adviceCard = {
+                    keyword: capabilityMatch.keyword,
+                    minRam: capabilityMatch.minRam,
+                    recRam: displayRam,
+                    minCpuTier: capabilityMatch.minCpuTier,
+                    recCpuTier: displayCpu,
+                    cpuLabel,
+                    minGpuTier: capabilityMatch.minGpuTier,
+                    recGpuTier: displayGpu,
+                    gpuLabel: gpuLabel || null,
+                    consensusScore: (capabilityMatch as any).consensusScore || 0,
+                    verificationStatus: capabilityMatch.verificationStatus,
+                    adviceText: `עבור ${capabilityMatch.keyword} ממליצים: ${displayRam}GB RAM, מעבד ${cpuLabel}${gpuLabel ? `, כרטיס מסך ${gpuLabel}` : ''}`
+                };
+
+                if (capabilityMatch.minRam) aiFilters.minRam = capabilityMatch.minRam;
+                if (capabilityMatch.minCpuTier) aiFilters.minCpuTier = capabilityMatch.minCpuTier;
+                if (capabilityMatch.minGpuTier) aiFilters.minGpuTier = capabilityMatch.minGpuTier;
+            } else if (processedQuery.trim().length > 2 && !isAutocomplete) {
+                await prismadb.unrecognizedKeyword.upsert({
+                    where: { keyword: processedQuery.trim().toLowerCase() },
+                    update: { occurrences: { increment: 1 }, lastSeen: new Date() },
+                    create: { keyword: processedQuery.trim().toLowerCase() }
+                }).catch(() => {});
+                
+                await prismadb.searchLog.create({
+                    data: { query: processedQuery.trim() }
+                }).catch(() => {});
+            }
         }
 
         // 2. Build Bounding Box for geo-distance filtering
@@ -656,6 +734,59 @@ export async function POST(req: Request) {
             }
         }
 
+        // 4.5 Apply Capability Filters & Traffic-Light Matching
+        if (capabilityApplied) {
+            listings = listings.map((l: any) => {
+                const combinedText = `${l.title} ${l.description || ""} ${l.extraData || ""}`.toLowerCase();
+                
+                const m = combinedText.match(/(\d+)\s*(gb|giga|ram)/i);
+                const lRam = m ? parseInt(m[1]) : 0;
+                
+                const getCpuTierIndex = (text: string): number => {
+                    const cpuTiers = [
+                        ["i9", "ultra 9", "ryzen 9", "m3 max", "m4 max"],
+                        ["i7", "ultra 7", "ryzen 7", "m3 pro", "m2 max", "m4 pro"],
+                        ["i5", "ultra 5", "ryzen 5", "m3", "m2 pro", "m2"],
+                        ["i3", "ryzen 3", "m1 pro", "m1", "celeron", "pentium"],
+                    ];
+                    for (let i = 0; i < cpuTiers.length; i++) {
+                        if (cpuTiers[i].some(cpu => text.includes(cpu))) return 4 - i;
+                    }
+                    return 0;
+                };
+                const lCpuTier = getCpuTierIndex(combinedText);
+                
+                // Traffic-Light matching
+                let matchScore = 0;
+                let maxRequirements = 0;
+                let isGamingReady = false;
+
+                if (aiFilters.minRam) { 
+                    maxRequirements++; 
+                    if (lRam >= aiFilters.minRam) matchScore++; 
+                }
+                if (aiFilters.minCpuTier) { 
+                    maxRequirements++; 
+                    if (lCpuTier >= aiFilters.minCpuTier) matchScore++; 
+                }
+                if (lRam >= 16 && lCpuTier >= 3) {
+                    isGamingReady = true;
+                }
+
+                let matchLevel = "green"; // perfect
+                if (maxRequirements > 0) {
+                    if (matchScore === maxRequirements) matchLevel = "green";
+                    else if (matchScore > 0 || (lRam === 0 && lCpuTier === 0)) matchLevel = "yellow"; // Partial match or unknown specs
+                    else matchLevel = "red"; // Low match
+                }
+                
+                return { ...l, matchLevel, isGamingReady };
+            }).sort((a, b) => {
+                const val = { green: 3, yellow: 2, red: 1 };
+                return (val[b.matchLevel as keyof typeof val] || 0) - (val[a.matchLevel as keyof typeof val] || 0);
+            });
+        }
+
         // 5. Precise Distance Calculation & Sorting
         let finalResults: any[] = listings;
         
@@ -685,13 +816,25 @@ export async function POST(req: Request) {
                 });
         }
 
+        // Smart Fallback: If capabilityApplied but no results — show smart message
+        let smartFallbackMessage: string | null = null;
+        if (capabilityApplied && capabilityMatch && finalResults.length === 0) {
+            // Try a broader search without spec filters to find ANY matching hardware
+            smartFallbackMessage = `לא מצאתי מחשב בשם "${capabilityMatch.keyword}", אבל מצאתי מחשבים שיריצו אותו מצוין — מסנן תוצאות רלוונטיות עבורך.`;
+            // Reset filters to just category to show what we have
+            isFallback = true;
+        }
+
         return NextResponse.json({ 
             success: true, 
             results: finalResults,
             total: finalResults.length,
             aiFilters,
             isFallback,
-            aiInsight: aiInsight || null
+            aiInsight: aiInsight || null,
+            capabilityMatch,
+            adviceCard,
+            smartFallbackMessage
         });
 
     } catch (error) {

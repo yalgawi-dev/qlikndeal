@@ -10,6 +10,15 @@ const nextConfig = {
     },
     experimental: {
         serverComponentsExternalPackages: ["natural"]
+    },
+    async redirects() {
+        return [
+            {
+                source: '/dashboard/marketplace',
+                destination: '/',
+                permanent: true,
+            },
+        ];
     }
 };
 

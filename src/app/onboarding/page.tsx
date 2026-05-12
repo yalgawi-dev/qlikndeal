@@ -31,7 +31,42 @@ export default function OnboardingPage() {
     const [filtered, setFiltered] = useState<string[]>([]);
     const [showList, setShowList] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [gettingLocation, setGettingLocation] = useState(false);
     const [error, setError] = useState("");
+    const [isPermanent, setIsPermanent] = useState(true);
+
+    const getDeviceLocation = () => {
+        setGettingLocation(true);
+        setError("");
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                async (p) => {
+                    try {
+                        const newLat = p.coords.latitude; const newLng = p.coords.longitude;
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLat}&lon=${newLng}&zoom=10&accept-language=he`);
+                        const data = await res.json();
+                        const city = data.address?.city || data.address?.town || data.address?.village || data.name;
+                        if (city) {
+                            setSelected(city);
+                            setSearch(city);
+                            setShowList(false);
+                        } else {
+                            setError("לא הצלחנו לזהות את שם העיר מהמיקום שלך.");
+                        }
+                    } catch {
+                        setError("שגיאה בחיבור לשרת המיקומים.");
+                    }
+                    setGettingLocation(false);
+                },
+                () => { setError("לא ניתן לקבל מיקום, בדוק הרשאות דפדפן"); setGettingLocation(false); },
+                { enableHighAccuracy: true, timeout: 5000 }
+            );
+        } else { setError("הדפדפן לא תומך במיקום"); setGettingLocation(false); }
+    };
+
+    useEffect(() => {
+        getDeviceLocation();
+    }, []);
 
     useEffect(() => {
         if (!search.trim()) { setFiltered([]); return; }
@@ -55,9 +90,15 @@ export default function OnboardingPage() {
             const res = await fetch("/api/user/set-city", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ city: selected }),
+                body: JSON.stringify({ city: selected, isPermanent }),
             });
             if (!res.ok) throw new Error(await res.text());
+            
+            if (isPermanent) {
+                localStorage.setItem("home_city", selected);
+                // We could get coords and save home_lat / home_lng here, but for simplicity we rely on the city text.
+            }
+            
             // Redirect to main page after onboarding
             router.push("/");
         } catch (e: any) {
@@ -115,6 +156,15 @@ export default function OnboardingPage() {
                                 placeholder="חפש עיר..."
                                 className="w-full bg-white/5 border border-white/10 rounded-xl pr-10 py-3 px-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/8 transition-all text-right"
                             />
+                            <button 
+                                type="button" 
+                                onClick={getDeviceLocation} 
+                                disabled={gettingLocation}
+                                className="absolute left-2 top-2 bg-indigo-500/20 hover:bg-indigo-500/40 text-indigo-300 p-1.5 rounded-lg flex items-center justify-center transition-colors"
+                                title="אתר את המיקום שלי"
+                            >
+                                {gettingLocation ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+                            </button>
                         </div>
 
                         {/* Dropdown */}
@@ -134,6 +184,19 @@ export default function OnboardingPage() {
                     </div>
 
                     {error && <p className="text-red-400 text-xs mb-4">{error}</p>}
+
+                    <div className="flex items-center gap-2 mt-4 mb-2">
+                        <input 
+                            type="checkbox" 
+                            id="isPermanent" 
+                            checked={isPermanent}
+                            onChange={(e) => setIsPermanent(e.target.checked)}
+                            className="w-4 h-4 text-indigo-500 bg-white/5 border-white/10 rounded focus:ring-indigo-500 focus:ring-offset-slate-900"
+                        />
+                        <label htmlFor="isPermanent" className="text-sm text-slate-300 cursor-pointer">
+                            זה המיקום הקבוע שלי למכירה וקנייה
+                        </label>
+                    </div>
 
                     {/* CTA */}
                     <button

@@ -142,6 +142,24 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                     <div className={`bg-black/60 backdrop-blur-md border border-white/10 text-white px-2 py-1 rounded text-xs font-bold`}>
                         {isCatalog ? "קטלוג 📚" : (listing.condition === "New" ? "חדש" : listing.condition === "Used" ? "משומש" : listing.condition)}
                     </div>
+                    {listing.matchLevel && (
+                        <div className={`backdrop-blur-md border px-2 py-1 rounded text-xs font-bold flex items-center gap-1 ${
+                            listing.matchLevel === 'green' ? 'bg-green-600/80 border-green-400 text-white shadow-[0_0_10px_rgba(34,197,94,0.6)]' :
+                            listing.matchLevel === 'yellow' ? 'bg-yellow-600/80 border-yellow-400 text-white shadow-[0_0_10px_rgba(234,179,8,0.6)]' :
+                            'bg-red-600/80 border-red-400 text-white shadow-[0_0_10px_rgba(239,68,68,0.6)]'
+                        }`}>
+                            <div className={`w-2 h-2 rounded-full ${
+                                listing.matchLevel === 'green' ? 'bg-green-300' :
+                                listing.matchLevel === 'yellow' ? 'bg-yellow-300' : 'bg-red-300'
+                            }`} />
+                            {listing.matchLevel === 'green' ? 'התאמה מושלמת' : listing.matchLevel === 'yellow' ? 'התאמה חלקית' : 'חלש מדי'}
+                        </div>
+                    )}
+                    {listing.isGamingReady && (
+                        <div className="bg-purple-600/80 backdrop-blur-md border border-purple-400 text-white px-2 py-1 rounded text-xs font-bold shadow-[0_0_8px_rgba(168,85,247,0.5)]">
+                            🎮 Gaming Ready
+                        </div>
+                    )}
                     {isExternal && (
                         <div className="bg-blue-600/80 backdrop-blur-md border border-blue-400/30 text-white px-2 py-1 rounded text-xs">
                            פייסבוק 🌐
@@ -221,7 +239,7 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                 {isCatalog ? (
                     <Button
                         variant="outline"
-                        className="flex-1 border-blue-500/30 text-blue-400 hover:bg-blue-500/10 font-bold"
+                        className="flex-1 border-blue-500/30 text-blue-400 hover:bg-blue-500/10 font-bold text-xs sm:text-sm h-auto py-2 whitespace-normal"
                         onClick={(e) => {
                             e.stopPropagation();
                             router.push(`/dashboard/marketplace/create?template=${listing.id}`);
@@ -232,7 +250,7 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                 ) : isExternal ? (
                     <Button
                         onClick={handleExternalClick}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold"
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm h-auto py-2 whitespace-normal"
                     >
                         צפה בפייסבוק 🌐
                     </Button>
@@ -242,7 +260,7 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                             e.stopPropagation(); 
                             router.push(`/dashboard/marketplace/my-listings`);
                         }}
-                        className="flex-1 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-bold border-0 shadow-md"
+                        className="flex-1 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-bold border-0 shadow-md text-xs sm:text-sm h-auto py-2 whitespace-normal leading-tight"
                     >
                         צפה במודעות שלי ובבקשות 📊
                     </Button>
@@ -253,7 +271,7 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                             handleBuyNow();
                         }}
                         disabled={loading}
-                        className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-bold border-0 shadow-md shadow-teal-900/20"
+                        className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-bold border-0 shadow-md shadow-teal-900/20 text-xs sm:text-sm h-auto py-2 whitespace-normal leading-tight"
                     >
                         {loading ? "פותח זירה..." : "לפתיחת זירת סחר ומשא ומתן 🤝"}
                     </Button>

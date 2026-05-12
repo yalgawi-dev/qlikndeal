@@ -8,9 +8,9 @@ import L from 'leaflet';
 // Fix leaflet icon issue in Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
 // Helper component to center map when coords change
@@ -18,6 +18,11 @@ function ChangeView({ center, zoom }: { center: [number, number], zoom: number }
   const map = useMap();
   useEffect(() => {
     map.setView(center, zoom);
+    // Fix Leaflet tile rendering bug in animated mobile modals
+    const timeoutId = setTimeout(() => {
+        map.invalidateSize();
+    }, 400);
+    return () => clearTimeout(timeoutId);
   }, [center, zoom, map]);
   return null;
 }
@@ -37,9 +42,10 @@ export default function LocationMap({ lat, lng, radiusKm }: LocationMapProps) {
 
   return (
     <MapContainer 
+      key={`map-${lat}-${lng}`} // Forces re-initialization if React Strict Mode causes issues
       center={position} 
       zoom={zoom} 
-      style={{ height: '100%', width: '100%', borderRadius: '0.75rem' }}
+      style={{ height: '100%', width: '100%', borderRadius: '0.75rem', zIndex: 1 }}
       zoomControl={false} // We can hide default controls if we want a cleaner look
     >
       <ChangeView center={position} zoom={zoom} />
