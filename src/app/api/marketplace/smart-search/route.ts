@@ -390,7 +390,7 @@ export async function POST(req: Request) {
                 status: "ACTIVE"
             };
 
-            if (currentClerkId) {
+            if (currentClerkId && consultantFilter) {
                 buyerWhereClause.user = {
                     clerkId: {
                         not: currentClerkId
@@ -533,7 +533,7 @@ export async function POST(req: Request) {
             ...latLngFilter
         };
 
-        if (currentClerkId) {
+        if (currentClerkId && consultantFilter) {
             whereClause.seller = {
                 clerkId: {
                     not: currentClerkId

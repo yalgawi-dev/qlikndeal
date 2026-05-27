@@ -161,6 +161,11 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                     </div>
                 )}
                 <div className="absolute top-2 right-2 flex gap-1">
+                    {actualIsOwner && (
+                        <div className="bg-blue-600/90 backdrop-blur-md border border-blue-400 text-white px-2 py-1 rounded text-xs font-bold shadow-[0_0_8px_rgba(37,99,235,0.5)]">
+                            {listing.listingType === "BUY" ? "הבקשה שלי 👤" : "המודעה שלי 👤"}
+                        </div>
+                    )}
                     <div className={`bg-black/60 backdrop-blur-md border border-white/10 text-white px-2 py-1 rounded text-xs font-bold`}>
                         {isCatalog ? "קטלוג 📚" : (listing.condition === "New" ? "חדש" : listing.condition === "Used" ? "משומש" : listing.condition)}
                     </div>
