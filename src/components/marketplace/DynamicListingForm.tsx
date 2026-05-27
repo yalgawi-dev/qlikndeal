@@ -7,10 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { createListing, updateListing, getMyPhone } from "@/app/actions/marketplace";
-import { Loader2, Sparkles, Box, HardDrive, Cpu, Monitor, Maximize2, MemoryStick, AlertCircle, Check, X, ImagePlus, Video, MapPin, LocateFixed } from "lucide-react";
+import { Loader2, Sparkles, Box, HardDrive, Cpu, Monitor, Maximize2, MemoryStick, AlertCircle, Check, X, ImagePlus, Video, MapPin, LocateFixed, Wifi, Layers, Calendar, Network, Info } from "lucide-react";
 import { SmartAiInput } from "./SmartAiInput";
 import { UniversalCatalogSearch } from "@/components/marketplace/UniversalCatalogSearch";
 import Script from "next/script";
+import { toast } from "sonner";
+import { getMotherboardSpecs } from "@/app/actions/hardware-search";
 
 // ─── ICON MAPPER ✨ ──────────────────────────────────────────────
 const IconMapper: Record<string, any> = {
@@ -141,7 +143,100 @@ function generateSmartTitle(category: string, fields: Record<string, string>): s
     return "";
 }
 
-export function DynamicListingForm({ onComplete, initialData, isEditing, listingId, initialCategory }: any) {
+function SearchableSelect({ value, onChange, options, placeholder, icon: IconComponent, isUncertain }: any) {
+    const [open, setOpen] = React.useState(false);
+    const [search, setSearch] = React.useState("");
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const filtered = options.filter((opt: string) =>
+        opt.toLowerCase().includes(search.toLowerCase())
+    );
+
+    return (
+        <div ref={containerRef} className="relative w-full">
+            <div
+                onClick={() => setOpen(!open)}
+                className={`flex items-center gap-2 w-full h-10 rounded-md bg-gray-800 text-white border px-3 cursor-pointer select-none hover:border-gray-600 transition-all ${
+                    isUncertain ? 'border-yellow-500/50 bg-yellow-500/5' : 'border-gray-700'
+                }`}
+            >
+                {IconComponent && <IconComponent className="w-3.5 h-3.5 text-slate-500 shrink-0" />}
+                <span className="flex-1 truncate text-xs text-right">
+                    {value || placeholder || "- בחר או הקלד -"}
+                </span>
+                <span className="text-slate-500 text-[10px] shrink-0">▼</span>
+            </div>
+
+            {open && (
+                <div className="absolute z-[999] top-full mt-1 w-full bg-gray-900 border border-gray-800 rounded-lg shadow-2xl p-2 space-y-1.5 flex flex-col" style={{ minWidth: '100%' }}>
+                    <input
+                        autoFocus
+                        type="text"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        placeholder="הקלד לחיפוש..."
+                        className="w-full h-8 px-2.5 rounded bg-gray-950 border border-gray-800 text-white text-xs outline-none focus:border-blue-500/50"
+                        onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                if (search.trim()) {
+                                    onChange(search.trim());
+                                    setOpen(false);
+                                    setSearch("");
+                                }
+                            }
+                        }}
+                    />
+                    <div className="overflow-y-auto space-y-0.5 max-h-48 pr-1" style={{ direction: 'rtl' }}>
+                        {search.trim() && !filtered.some((opt: string) => opt.toLowerCase() === search.toLowerCase().trim()) && (
+                            <div
+                                onClick={() => {
+                                    onChange(search.trim());
+                                    setOpen(false);
+                                    setSearch("");
+                                }}
+                                className="px-2 py-1.5 rounded text-xs cursor-pointer text-blue-400 hover:bg-gray-800 font-bold text-right border border-dashed border-blue-900/50"
+                            >
+                                + הוסף: "{search.trim()}"
+                            </div>
+                        )}
+                        {filtered.length > 0 ? (
+                            filtered.map((opt: string) => (
+                                <div
+                                    key={opt}
+                                    onClick={() => {
+                                        onChange(opt);
+                                        setOpen(false);
+                                        setSearch("");
+                                    }}
+                                    className={`px-2 py-1.5 rounded text-xs cursor-pointer text-right transition-colors ${
+                                        value === opt ? 'bg-blue-600 text-white font-bold' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                                    }`}
+                                >
+                                    {opt}
+                                </div>
+                            ))
+                        ) : (
+                            !search.trim() && <div className="text-slate-500 text-[10px] p-2 text-center">אין אופציות זמינות</div>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export function DynamicListingForm({ onComplete, initialData, isEditing, listingId, initialCategory, initialListingType }: any) {
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [uncertainFields, setUncertainFields] = useState<{field: string, weight: number}[]>([]);
@@ -151,6 +246,8 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
     const [showCustomFieldBox, setShowCustomFieldBox] = useState(false);
     const [nsfwModel, setNsfwModel] = useState<any>(null);
     const [isNsfwLoading, setIsNsfwLoading] = useState(true);
+    const [selectedMbSpecs, setSelectedMbSpecs] = useState<any>(null);
+    const [loadingMbSpecs, setLoadingMbSpecs] = useState(false);
 
     useEffect(() => {
         // We load the model via CDN script tags below to bypass Next.js webpack build errors 
@@ -208,6 +305,7 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
             price: initialData?.price?.toString() || "",
             description: initialData?.description || "",
             category: initialData?.category || activeCategory,
+            listingType: initialData?.listingType || initialListingType || "SELL",
             contactPhone: initialData?.contactPhone || "",
             images: initialData?.images ? (typeof initialData.images === "string" ? JSON.parse(initialData.images) : initialData.images) : [] as string[],
             videos: initialData?.videos ? (typeof initialData.videos === "string" ? JSON.parse(initialData.videos) : initialData.videos) : [] as string[],
@@ -439,30 +537,59 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
 
         // ─── FIELD ALIAS NORMALIZATION (defined outside setFormData for reuse) ─────
         const FIELD_ALIASES: Record<string, string> = {
+            // Brand / Model
             "series":  "family",
             "סדרה":   "family",
-            "screensize": "screen",
-            "screen size": "screen",
-            "מסך": "screen",
             "brand": "brand",
             "יצרן": "brand",
             "make": "brand",
             "submodel": "subModel",
             "דגם": "subModel",
+            // RAM
             "ram": "ram",
             "זכרון": "ram",
             "זיכרון": "ram",
+            // Storage
             "storage": "storage",
             "אחסון": "storage",
             "נפח": "storage",
+            "נפח אחסון": "storage",
+            // Extra Storage
+            "extrastorage": "extraStorage",
+            "extra storage": "extraStorage",
+            "אחסון נוסף": "extraStorage",
+            // CPU
             "cpu": "cpu",
             "מעבד": "cpu",
+            // GPU — כרטיס מסך (חדש)
+            "gpu": "gpu",
+            "כרטיס מסך": "gpu",
+            "graphics": "gpu",
+            "כרטיס גרפי": "gpu",
+            // Screen
+            "screensize": "screen",
+            "screen size": "screen",
+            "מסך": "screen",
+            "גודל מסך": "screen",
+            // Resolution type — FHD / QHD / 4K (חדש)
+            "סוג רזולוציה": "resolutionType",
+            "resolution type": "resolutionType",
+            "רזולוציה": "resolutionType",
+            // Refresh rate
+            "תדר רענון": "refreshRate",
+            "refresh rate": "refreshRate",
+            "הרץ": "refreshRate",
+            // OS
+            "מערכת הפעלה": "os",
+            "operating system": "os",
+            // Year
             "year": "releaseYear",
             "release_year": "releaseYear",
             "releaseyear": "releaseYear",
             "שנה": "releaseYear",
             "שנת יצור": "releaseYear",
             "שנת ייצור": "releaseYear",
+            // Misc
             "color": "color",
             "צבע": "color",
             "condition": "condition",
@@ -579,6 +706,59 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
 
     const getFieldValue = (key: string) => {
         return formData.extraData.find(e => e.key === key)?.value || "";
+    };
+
+    const motherboardValue = getFieldValue('motherboard');
+
+    useEffect(() => {
+        if (!motherboardValue) {
+            setSelectedMbSpecs(null);
+            return;
+        }
+        let active = true;
+        async function fetchSpecs() {
+            setLoadingMbSpecs(true);
+            try {
+                const res = await getMotherboardSpecs(motherboardValue);
+                if (active) {
+                    setSelectedMbSpecs(res);
+                }
+            } catch (err) {
+                console.error("Failed to load motherboard specs:", err);
+                if (active) setSelectedMbSpecs(null);
+            } finally {
+                if (active) setLoadingMbSpecs(false);
+            }
+        }
+        fetchSpecs();
+        return () => {
+            active = false;
+        };
+    }, [motherboardValue]);
+
+    const getCompatibilityWarning = (fieldId: string) => {
+        if (formData.category !== "CUSTOM_COMPUTERS") return null;
+
+        const cpuVal = getFieldValue('cpu').toLowerCase();
+        const mbVal = getFieldValue('motherboard').toLowerCase();
+
+        if (!cpuVal || !mbVal) return null;
+
+        const isIntelCpu = cpuVal.includes('intel') || cpuVal.includes('i3') || cpuVal.includes('i5') || cpuVal.includes('i7') || cpuVal.includes('i9') || cpuVal.includes('ultra');
+        const isAmdCpu = cpuVal.includes('amd') || cpuVal.includes('ryzen');
+
+        const isIntelMb = mbVal.includes('intel') || mbVal.includes('lga') || mbVal.includes('h610') || mbVal.includes('b760') || mbVal.includes('z790') || mbVal.includes('b660') || mbVal.includes('z690');
+        const isAmdMb = mbVal.includes('amd') || mbVal.includes('am5') || mbVal.includes('am4') || mbVal.includes('a620') || mbVal.includes('b650') || mbVal.includes('x670') || mbVal.includes('b550') || mbVal.includes('x570') || mbVal.includes('a320');
+
+        if (fieldId === 'motherboard' || fieldId === 'cpu') {
+            if (isIntelCpu && isAmdMb) {
+                return "⚠️ מעבד Intel אינו תואם ללוח אם של AMD";
+            }
+            if (isAmdCpu && isIntelMb) {
+                return "⚠️ מעבד AMD אינו תואם ללוח אם של Intel";
+            }
+        }
+        return null;
     };
 
     const addCustomField = () => {
@@ -699,12 +879,30 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
                 condition: extraDataObject["condition"] || "לא צוין", // REQUIRED BY API
                 latitude: finalLat,
                 longitude: finalLng,
+                listingType: formData.listingType || "SELL",
                 extraData: extraDataObject
             };
 
             const res = isEditing ? await updateListing(listingId, payload) : await createListing(payload);
-            if (res.success) onComplete();
-        } catch (e) { console.error(e); } finally { setLoading(false); }
+            if (res.success) {
+                if (res.matchCount && res.matchCount > 0) {
+                    toast.success(`🎉 נמצאו ${res.matchCount} קונים מתאימים! הודעה נשלחה אליהם.`);
+                    setTimeout(() => {
+                        onComplete();
+                    }, 2500);
+                } else {
+                    toast.success(isEditing ? "המודעה עודכנה בהצלחה" : "המודעה פורסמה בהצלחה");
+                    setTimeout(() => {
+                        onComplete();
+                    }, 1000);
+                }
+            }
+        } catch (e) { 
+            console.error(e); 
+            toast.error("שגיאה בפרסום המודעה");
+        } finally { 
+            setLoading(false); 
+        }
     };
 
     const compressImage = (file: File): Promise<string> => {
@@ -837,7 +1035,41 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 border-blue-500">
                         {fields.map(field => {
                             const IconComponent = field.icon ? IconMapper[field.icon] || Box : null;
-                            const fieldOptions = dynamicOptions[field.fieldId] || [];
+                            
+                            // Apply options filtering for motherboard-CPU compatibility
+                            let fieldOptions = dynamicOptions[field.fieldId] || [];
+
+                            if (formData.category === "CUSTOM_COMPUTERS") {
+                                if (field.fieldId === 'cpu') {
+                                    // Exclude Apple CPUs from Custom Computers
+                                    fieldOptions = fieldOptions.filter(opt => 
+                                        !opt.toLowerCase().includes('apple') && 
+                                        !opt.toLowerCase().includes('m1') && 
+                                        !opt.toLowerCase().includes('m2') && 
+                                        !opt.toLowerCase().includes('m3') && 
+                                        !opt.toLowerCase().includes('m4')
+                                    );
+
+                                    const selectedMb = getFieldValue('motherboard').toLowerCase();
+                                    const isIntelMb = selectedMb.includes('intel') || selectedMb.includes('lga') || selectedMb.includes('h610') || selectedMb.includes('b760') || selectedMb.includes('z790') || selectedMb.includes('b660') || selectedMb.includes('z690');
+                                    const isAmdMb = selectedMb.includes('amd') || selectedMb.includes('am5') || selectedMb.includes('am4') || selectedMb.includes('a620') || selectedMb.includes('b650') || selectedMb.includes('x670') || selectedMb.includes('b550') || selectedMb.includes('x570') || selectedMb.includes('a320');
+                                    
+                                    if (isIntelMb) {
+                                        fieldOptions = fieldOptions.filter(opt => opt.toLowerCase().includes('intel') || opt.toLowerCase().includes('i3') || opt.toLowerCase().includes('i5') || opt.toLowerCase().includes('i7') || opt.toLowerCase().includes('i9') || opt.toLowerCase().includes('ultra') || (!opt.toLowerCase().includes('amd') && !opt.toLowerCase().includes('ryzen')));
+                                    } else if (isAmdMb) {
+                                        fieldOptions = fieldOptions.filter(opt => opt.toLowerCase().includes('amd') || opt.toLowerCase().includes('ryzen') || (!opt.toLowerCase().includes('intel') && !opt.toLowerCase().includes('i3') && !opt.toLowerCase().includes('i5') && !opt.toLowerCase().includes('i7') && !opt.toLowerCase().includes('i9') && !opt.toLowerCase().includes('ultra')));
+                                    }
+                                }
+
+                                if (field.fieldId === 'motherboard') {
+                                    const selectedCpu = getFieldValue('cpu').toLowerCase();
+                                    if (selectedCpu.includes('intel') || selectedCpu.includes('i3') || selectedCpu.includes('i5') || selectedCpu.includes('i7') || selectedCpu.includes('i9') || selectedCpu.includes('ultra')) {
+                                        fieldOptions = fieldOptions.filter(opt => opt.toLowerCase().includes('intel') || !opt.toLowerCase().includes('amd'));
+                                    } else if (selectedCpu.includes('amd') || selectedCpu.includes('ryzen')) {
+                                        fieldOptions = fieldOptions.filter(opt => opt.toLowerCase().includes('amd') || !opt.toLowerCase().includes('intel'));
+                                    }
+                                }
+                            }
 
                             return (
                                 <React.Fragment key={field.fieldId}>
@@ -884,25 +1116,26 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
                                             </Label>
                                             
                                             {field.fieldType === "select" ? (
-                                                <div className="relative w-full">
-                                                    <Input
-                                                        list={`datalist-${field.fieldId}`}
-                                                        value={getFieldValue(field.fieldId)} 
-                                                        onChange={e => handleFieldChange(field.fieldId, e.target.value)}
-                                                        className={`w-full bg-gray-800 text-white ${getUncertain(field.fieldId) ? 'border-yellow-500/50' : 'border-gray-700'}`} 
-                                                        placeholder="- לחץ לבחירה או הקלד -"
-                                                    />
-                                                    <datalist id={`datalist-${field.fieldId}`}>
-                                                        <option value="" disabled>- בחירה -</option>
-                                                        {fieldOptions.map((opt: string) => <option key={opt} value={opt} />)}
-                                                    </datalist>
-                                                </div>
+                                                <SearchableSelect
+                                                    value={getFieldValue(field.fieldId)}
+                                                    onChange={(val: string) => handleFieldChange(field.fieldId, val)}
+                                                    options={fieldOptions}
+                                                    placeholder={field.labelHera ? `- בחר ${field.labelHera} -` : "- בחר או הקלד -"}
+                                                    icon={IconComponent}
+                                                    isUncertain={!!getUncertain(field.fieldId)}
+                                                />
                                             ) : (
                                                 <Input 
                                                     value={getFieldValue(field.fieldId)} 
                                                     onChange={e => handleFieldChange(field.fieldId, e.target.value)}
                                                     className={`bg-gray-800 text-white ${getUncertain(field.fieldId) ? 'border-yellow-500/50' : 'border-gray-700'}`} 
                                                 />
+                                            )}
+
+                                            {getCompatibilityWarning(field.fieldId) && (
+                                                <div className="text-[10px] text-red-400 font-bold mt-1 bg-red-950/30 p-1.5 rounded border border-red-900/40 animate-in fade-in slide-in-from-top-1">
+                                                    {getCompatibilityWarning(field.fieldId)}
+                                                </div>
                                             )}
 
                                             {getUncertain(field.fieldId) && (
@@ -915,6 +1148,138 @@ export function DynamicListingForm({ onComplete, initialData, isEditing, listing
                                                     </button>
                                                 </div>
                                             )}
+                                        </div>
+                                    )}
+
+                                    {field.fieldId === 'motherboard' && selectedMbSpecs && (
+                                        <div className="col-span-1 sm:col-span-2 lg:col-span-3 bg-slate-900/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 shadow-xl relative overflow-hidden mt-2">
+                                            {/* Decorative colored glow background */}
+                                            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+                                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                                            {/* Header */}
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-800 pb-3">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div className="p-2 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 shadow-inner">
+                                                        <Info className="w-4 h-4" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-sm font-bold text-white leading-tight">מפרט לוח אם מזהה</h4>
+                                                        <p className="text-[11px] text-gray-400 font-mono mt-0.5">{selectedMbSpecs.model}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {selectedMbSpecs.socket && (
+                                                        <span className="text-[10px] font-bold bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30">
+                                                            {selectedMbSpecs.socket}
+                                                        </span>
+                                                    )}
+                                                    {selectedMbSpecs.chipset && (
+                                                        <span className="text-[10px] font-bold bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30">
+                                                            {selectedMbSpecs.chipset}
+                                                        </span>
+                                                    )}
+                                                    {selectedMbSpecs.formFactor && (
+                                                        <span className="text-[10px] font-bold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
+                                                            {selectedMbSpecs.formFactor}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Specifications Grid */}
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3" dir="rtl">
+                                                {/* RAM Type & Max RAM */}
+                                                {(selectedMbSpecs.ramType || selectedMbSpecs.maxRam) && (
+                                                    <div className="bg-gray-950/40 p-3 rounded-xl border border-gray-800/60 flex items-start gap-2.5 hover:border-gray-700/50 transition-colors">
+                                                        <div className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg mt-0.5">
+                                                            <MemoryStick className="w-3.5 h-3.5" />
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-[10px] text-gray-500 font-medium">זיכרון מירבי וסוג</div>
+                                                            <div className="text-xs font-bold text-gray-200 mt-0.5">
+                                                                {selectedMbSpecs.ramType || "DDR4/DDR5"} 
+                                                                {selectedMbSpecs.maxRam ? ` (עד ${selectedMbSpecs.maxRam}GB)` : ""}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* PCIe Info */}
+                                                {selectedMbSpecs.pcie && (
+                                                    <div className="bg-gray-950/40 p-3 rounded-xl border border-gray-800/60 flex items-start gap-2.5 hover:border-gray-700/50 transition-colors">
+                                                        <div className="p-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg mt-0.5">
+                                                            <Layers className="w-3.5 h-3.5" />
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-[10px] text-gray-500 font-medium">חריצי PCIe</div>
+                                                            <div className="text-xs font-bold text-gray-200 mt-0.5">
+                                                                {selectedMbSpecs.pcie}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* M.2 slots */}
+                                                {selectedMbSpecs.m2 && selectedMbSpecs.m2 !== "nan" && (
+                                                    <div className="bg-gray-950/40 p-3 rounded-xl border border-gray-800/60 flex items-start gap-2.5 hover:border-gray-700/50 transition-colors">
+                                                        <div className="p-1.5 bg-cyan-500/10 text-cyan-400 rounded-lg mt-0.5">
+                                                            <HardDrive className="w-3.5 h-3.5" />
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-[10px] text-gray-500 font-medium">חיבורי M.2 SSD</div>
+                                                            <div className="text-xs font-bold text-gray-200 mt-0.5">
+                                                                {selectedMbSpecs.m2}x חיבורים
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* LAN */}
+                                                {selectedMbSpecs.lan && selectedMbSpecs.lan !== "nan" && (
+                                                    <div className="bg-gray-950/40 p-3 rounded-xl border border-gray-800/60 flex items-start gap-2.5 hover:border-gray-700/50 transition-colors">
+                                                        <div className="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg mt-0.5">
+                                                            <Network className="w-3.5 h-3.5" />
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-[10px] text-gray-500 font-medium">כרטיס רשת קווי (LAN)</div>
+                                                            <div className="text-xs font-bold text-gray-200 mt-0.5">
+                                                                {selectedMbSpecs.lan}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* WiFi */}
+                                                {selectedMbSpecs.wifi && selectedMbSpecs.wifi !== "nan" && selectedMbSpecs.wifi !== "None" && (
+                                                    <div className="bg-gray-950/40 p-3 rounded-xl border border-gray-800/60 flex items-start gap-2.5 hover:border-gray-700/50 transition-colors">
+                                                        <div className="p-1.5 bg-blue-500/10 text-blue-400 rounded-lg mt-0.5">
+                                                            <Wifi className="w-3.5 h-3.5" />
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-[10px] text-gray-500 font-medium">תקשורת אלחוטית WiFi</div>
+                                                            <div className="text-xs font-bold text-gray-200 mt-0.5">
+                                                                {selectedMbSpecs.wifi}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Release Year */}
+                                                {selectedMbSpecs.releaseYear && selectedMbSpecs.releaseYear !== "nan" && (
+                                                    <div className="bg-gray-950/40 p-3 rounded-xl border border-gray-800/60 flex items-start gap-2.5 hover:border-gray-700/50 transition-colors">
+                                                        <div className="p-1.5 bg-amber-500/10 text-amber-400 rounded-lg mt-0.5">
+                                                            <Calendar className="w-3.5 h-3.5" />
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-[10px] text-gray-500 font-medium">שנת יציאה לשוק</div>
+                                                            <div className="text-xs font-bold text-gray-200 mt-0.5">
+                                                                {selectedMbSpecs.releaseYear}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                 </React.Fragment>

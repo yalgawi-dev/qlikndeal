@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { ContextAwareParser } from "@/lib/parsing/contextAwareParser";
 import prismadb from "@/lib/prismadb";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const text = "מכירה עקב גיוס - מחשב גיימינג מפלצת! אסוס רוג סטריקס שנת 2022. דגם G15. מוכר ב-3800 שח סופי בהחלט, לא להתווכח על השקל. שנת 2022 ככה שזה מחיר פצצה. איסוף מראשון לציון או משלוח בתוספת תשלום. לא בשבת.";
   

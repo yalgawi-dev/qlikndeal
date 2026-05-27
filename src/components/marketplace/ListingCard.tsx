@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { User, ShoppingBag, MessageCircle, Edit, Trash2, Loader2 } from "lucide-react";
+import { User, ShoppingBag, MessageCircle, Edit, Trash2, Loader2, Radar } from "lucide-react";
 import { createShipmentFromListing } from "@/app/actions/marketplace";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
@@ -119,6 +119,8 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
             onClick={() => {
                 if (isExternal) {
                     if (listing.sourceUrl) window.open(listing.sourceUrl, "_blank");
+                } else if (listing.listingType === "BUY") {
+                    router.push(`/wish/${listing.id}`);
                 } else if (!isCatalog) {
                     router.push(`/dashboard/marketplace/${listing.id}`);
                 }
@@ -127,7 +129,27 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
 
             {/* Image Area */}
             <div className={`aspect-video w-full bg-gray-800 relative overflow-hidden ${isCatalog ? 'bg-gradient-to-br from-blue-900/20 to-indigo-900/40' : ''}`}>
-                {mainImage ? (
+                {listing.listingType === "BUY" ? (
+                    <div className="w-full h-full bg-gradient-to-br from-slate-950 via-gray-900 to-indigo-950 flex items-center justify-center relative overflow-hidden">
+                        {/* Radar scan lines */}
+                        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(to_right,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:16px_16px]" />
+                        
+                        {/* Glowing concentric circles */}
+                        <div className="absolute w-48 h-48 rounded-full border border-cyan-500/5 animate-pulse duration-1000" />
+                        <div className="absolute w-36 h-36 rounded-full border border-cyan-500/10 animate-pulse duration-[2000ms]" />
+                        <div className="absolute w-24 h-24 rounded-full border border-indigo-500/20" />
+                        <div className="absolute w-12 h-12 rounded-full border border-cyan-500/30" />
+
+                        {/* Sweep hand effect */}
+                        <div className="absolute top-1/2 left-1/2 w-1/2 h-[2px] bg-gradient-to-r from-cyan-500/40 to-transparent origin-left -translate-y-1/2 animate-[spin_4s_linear_infinite] pointer-events-none" />
+
+                        {/* Pulsing center glow */}
+                        <div className="absolute w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_12px_#22d3ee] animate-ping" />
+                        <div className="absolute w-2.5 h-2.5 rounded-full bg-cyan-300 shadow-[0_0_8px_#22d3ee]" />
+
+                        <Radar className="w-12 h-12 text-cyan-400 animate-pulse drop-shadow-[0_0_12px_rgba(34,211,238,0.7)] z-10" />
+                    </div>
+                ) : mainImage ? (
                     <img
                         src={mainImage}
                         alt={listing.title}
@@ -258,11 +280,25 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                     <Button
                         onClick={(e) => {
                             e.stopPropagation(); 
-                            router.push(`/dashboard/marketplace/my-listings`);
+                            if (listing.listingType === "BUY") {
+                                router.push(`/dashboard/marketplace/my-requests`);
+                            } else {
+                                router.push(`/dashboard/marketplace/my-listings`);
+                            }
                         }}
                         className="flex-1 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-bold border-0 shadow-md text-xs sm:text-sm h-auto py-2 whitespace-normal leading-tight"
                     >
-                        צפה במודעות שלי ובבקשות 📊
+                        {listing.listingType === "BUY" ? "הבקשה שלי - צפה בהצעות שקיבלת 📊" : "המודעה שלי - ניהול ועריכה 📊"}
+                    </Button>
+                ) : listing.listingType === "BUY" ? (
+                    <Button
+                        onClick={(e) => {
+                            e.stopPropagation(); 
+                            router.push(`/wish/${listing.id}`);
+                        }}
+                        className="flex-1 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-bold border-0 shadow-md shadow-cyan-900/20 text-xs sm:text-sm h-auto py-2 whitespace-normal leading-tight"
+                    >
+                        יש לי כזה - הצע מוצר 🤝
                     </Button>
                 ) : (
                     <Button

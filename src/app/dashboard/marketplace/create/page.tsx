@@ -4,11 +4,14 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { Navbar } from "@/components/Navbar";
 import { DynamicListingForm } from "@/components/marketplace/DynamicListingForm";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 function CreateListingContent() {
     const searchParams = useSearchParams();
-    const router = useRouter(); // Soft navigation initialized here
-    const mode = searchParams.get("mode"); 
+    const router = useRouter();
+    const mode = searchParams.get("mode");
+    const listingTypeParam = (searchParams.get("listingType") || "SELL") as "SELL" | "BUY";
     const [initialSmartData, setInitialSmartData] = useState<any>(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isComputer, setIsComputer] = useState(false);
@@ -47,9 +50,16 @@ function CreateListingContent() {
                 <Navbar />
                 <div className="container mx-auto px-4 pt-12 max-w-3xl flex flex-col items-center">
                     <div className="text-center mb-10">
-                        <button onClick={() => window.history.back()} className="text-gray-500 hover:text-gray-300 text-sm mb-4 flex items-center justify-center gap-2 transition-colors">
-                            <span>← חזרה לשוק</span>
-                        </button>
+                        <div className="flex gap-4 items-center justify-center mb-6 text-sm flex-wrap text-center">
+                            <Link href="/" className="inline-flex items-center text-cyan-400 hover:text-cyan-300 transition-colors font-bold">
+                                <ArrowRight className="w-4 h-4 ml-1.5" />
+                                חזרה למרקטפלייס
+                            </Link>
+                            <span className="text-gray-700">|</span>
+                            <button onClick={() => router.back()} className="inline-flex items-center text-gray-400 hover:text-gray-300 transition-colors font-bold">
+                                חזור שלב אחורה
+                            </button>
+                        </div>
                         <h1 className="text-4xl font-black mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                             מה ברצונך להוסיף?
                         </h1>
@@ -190,6 +200,7 @@ function CreateListingContent() {
                     {isComputerForm ? (
                         <DynamicListingForm 
                             initialData={initialSmartData}
+                            initialListingType={listingTypeParam}
                             initialCategory={
                                 manualCategory === "desktop" ? "DESKTOPS" :
                                 manualCategory === "aio" ? "AIO" :
@@ -201,6 +212,7 @@ function CreateListingContent() {
                     ) : (
                         <DynamicListingForm 
                             initialData={initialSmartData} 
+                            initialListingType={listingTypeParam}
                             initialCategory={manualCategory === "Phones" ? "SMARTPHONES" : "GENERAL"}
                             onComplete={() => router.push("/dashboard/marketplace/my-listings")}
                         />

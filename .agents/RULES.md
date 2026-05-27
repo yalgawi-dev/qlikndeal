@@ -1,5 +1,12 @@
 # Agent Rules
 
+## Database & Data Isolation Rules (CRITICAL)
+
+1. **No Local DB Files**: We do not create, maintain, or read from local database files (SQLite, local JSON database files, etc.) on the disk. All application state and persistent structures must be managed entirely in **Prisma (Neon DB)**.
+2. **Category Isolation**: Never mix categories in Prisma tables. Each category MUST have a separate, dedicated table (e.g. separate catalogs for Laptops, Smartphones, AIOs, etc.).
+
+---
+
 ## Behavioral Rules
 
 - Do not ask for clarifications. If information is missing, use your best judgment and proceed.

@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { toast } from "sonner";
 import dynamic from 'next/dynamic';
+import ComputerConsultantModal from "@/components/marketplace/ComputerConsultantModal";
 
 const LocationMap = dynamic(() => import('@/components/marketplace/LocationMap'), {
   ssr: false,
@@ -75,6 +76,7 @@ function MarketplaceContent() {
   const [adviceCard, setAdviceCard] = useState<any>(null);
   const [showAdviceModal, setShowAdviceModal] = useState(false);
   const [smartFallbackMessage, setSmartFallbackMessage] = useState<string | null>(null);
+  const [catalogSuggestions, setCatalogSuggestions] = useState<any[]>([]);
   const [searchInput, setSearchInput] = useState(searchParams.get("q") || "");
   const [autocompleteResults, setAutocompleteResults] = useState<any[]>([]);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
@@ -100,6 +102,20 @@ function MarketplaceContent() {
   const { user } = useUser();
   const isAdmin = ADMIN_EMAILS.includes(user?.primaryEmailAddress?.emailAddress || "");
 
+  // Consultant wizard states
+  const [showConsultantModal, setShowConsultantModal] = useState(false);
+  const [consultantFilter, setConsultantFilter] = useState<{
+    categoryName: string;
+    minRamGb: number;
+    minStorageGb: number;
+    minCpuTier: string;
+    recommendedGpu: string;
+    userBudget: number;
+    preferredFormFactor: "laptop" | "desktop";
+    selectedApps?: Array<{ id: number; appNameEn: string; appNameHe?: string | null }>;
+    selectedCategoryId?: number;
+  } | null>(null);
+
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (autocompleteRef.current && !autocompleteRef.current.contains(e.target as Node)) setShowAutocomplete(false);
@@ -108,13 +124,21 @@ function MarketplaceContent() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const fetchSearch = async (q = searchInput, latV = lat, lngV = lng, type = listingType) => {
+  const fetchSearch = async (q = searchInput, latV = lat, lngV = lng, type = listingType, filterV = consultantFilter, catV = selectedCategory) => {
     setLoading(true); setShowAutocomplete(false);
-    setAdviceCard(null); setShowAdviceModal(false); setSmartFallbackMessage(null);
+    setAdviceCard(null); setShowAdviceModal(false); setSmartFallbackMessage(null); setCatalogSuggestions([]);
     try {
       const res = await fetch("/api/marketplace/smart-search", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: q, lat: latV, lng: lngV, radiusKm: latV && lngV ? (radiusKm === 155 ? null : radiusKm) : null, category: selectedCategory === "all" ? null : selectedCategory, listingType: type })
+        body: JSON.stringify({ 
+          query: q, 
+          lat: latV, 
+          lng: lngV, 
+          radiusKm: latV && lngV ? (radiusKm === 155 ? null : radiusKm) : null, 
+          category: catV === "all" ? null : catV, 
+          listingType: type,
+          consultantFilter: filterV
+        })
       });
       const data = await res.json();
       if (data.success) { 
@@ -124,33 +148,108 @@ function MarketplaceContent() {
         setCapabilityMatch(data.capabilityMatch || null);
         if (data.adviceCard) {
           setAdviceCard(data.adviceCard);
-          setShowAdviceModal(true); // Auto-pop the advice modal
+          setShowAdviceModal(true);
         }
         if (data.smartFallbackMessage) setSmartFallbackMessage(data.smartFallbackMessage);
+        // ── Catalog suggestions (models with no listings yet) ──
+        if (data.catalogSuggestions?.length > 0) setCatalogSuggestions(data.catalogSuggestions);
       }
     } catch { toast.error("שגיאה בחיפוש"); }
     setLoading(false);
   };
 
+  const isRestored = useRef(false);
+
+  // Sync states to sessionStorage when they change
+  useEffect(() => {
+    if (!isRestored.current) return;
+    try {
+      sessionStorage.setItem("qlik_searchInput", searchInput);
+      sessionStorage.setItem("qlik_selectedCategory", selectedCategory);
+      sessionStorage.setItem("qlik_listingType", listingType);
+      sessionStorage.setItem("qlik_radiusKm", String(radiusKm));
+      sessionStorage.setItem("qlik_locationMode", locationMode);
+      sessionStorage.setItem("qlik_locationName", locationName);
+      if (lat !== null) sessionStorage.setItem("qlik_lat", String(lat));
+      else sessionStorage.removeItem("qlik_lat");
+      if (lng !== null) sessionStorage.setItem("qlik_lng", String(lng));
+      else sessionStorage.removeItem("qlik_lng");
+      
+      if (consultantFilter) {
+        sessionStorage.setItem("qlik_consultantFilter", JSON.stringify(consultantFilter));
+      } else {
+        sessionStorage.removeItem("qlik_consultantFilter");
+      }
+    } catch (e) {
+      console.error("Failed to save search filters to sessionStorage", e);
+    }
+  }, [searchInput, selectedCategory, listingType, consultantFilter, lat, lng, locationName, locationMode, radiusKm]);
+
   useEffect(() => { 
-    fetchSearch(""); 
-    
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (p) => { 
-            const newLat = p.coords.latitude; const newLng = p.coords.longitude;
-            setLat(newLat); setLng(newLng); setLocationMode("LIVE");
-            try {
-              const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLat}&lon=${newLng}&zoom=10&accept-language=he`);
-              const data = await res.json();
-              const city = data.address?.city || data.address?.town || data.address?.village || data.name;
-              if (city) { setLocationName(`${city} 📍`); return; }
-            } catch {}
-            setLocationName("מיקום נוכחי 📍");
-        },
-        () => {}, 
-        { enableHighAccuracy: true, timeout: 5000 }
-      );
+    let restored = false;
+    try {
+      const savedSearchInput = sessionStorage.getItem("qlik_searchInput");
+      const savedCategory = sessionStorage.getItem("qlik_selectedCategory");
+      const savedListingType = sessionStorage.getItem("qlik_listingType") as "SELL" | "BUY" | null;
+      const savedConsultantFilter = sessionStorage.getItem("qlik_consultantFilter");
+      const savedLat = sessionStorage.getItem("qlik_lat");
+      const savedLng = sessionStorage.getItem("qlik_lng");
+      const savedLocationName = sessionStorage.getItem("qlik_locationName");
+      const savedLocationMode = sessionStorage.getItem("qlik_locationMode");
+      const savedRadiusKm = sessionStorage.getItem("qlik_radiusKm");
+
+      if (savedSearchInput !== null || savedCategory !== null || savedListingType !== null || savedConsultantFilter !== null) {
+        const parsedConsultantFilter = savedConsultantFilter ? JSON.parse(savedConsultantFilter) : null;
+        const finalSearchInput = savedSearchInput || "";
+        const finalCategory = savedCategory || "all";
+        const finalListingType = savedListingType || "SELL";
+        const finalLat = savedLat ? parseFloat(savedLat) : null;
+        const finalLng = savedLng ? parseFloat(savedLng) : null;
+        const finalLocationName = savedLocationName || "";
+        const finalLocationMode = (savedLocationMode as any) || "";
+        const finalRadiusKm = savedRadiusKm ? parseInt(savedRadiusKm, 10) : 155;
+
+        setSearchInput(finalSearchInput);
+        setSelectedCategory(finalCategory);
+        setListingType(finalListingType);
+        setConsultantFilter(parsedConsultantFilter);
+        setLat(finalLat);
+        setLng(finalLng);
+        setLocationName(finalLocationName);
+        setLocationMode(finalLocationMode);
+        setRadiusKm(finalRadiusKm);
+
+        restored = true;
+        fetchSearch(finalSearchInput, finalLat, finalLng, finalListingType, parsedConsultantFilter, finalCategory);
+      }
+    } catch (e) {
+      console.error("Failed to restore search filters from sessionStorage", e);
+    } finally {
+      setTimeout(() => {
+        isRestored.current = true;
+      }, 100);
+    }
+
+    if (!restored) {
+      fetchSearch(""); 
+      
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (p) => { 
+              const newLat = p.coords.latitude; const newLng = p.coords.longitude;
+              setLat(newLat); setLng(newLng); setLocationMode("LIVE");
+              try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${newLat}&lon=${newLng}&zoom=10&accept-language=he`);
+                const data = await res.json();
+                const city = data.address?.city || data.address?.town || data.address?.village || data.name;
+                if (city) { setLocationName(`${city} 📍`); return; }
+              } catch {}
+              setLocationName("מיקום נוכחי 📍");
+          },
+          () => {}, 
+          { enableHighAccuracy: true, timeout: 5000 }
+        );
+      }
     }
   }, []);
 
@@ -253,7 +352,7 @@ function MarketplaceContent() {
                     </div>
                   </button>
                 </DialogTrigger>
-                <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-2xl p-0 overflow-hidden">
+                <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-2xl p-0">
                   <div className="p-6 text-center border-b border-gray-800"><DialogTitle className="text-2xl font-bold">איך תרצה לפרסם?</DialogTitle><p className="text-gray-400 mt-2">בחר את הדרך הנוחה לך ביותר</p></div>
                   <div className="grid md:grid-cols-2 gap-4 p-6">
                     <button onClick={() => { setIsNavigatingTo("/dashboard/marketplace/create-ai"); router.push("/dashboard/marketplace/create-ai"); }} disabled={!!isNavigatingTo} className={`group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all cursor-pointer ${isNavigatingTo === "/dashboard/marketplace/create-ai" ? "border-indigo-500 bg-indigo-500/20 opacity-80 cursor-wait" : "border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 hover:border-indigo-500"}`}>
@@ -353,7 +452,7 @@ function MarketplaceContent() {
             </div>
           </div>
 
-          <div className="bg-gray-900/40 p-4 rounded-3xl border border-gray-800 backdrop-blur-sm space-y-4 relative z-50">
+          <div className="bg-gray-900/40 p-4 rounded-3xl border border-gray-800 backdrop-blur-sm space-y-4 relative z-30">
             <form onSubmit={(e) => { e.preventDefault(); fetchSearch(); }} className="flex flex-col sm:flex-row gap-2">
               <div className="relative flex-1 w-full" ref={autocompleteRef}>
                 <Sparkles className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-purple-400 w-5 h-5 z-10 pointer-events-none"/>
@@ -378,11 +477,43 @@ function MarketplaceContent() {
               </div>
               <div className="flex gap-2 w-full sm:w-auto">
                 <Button type="button" variant="outline" onClick={() => setShowFilters(!showFilters)} className={`flex-1 sm:flex-none h-12 sm:h-14 px-4 rounded-2xl border-gray-700 hover:bg-gray-800 ${showFilters ? "bg-gray-800 text-purple-400 border-purple-500" : "bg-gray-900"}`}><Filter className="w-5 h-5"/></Button>
+                
+                <Button type="button" onClick={() => setShowConsultantModal(true)} className="h-12 sm:h-14 px-4 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 hover:text-white border border-purple-500/30 rounded-2xl font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(168,85,247,0.15)] transition-all">
+                  <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                  <span className="text-sm">צריך עזרה בבחירה?</span>
+                </Button>
+
                 <Button id="search-btn" type="submit" disabled={loading} className={`flex-[2] sm:flex-none h-12 sm:h-14 px-4 sm:px-8 rounded-2xl ${loading ? 'bg-indigo-600/80 shadow-[0_0_15px_rgba(79,70,229,0.5)]' : 'bg-purple-600 hover:bg-purple-700'} text-base sm:text-lg font-bold transition-all`}>
-                  {loading ? <span className="flex items-center gap-2 animate-pulse"><Loader2 className="w-5 h-5 animate-spin text-indigo-300"/> <span className="text-sm sm:text-base text-indigo-100">המוח הלומד חושב...</span></span> : <span className="flex items-center"><Search className="w-4 h-4 sm:w-5 sm:h-5 ml-2"/>חפש</span>}
+                  {loading ? <span className="flex items-center gap-2 animate-pulse"><Loader2 className="w-5 h-5 animate-spin text-indigo-300"/> <span className="text-sm sm:text-base text-indigo-100">מחפש...</span></span> : <span className="flex items-center"><Search className="w-4 h-4 sm:w-5 sm:h-5 ml-2"/>חפש</span>}
                 </Button>
               </div>
             </form>
+
+            {consultantFilter && (
+              <div className="flex flex-wrap items-center gap-2 pt-2 text-right" dir="rtl">
+                <span className="text-xs text-purple-300 font-bold">סינון יועץ רכישה פעיל:</span>
+                <div className="inline-flex items-center gap-1.5 bg-purple-900/40 border border-purple-500/30 text-purple-200 text-xs font-bold px-3 py-1.5 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.1)]">
+                  <span 
+                    onClick={() => setShowConsultantModal(true)} 
+                    className="cursor-pointer hover:text-purple-300 transition-colors"
+                    title="לחץ לעריכת הדרישות"
+                  >
+                    {consultantFilter.categoryName} • {consultantFilter.preferredFormFactor === "laptop" ? "נייד" : "נייח"} • מעבד {consultantFilter.minCpuTier}+ • {consultantFilter.minRamGb}GB RAM • {consultantFilter.minStorageGb >= 1024 ? `${consultantFilter.minStorageGb / 1024}TB` : `${consultantFilter.minStorageGb}GB`} SSD{consultantFilter.recommendedGpu && consultantFilter.recommendedGpu !== "Integrated" && consultantFilter.recommendedGpu !== "מובנה" ? ` • ${consultantFilter.recommendedGpu}` : ""} • עד {consultantFilter.userBudget > 0 ? `${consultantFilter.userBudget.toLocaleString()} ₪` : "ללא הגבלת תקציב"}
+                  </span>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setConsultantFilter(null);
+                      setSelectedCategory("all");
+                      fetchSearch(searchInput, lat, lng, listingType, null, "all");
+                    }} 
+                    className="hover:text-red-400 hover:bg-white/10 rounded-full p-0.5 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
 
             {showFilters && (
               <div className="p-5 bg-gray-800/30 rounded-2xl border border-gray-800/50 animate-in slide-in-from-top-2">
@@ -444,7 +575,7 @@ function MarketplaceContent() {
       </div>
 
       {showMap && lat && lng && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+        <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
           <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-4xl h-[80vh] sm:h-[70vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95">
             <div className="h-14 border-b border-gray-800 flex items-center justify-between px-4" dir="rtl">
               <h3 className="text-lg font-bold text-white flex items-center gap-2"><MapPin className="w-5 h-5 text-purple-400"/> תצוגת מפה ורדיוס</h3>
@@ -552,13 +683,86 @@ function MarketplaceContent() {
 
       {/* ── Listings ── */}
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {consultantFilter && (
+          <div className="bg-[#0f1422]/90 border border-purple-500/20 rounded-2xl p-5 mb-6 space-y-4 shadow-xl shadow-purple-900/5 animate-in fade-in duration-300" dir="rtl">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-400 animate-pulse" />
+                <h3 className="font-bold text-sm sm:text-base text-gray-100">דרישות יועץ הרכישה האוטומטי</h3>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowConsultantModal(true)}
+                  className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 text-xs font-bold rounded-xl px-3 py-1.5 h-8"
+                >
+                  ערוך דרישות ⚙️
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => {
+                    setConsultantFilter(null);
+                    setSelectedCategory("all");
+                    fetchSearch(searchInput, lat, lng, listingType, null, "all");
+                  }}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs font-bold rounded-xl px-3 py-1.5 h-8"
+                >
+                  בטל סינון ❌
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              {/* Selected Apps Chips */}
+              {consultantFilter.selectedApps && consultantFilter.selectedApps.length > 0 && (
+                <div className="w-full flex flex-wrap gap-1.5 pb-2 border-b border-gray-800/60">
+                  <span className="text-[11px] text-purple-400 font-bold w-full mb-0.5">תוכנות ומשחקים שנבחרו:</span>
+                  {consultantFilter.selectedApps.map(app => (
+                    <span key={app.id} className="inline-flex items-center gap-1 bg-indigo-900/40 border border-indigo-500/30 rounded-full px-2.5 py-1 text-[11px] text-indigo-200 font-semibold">
+                      ✦ {app.appNameHe || app.appNameEn}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
+                <span className="font-semibold text-purple-400">סוג מחשב: </span>
+                {consultantFilter.preferredFormFactor === "laptop" ? "מחשב נייד 💻" : "מחשב נייח 🖥️"}
+              </div>
+              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
+                <span className="font-semibold text-purple-400">מעבד מינימלי: </span>
+                {consultantFilter.minCpuTier}+
+              </div>
+              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
+                <span className="font-semibold text-purple-400">זיכרון מינימלי: </span>
+                {consultantFilter.minRamGb}GB RAM
+              </div>
+              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
+                <span className="font-semibold text-purple-400">נפח אחסון מינימלי: </span>
+                {consultantFilter.minStorageGb >= 1024 ? `${consultantFilter.minStorageGb / 1024}TB` : `${consultantFilter.minStorageGb}GB`} SSD
+              </div>
+              {consultantFilter.recommendedGpu && consultantFilter.recommendedGpu !== "Integrated" && consultantFilter.recommendedGpu !== "מובנה" && (
+                <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
+                  <span className="font-semibold text-purple-400">כרטיס מסך: </span>
+                  {consultantFilter.recommendedGpu}
+                </div>
+              )}
+              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
+                <span className="font-semibold text-purple-400">תקציב: </span>
+                {consultantFilter.userBudget > 0 ? `עד ₪${consultantFilter.userBudget.toLocaleString()}` : "ללא הגבלה"}
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{[1,2,3,4,5,6].map(i => <div key={i} className="h-96 bg-gray-900/30 rounded-3xl animate-pulse"/>)}</div>
         ) : listings.length > 0 ? (
           <div className="space-y-6">
             {/* Neon Advice Modal */}
             {showAdviceModal && adviceCard && (
-              <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowAdviceModal(false)}>
+              <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowAdviceModal(false)}>
                 <div
                   className="relative w-full max-w-lg bg-[#07071a] border-2 border-indigo-500 rounded-3xl p-6 shadow-[0_0_60px_rgba(99,102,241,0.4)] animate-in slide-in-from-bottom-4 duration-300"
                   onClick={e => e.stopPropagation()}
@@ -684,6 +888,8 @@ function MarketplaceContent() {
                 </div>
               </div>
             )}
+
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {listings.map(listing => (
                 <div key={listing.id} className="relative">
@@ -699,12 +905,24 @@ function MarketplaceContent() {
             <h3 className="text-2xl font-bold text-gray-400">לא מצאנו תוצאות מתאימות</h3>
             <p className="text-gray-500 mt-2 mb-6">נסה מילות חיפוש שונות</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button variant="outline" className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 h-12" onClick={() => { setSearchInput(""); setLat(null); setLng(null); setLocationName(""); setSelectedCategory("all"); fetchSearch(""); }}>נקה סינונים</Button>
+              <Button variant="outline" className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 h-12" onClick={() => { setSearchInput(""); setLat(null); setLng(null); setLocationName(""); setSelectedCategory("all"); setConsultantFilter(null); fetchSearch("", null, null, listingType, null, "all"); }}>נקה סינונים</Button>
               <Button className="bg-purple-600 hover:bg-purple-700 h-12" onClick={() => router.push(`/dashboard/marketplace/my-requests?query=${encodeURIComponent(searchInput)}`)}><Search className="w-4 h-4 ml-2"/>פתח מודעת &quot;דרוש מוצר&quot;</Button>
             </div>
           </div>
         )}
       </div>
+
+      <ComputerConsultantModal
+        isOpen={showConsultantModal}
+        onClose={() => setShowConsultantModal(false)}
+        initialFilter={consultantFilter}
+        onApplyFilter={(filter) => {
+          setConsultantFilter(filter);
+          const targetCat = filter.preferredFormFactor === "laptop" ? "מחשבים ניידים" : "מחשבים שולחניים";
+          setSelectedCategory(targetCat);
+          fetchSearch(searchInput, lat, lng, listingType, filter, targetCat);
+        }}
+      />
     </main>
   );
 }

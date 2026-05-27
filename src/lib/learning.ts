@@ -124,7 +124,7 @@ export async function learnFromImport(field: string, value: any, category: strin
     'modelName':     'subModel',
     'model':         'subModel',
     'screenSize':    'screen',
-    'display':       'screen',
+    'display':       'display',
     'rearCamera':    'cameraMain',
     'frontCamera':   'cameraSystem',
     'make':          'brand',
@@ -207,21 +207,50 @@ export async function masterLearn(text: string, field: string, value: string, ca
   // e.g.: "series" → "family", "SKU" → "sku", "שנת דגם" → "releaseYear"
   // ─────────────────────────────────────────────────────────────────────────────
   const CANONICAL_FIELD_MAP: Record<string, string> = {
-    'series':           'family',
-    'display':          'screen',
-    'screenSize':       'screen',
-    'BatteryStatus':    'batteryHealth',
-    'battery':          'batteryHealth',
-    'SKU':              'sku',
+    'series':             'family',
+    'display':            'display',
+    'מפרט מסך':          'display',
+    'תצוגה':             'display',
+    'screenSize':         'screen',
+    'screen size':        'screen',
+    'גודל מסך':        'screen',
+    'מסך':               'screen',
+    'BatteryStatus':      'batteryHealth',
+    'battery':            'batteryHealth',
+    'SKU':                'sku',
     'שנת דגם':          'releaseYear',
+    'שנת ייצור':        'releaseYear',
+    'שנת יצור':         'releaseYear',
     'טכנולוגיית מסך':   'screenType',
-    'טכנולוגיית מסך ':  'screenType',  // trailing space variant
-    'screentype':       'screenType',
-    'modelName':        'subModel',
-    'מעבד ':            'cpu',          // trailing space variant
-    'כרטיס מסך ':       'gpu',          // trailing space variant
-    'רזלוציית מסך ':    'screen',       // trailing space variant
-    'title':            null as unknown as string, // NOT a form field — block learning
+    'screentype':         'screenType',
+    'modelName':          'subModel',
+    // CPU aliases (clean, no trailing space)
+    'מעבד':              'cpu',
+    'מעבד ':             'cpu',   // trailing space variant
+    // GPU aliases (FIXED: was '\u05db\u05e8\u05d8\u05d9\u05e1 \u05de\u05e1\u05da ' with trailing space — never matched!)
+    'gpu':                'gpu',
+    'כרטיס מסך':       'gpu',   // ← FIXED (no trailing space)
+    'כרטיס מסך ':      'gpu',   // trailing space variant
+    'כרטיס גרפי':      'gpu',
+    'graphics card':      'gpu',
+    'graphics':           'gpu',
+    // Resolution type (NEW)
+    'סוג רזולוציה':    'resolutionType',
+    'רזולוציה':          'resolutionType',
+    'resolution type':    'resolutionType',
+    // Refresh rate (NEW)
+    'תדר רענון':       'refreshRate',
+    'refresh rate':       'refreshRate',
+    'הרץ':               'refreshRate',
+    // OS (NEW)
+    'מערכת הפעלה':     'os',
+    'operating system':   'os',
+    // Storage
+    'נפח אחסון':       'storage',
+    'אחסון':             'storage',
+    // Broken/legacy aliases with trailing space (keep for safety)
+    'רזלוציית מסך ':    'screen',   // typo variant + space
+    'title':              null as unknown as string, // NOT a form field — block learning
   };
   const fieldTrimmed = field.trim(); // Remove accidental trailing spaces
   const canonicalField = CANONICAL_FIELD_MAP.hasOwnProperty(fieldTrimmed)

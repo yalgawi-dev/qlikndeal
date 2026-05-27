@@ -1,7 +1,7 @@
 export const MOTHERBOARD_DATABASE = [
   {
-    "brand": "ASRock",
-    "model": "ASRock MPG EDGE B760-X WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B760-X WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -14,8 +14,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT CREATOR Z890-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR Z890-PLUS WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Mini-ITX",
@@ -28,8 +28,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte PRO B660-X WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B660-X WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -42,8 +42,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "MSI",
-    "model": "MSI ROG STRIX B650E-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX B650E-F WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -56,8 +56,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PRO B650E-X WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B650E-X WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -84,8 +84,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "MSI",
-    "model": "MSI TAICHI Z690-X WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI Z690-X WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -98,8 +98,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS AORUS ELITE B660-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B660-PRO WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -112,8 +112,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS N7 Z690-P WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 Z690-P WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -126,8 +126,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PHANTOM GAMING X670-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte PHANTOM GAMING X670-PRO WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -140,8 +140,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PHANTOM GAMING X670E-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte PHANTOM GAMING X670E-P WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -154,8 +154,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS ELITE B660-F WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B660-F WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -168,8 +168,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA AORUS ELITE B650E-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B650E-A WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -196,8 +196,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte MPG EDGE Z690-A WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE Z690-A WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -210,8 +210,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar PHANTOM GAMING X670-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte PHANTOM GAMING X670-P WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -224,8 +224,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CARBON WIFI TRX50-P WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI TRX50-P WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "E-ATX",
@@ -238,8 +238,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS ELITE Z690-E WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE Z690-E WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -252,8 +252,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar N7 B760-MAX WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 B760-MAX WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -280,8 +280,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock DARK Z790-PRO WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK Z790-PRO WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -294,8 +294,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TAICHI X670E-PLUS WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI X670E-PLUS WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -308,8 +308,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CREATOR TRX50-E WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR TRX50-E WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "ATX",
@@ -336,8 +336,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA ROG STRIX Z890-X WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX Z890-X WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -350,8 +350,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar N7 TRX50-A WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 TRX50-A WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "E-ATX",
@@ -364,8 +364,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PRO Z690-F WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO Z690-F WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -378,8 +378,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT ULTRA DURABLE B550-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE B550-PRO WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "ATX",
@@ -392,8 +392,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS PHANTOM GAMING TRX50-F WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING TRX50-F WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "E-ATX",
@@ -420,8 +420,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte DARK X670E-F WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK X670E-F WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -434,8 +434,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS MPG EDGE B660-PRO WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B660-PRO WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -448,8 +448,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MPG EDGE Z790-PRO WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE Z790-PRO WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -476,8 +476,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PRIME B660-MAX WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME B660-MAX WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -518,8 +518,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MAG TOMAHAWK B660-X WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B660-X WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -546,8 +546,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS CREATOR Z890-P WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR Z890-P WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Mini-ITX",
@@ -560,8 +560,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS MASTER Z690-E WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER Z690-E WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -574,8 +574,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar AORUS ELITE X670E-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE X670E-PLUS WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -588,8 +588,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar AORUS MASTER X670E-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER X670E-A WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -602,8 +602,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar CREATOR Z890-X WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR Z890-X WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "ATX",
@@ -616,8 +616,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock ULTRA DURABLE B650-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE B650-PLUS WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -630,8 +630,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar N7 Z790-X WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 Z790-X WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -644,8 +644,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS MAG TOMAHAWK B650E-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B650E-MAX WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -658,8 +658,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA AORUS MASTER B650E-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B650E-P WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -672,8 +672,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar CARBON WIFI B550-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI B550-PLUS WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -686,8 +686,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS ELITE TRX50-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE TRX50-PRO WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "Micro-ATX",
@@ -700,8 +700,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte CREATOR Z690-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR Z690-PLUS WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -714,8 +714,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock ROG STRIX B760-P WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX B760-P WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -756,8 +756,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS ELITE B760-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B760-A WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -784,8 +784,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA TUF GAMING X670-MAX WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING X670-MAX WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -812,8 +812,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI DARK B760-MAX WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B760-MAX WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -826,8 +826,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TUF GAMING Z790-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING Z790-F WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -854,8 +854,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT TUF GAMING B650-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING B650-F WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -868,8 +868,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT DARK B650-A WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B650-A WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -882,8 +882,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PRIME B550-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME B550-E WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Mini-ITX",
@@ -896,8 +896,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock MAG TOMAHAWK X670E-F WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK X670E-F WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -910,8 +910,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CARBON WIFI B660-X WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI B660-X WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -966,8 +966,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA AORUS MASTER X670-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER X670-PLUS WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -980,8 +980,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS CREATOR Z890-E WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR Z890-E WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "E-ATX",
@@ -1008,8 +1008,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ULTRA DURABLE Z790-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE Z790-PLUS WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -1022,8 +1022,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA AORUS MASTER Z890-X WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER Z890-X WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -1036,8 +1036,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT ROG STRIX TRX50-X WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX TRX50-X WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "ATX",
@@ -1064,8 +1064,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI PHANTOM GAMING B650E-F WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B650E-F WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -1078,8 +1078,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PRIME B650E-PRO WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME B650E-PRO WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -1092,8 +1092,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar TAICHI B660-X WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B660-X WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -1106,8 +1106,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT STEEL LEGEND Z690-MAX WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND Z690-MAX WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -1134,8 +1134,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar CARBON WIFI B550-PRO WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI B550-PRO WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "E-ATX",
@@ -1148,8 +1148,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock AORUS MASTER X670E-E WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER X670E-E WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -1162,8 +1162,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS ELITE B760-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B760-P WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -1176,8 +1176,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT TAICHI X670E-P WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI X670E-P WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -1190,8 +1190,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "MSI",
-    "model": "MSI TUF GAMING X670-PLUS WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING X670-PLUS WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -1204,8 +1204,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS STEEL LEGEND Z890-A WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND Z890-A WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Mini-ITX",
@@ -1218,8 +1218,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS MAG TOMAHAWK B660-F WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B660-F WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -1232,8 +1232,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PRIME Z790-MAX WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME Z790-MAX WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -1246,8 +1246,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA STEEL LEGEND B660-E WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND B660-E WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -1260,8 +1260,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS MPG EDGE Z790-P WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE Z790-P WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -1274,8 +1274,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS STEEL LEGEND Z690-X WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND Z690-X WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -1288,8 +1288,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ULTRA DURABLE B760-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE B760-PLUS WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -1302,8 +1302,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS PRO Z790-P WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO Z790-P WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -1316,8 +1316,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS N7 Z690-X WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 Z690-X WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -1330,8 +1330,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MPG EDGE TRX50-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE TRX50-PLUS WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "ATX",
@@ -1344,8 +1344,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI TUF GAMING B660-A WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING B660-A WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -1372,22 +1372,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT N7 X670-F WIFI",
-    "chipset": "AMD X670",
-    "socket": "AM5",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "2",
-    "lan": "10 GbE",
-    "wifi": "nan",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA PRIME X670-P WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME X670-P WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -1400,8 +1386,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock CARBON WIFI X670E-X WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI X670E-X WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -1428,8 +1414,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CREATOR TRX50-PRO WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR TRX50-PRO WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "Micro-ATX",
@@ -1442,8 +1428,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS AORUS MASTER Z690-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER Z690-PLUS WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -1456,8 +1442,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TUF GAMING Z890-PRO WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING Z890-PRO WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "ATX",
@@ -1470,8 +1456,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS MASTER B550-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B550-PRO WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "ATX",
@@ -1484,8 +1470,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ROG STRIX X670E-PLUS WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX X670E-PLUS WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -1498,8 +1484,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS CARBON WIFI B550-A WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI B550-A WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Mini-ITX",
@@ -1513,21 +1499,7 @@ export const MOTHERBOARD_DATABASE = [
   },
   {
     "brand": "Gigabyte",
-    "model": "Gigabyte AORUS MASTER Z690-PLUS WIFI",
-    "chipset": "Intel Z690",
-    "socket": "LGA1700",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "5",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT ULTRA DURABLE Z790-P WIFI",
+    "model": "Gigabyte ULTRA DURABLE Z790-P WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -1554,8 +1526,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock AORUS MASTER TRX50-E WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER TRX50-E WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "E-ATX",
@@ -1582,8 +1554,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar TAICHI B550-X WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B550-X WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -1596,22 +1568,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar TUF GAMING B650-F WIFI",
-    "chipset": "AMD B650",
-    "socket": "AM5",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "1",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2022"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA CARBON WIFI Z690-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI Z690-PLUS WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -1624,8 +1582,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PHANTOM GAMING B650-F WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B650-F WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -1638,8 +1596,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte MAG TOMAHAWK B550-F WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B550-F WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "E-ATX",
@@ -1652,8 +1610,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock N7 X670E-P WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 X670E-P WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -1666,8 +1624,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS PHANTOM GAMING Z790-P WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING Z790-P WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -1680,8 +1638,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS PHANTOM GAMING B650-A WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B650-A WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -1694,8 +1652,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PRO B760-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B760-PLUS WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -1708,8 +1666,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "MSI",
-    "model": "MSI PRIME B650E-MAX WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME B650E-MAX WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -1722,8 +1680,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock ULTRA DURABLE Z790-MAX WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE Z790-MAX WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -1736,8 +1694,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte STEEL LEGEND B650-F WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND B650-F WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -1750,8 +1708,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PRO Z890-A WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO Z890-A WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "E-ATX",
@@ -1778,8 +1736,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CARBON WIFI X670-A WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI X670-A WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -1790,20 +1748,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "2.5 GbE",
     "wifi": "WiFi 6",
     "releaseYear": "2024"
-  },
-  {
-    "brand": "Gigabyte",
-    "model": "Gigabyte ULTRA DURABLE Z790-PLUS WIFI",
-    "chipset": "Intel Z790",
-    "socket": "LGA1700",
-    "formFactor": "ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "192",
-    "pcie": "PCIe 5.0",
-    "m2": "1",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2023"
   },
   {
     "brand": "ASUS",
@@ -1848,8 +1792,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA TUF GAMING Z690-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING Z690-E WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -1860,20 +1804,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "10 GbE",
     "wifi": "WiFi 6",
     "releaseYear": "2022"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA N7 B760-MAX WIFI",
-    "chipset": "Intel B760",
-    "socket": "LGA1700",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "192",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2021"
   },
   {
     "brand": "Gigabyte",
@@ -1890,8 +1820,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ULTRA DURABLE B760-E WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE B760-E WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -1904,8 +1834,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA AORUS ELITE Z890-MAX WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE Z890-MAX WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "ATX",
@@ -1918,22 +1848,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar TUF GAMING X670-PLUS WIFI",
-    "chipset": "AMD X670",
-    "socket": "AM5",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "10 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2023"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA PRIME X670E-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME X670E-E WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -1946,8 +1862,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA ULTRA DURABLE Z690-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE Z690-A WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -1960,8 +1876,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS TAICHI X670E-A WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI X670E-A WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -1974,8 +1890,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT TUF GAMING Z690-X WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING Z690-X WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -1988,8 +1904,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS MASTER B760-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B760-PLUS WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -2002,8 +1918,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar PRO B650E-A WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B650E-A WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -2017,21 +1933,7 @@ export const MOTHERBOARD_DATABASE = [
   },
   {
     "brand": "MSI",
-    "model": "MSI ROG STRIX Z890-X WIFI",
-    "chipset": "Intel Z890",
-    "socket": "LGA1851",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "1",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2024"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA MPG EDGE X670-A WIFI",
+    "model": "MSI MPG EDGE X670-A WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -2044,8 +1946,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT TUF GAMING B760-MAX WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING B760-MAX WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -2058,8 +1960,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte PRIME X670E-PLUS WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME X670E-PLUS WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -2072,8 +1974,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PRIME Z790-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME Z790-F WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -2086,8 +1988,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte ROG STRIX Z690-PRO WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX Z690-PRO WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -2100,8 +2002,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA STEEL LEGEND B760-MAX WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND B760-MAX WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -2114,8 +2016,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock MPG EDGE B650E-A WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B650E-A WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -2128,8 +2030,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TAICHI B760-E WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B760-E WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -2142,8 +2044,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte MAG TOMAHAWK Z790-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK Z790-PLUS WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -2156,8 +2058,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock MAG TOMAHAWK B650-E WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B650-E WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -2170,8 +2072,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS AORUS ELITE B760-X WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B760-X WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -2184,8 +2086,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ULTRA DURABLE X670E-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE X670E-PLUS WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -2198,8 +2100,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA MPG EDGE B660-A WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B660-A WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -2212,8 +2114,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar TUF GAMING Z790-PLUS WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING Z790-PLUS WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -2226,8 +2128,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA STEEL LEGEND X670E-PRO WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND X670E-PRO WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -2254,8 +2156,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA MAG TOMAHAWK Z690-X WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK Z690-X WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -2268,8 +2170,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS ELITE X670E-MAX WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE X670E-MAX WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -2282,8 +2184,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS MASTER B660-X WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B660-X WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -2324,8 +2226,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PHANTOM GAMING TRX50-X WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING TRX50-X WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "Mini-ITX",
@@ -2338,8 +2240,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock TUF GAMING B660-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING B660-F WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -2352,8 +2254,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS STEEL LEGEND B760-E WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND B760-E WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -2366,22 +2268,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar PRO Z790-P WIFI",
-    "chipset": "Intel Z790",
-    "socket": "LGA1700",
-    "formFactor": "E-ATX",
-    "ramType": "DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 5.0",
-    "m2": "3",
-    "lan": "1 GbE",
-    "wifi": "nan",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock DARK B650-MAX WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B650-MAX WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -2394,8 +2282,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "MSI",
-    "model": "MSI TAICHI TRX50-MAX WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI TRX50-MAX WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "ATX",
@@ -2436,8 +2324,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS N7 B660-PRO WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 B660-PRO WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -2448,20 +2336,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "10 GbE",
     "wifi": "WiFi 7",
     "releaseYear": "2023"
-  },
-  {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TUF GAMING B760-MAX WIFI",
-    "chipset": "Intel B760",
-    "socket": "LGA1700",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "64",
-    "pcie": "PCIe 5.0",
-    "m2": "2",
-    "lan": "1 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2022"
   },
   {
     "brand": "MSI",
@@ -2478,8 +2352,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar TUF GAMING X670E-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING X670E-F WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -2506,8 +2380,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "MSI",
-    "model": "MSI STEEL LEGEND B650-PLUS WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND B650-PLUS WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -2520,22 +2394,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar AORUS ELITE B660-F WIFI",
-    "chipset": "Intel B660",
-    "socket": "LGA1700",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 5.0",
-    "m2": "4",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2024"
-  },
-  {
-    "brand": "ASUS",
-    "model": "ASUS AORUS ELITE B550-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B550-PRO WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -2562,8 +2422,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MAG TOMAHAWK X670E-P WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK X670E-P WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -2576,8 +2436,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock AORUS MASTER B760-E WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B760-E WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -2632,8 +2492,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS ULTRA DURABLE TRX50-E WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE TRX50-E WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "Micro-ATX",
@@ -2674,8 +2534,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS AORUS ELITE B650E-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B650E-P WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -2688,8 +2548,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar N7 Z790-F WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 Z790-F WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -2702,22 +2562,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte STEEL LEGEND B760-E WIFI",
-    "chipset": "Intel B760",
-    "socket": "LGA1700",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 4.0",
-    "m2": "3",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2024"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT TAICHI X670-X WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI X670-X WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -2758,8 +2604,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT ROG STRIX TRX50-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX TRX50-F WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "Micro-ATX",
@@ -2772,8 +2618,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte ROG STRIX B660-PRO WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX B660-PRO WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -2800,8 +2646,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CARBON WIFI TRX50-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI TRX50-PLUS WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "Micro-ATX",
@@ -2814,8 +2660,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PRIME B550-MAX WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME B550-MAX WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Mini-ITX",
@@ -2828,8 +2674,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI TUF GAMING TRX50-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING TRX50-E WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "Micro-ATX",
@@ -2842,8 +2688,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte CREATOR B760-P WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR B760-P WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -2870,8 +2716,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte MPG EDGE Z890-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE Z890-MAX WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -2884,8 +2730,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte STEEL LEGEND X670-P WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND X670-P WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -2912,22 +2758,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock ULTRA DURABLE B650-PLUS WIFI",
-    "chipset": "AMD B650",
-    "socket": "AM5",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "64",
-    "pcie": "PCIe 5.0",
-    "m2": "4",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA MAG TOMAHAWK B660-P WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B660-P WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -2940,8 +2772,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte MPG EDGE B660-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B660-PLUS WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -2968,8 +2800,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PRO Z790-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO Z790-MAX WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -2982,8 +2814,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS MAG TOMAHAWK X670-F WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK X670-F WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -2996,8 +2828,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS MASTER B550-F WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B550-F WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "E-ATX",
@@ -3010,8 +2842,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS ELITE Z890-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE Z890-P WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "E-ATX",
@@ -3024,8 +2856,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ROG STRIX X670-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX X670-F WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -3038,8 +2870,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock DARK B650E-PLUS WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B650E-PLUS WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -3052,8 +2884,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS MAG TOMAHAWK B650E-X WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B650E-X WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -3066,8 +2898,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock CREATOR B660-A WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR B660-A WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -3080,8 +2912,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TAICHI B760-PLUS WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B760-PLUS WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -3094,8 +2926,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "MSI",
-    "model": "MSI PHANTOM GAMING Z690-PLUS WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING Z690-PLUS WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -3122,8 +2954,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CARBON WIFI Z790-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI Z790-MAX WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -3136,8 +2968,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar N7 Z790-MAX WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 Z790-MAX WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -3164,8 +2996,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MPG EDGE B650-X WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B650-X WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -3178,8 +3010,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "MSI",
-    "model": "MSI N7 X670-A WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 X670-A WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -3192,8 +3024,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte STEEL LEGEND TRX50-MAX WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND TRX50-MAX WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "E-ATX",
@@ -3206,8 +3038,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ULTRA DURABLE Z890-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE Z890-A WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "E-ATX",
@@ -3248,8 +3080,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte ROG STRIX B550-PLUS WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX B550-PLUS WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Mini-ITX",
@@ -3262,8 +3094,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar CARBON WIFI B760-A WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI B760-A WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -3276,8 +3108,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte MPG EDGE B550-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B550-PLUS WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "ATX",
@@ -3290,22 +3122,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "MSI",
-    "model": "MSI CARBON WIFI Z890-E WIFI",
-    "chipset": "Intel Z890",
-    "socket": "LGA1851",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 4.0",
-    "m2": "5",
-    "lan": "10 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2023"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT STEEL LEGEND B650E-PRO WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND B650E-PRO WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -3318,8 +3136,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte DARK B660-PLUS WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B660-PLUS WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -3346,8 +3164,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA ROG STRIX B650E-PRO WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX B650E-PRO WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -3357,20 +3175,6 @@ export const MOTHERBOARD_DATABASE = [
     "m2": "3",
     "lan": "10 GbE",
     "wifi": "WiFi 6E",
-    "releaseYear": "2024"
-  },
-  {
-    "brand": "ASUS",
-    "model": "ASUS STEEL LEGEND X670-PRO WIFI",
-    "chipset": "AMD X670",
-    "socket": "AM5",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "3",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6",
     "releaseYear": "2024"
   },
   {
@@ -3402,36 +3206,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ROG STRIX TRX50-E WIFI",
-    "chipset": "AMD TRX50",
-    "socket": "sTR5",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 5.0",
-    "m2": "2",
-    "lan": "2.5 GbE",
-    "wifi": "nan",
-    "releaseYear": "2021"
-  },
-  {
-    "brand": "Biostar",
-    "model": "Biostar STEEL LEGEND B650-PLUS WIFI",
-    "chipset": "AMD B650",
-    "socket": "AM5",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4",
-    "maxRam": "64",
-    "pcie": "PCIe 4.0",
-    "m2": "5",
-    "lan": "10 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2024"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA PRO Z690-A WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO Z690-A WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -3444,8 +3220,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PHANTOM GAMING Z790-PLUS WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING Z790-PLUS WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -3458,8 +3234,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte ROG STRIX X670-A WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX X670-A WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -3472,8 +3248,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte STEEL LEGEND Z690-PRO WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND Z690-PRO WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -3486,8 +3262,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar PRIME B650E-X WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME B650E-X WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -3500,8 +3276,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "MSI",
-    "model": "MSI STEEL LEGEND B650E-E WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND B650E-E WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -3514,8 +3290,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "MSI",
-    "model": "MSI ROG STRIX Z890-MAX WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX Z890-MAX WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -3528,8 +3304,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT TAICHI B650-X WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B650-X WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -3542,8 +3318,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock DARK Z890-E WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK Z890-E WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -3556,8 +3332,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar AORUS MASTER B660-E WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B660-E WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -3584,8 +3360,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA ROG STRIX Z890-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX Z890-F WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Mini-ITX",
@@ -3612,8 +3388,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI PHANTOM GAMING B550-A WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B550-A WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -3626,8 +3402,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock ROG STRIX B550-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX B550-E WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "E-ATX",
@@ -3640,22 +3416,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS TUF GAMING B650-F WIFI",
-    "chipset": "AMD B650",
-    "socket": "AM5",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "64",
-    "pcie": "PCIe 4.0",
-    "m2": "3",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock ULTRA DURABLE B650-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE B650-P WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -3668,22 +3430,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "MSI",
-    "model": "MSI CARBON WIFI TRX50-PLUS WIFI",
-    "chipset": "AMD TRX50",
-    "socket": "sTR5",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "1",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2022"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT TAICHI B650-P WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B650-P WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -3708,20 +3456,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "5 GbE",
     "wifi": "nan",
     "releaseYear": "2025"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT TUF GAMING Z790-F WIFI",
-    "chipset": "Intel Z790",
-    "socket": "LGA1700",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "5",
-    "lan": "10 GbE",
-    "wifi": "nan",
-    "releaseYear": "2023"
   },
   {
     "brand": "ASRock",
@@ -3752,8 +3486,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS ELITE B650-MAX WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B650-MAX WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -3766,8 +3500,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA MPG EDGE B550-P WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B550-P WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -3780,8 +3514,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock MPG EDGE B650-E WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B650-E WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -3808,8 +3542,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA MPG EDGE X670E-F WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE X670E-F WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -3822,22 +3556,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI ROG STRIX Z690-PRO WIFI",
-    "chipset": "Intel Z690",
-    "socket": "LGA1700",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4",
-    "maxRam": "64",
-    "pcie": "PCIe 5.0",
-    "m2": "3",
-    "lan": "10 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2022"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA PHANTOM GAMING B550-PRO WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B550-PRO WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -3850,8 +3570,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS ULTRA DURABLE B760-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE B760-PRO WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -3862,20 +3582,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "5 GbE",
     "wifi": "WiFi 5",
     "releaseYear": "2021"
-  },
-  {
-    "brand": "ASUS",
-    "model": "ASUS PRO B650E-X WIFI",
-    "chipset": "AMD B650E",
-    "socket": "AM5",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2022"
   },
   {
     "brand": "Gigabyte",
@@ -3892,8 +3598,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS MPG EDGE Z890-F WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE Z890-F WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "E-ATX",
@@ -3906,8 +3612,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar DARK B550-X WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B550-X WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -3934,8 +3640,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte ROG STRIX Z790-PLUS WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX Z790-PLUS WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -3962,8 +3668,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS PHANTOM GAMING B760-MAX WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B760-MAX WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -3990,20 +3696,6 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS PRO B650E-A WIFI",
-    "chipset": "AMD B650E",
-    "socket": "AM5",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4",
-    "maxRam": "192",
-    "pcie": "PCIe 4.0",
-    "m2": "1",
-    "lan": "10 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2025"
-  },
-  {
     "brand": "ASRock",
     "model": "ASRock PRO X670-MAX WIFI",
     "chipset": "AMD X670",
@@ -4018,8 +3710,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA ROG STRIX X670E-P WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX X670E-P WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -4046,8 +3738,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PRIME X670E-PRO WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME X670E-PRO WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -4074,8 +3766,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PRO Z890-E WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO Z890-E WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "E-ATX",
@@ -4088,8 +3780,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PHANTOM GAMING X670-MAX WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte PHANTOM GAMING X670-MAX WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -4102,8 +3794,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS TAICHI Z790-A WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI Z790-A WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -4114,20 +3806,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "2.5 GbE",
     "wifi": "WiFi 5",
     "releaseYear": "2022"
-  },
-  {
-    "brand": "Gigabyte",
-    "model": "Gigabyte STEEL LEGEND B650-PLUS WIFI",
-    "chipset": "AMD B650",
-    "socket": "AM5",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "2",
-    "lan": "10 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2023"
   },
   {
     "brand": "ASUS",
@@ -4144,8 +3822,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT STEEL LEGEND X670E-PLUS WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND X670E-PLUS WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -4158,8 +3836,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MAG TOMAHAWK B660-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B660-MAX WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -4172,8 +3850,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock ROG STRIX B650E-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX B650E-E WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -4186,8 +3864,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PRO B550-X WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B550-X WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Mini-ITX",
@@ -4214,8 +3892,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS AORUS ELITE B650-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B650-A WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -4228,22 +3906,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS MASTER Z690-E WIFI",
-    "chipset": "Intel Z690",
-    "socket": "LGA1700",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 4.0",
-    "m2": "3",
-    "lan": "1 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2022"
-  },
-  {
-    "brand": "Gigabyte",
-    "model": "Gigabyte PHANTOM GAMING B650E-PRO WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B650E-PRO WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -4270,8 +3934,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "MSI",
-    "model": "MSI TUF GAMING B550-X WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING B550-X WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "E-ATX",
@@ -4284,8 +3948,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA AORUS ELITE Z690-MAX WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE Z690-MAX WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -4298,8 +3962,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PRO B650-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B650-MAX WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -4310,20 +3974,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "10 GbE",
     "wifi": "WiFi 7",
     "releaseYear": "2022"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT PRIME X670E-PRO WIFI",
-    "chipset": "AMD X670E",
-    "socket": "AM5",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4",
-    "maxRam": "192",
-    "pcie": "PCIe 4.0",
-    "m2": "4",
-    "lan": "5 GbE",
-    "wifi": "nan",
-    "releaseYear": "2024"
   },
   {
     "brand": "MSI",
@@ -4340,8 +3990,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte MAG TOMAHAWK B660-E WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B660-E WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -4368,8 +4018,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar N7 X670E-A WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 X670E-A WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -4396,8 +4046,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA AORUS MASTER X670-X WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER X670-X WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -4410,8 +4060,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA TUF GAMING B650E-A WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING B650E-A WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -4424,8 +4074,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "MSI",
-    "model": "MSI ULTRA DURABLE B650E-X WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE B650E-X WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -4438,8 +4088,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock DARK Z890-F WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK Z890-F WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "ATX",
@@ -4466,8 +4116,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte N7 Z890-F WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 Z890-F WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Mini-ITX",
@@ -4480,22 +4130,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar AORUS MASTER Z890-X WIFI",
-    "chipset": "Intel Z890",
-    "socket": "LGA1851",
-    "formFactor": "ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "2",
-    "lan": "5 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2021"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock MPG EDGE B760-A WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B760-A WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -4508,8 +4144,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT ULTRA DURABLE Z890-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE Z890-PLUS WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "ATX",
@@ -4522,8 +4158,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "MSI",
-    "model": "MSI DARK B550-A WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B550-A WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Mini-ITX",
@@ -4564,8 +4200,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS TAICHI B760-P WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B760-P WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -4592,8 +4228,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock AORUS MASTER B660-F WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B660-F WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -4606,8 +4242,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PRO B650-P WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B650-P WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -4620,8 +4256,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte PHANTOM GAMING B550-X WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B550-X WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -4634,8 +4270,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA TAICHI Z790-F WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI Z790-F WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -4648,8 +4284,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS CREATOR B650E-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR B650E-MAX WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -4662,8 +4298,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA STEEL LEGEND B650-MAX WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND B650-MAX WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -4690,8 +4326,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock TUF GAMING Z890-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING Z890-F WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -4732,22 +4368,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte AORUS ELITE B550-PRO WIFI",
-    "chipset": "AMD B550",
-    "socket": "AM4",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "192",
-    "pcie": "PCIe 4.0",
-    "m2": "4",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2022"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT STEEL LEGEND Z890-PLUS WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND Z890-PLUS WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "ATX",
@@ -4760,8 +4382,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte PRIME TRX50-PRO WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME TRX50-PRO WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "E-ATX",
@@ -4774,22 +4396,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA TUF GAMING X670-MAX WIFI",
-    "chipset": "AMD X670",
-    "socket": "AM5",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 5.0",
-    "m2": "2",
-    "lan": "10 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2021"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT PHANTOM GAMING Z790-F WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING Z790-F WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -4802,8 +4410,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PRO Z890-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO Z890-PLUS WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "E-ATX",
@@ -4816,8 +4424,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock DARK X670E-E WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK X670E-E WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -4830,8 +4438,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT TUF GAMING X670-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING X670-E WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -4844,8 +4452,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS ELITE X670E-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE X670E-P WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -4858,8 +4466,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS TAICHI Z890-PRO WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI Z890-PRO WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "ATX",
@@ -4872,8 +4480,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte ROG STRIX X670-X WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX X670-X WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -4886,8 +4494,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS ELITE Z890-X WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE Z890-X WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -4898,20 +4506,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "5 GbE",
     "wifi": "nan",
     "releaseYear": "2022"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock CREATOR B660-PLUS WIFI",
-    "chipset": "Intel B660",
-    "socket": "LGA1700",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4",
-    "maxRam": "256",
-    "pcie": "PCIe 4.0",
-    "m2": "5",
-    "lan": "10 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2021"
   },
   {
     "brand": "ASRock",
@@ -4928,36 +4522,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "MSI",
-    "model": "MSI STEEL LEGEND X670-PRO WIFI",
-    "chipset": "AMD X670",
-    "socket": "AM5",
-    "formFactor": "ATX",
-    "ramType": "DDR4",
-    "maxRam": "64",
-    "pcie": "PCIe 5.0",
-    "m2": "1",
-    "lan": "1 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2023"
-  },
-  {
     "brand": "ASUS",
-    "model": "ASUS TAICHI B760-E WIFI",
-    "chipset": "Intel B760",
-    "socket": "LGA1700",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2024"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock PRIME B650E-PLUS WIFI",
+    "model": "ASUS PRIME B650E-PLUS WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -4970,36 +4536,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CARBON WIFI Z890-E WIFI",
-    "chipset": "Intel Z890",
-    "socket": "LGA1851",
-    "formFactor": "ATX",
-    "ramType": "DDR4",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "4",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2022"
-  },
-  {
     "brand": "NZXT",
-    "model": "NZXT DARK B660-X WIFI",
-    "chipset": "Intel B660",
-    "socket": "LGA1700",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "4",
-    "lan": "1 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock N7 X670E-PRO WIFI",
+    "model": "NZXT N7 X670E-PRO WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -5012,8 +4550,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "MSI",
-    "model": "MSI DARK Z890-PRO WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK Z890-PRO WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "E-ATX",
@@ -5026,8 +4564,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS MPG EDGE Z790-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE Z790-MAX WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -5040,8 +4578,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar TAICHI B760-MAX WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B760-MAX WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -5054,8 +4592,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MAG TOMAHAWK X670-E WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK X670-E WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -5068,8 +4606,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA ULTRA DURABLE X670-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE X670-P WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -5096,8 +4634,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar PRO B650-PRO WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B650-PRO WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -5110,36 +4648,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ULTRA DURABLE B760-PRO WIFI",
-    "chipset": "Intel B760",
-    "socket": "LGA1700",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "2",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2023"
-  },
-  {
-    "brand": "ASUS",
-    "model": "ASUS MAG TOMAHAWK Z690-X WIFI",
-    "chipset": "Intel Z690",
-    "socket": "LGA1700",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "192",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "10 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2024"
-  },
-  {
-    "brand": "Biostar",
-    "model": "Biostar MPG EDGE B650E-P WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B650E-P WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -5152,8 +4662,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA N7 B550-PRO WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 B550-PRO WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -5166,8 +4676,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI TAICHI B550-PLUS WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B550-PLUS WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -5180,8 +4690,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MPG EDGE X670-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE X670-MAX WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -5194,8 +4704,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "MSI",
-    "model": "MSI PRIME Z890-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME Z890-E WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Mini-ITX",
@@ -5208,8 +4718,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS CARBON WIFI Z890-F WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI Z890-F WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -5222,8 +4732,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA MPG EDGE B660-P WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B660-P WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -5236,8 +4746,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MPG EDGE B760-P WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE B760-P WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -5250,8 +4760,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TAICHI B660-A WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI B660-A WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -5264,8 +4774,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS TAICHI Z790-X WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI Z790-X WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -5278,8 +4788,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT PHANTOM GAMING Z690-PRO WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING Z690-PRO WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -5292,8 +4802,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte PHANTOM GAMING TRX50-P WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING TRX50-P WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "E-ATX",
@@ -5306,8 +4816,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS MASTER B760-MAX WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B760-MAX WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -5320,8 +4830,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar AORUS MASTER Z690-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER Z690-A WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -5334,8 +4844,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS AORUS ELITE B760-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B760-PLUS WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -5362,8 +4872,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT MAG TOMAHAWK B760-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK B760-MAX WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -5376,8 +4886,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TUF GAMING B760-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING B760-E WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -5390,8 +4900,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock ULTRA DURABLE B550-X WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE B550-X WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "E-ATX",
@@ -5404,8 +4914,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PRO B550-E WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B550-E WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -5418,8 +4928,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock CARBON WIFI X670-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI X670-PLUS WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -5432,8 +4942,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte PRO B650-F WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B650-F WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -5446,8 +4956,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT MAG TOMAHAWK Z690-P WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK Z690-P WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -5460,8 +4970,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock N7 B650E-A WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 B650E-A WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -5470,20 +4980,6 @@ export const MOTHERBOARD_DATABASE = [
     "pcie": "PCIe 5.0",
     "m2": "4",
     "lan": "1 GbE",
-    "wifi": "nan",
-    "releaseYear": "2023"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock PRIME B650E-MAX WIFI",
-    "chipset": "AMD B650E",
-    "socket": "AM5",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "1",
-    "lan": "5 GbE",
     "wifi": "nan",
     "releaseYear": "2023"
   },
@@ -5516,22 +5012,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA AORUS ELITE B650E-A WIFI",
-    "chipset": "AMD B650E",
-    "socket": "AM5",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "64",
-    "pcie": "PCIe 4.0",
-    "m2": "1",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2023"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT PRIME TRX50-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME TRX50-F WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "ATX",
@@ -5544,8 +5026,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS AORUS MASTER B550-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B550-P WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Micro-ATX",
@@ -5559,35 +5041,7 @@ export const MOTHERBOARD_DATABASE = [
   },
   {
     "brand": "MSI",
-    "model": "MSI MAG TOMAHAWK B660-F WIFI",
-    "chipset": "Intel B660",
-    "socket": "LGA1700",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "1 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2024"
-  },
-  {
-    "brand": "ASUS",
-    "model": "ASUS AORUS ELITE Z690-MAX WIFI",
-    "chipset": "Intel Z690",
-    "socket": "LGA1700",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 5.0",
-    "m2": "4",
-    "lan": "10 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "ASUS",
-    "model": "ASUS CARBON WIFI B650-PLUS WIFI",
+    "model": "MSI CARBON WIFI B650-PLUS WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -5600,8 +5054,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock CREATOR X670-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR X670-PLUS WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -5628,8 +5082,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PHANTOM GAMING B650-PLUS WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B650-PLUS WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -5685,21 +5139,7 @@ export const MOTHERBOARD_DATABASE = [
   },
   {
     "brand": "ASUS",
-    "model": "ASUS DARK Z790-PRO WIFI",
-    "chipset": "Intel Z790",
-    "socket": "LGA1700",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "3",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "MSI",
-    "model": "MSI PRIME B660-X WIFI",
+    "model": "ASUS PRIME B660-X WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -5712,8 +5152,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock ULTRA DURABLE B760-X WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE B760-X WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -5726,8 +5166,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte PHANTOM GAMING B660-P WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B660-P WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -5740,8 +5180,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "MSI",
-    "model": "MSI ULTRA DURABLE X670-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE X670-A WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -5754,22 +5194,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA MAG TOMAHAWK B760-MAX WIFI",
-    "chipset": "Intel B760",
-    "socket": "LGA1700",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 5.0",
-    "m2": "4",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2023"
-  },
-  {
-    "brand": "Gigabyte",
-    "model": "Gigabyte MPG EDGE X670-PRO WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE X670-PRO WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -5782,8 +5208,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PRIME X670E-F WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME X670E-F WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -5796,8 +5222,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT CARBON WIFI B650-A WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI B650-A WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -5810,8 +5236,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar CARBON WIFI B650E-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI B650E-MAX WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -5824,8 +5250,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS CREATOR Z790-PRO WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR Z790-PRO WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -5838,8 +5264,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT DARK Z690-A WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK Z690-A WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -5852,8 +5278,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte N7 X670E-X WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 X670E-X WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -5866,8 +5292,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ROG STRIX B650-P WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX B650-P WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -5878,20 +5304,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "2.5 GbE",
     "wifi": "nan",
     "releaseYear": "2023"
-  },
-  {
-    "brand": "Biostar",
-    "model": "Biostar ROG STRIX Z890-F WIFI",
-    "chipset": "Intel Z890",
-    "socket": "LGA1851",
-    "formFactor": "E-ATX",
-    "ramType": "DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "2",
-    "lan": "1 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2024"
   },
   {
     "brand": "NZXT",
@@ -5908,20 +5320,6 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TUF GAMING Z790-PLUS WIFI",
-    "chipset": "Intel Z790",
-    "socket": "LGA1700",
-    "formFactor": "E-ATX",
-    "ramType": "DDR5",
-    "maxRam": "64",
-    "pcie": "PCIe 4.0",
-    "m2": "1",
-    "lan": "1 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2021"
-  },
-  {
     "brand": "ASRock",
     "model": "ASRock PRO X670E-PLUS WIFI",
     "chipset": "AMD X670E",
@@ -5936,8 +5334,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA MPG EDGE Z890-PLUS WIFI",
+    "brand": "MSI",
+    "model": "MSI MPG EDGE Z890-PLUS WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "E-ATX",
@@ -5964,20 +5362,6 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar PHANTOM GAMING X670-MAX WIFI",
-    "chipset": "AMD X670",
-    "socket": "AM5",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "192",
-    "pcie": "PCIe 5.0",
-    "m2": "1",
-    "lan": "10 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2021"
-  },
-  {
     "brand": "Gigabyte",
     "model": "Gigabyte EXTREME X670-X WIFI",
     "chipset": "AMD X670",
@@ -5992,8 +5376,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CREATOR B550-A WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR B550-A WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Mini-ITX",
@@ -6006,8 +5390,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ROG STRIX B760-X WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX B760-X WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -6020,8 +5404,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS MASTER B660-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B660-PRO WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -6032,20 +5416,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "1 GbE",
     "wifi": "WiFi 7",
     "releaseYear": "2021"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT MPG EDGE Z890-PLUS WIFI",
-    "chipset": "Intel Z890",
-    "socket": "LGA1851",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4",
-    "maxRam": "64",
-    "pcie": "PCIe 5.0",
-    "m2": "3",
-    "lan": "10 GbE",
-    "wifi": "WiFi 7",
-    "releaseYear": "2024"
   },
   {
     "brand": "Gigabyte",
@@ -6062,8 +5432,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "MSI",
-    "model": "MSI AORUS MASTER Z890-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER Z890-A WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -6077,35 +5447,7 @@ export const MOTHERBOARD_DATABASE = [
   },
   {
     "brand": "ASRock",
-    "model": "ASRock CARBON WIFI B550-A WIFI",
-    "chipset": "AMD B550",
-    "socket": "AM4",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 5.0",
-    "m2": "2",
-    "lan": "10 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "Gigabyte",
-    "model": "Gigabyte STEEL LEGEND Z690-X WIFI",
-    "chipset": "Intel Z690",
-    "socket": "LGA1700",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4",
-    "maxRam": "64",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2023"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA TAICHI Z690-MAX WIFI",
+    "model": "ASRock TAICHI Z690-MAX WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -6118,8 +5460,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte DARK B660-E WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B660-E WIFI",
     "chipset": "Intel B660",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -6132,8 +5474,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT STEEL LEGEND X670E-F WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND X670E-F WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -6146,22 +5488,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock MPG EDGE B550-PLUS WIFI",
-    "chipset": "AMD B550",
-    "socket": "AM4",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "64",
-    "pcie": "PCIe 4.0",
-    "m2": "3",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2023"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock PRO B650E-F WIFI",
+    "brand": "MSI",
+    "model": "MSI PRO B650E-F WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -6174,8 +5502,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT STEEL LEGEND X670E-MAX WIFI",
+    "brand": "ASRock",
+    "model": "ASRock STEEL LEGEND X670E-MAX WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -6188,8 +5516,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS ELITE B650E-PLUS WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B650E-PLUS WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -6202,8 +5530,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT AORUS MASTER TRX50-X WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER TRX50-X WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "E-ATX",
@@ -6216,8 +5544,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte MAG TOMAHAWK Z690-F WIFI",
+    "brand": "MSI",
+    "model": "MSI MAG TOMAHAWK Z690-F WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -6230,8 +5558,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte ROG STRIX Z690-PLUS WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX Z690-PLUS WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "ATX",
@@ -6258,22 +5586,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PHANTOM GAMING TRX50-X WIFI",
-    "chipset": "AMD TRX50",
-    "socket": "sTR5",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "64",
-    "pcie": "PCIe 4.0",
-    "m2": "2",
-    "lan": "10 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2021"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA TUF GAMING TRX50-PLUS WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING TRX50-PLUS WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "Mini-ITX",
@@ -6286,8 +5600,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar AORUS MASTER B650E-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER B650E-PRO WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -6314,8 +5628,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock TUF GAMING B760-P WIFI",
+    "brand": "ASUS",
+    "model": "ASUS TUF GAMING B760-P WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -6342,8 +5656,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT ULTRA DURABLE Z890-F WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE Z890-F WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "Micro-ATX",
@@ -6384,8 +5698,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock AORUS ELITE X670-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE X670-A WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -6395,20 +5709,6 @@ export const MOTHERBOARD_DATABASE = [
     "m2": "4",
     "lan": "10 GbE",
     "wifi": "WiFi 6",
-    "releaseYear": "2022"
-  },
-  {
-    "brand": "ASUS",
-    "model": "ASUS AORUS ELITE B760-PLUS WIFI",
-    "chipset": "Intel B760",
-    "socket": "LGA1700",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 4.0",
-    "m2": "3",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6E",
     "releaseYear": "2022"
   },
   {
@@ -6426,8 +5726,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte PHANTOM GAMING Z690-F WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING Z690-F WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -6440,8 +5740,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS N7 X670-E WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 X670-E WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -6454,22 +5754,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "MSI",
-    "model": "MSI CARBON WIFI B650E-A WIFI",
-    "chipset": "AMD B650E",
-    "socket": "AM5",
-    "formFactor": "E-ATX",
-    "ramType": "DDR5",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "10 GbE",
-    "wifi": "nan",
-    "releaseYear": "2021"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock AORUS MASTER Z890-PRO WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER Z890-PRO WIFI",
     "chipset": "Intel Z890",
     "socket": "LGA1851",
     "formFactor": "ATX",
@@ -6482,8 +5768,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock N7 B650E-F WIFI",
+    "brand": "NZXT",
+    "model": "NZXT N7 B650E-F WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -6497,21 +5783,7 @@ export const MOTHERBOARD_DATABASE = [
   },
   {
     "brand": "ASRock",
-    "model": "ASRock MAG TOMAHAWK B660-F WIFI",
-    "chipset": "Intel B660",
-    "socket": "LGA1700",
-    "formFactor": "E-ATX",
-    "ramType": "DDR5",
-    "maxRam": "192",
-    "pcie": "PCIe 5.0",
-    "m2": "1",
-    "lan": "10 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2024"
-  },
-  {
-    "brand": "ASUS",
-    "model": "ASUS STEEL LEGEND B550-F WIFI",
+    "model": "ASRock STEEL LEGEND B550-F WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "E-ATX",
@@ -6522,20 +5794,6 @@ export const MOTHERBOARD_DATABASE = [
     "lan": "2.5 GbE",
     "wifi": "WiFi 6E",
     "releaseYear": "2021"
-  },
-  {
-    "brand": "EVGA",
-    "model": "EVGA TAICHI B650-P WIFI",
-    "chipset": "AMD B650",
-    "socket": "AM5",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "192",
-    "pcie": "PCIe 5.0",
-    "m2": "3",
-    "lan": "1 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2023"
   },
   {
     "brand": "NZXT",
@@ -6552,8 +5810,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CARBON WIFI B650-X WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI B650-X WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -6566,8 +5824,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS DARK B650-PRO WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B650-PRO WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -6594,8 +5852,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "MSI",
-    "model": "MSI PHANTOM GAMING X670-A WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte PHANTOM GAMING X670-A WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -6608,8 +5866,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2024"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar CREATOR Z690-A WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR Z690-A WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "Mini-ITX",
@@ -6622,22 +5880,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock AORUS ELITE B650E-A WIFI",
-    "chipset": "AMD B650E",
-    "socket": "AM5",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR4",
-    "maxRam": "192",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "10 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "Gigabyte",
-    "model": "Gigabyte DARK B760-F WIFI",
+    "brand": "EVGA",
+    "model": "EVGA DARK B760-F WIFI",
     "chipset": "Intel B760",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -6650,64 +5894,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar MPG EDGE B550-PLUS WIFI",
-    "chipset": "AMD B550",
-    "socket": "AM4",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4",
-    "maxRam": "256",
-    "pcie": "PCIe 4.0",
-    "m2": "3",
-    "lan": "1 GbE",
-    "wifi": "WiFi 6E",
-    "releaseYear": "2025"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock PRO B650-PRO WIFI",
-    "chipset": "AMD B650",
-    "socket": "AM5",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4",
-    "maxRam": "256",
-    "pcie": "PCIe 5.0",
-    "m2": "3",
-    "lan": "5 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2023"
-  },
-  {
-    "brand": "ASRock",
-    "model": "ASRock ROG STRIX B760-F WIFI",
-    "chipset": "Intel B760",
-    "socket": "LGA1700",
-    "formFactor": "ATX",
-    "ramType": "DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 5.0",
-    "m2": "3",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2021"
-  },
-  {
-    "brand": "MSI",
-    "model": "MSI AORUS MASTER Z890-X WIFI",
-    "chipset": "Intel Z890",
-    "socket": "LGA1851",
-    "formFactor": "Micro-ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 5.0",
-    "m2": "4",
-    "lan": "2.5 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2022"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT ROG STRIX X670-PRO WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX X670-PRO WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -6734,36 +5922,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS PRIME B650E-X WIFI",
-    "chipset": "AMD B650E",
-    "socket": "AM5",
-    "formFactor": "E-ATX",
-    "ramType": "DDR4",
-    "maxRam": "256",
-    "pcie": "PCIe 4.0",
-    "m2": "2",
-    "lan": "5 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2022"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT AORUS ELITE X670E-PLUS WIFI",
-    "chipset": "AMD X670E",
-    "socket": "AM5",
-    "formFactor": "ATX",
-    "ramType": "DDR4/DDR5",
-    "maxRam": "128",
-    "pcie": "PCIe 4.0",
-    "m2": "2",
-    "lan": "5 GbE",
-    "wifi": "WiFi 6",
-    "releaseYear": "2021"
-  },
-  {
-    "brand": "NZXT",
-    "model": "NZXT AORUS MASTER X670E-P WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS MASTER X670E-P WIFI",
     "chipset": "AMD X670E",
     "socket": "AM5",
     "formFactor": "ATX",
@@ -6790,8 +5950,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte CARBON WIFI X670-PRO WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI X670-PRO WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Micro-ATX",
@@ -6804,8 +5964,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock PRIME B650-X WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME B650-X WIFI",
     "chipset": "AMD B650",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -6818,22 +5978,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2023"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT ULTRA DURABLE B760-X WIFI",
-    "chipset": "Intel B760",
-    "socket": "LGA1700",
-    "formFactor": "Mini-ITX",
-    "ramType": "DDR5",
-    "maxRam": "192",
-    "pcie": "PCIe 5.0",
-    "m2": "5",
-    "lan": "5 GbE",
-    "wifi": "WiFi 5",
-    "releaseYear": "2022"
-  },
-  {
-    "brand": "Gigabyte",
-    "model": "Gigabyte CREATOR B550-MAX WIFI",
+    "brand": "MSI",
+    "model": "MSI CREATOR B550-MAX WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "E-ATX",
@@ -6846,8 +5992,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PRIME X670-E WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME X670-E WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -6860,8 +6006,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA CARBON WIFI Z790-PRO WIFI",
+    "brand": "MSI",
+    "model": "MSI CARBON WIFI Z790-PRO WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -6874,8 +6020,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "Gigabyte",
-    "model": "Gigabyte TAICHI Z790-E WIFI",
+    "brand": "ASRock",
+    "model": "ASRock TAICHI Z790-E WIFI",
     "chipset": "Intel Z790",
     "socket": "LGA1700",
     "formFactor": "Micro-ATX",
@@ -6902,8 +6048,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "EVGA",
-    "model": "EVGA PRIME Z690-X WIFI",
+    "brand": "ASUS",
+    "model": "ASUS PRIME Z690-X WIFI",
     "chipset": "Intel Z690",
     "socket": "LGA1700",
     "formFactor": "E-ATX",
@@ -6916,8 +6062,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "NZXT",
-    "model": "NZXT ULTRA DURABLE X670-F WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte ULTRA DURABLE X670-F WIFI",
     "chipset": "AMD X670",
     "socket": "AM5",
     "formFactor": "Mini-ITX",
@@ -6944,8 +6090,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2022"
   },
   {
-    "brand": "ASUS",
-    "model": "ASUS PHANTOM GAMING B650E-E WIFI",
+    "brand": "ASRock",
+    "model": "ASRock PHANTOM GAMING B650E-E WIFI",
     "chipset": "AMD B650E",
     "socket": "AM5",
     "formFactor": "E-ATX",
@@ -6958,8 +6104,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2021"
   },
   {
-    "brand": "ASRock",
-    "model": "ASRock AORUS ELITE B550-MAX WIFI",
+    "brand": "Gigabyte",
+    "model": "Gigabyte AORUS ELITE B550-MAX WIFI",
     "chipset": "AMD B550",
     "socket": "AM4",
     "formFactor": "Mini-ITX",
@@ -6972,8 +6118,8 @@ export const MOTHERBOARD_DATABASE = [
     "releaseYear": "2025"
   },
   {
-    "brand": "Biostar",
-    "model": "Biostar ROG STRIX TRX50-PRO WIFI",
+    "brand": "ASUS",
+    "model": "ASUS ROG STRIX TRX50-PRO WIFI",
     "chipset": "AMD TRX50",
     "socket": "sTR5",
     "formFactor": "Mini-ITX",

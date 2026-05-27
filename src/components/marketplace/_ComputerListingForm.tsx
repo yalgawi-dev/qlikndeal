@@ -17,6 +17,9 @@ interface ComputerSpec {
     screen: string; cpu: string; gpu: string; os: string; condition: string;
     extras: string; sku: string; battery: string; batteryHealth: string;
     batteryPercent: string; ports: string; weight: string; release_year: string;
+    refreshRate: string;    // תדר רענון מסך (Hz)
+    extraStorage: string;   // אחסון נוסף (SSD דיסק שני / HDD)
+    resolutionType: string; // FHD / QHD / 4K
 }
 
 // שדות מובנים למצב וליציאות
@@ -82,6 +85,10 @@ export function ComputerListingForm({ onComplete, initialData, isEditing, listin
         ports: extraDataObj["ports"] || extraDataObj["חיבורים"] || "",
         weight: extraDataObj["weight"] || extraDataObj["משקל"] || "",
         release_year: extraDataObj["release_year"] || extraDataObj["שנת ייצור"] || "",
+        // שדות חדשים
+        refreshRate: extraDataObj["refreshRate"] || extraDataObj["תדר רענון"] || "",
+        extraStorage: extraDataObj["extraStorage"] || extraDataObj["אחסון נוסף"] || "",
+        resolutionType: extraDataObj["resolutionType"] || extraDataObj["סוג רזולוציה"] || "",
     });
 
     const [selectedPorts, setSelectedPorts] = useState<string[]>(spec.ports ? spec.ports.split(", ") : []);
@@ -137,7 +144,11 @@ export function ComputerListingForm({ onComplete, initialData, isEditing, listin
             batteryPercent: data.batteryPercent || prev.batteryPercent,
             batteryHealth: data.batteryHealth || prev.batteryHealth,
             gpu: mapToOption(data.gpu, dynamicOptions["gpu"] || []),
-            screen: mapToOption(data.screenSize || data.screen, dynamicOptions["screen"] || [])
+            screen: mapToOption(data.screenSize || data.screen, dynamicOptions["screen"] || []),
+            // שדות חדשים
+            refreshRate: data.refreshRate || prev.refreshRate,
+            extraStorage: data.extraStorage || prev.extraStorage,
+            resolutionType: data.resolutionType || prev.resolutionType,
         }));
 
         setDetails(prev => ({
@@ -168,7 +179,7 @@ export function ComputerListingForm({ onComplete, initialData, isEditing, listin
             });
         }
 
-        const handledKeys = ["brand", "cpu", "ram", "storage", "subModel", "model", "os", "family", "condition", "batteryPercent", "gpu", "screenSize", "screen", "title", "price", "contactPhone", "description", "suggestions", "success", "category", "isCatalogMatch", "sourceTable"];
+        const handledKeys = ["brand", "cpu", "ram", "storage", "subModel", "model", "os", "family", "condition", "batteryPercent", "gpu", "screenSize", "screen", "title", "price", "contactPhone", "description", "suggestions", "success", "category", "isCatalogMatch", "sourceTable", "refreshRate", "extraStorage", "resolutionType"];
         const newDynamics: { key: string, value: string }[] = [];
         
         // חילוץ סעיפים רגילים שחזרו כ-FILL פשוט
@@ -261,7 +272,11 @@ export function ComputerListingForm({ onComplete, initialData, isEditing, listin
                 "מערכת הפעלה": spec.os, "נפח אחסון": spec.storage, "גודל מסך": spec.screen,
                 "SKU": spec.sku, "סוללה": spec.battery, "תקינות סוללה": spec.batteryHealth,
                 "אחוזי סוללה": spec.batteryPercent + "%", "משקל": spec.weight,
-                "שנת ייצור": spec.release_year, "חיבורים": spec.ports, "הערות/פגמים": spec.extras
+                "שנת ייצור": spec.release_year, "חיבורים": spec.ports, "הערות/פגמים": spec.extras,
+                // שדות חדשים
+                "תדר רענון": spec.refreshRate,
+                "אחסון נוסף": spec.extraStorage,
+                "סוג רזולוציה": spec.resolutionType,
             };
 
             // הוספת השדות הדינמיים שהמשתמש אישר/שינה
@@ -369,6 +384,10 @@ export function ComputerListingForm({ onComplete, initialData, isEditing, listin
                             <SpecField label="מערכת הפעלה" val={spec.os} fn={(v) => setSpec({ ...spec, os: v })} opts={dynamicOptions["os"] || []} icon={<Monitor size={14} />} uncert={uncertainFields.includes('os')} onConf={() => removeUncertain('os')} />
                             <SpecField label="גודל מסך" val={spec.screen} fn={(v) => setSpec({ ...spec, screen: v })} opts={dynamicOptions["screen"] || []} icon={<Maximize2 size={14} />} uncert={uncertainFields.includes('screen')} onConf={() => removeUncertain('screen')} />
                             <SpecField label="כרטיס מסך (GPU)" val={spec.gpu} fn={(v) => setSpec({ ...spec, gpu: v })} opts={dynamicOptions["gpu"] || []} icon={<Cpu size={14} />} uncert={uncertainFields.includes('gpu')} onConf={() => removeUncertain('gpu')} />
+                            {/* שדות חדשים */}
+                            <SpecField label="תדר רענון (Hz)" val={spec.refreshRate} fn={(v) => setSpec({ ...spec, refreshRate: v })} opts={["60Hz","75Hz","90Hz","120Hz","144Hz","165Hz","180Hz","240Hz","360Hz"]} icon={<Monitor size={14} />} uncert={uncertainFields.includes('refreshRate')} onConf={() => removeUncertain('refreshRate')} />
+                            <SpecField label="סוג רזולוציה" val={spec.resolutionType} fn={(v) => setSpec({ ...spec, resolutionType: v })} opts={["HD","FHD","QHD","WQHD","4K UHD","WUXGA","WQXGA"]} icon={<Maximize2 size={14} />} uncert={uncertainFields.includes('resolutionType')} onConf={() => removeUncertain('resolutionType')} />
+                            <SpecField label="אחסון נוסף" val={spec.extraStorage} fn={(v) => setSpec({ ...spec, extraStorage: v })} opts={["256GB SSD","512GB SSD","1TB SSD","2TB SSD","500GB HDD","1TB HDD","2TB HDD"]} icon={<HardDrive size={14} />} uncert={uncertainFields.includes('extraStorage')} onConf={() => removeUncertain('extraStorage')} />
                         </div>
                     </div>
 
@@ -569,6 +588,18 @@ export function ComputerListingForm({ onComplete, initialData, isEditing, listin
                             <div className="flex justify-between border-b border-red-900/30 pb-1">
                                 <span className="text-red-500 font-bold bg-red-950/50 px-2 rounded">מערכת הפעלה</span>
                                 <span className="text-gray-300 ml-4 font-medium">{getFieldDisplay(spec.os)}</span>
+                            </div>
+                            <div className="flex justify-between border-b border-red-900/30 pb-1">
+                                <span className="text-red-500 font-bold bg-red-950/50 px-2 rounded">כרטיס מסך</span>
+                                <span className="text-gray-300 ml-4 font-medium">{getFieldDisplay(spec.gpu)}</span>
+                            </div>
+                            <div className="flex justify-between border-b border-red-900/30 pb-1">
+                                <span className="text-red-500 font-bold bg-red-950/50 px-2 rounded">תדר רענון</span>
+                                <span className="text-gray-300 ml-4 font-medium">{spec.refreshRate || "לא מוללא"}</span>
+                            </div>
+                            <div className="flex justify-between border-b border-red-900/30 pb-1">
+                                <span className="text-red-500 font-bold bg-red-950/50 px-2 rounded">אחסון נוסף</span>
+                                <span className="text-gray-300 ml-4 font-medium">{spec.extraStorage || "אין"}</span>
                             </div>
                             <div className="flex justify-between border-b border-red-900/30 pb-1">
                                 <span className="text-red-500 font-bold bg-red-950/50 px-2 rounded">תקינות סוללה</span>

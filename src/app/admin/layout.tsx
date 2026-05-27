@@ -13,6 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: "סקירה כללית", href: "/admin", icon: LayoutDashboard },
         { name: "ניהול מודעות", href: "/admin/listings", icon: ShoppingBag },
         { name: "ניהול משתמשים", href: "/admin/users", icon: Users },
+        { name: "ניהול אפליקציות", href: "/admin/software", icon: Sliders },
         { name: "המוח הלומד", href: "/admin/learning-agent", icon: BrainCircuit },
         { name: "למידת AI", href: "/admin/parser-logs", icon: Bot },
         { name: "ניהול טרשהולדים", href: "/admin/thresholds", icon: Sliders },

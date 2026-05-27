@@ -83,6 +83,7 @@ export async function createListing(data: {
     latitude?: number;
     longitude?: number;
     extraData?: any;
+    listingType?: "SELL" | "BUY";
 }) {
     console.log("createListing started", {
         title: data.title, brand: data.brand, model: data.model,
@@ -158,14 +159,22 @@ export async function createListing(data: {
                 latitude: data.latitude,
                 longitude: data.longitude,
                 status: "ACTIVE",
+                listingType: data.listingType || "SELL",
                 extraData: data.extraData ? JSON.stringify(data.extraData) : null
             }
         });
         console.log("Listing created successfully:", listing.id);
 
+        // Match listing with active requests (radars)
+        let matchCount = 0;
+        if (listing.status === "ACTIVE" && listing.listingType === "SELL") {
+            const { matchListingWithRequests } = await import("@/lib/matchmaker");
+            matchCount = await matchListingWithRequests(listing.id);
+        }
+
         // revalidatePath("/dashboard/marketplace");
         // Return minimal data to avoid serialization issues
-        return { success: true, listing: { id: listing.id } as any };
+        return { success: true, matchCount, listing: { id: listing.id } as any };
 
     } catch (error: any) {
         console.error("Create Listing Error (Detailed):", error);
@@ -316,6 +325,80 @@ export async function getMyListings() {
     }
 }
 
+export async function getMyRequests() {
+    try {
+        const user = await currentUser();
+        if (!user) return { success: false, error: "Unauthorized" };
+
+        const dbUser = await prismadb.user.findUnique({ where: { clerkId: user.id } });
+        if (!dbUser) return { success: false, error: "User not found" };
+
+        const requests = await prismadb.buyerRequest.findMany({
+            where: {
+                userId: dbUser.id,
+                status: { not: "ARCHIVED" } // Fetch active/non-archived requests
+            },
+            orderBy: {
+                createdAt: "desc"
+            }
+        });
+
+        return { success: true, requests };
+    } catch (error) {
+        console.error("Get My Requests Error:", error);
+        return { success: false, error: "Failed to fetch requests" };
+    }
+}
+
+export async function deleteRequest(id: string) {
+    try {
+        const { userId: clerkId } = await auth();
+        if (!clerkId) return { success: false, error: "Unauthorized" };
+        const dbUser = await prismadb.user.findUnique({ where: { clerkId } });
+        if (!dbUser) return { success: false, error: "User not found" };
+        // Verify ownership
+        const req = await prismadb.buyerRequest.findFirst({ where: { id, userId: dbUser.id } });
+        if (!req) return { success: false, error: "Not found" };
+        await prismadb.buyerRequest.delete({ where: { id } });
+        return { success: true };
+    } catch (error) {
+        console.error("Delete Request Error:", error);
+        return { success: false, error: "Failed to delete request" };
+    }
+}
+
+export async function updateRequest(id: string, data: { query?: string; extraData?: string }) {
+    try {
+        const { userId: clerkId } = await auth();
+        if (!clerkId) return { success: false, error: "Unauthorized" };
+        const dbUser = await prismadb.user.findUnique({ where: { clerkId } });
+        if (!dbUser) return { success: false, error: "User not found" };
+        const req = await prismadb.buyerRequest.findFirst({ where: { id, userId: dbUser.id } });
+        if (!req) return { success: false, error: "Not found" };
+        const updated = await prismadb.buyerRequest.update({
+            where: { id },
+            data: {
+                ...(data.query && { query: data.query }),
+                ...(data.extraData !== undefined && { extraData: data.extraData }),
+                status: "ACTIVE", // Reset status back to ACTIVE on edit
+            },
+        });
+
+        // Run smart matchmaker to check if it matches existing listings
+        const { matchRequestWithListings } = await import("@/lib/matchmaker");
+        await matchRequestWithListings(id);
+
+        const finalRequest = await prismadb.buyerRequest.findUnique({
+            where: { id }
+        }) || updated;
+
+        return { success: true, request: finalRequest };
+    } catch (error) {
+        console.error("Update Request Error:", error);
+        return { success: false, error: "Failed to update request" };
+    }
+}
+
 export async function updateListing(id: string, data: any) {
     try {
         // ⚡ PERF: auth() — local JWT validation, no Clerk HTTP call
@@ -358,13 +441,22 @@ export async function updateListing(id: string, data: any) {
                 longitude: data.longitude,
                 images: JSON.stringify(data.images),
                 videos: JSON.stringify(data.videos || []),
+                ...(data.listingType ? { listingType: data.listingType } : {}),
                 extraData: data.extraData ? JSON.stringify(data.extraData) : null
             }
         });
 
+        // Match listing with active requests (radars)
+        let matchCount = 0;
+        if (listing.status === "ACTIVE" && listing.listingType === "SELL") {
+            const { matchListingWithRequests } = await import("@/lib/matchmaker");
+            matchCount = await matchListingWithRequests(listing.id);
+        }
+
         revalidatePath("/dashboard/marketplace");
         revalidatePath(`/dashboard/marketplace/${id}`);
-        return { success: true, listing };
+        revalidatePath(`/listing/${id}`);         // Public landing page cache
+        return { success: true, matchCount, listing };
     } catch (error) {
         console.error("Update Listing Error:", error);
         return { success: false, error: "Failed to update listing" };
@@ -392,6 +484,7 @@ export async function deleteListing(id: string) {
         });
 
         revalidatePath("/dashboard/marketplace");
+        revalidatePath(`/listing/${id}`);         // Clear public OG cache on delete
         return { success: true };
     } catch (error) {
         console.error("Delete Listing Error:", error);
@@ -618,4 +711,109 @@ export async function getAiKnowledge() {
     }
     return {};
 }
+
+export async function createShipmentFromRequest(requestId: string) {
+    try {
+        const { userId: clerkId } = await auth();
+        if (!clerkId) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        let dbUser = await prismadb.user.findUnique({
+            where: { clerkId }
+        });
+
+        if (!dbUser) {
+            const fullUser = await currentUser();
+            if (!fullUser) return { success: false, error: "Unauthorized" };
+            dbUser = await prismadb.user.create({
+                data: {
+                    clerkId,
+                    email: fullUser.emailAddresses[0]?.emailAddress,
+                    firstName: fullUser.firstName,
+                    lastName: fullUser.lastName,
+                    imageUrl: fullUser.imageUrl,
+                    phone: fullUser.phoneNumbers[0]?.phoneNumber,
+                }
+            });
+        }
+
+        const request = await prismadb.buyerRequest.findUnique({
+            where: { id: requestId }
+        });
+
+        if (!request) {
+            return { success: false, error: "בקשת הקונה לא נמצאה" };
+        }
+
+        if (request.userId === dbUser.id) {
+            return { success: false, error: "לא ניתן להציע מוצר לבקשה של עצמך" };
+        }
+
+        // Parse budget values from request
+        let value = 0;
+        let detailsText = "";
+        try {
+            const extra = typeof request.extraData === "string" ? JSON.parse(request.extraData) : request.extraData;
+            if (extra && typeof extra === "object") {
+                if (extra.budget) {
+                    value = parseFloat(extra.budget) || 0;
+                } else if (extra.budgetRange) {
+                    let br = extra.budgetRange;
+                    if (typeof br === "string") {
+                        try { br = JSON.parse(br); } catch { br = br.split(",").map(Number); }
+                    }
+                    if (Array.isArray(br) && br.length >= 2) {
+                        value = parseFloat(br[1]) || parseFloat(br[0]) || 0;
+                    }
+                }
+                if (extra.details) {
+                    detailsText = String(extra.details);
+                }
+            }
+        } catch (e) {
+            console.error("Error parsing budget for shipment creation:", e);
+        }
+
+        const sellerNotes = `הצעה עבור בקשת קנייה: ${request.query}${detailsText ? `\n\nפרטי הבקשה:\n${detailsText}` : ""}`;
+
+        const shipment = await prismadb.shipment.create({
+            data: {
+                shortId: Math.random().toString(36).substring(2, 7).toUpperCase(),
+                sellerId: dbUser.id,
+                buyerId: request.userId,
+                listingId: null,
+                status: "DRAFT",
+                details: {
+                    create: {
+                        itemName: request.query,
+                        value: value,
+                        itemCondition: "דרוש לקנייה 🏷️",
+                        sellerNotes: sellerNotes,
+                        images: JSON.stringify([]),
+                        videos: JSON.stringify([]),
+                        flexibleData: JSON.stringify({
+                            buyerRequestData: request.extraData,
+                            dealType: 'negotiation',
+                            offers: [{
+                                amount: value,
+                                by: 'seller',
+                                createdAt: new Date().toISOString()
+                            }],
+                            lastOfferBy: 'seller',
+                            negotiationStatus: 'active'
+                        })
+                    }
+                }
+            }
+        });
+
+        return { success: true, shipmentId: shipment.id, shortId: shipment.shortId };
+
+    } catch (error) {
+        console.error("Create Shipment from Request Error:", error);
+        return { success: false, error: "Failed to start transaction" };
+    }
+}
+
 

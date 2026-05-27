@@ -870,3 +870,62 @@ model SearchLog {
   query     String
   createdAt DateTime @default(now())
 }
+
+model ComputerUseCategory {
+  id                         Int                   @id @default(autoincrement())
+  categoryNameHe             String                @map("category_name_he")
+  categoryNameEn             String?               @map("category_name_en")
+  description                String?
+  minCpuTier                 String?               @map("min_cpu_tier")
+  minRamGb                   Int                   @map("min_ram_gb")
+  minStorageGb               Int                   @map("min_storage_gb")
+  storageType                String                @default("SSD NVMe") @map("storage_type")
+  recommendedGpu             String?               @map("recommended_gpu")
+  manufacturerRecommendation String?               @map("manufacturer_recommendation")
+  dynamicAttributes          Json                  @default("{}") @map("dynamic_attributes")
+  createdAt                  DateTime              @default(now()) @map("created_at")
+  updatedAt                  DateTime              @default(now()) @updatedAt @map("updated_at")
+  logs                       UserConsultationLog[]
+  softwareApplications       SoftwareApplication[]
+
+  @@map("computer_use_categories")
+}
+
+model UserConsultationLog {
+  id                       Int                  @id @default(autoincrement())
+  userId                   String?              @map("user_id")
+  selectedCategoryId       Int                  @map("selected_category_id")
+  category                 ComputerUseCategory  @relation(fields: [selectedCategoryId], references: [id])
+  preferredFormFactor      String?              @map("preferred_form_factor")
+  userBudget               Decimal?             @map("user_budget")
+  selectedListingId        String?              @map("selected_listing_id")
+  aiAdjustedRecommendation Json?                @map("ai_adjusted_recommendation")
+  createdAt                DateTime             @default(now()) @map("created_at")
+
+  @@map("user_consultation_logs")
+}
+
+model SoftwareApplication {
+  id                Int                  @id @default(autoincrement())
+  appNameEn         String               @map("app_name_en")
+  appNameHe         String?              @map("app_name_he")
+  categoryId        Int?                 @map("category_id")
+  category          ComputerUseCategory? @relation(fields: [categoryId], references: [id])
+  minRamGbOverride  Int?                 @map("min_ram_gb_override")
+  minVramGbOverride Int?                 @map("min_vram_gb_override")
+  isPopular         Boolean              @default(false) @map("is_popular")
+  iconUrl           String?              @map("icon_url") @db.VarChar(500)
+  createdAt         DateTime             @default(now()) @map("created_at")
+
+  @@map("software_applications")
+}
+
+model SoftwareRequest {
+  id        Int      @id @default(autoincrement())
+  appName   String   @map("app_name")
+  isAdded   Boolean  @default(false) @map("is_added")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("software_requests")
+}
+

@@ -927,19 +927,28 @@ export function extractAttributes(text: string): { key: string; value: string; u
         { key: "טסט עד", regex: /(?:טסט|test)\s*(?:עד|until)?[:\s-]*(\d{1,2}[.\/-]\d{2,4})/i, format: (m) => ({ value: m[1] }) },
         { key: "תאריך קנייה", regex: /(?:נקנה|נקניתי|רכשתי|קניתי|purchased?)\s*(?:ב|ב-|\s)([0-9]{1,2}[\/.\-][0-9]{1,2}[\/.\-][0-9]{2,4}|[0-9]{1,2}[\/.][0-9]{2,4})/i, format: (m) => ({ value: m[1] }) },
         // RAM: use inline "." not "[\s\S]" to prevent matching RAM from the next line
+        // Support slash delimiter: /32GB/ pattern (used in spec sheets like Lenovo LOQ)
         { key: "RAM", regex: /(?:זיכרון\s*פנימי|זיכרון\s*\(RAM\)|RAM|זיכרון|זכרון).{0,30}?(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         { key: "RAM", regex: /(\d{1,3})\s*(GB|גיגה).{0,40}?(RAM|זיכרון|זכרון)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
-        // RAM fallback: 'ל-24GB' / 'משודרג ל-24GB' - Hebrew phrasing for 'upgraded to X GB'
+        // RAM fallback: slash-delimited specs like i7-14700HX/32GB/1TB or standalone NGB in context
+        { key: "RAM", regex: /[\s\/](\d{1,3})\.?GB(?=\/|\s|$)(?!.*(?:SSD|HDD|NVMe|NVME|אחסון))/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
         { key: "RAM", regex: /משודרג.{0,20}?(\d{1,3})\s*(GB|גיגה)/i, format: (m) => ({ value: m[1], unit: "GB RAM" }) },
-        // Storage: require explicit storage keywords or TB (do NOT match 'זיכרון פנימי בנפח' - that's RAM)
-        { key: "נפח אחסון", regex: /(?:אחסון|דיסק|SSD|HDD|כונן)\s*[-:]?\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
+        // Storage: require explicit storage keywords, TB, or NVMe/NVME (do NOT match RAM)
+        { key: "נפח אחסון", regex: /(?:אחסון|דיסק|SSD|HDD|NVMe|NVME|כונן)\s*[-:\/]?\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
         { key: "נפח אחסון", regex: /(\d{1,4})\s*(TB|טרה)\b/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
+        // Storage: slash-delimited "1TB NVMe" or "1TB SSD" pattern
+        { key: "נפח אחסון", regex: /[\s\/](\d{1,4})(TB|GB)\s*(?:NVMe|NVME|SSD|HDD)/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
         { key: "נפח אחסון", regex: /(?:נפח)\s*(\d{1,4})\s*(GB|TB|גיגה|טרה)\b(?!.*(?:זיכרון|ראם|RAM))/i, format: (m) => ({ value: m[1], unit: m[2].toUpperCase() }) },
+        // GPU / כרטיס מסך: NVIDIA GeForce RTX/GTX, AMD Radeon RX, Intel Arc/Iris
+        { key: "כרטיס מסך", regex: /(?:NVIDIA[®\s]*)?(?:GeForce[\s®™]*)?(?:RTX[™\s]*(\d{4}(?:\s*Ti)?)|GTX[™\s]*(\d{4}(?:\s*Ti)?))/i, format: (m) => ({ value: `NVIDIA ${m[1] ? 'RTX ' + m[1].trim() : 'GTX ' + (m[2] || '').trim()}` }) },
+        { key: "כרטיס מסך", regex: /(?:AMD[\s®]*)?Radeon[\s®™]*(?:RX[\s]*(\d{3,4}(?:\s*XT)?)|Pro[\s]*(\d{3,4}))/i, format: (m) => ({ value: `AMD Radeon RX ${(m[1] || m[2] || '').trim()}` }) },
+        { key: "כרטיס מסך", regex: /Intel[\s®]*(?:Arc[\s®™]*(A\d{3}[A-Z]?)|Iris[\s®™]*Xe)/i, format: (m) => ({ value: m[1] ? `Intel Arc ${m[1].trim()}` : 'Intel Iris Xe' }) },
         // CPU: Apple chip voiced as 'שבב M3' / 'שבב M4'
         { key: "מעבד", regex: /(?:שבב|chip)\s*(M[1-4](?:\s+(?:Pro|Max|Ultra))?)/i, format: (m) => ({ value: `Apple ${m[1].trim()}` }) },
-        // CPU: Specific matches first
+        // CPU: Slash-delimited i7-14700HX (e.g. i7-14700HX/32GB/1TB)
+        { key: "מעבד", regex: /(?:^|[\s\/,.-])(i[3579]-\d{4,5}[A-Z]{0,3})(?=[\s\/,.-]|$)/i, format: (m) => ({ value: m[1].trim() }) },
+        // CPU: Specific full brand matches
         { key: "מעבד", regex: /(?:^|[\s,.-])(Intel(?:[ \t]+Core)?(?:[ \t]+Ultra)?[ \t]+[i\d][\w\-]*|AMD[ \t]+Ryzen[ \t]+\d[\w\-]*|Apple[ \t]+M[1-4](?:[ \t]+(?:Pro|Max|Ultra))?)(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1].trim() }) },
-        { key: "מעבד", regex: /(?:^|[\s(,.-])(i[3579]-\d{4,5}[A-Z]{0,2})(?:[\s),.-]|$)/i, format: (m) => ({ value: m[1].trim() }) },
         // CPU: Support Keyword AFTER value for CPU, e.g. "Core i5-9600k 3.7Ghz מעבד"
         { key: "מעבד", regex: /(i[3579]-[\w]+)[ \t]+(?:[0-9]+(?:\.[0-9]+)?[ \t]*Ghz[ \t]*)?(?:מעבד|processor)/i, format: (m) => ({ value: m[1].trim() }) },
         { key: "מעבד", regex: /(?:Intel(?:[ \t]+Core)?(?:[ \t]+Ultra)?[ \t]+[i\d][\w\-]*|AMD[ \t]+Ryzen[ \t]+\d[\w\-]*)[ \t]+(?:[0-9]+(?:\.[0-9]+)?[ \t]*Ghz[ \t]*)?(?:מעבד|processor)/i, format: (m) => ({ value: m[1].trim() }) },
@@ -954,10 +963,12 @@ export function extractAttributes(text: string): { key: string; value: string; u
         { key: "מצב סוללה", regex: /(\d{2,3})%\s*(?:סוללה|battery)/i, format: (m) => ({ value: m[1], unit: "%" }) },
         // טכנולוגיית מסך: OLED, AMOLED, IPS, LCD etc.
         { key: "טכנולוגיית מסך", regex: /(?:^|[\s,.-])(OLED|AMOLED|QLED|IPS|LCD|Retina|Mini LED|LTPO)(?:[\s,.-]|$)/i, format: (m) => ({ value: m[1].toUpperCase() }) },
-        // גודל מסך: handle all apostrophe variants (U+0027, U+2019, U+05F3)
-        { key: "גודל מסך", regex: /(\d{1,3}(?:\.\d)?)\s*(?:אינץ[\u0027\u2019\u05F3]?|אינצ[\u0027\u2019\u05F3]|אינ[\u0027\u2019\u05F3]\s*ץ|inch|")/i, format: (m) => ({ value: m[1], unit: "אינץ'" }) },
+        // סוג רזולוציה: FHD, QHD, WQHD, 4K, UHD
+        { key: "סוג רזולוציה", regex: /(?:^|[\s\/,.-])(FHD|QHD|WQHD|UHD|4K|2K|OLED|WUXGA|WQXGA)(?=[\s\/,.-]|$)/i, format: (m) => ({ value: m[1].toUpperCase() }) },
+        // גודל מסך: handle slash delimiters too e.g. 15.6" or 15.6"
+        { key: "גודל מסך", regex: /(?:^|[\s\/])(\d{1,3}(?:\.\d)?)(?:אינץ[\u0027\u2019\u05F3]?|אינצ[\u0027\u2019\u05F3]|inch|")/i, format: (m) => ({ value: m[1], unit: "אינץ'" }) },
         { key: "גודל מסך", regex: /(?:מסך\s*(?:ב?גודל)?|גודל)\s*['"״]{1,2}(\d{1,3}(?:\.\d)?)/i, format: (m) => ({ value: m[1], unit: "אינץ'" }) },
-        // רזולוציה: standard + non-standard laptop resolutions (4-digit x 4-digit)
+        // רזולוציה מספרית: standard + non-standard laptop resolutions (4-digit x 4-digit)
         { key: "רזולוציה", regex: /\b(1920|2560|2880|3200|3840|7680|1366|1280|2160)[xX×](1080|1200|1440|1600|1800|2160|4320|768|800)\b/, format: (m) => ({ value: `${m[1]}x${m[2]}` }) },
         { key: "תדר רענון", regex: /(\d{2,3})\s*(Hz|הרץ)\b/i, format: (m) => ({ value: m[1], unit: "Hz" }) },
         { key: "מצלמה", regex: /(\d{1,3})\s*(MP|מגה\s*פיקסל)\b/i, format: (m) => ({ value: m[1], unit: "MP" }) },

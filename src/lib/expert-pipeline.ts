@@ -58,9 +58,10 @@ export async function classifyCategory(query: any): Promise<string> {
     const classifier = new natural.BayesClassifier();
     
     // אימון המערכת על השמות המאוחדים שלנו
-    classifier.addDocument('אייפון סמסונג טלפון סלולרי נייד גלקסי iphone samsung galaxy mobile', 'PHONES');
-    classifier.addDocument('לפטופ מחשב נייד נייח מעבד מקבוק pc desktop laptop macbook', 'LAPTOPS');
-    classifier.addDocument('רכב מכונית אוטו טויוטה יונדאי קורולה car toyota hyundai car', 'VEHICLES');
+    classifier.addDocument('אייפון סמסונג טלפון סלולרי נייד גלקסי סמארטפון טאבלט iphone samsung galaxy mobile smartphone tablet redmi poco xiaomi', 'PHONES');
+    classifier.addDocument('לפטופ מחשב נייד נייח מעבד מקבוק מקלדת משטח מגע זיכרון מסך pc desktop laptop macbook notebook ultrabook chromebook zenbook vivobook thinkpad ideapad core intel ryzen ssd graphics gpu hdmi ram windows', 'LAPTOPS');
+    classifier.addDocument('רכב מכונית אוטו טויוטה יונדאי קורולה קילומטראז טסט ידני אוטומט מנוע יד שנת ייצור car toyota hyundai car engine mileage gear test year model make', 'VEHICLES');
+    classifier.addDocument('אול אין וואן איימק imac aio all in one all-in-one הכל באחד', 'AIO');
     
     classifier.train();
     
@@ -101,16 +102,17 @@ export async function expertFeedbackPipeline(query: any, existingCategory?: stri
     // שלב הניקוי ויישור הקו (Normalization)
     const t1 = Date.now();
     
-    // CRITICAL FIX: If the user explicitly chose a category (e.g. LAPTOPS), respect it!
-    // Only run detectCategory when no category is provided or it's UNKNOWN/GENERAL.
-    const userHasCategory = existingCategory && existingCategory !== '' && existingCategory !== 'undefined' && existingCategory !== 'UNKNOWN' && existingCategory !== 'GENERAL';
-    if (!userHasCategory) {
-        const detected = await detectCategory(safeQuery);
-        if (detected !== "UNKNOWN") {
-            category = detected;
-        } else {
-            category = await classifyCategory(safeQuery);
-        }
+    // Detect the category from the query text first (e.g. if the user pasted an iMac listing but the form was in LAPTOPS mode, snap to AIO).
+    // Fall back to the existing category only if the AI returns UNKNOWN.
+    let detected: string = await detectCategory(safeQuery);
+    if (detected === "UNKNOWN") {
+        detected = await classifyCategory(safeQuery);
+    }
+
+    if (detected && detected !== "UNKNOWN") {
+        category = detected;
+    } else if (!category || category === "UNKNOWN" || category === "GENERAL") {
+        category = "GENERAL";
     }
     console.log("📂 CATEGORY:", Date.now() - t1, "ms", "→", category);
 

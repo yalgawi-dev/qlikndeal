@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
 import { dbCache } from "@/lib/db-cache";
 
-export const revalidate = 60; // ⚡ CACHING TTL 60s (Senior Architect Rule enforced)
+export const dynamic = "force-dynamic";   // route uses request.url — cannot be statically rendered
+export const revalidate = 0;              // ⚡ No ISR — full dynamic at runtime (DB calls per request)
 
 export async function GET(req: Request) {
     try {
@@ -146,6 +147,11 @@ export async function GET(req: Request) {
             });
             // מיון אלפבתי
             options[targetFieldId].sort((a, b) => a.localeCompare(b));
+        });
+
+        // ⚡ Sort all option lists alphabetically (A-Z / א-ת) with numeric sorting support for premium UX
+        Object.keys(options).forEach(fieldId => {
+            options[fieldId].sort((a, b) => a.localeCompare(b, 'he', { sensitivity: 'base', numeric: true }));
         });
 
         return NextResponse.json({

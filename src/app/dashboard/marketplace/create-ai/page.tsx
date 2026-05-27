@@ -128,11 +128,18 @@ export default function CreateAiPage() {
             <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
 
-            <Link href="/dashboard/marketplace" className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all z-50 backdrop-blur-md border border-white/10">
-                <X size={24} />
-            </Link>
-
             <div className="max-w-3xl w-full relative z-10">
+                {/* Back Navigation Bar */}
+                <div className="flex gap-4 items-center mb-8 text-sm flex-wrap justify-center sm:justify-start" dir="rtl">
+                    <Link href="/" className="inline-flex items-center text-cyan-400 hover:text-cyan-300 transition-colors font-bold bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl border border-white/10 backdrop-blur-md">
+                        <ArrowRight className="w-4 h-4 ml-1.5" />
+                        חזרה למרקטפלייס
+                    </Link>
+                    <button onClick={() => router.back()} className="inline-flex items-center text-gray-400 hover:text-gray-300 transition-colors font-bold bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl border border-white/10 backdrop-blur-md">
+                        חזור שלב אחורה
+                    </button>
+                </div>
+
                 <div className="text-center mb-6 sm:mb-12 space-y-3">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-sm font-medium mb-4 animate-pulse">
                         <Sparkles size={14} />

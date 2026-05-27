@@ -506,3 +506,16 @@ export async function getModelsByFamily(type: "laptop" | "desktop" | "aio" | "mo
         return { success: false, error: error.message };
     }
 }
+
+export async function getMotherboardSpecs(modelName: string) {
+    if (!modelName) return null;
+    try {
+        const mb = await prisma.motherboardCatalog.findFirst({
+            where: { model: { equals: modelName.trim(), mode: 'insensitive' } }
+        });
+        return mb;
+    } catch (e) {
+        console.error("Error fetching motherboard specs:", e);
+        return null;
+    }
+}

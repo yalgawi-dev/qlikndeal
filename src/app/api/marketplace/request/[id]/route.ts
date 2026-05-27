@@ -43,11 +43,21 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
             },
             data: {
                 query,
-                extraData: extraData || null
+                extraData: extraData || null,
+                status: "ACTIVE" // Reset status back to ACTIVE on edit
             }
         });
 
-        return NextResponse.json(updatedRequest);
+        // Run smart matchmaker to check if it matches existing listings
+        const { matchRequestWithListings } = await import("@/lib/matchmaker");
+        await matchRequestWithListings(params.id);
+
+        // Fetch updated request to get correct status
+        const finalRequest = await prismadb.buyerRequest.findUnique({
+            where: { id: params.id }
+        }) || updatedRequest;
+
+        return NextResponse.json(finalRequest);
     } catch (error) {
         console.error("[MARKETPLACE_REQUEST_PUT]", error);
         return new NextResponse("Internal Error", { status: 500 });

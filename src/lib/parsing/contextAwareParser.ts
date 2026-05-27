@@ -38,7 +38,9 @@ export class ContextAwareParser {
     const cleanDict = (str: string) => String(str).replace(/[()\[\]{}]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
 
     // Preserve strong punctuation to create boundaries
-    let normalizedText = originalText.toLowerCase();
+    let normalizedText = originalText.toLowerCase()
+        .replace(/[\u00ae\u2122\u00a9]/g, ' ') // Strip ®, ™, ©
+        .replace(/[\u200b-\u200d\ufeff]/g, ''); // Strip zero-width characters
     
     // Convert hard boundary punctuation to a special token: __wall__
     normalizedText = normalizedText.replace(/[.!;\n|]/g, ' __wall__ ');
@@ -49,7 +51,7 @@ export class ContextAwareParser {
     normalizedText = normalizedText.replace(/[()\[\]{}]/g, ' ');
 
     // Strip other punctuation but keep boundaries intact
-    normalizedText = normalizedText.replace(/[:-]/g, ' ');
+    normalizedText = normalizedText.replace(/[:\-\/]/g, ' ');
     // Collapse multiple spaces
     normalizedText = normalizedText.replace(/\s+/g, ' ').trim();
 

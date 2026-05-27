@@ -159,6 +159,7 @@ export async function getShipmentByShortId(shortId: string) {
             where: { shortId },
             include: {
                 details: true,
+                listing: true,
                 seller: {
                     select: {
                         clerkId: true, // Needed for permission check

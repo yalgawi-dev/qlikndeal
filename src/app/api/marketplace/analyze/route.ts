@@ -45,7 +45,10 @@ export async function POST(req: Request) {
 
         // 🛡️ הגנה קריטית: מוודאים ש-text הוא תמיד מחרוזת (String)
         const rawText = body.text;
-        const text = typeof rawText === 'string' ? rawText : "";
+        let text = typeof rawText === 'string' ? rawText : "";
+        
+        // ⚡ ניקוי סימנים מסחריים מעכבי זיהוי (®, ™, ©)
+        text = text.replace(/[\u00ae\u2122\u00a9]/g, ' ').replace(/[\u200b-\u200d\ufeff]/g, '');
 
         if (!text || text.trim().length === 0) {
             return NextResponse.json({ success: false, error: "Text is required" }, { status: 400 });
@@ -58,9 +61,9 @@ export async function POST(req: Request) {
         console.log("🧠 PIPELINE DONE:", t2 - t1, "ms");
 
         // 2. נרמול קטגוריות - יישור קו יסודי
-        // לבקשתך: השבתנו את החלפת הקטגוריה האוטומטית כרגע.
-        // תמיד ניתן עדיפות לקטגוריה שהמשתמש בחר ידנית (body.category).
-        let rawCategory = body.category || aiResult?.category || "GENERAL";
+        // Prioritize the category detected by the AI pipeline (aiResult?.category) so that the form category dropdown 
+        // will update to the correct category identified by the AI. Fall back to body.category if undetected.
+        let rawCategory = aiResult?.category || body.category || "GENERAL";
         let finalCategory = rawCategory.toUpperCase();
         const normalizationRules: Record<string, string> = {
             "MOBILES": "SMARTPHONES", "MOBILE": "SMARTPHONES", "PHONE": "SMARTPHONES", "PHONES": "SMARTPHONES",
@@ -136,23 +139,44 @@ export async function POST(req: Request) {
                 // מנע טעות: שנים (2000-2099) לעולם לא יהיו מחיר (מנע המקרה "ב-2024" → price=2024)
                 if (numVal >= 2000 && numVal <= 2099) { foundPrice = ""; continue; }
                 // Sanity check: price should be reasonable (200 – 10,000,000)
-                if (numVal >= 200 && numVal <= 10000000) break;
+                if (numVal >= 200 && numVal <= 10000000) {
+                    // Check context before match (reject CPU/GPU model numbers like RTX 5060)
+                    const matchIndex = m.index || 0;
+                    const textBefore = text.substring(Math.max(0, matchIndex - 25), matchIndex).toLowerCase();
+                    const isModelNumber = /rtx|gtx|rx|i\d|ryzen|geforce|radeon|intel|amd|core|snapdragon|m\d/i.test(textBefore);
+                    const isExplicitPrice = /מחיר|מחירו|מבקש|עולה|ב-?|תמורת/i.test(textBefore);
+                    
+                    if (isModelNumber && !isExplicitPrice) {
+                        foundPrice = "";
+                        continue;
+                    }
+                    break;
+                }
                 foundPrice = "";
             }
         }
         if (foundPrice) regexExtracted.price = foundPrice;
 
-        // כותרת — חיפוש שם מוצר (מותג + דגם)
-        const KNOWN_BRANDS = ["אייפון", "iPhone", "Samsung", "סמסונג", "Xiaomi", "שיאומי",
-            "Lenovo", "לנובו", "Dell", "HP", "Apple", "MacBook", "מקבוק",
-            "Google", "OnePlus", "Huawei", "Oppo", "Pixel"];
+        // Brand Extraction & Normalization
+        const appleBrands = ["אייפון", "iphone", "apple", "אפל", "macbook", "מקבוק", "imac", "איימק", "ipad", "אייפד"];
+        const isApple = appleBrands.some(k => text.toLowerCase().includes(k));
+        
         let foundBrand = "";
-        for (const brand of KNOWN_BRANDS) {
-            if (text.toLowerCase().includes(brand.toLowerCase())) {
-                foundBrand = brand;
-                regexExtracted.brand = brand;
-                break;
+        if (isApple) {
+            foundBrand = "Apple";
+        } else {
+            const KNOWN_BRANDS = ["Samsung", "סמסונג", "Xiaomi", "שיאומי",
+                "Lenovo", "לנובו", "Dell", "HP", "Google", "OnePlus", "Huawei", "Oppo", "Pixel", "Asus", "אזוס", "אסוס", "Gigabyte", "MSI", "Acer", "איסר", "אייסר"];
+            for (const brand of KNOWN_BRANDS) {
+                if (text.toLowerCase().includes(brand.toLowerCase())) {
+                    foundBrand = brand;
+                    break;
+                }
             }
+        }
+        
+        if (foundBrand) {
+            regexExtracted.brand = foundBrand;
         }
 
         // חילוץ כותרת אוטומטית מטקסט המודעה - יצירת כותרת יפה ותמציתית (לפי שם הקטגוריה + יצרן)
@@ -206,9 +230,21 @@ export async function POST(req: Request) {
                 text.match(/AMD\s+Ryzen\s+\d+\s+[\w-]+(?=[,.(\s\n]|$)/i) ||
                 text.match(/Apple\s+M\d+(?:\s+(?:Pro|Max|Ultra))?(?=[,.(\s\n]|$)/i) ||
                 text.match(/Snapdragon\s+X\s*[\w]+(?=[,.(\s\n]|$)/i) ||
-                text.match(/\b(i3|i5|i7|i9|m1|m2|m3|Ryzen\s*[3579])\b/i);
+                text.match(/\b(i3|i5|i7|i9|m[1-5](?:\s+(?:Pro|Max|Ultra))?|Ryzen\s*[3579])\b/i);
             if (cpuMatch) regexExtracted.cpu = cpuMatch[1] || cpuMatch[0].trim().replace(/\s+/g, ' ');
         }
+
+        // כרטיס מסך (GPU) — Regex ייעודי כגיבוי
+        const gpuMatch = 
+            text.match(/(?:NVIDIA\s+)?GeForce\s+RTX\s+\d{3,4}(?:\s*Ti)?/i) ||
+            text.match(/(?:NVIDIA\s+)?GeForce\s+GTX\s+\d{3,4}(?:\s*Ti)?/i) ||
+            text.match(/(?:AMD\s+)?Radeon\s+RX\s+\d{3,4}(?:\s*XT)?/i) ||
+            text.match(/(?:Intel\s+)?Iris\s+Xe\s*(?:Graphics)?/i) ||
+            text.match(/(?:Intel\s+)?UHD\s+Graphics\s*\d{0,4}/i) ||
+            text.match(/\b(RTX\s*A?\d{3,4}(?:\s*Ada)?|GTX\s*\d{3,4})\b/i) ||
+            text.match(/(?:\bApple\s+)?\b(?:\d{1,2}-?Core|\d{1,2}c)\s+gpu\b/i);
+        if (gpuMatch) regexExtracted.gpu = gpuMatch[0].trim().replace(/\s+/g, ' ');
+
 
         // מצב סוללה — אחוזים (תומך גם בסמל % וגם במילה 'אחוז'). נאפשר מרחק תווים למילים כמו "בטריה נמצאת ב 98 אחוז".
         const batteryMatch = text.match(/(?:סוללה|battery|בטרי|בריאות)[\s\S]{0,35}?(\d{2,3})\s*(?:%|אחוז)/i);
@@ -253,6 +289,67 @@ export async function POST(req: Request) {
             for (const { r, val } of osPatterns) {
                 if (r.test(text)) { regexExtracted.os = val; break; }
             }
+        }
+
+        // סוג רזולוציה — FHD / QHD / UHD / 4.5K / 5K
+        const resolutionMatch = text.match(/\b(4\.5K|5K|4K|2K|FHD|QHD|UHD|Retina)\b/i);
+        if (resolutionMatch) {
+            regexExtracted.resolutionType = resolutionMatch[1].toUpperCase();
+        }
+
+        // צבע (Color)
+        const colorPatterns = [
+            /\b(green|blue|pink|silver|space\s*gray|yellow|orange|purple|white|black)\b/i,
+            /\b(ירוק|כחול|ורוד|כסף|אפור|צהוב|כתום|סגול|לבן|שחור)\b/
+        ];
+        let foundColor = "";
+        for (const pattern of colorPatterns) {
+            const m = text.match(pattern);
+            if (m) {
+                foundColor = m[1].toLowerCase();
+                break;
+            }
+        }
+        if (foundColor) {
+            const colorMap: Record<string, string> = {
+                "green": "ירוק (Green)", "ירוק": "ירוק (Green)",
+                "blue": "כחול (Blue)", "כחול": "כחול (Blue)",
+                "pink": "ורוד (Pink)", "ורוד": "ורוד (Pink)",
+                "silver": "כסף (Silver)", "כסף": "כסף (Silver)",
+                "space gray": "אפור חלל (Space Gray)", "spacegray": "אפור חלל (Space Gray)", "אפור": "אפור חלל (Space Gray)",
+                "yellow": "צהוב (Yellow)", "צהוב": "צהוב (Yellow)",
+                "orange": "כתום (Orange)", "כתום": "כתום (Orange)",
+                "purple": "סגול (Purple)", "סגול": "סגול (Purple)",
+                "white": "לבן", "לבן": "לבן",
+                "black": "שחור", "שחור": "שחור"
+            };
+            regexExtracted.color = colorMap[foundColor] || foundColor;
+        }
+
+        // שנת יציאה / שנת השקה (releaseYear)
+        const releaseYearMatch = text.match(/\b(20\d{2})\b/);
+        if (releaseYearMatch) {
+            const yr = parseInt(releaseYearMatch[1]);
+            if (yr >= 2010 && yr <= 2030) {
+                regexExtracted.releaseYear = String(yr);
+            }
+        }
+
+        // Apple SKU / Model Number (e.g. MWUE3HB/A) mapped directly to subModel
+        const appleSkuMatch = text.match(/\b([A-Z0-9]{5,10}\/[A-Z])\b/i);
+        if (appleSkuMatch) {
+            regexExtracted.subModel = appleSkuMatch[1].toUpperCase();
+        }
+
+        // מסך מגע (Touchscreen)
+        const hasTouchNegation = /(?:ללא|בלי)\s+מסך\s+מגע/i.test(text) || /no\s+touch/i.test(text);
+        const touchHebrewPattern = /(?:^|[\s,.-])(?:ב|ו|ל|מ)?(?:מסך\s*מגע|מגע)(?:$|[\s,.-])/i;
+        const touchEnglishPattern = /\b(touch|touchscreen|touch\s*screen)\b/i;
+        const hasTouch = touchHebrewPattern.test(text) || touchEnglishPattern.test(text);
+        if (hasTouchNegation) {
+            regexExtracted.touchscreen = "לא";
+        } else if (hasTouch) {
+            regexExtracted.touchscreen = "כן";
         }
 
         // גודל מסך משם הדגם (G16→16", X14→14") — כאשר לא נמצא ממפרט מפורש
@@ -303,8 +400,16 @@ export async function POST(req: Request) {
                 screen: aiResult.screen || regexExtracted.screen || "",
                 brand: aiResult.brand || catalogData.brand || regexExtracted.brand || "",
                 // subModel = DB fieldId
-                subModel: aiResult.subModel || "",
+                subModel: aiResult.subModel || regexExtracted.subModel || "",
                 category: finalCategory,
+                gpu: aiResult.gpu || regexExtracted.gpu || "",
+                // שדות חדשים
+                refreshRate: regexExtracted.refreshRate || aiResult.refreshRate || "",
+                resolutionType: regexExtracted.resolutionType || aiResult.resolutionType || "",
+                extraStorage: regexExtracted.extraStorage || aiResult.extraStorage || "",
+                color: aiResult.color || regexExtracted.color || "",
+                releaseYear: aiResult.releaseYear || regexExtracted.releaseYear || "",
+                touchscreen: aiResult.touchscreen || regexExtracted.touchscreen || "",
                 // לא להעביר שדות פנימיים (isCatalogMatch / sourceTable) לטופס
                 suggestions: aiResult.suggestions
             }

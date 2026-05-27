@@ -18,7 +18,7 @@
 export const CATALOG_TO_FORM_FIELD_MAP: Record<string, string> = {
   // LaptopCatalog column → form fieldId
   'series':       'family',     // "סדרת יצרן" in form
-  'display':      'screen',     // screen specifications → screen field
+  'display':      'display',     // screen specifications → display field
   'screenSize':   'screen',     // screen size → same screen field
   'modelName':    'subModel',   // full model name → subModel field
   'screenType':   'screenType', // screen type (IPS/OLED) — matches form

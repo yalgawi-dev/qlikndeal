@@ -8,6 +8,8 @@ const isPublicRoute = createRouteMatcher([
     "/api/webhooks(.*)",
     "/api/user/set-city(.*)",
     "/link(.*)",
+    "/listing(.*)",               // Public listing landing pages
+    "/api/og(.*)",                // Dynamic OG image generation
     "/api/shadow-lead(.*)",
     // Marketplace APIs - publicly accessible listing data
     "/api/marketplace/smart-search(.*)",
@@ -18,6 +20,8 @@ const isPublicRoute = createRouteMatcher([
     "/api/marketplace/analyze(.*)",
     "/api/marketplace/form-structure(.*)",
     "/api/marketplace/catalog-search(.*)",  // חיפוש קטלוג פומבי
+    "/api/marketplace/software-request(.*)", // בקשת תוכנה של משתמש
+    "/api/marketplace/consultant(.*)",       // יועץ מחשבים
     "/api/test-catalog(.*)",                 // הנדסה בדיקה
 ]);
 

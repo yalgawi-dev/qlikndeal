@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -76,15 +77,21 @@ const DialogContent = React.forwardRef<
     React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
     const ctx = React.useContext(DialogContext);
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     if (!ctx?.open) return null;
+    if (!mounted) return null;
 
-    return (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-in fade-in duration-200">
+    return createPortal(
+        <div className="fixed inset-0 z-[200] bg-black/80 flex items-center justify-center p-4 animate-in fade-in duration-200">
             <div
                 ref={ref}
                 className={cn(
-                    "bg-background rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative shadow-2xl animate-in zoom-in-95 duration-200",
+                    "bg-gray-900 text-white border border-gray-800 rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative shadow-2xl animate-in zoom-in-95 duration-200",
                     className
                 )}
                 onClick={(e) => e.stopPropagation()}
@@ -99,7 +106,8 @@ const DialogContent = React.forwardRef<
                 </button>
                 {children}
             </div>
-        </div>
+        </div>,
+        document.body
     );
 });
 DialogContent.displayName = "DialogContent";

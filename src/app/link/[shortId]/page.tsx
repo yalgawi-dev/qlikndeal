@@ -1,7 +1,7 @@
 import { getShipmentByShortId } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle, ShieldCheck, User, ArrowRight, Package, Clock } from "lucide-react";
+import { CheckCircle, ShieldCheck, User, ArrowRight, Package, Clock, Zap } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -14,6 +14,159 @@ import { LastSeenUpdater } from "@/components/LastSeenUpdater";
 import { BackButton } from "@/components/BackButton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+const VIEWABLE_RADAR_FIELDS = [
+    { key: "category", label: "קטגוריה" },
+    { key: "brand", label: "יצרן" },
+    { key: "model", label: "דגם" },
+    { key: "ram", label: "זיכרון RAM" },
+    { key: "storage", label: "נפח אחסון" },
+    { key: "processor", label: "מעבד (CPU)" },
+    { key: "gpu", label: "כרטיס מסך (GPU)" },
+    { key: "screen", label: "גודל מסך" },
+    { key: "display", label: "מפרט מסך" },
+    { key: "budgetRange", label: "טווח מחיר" },
+    { key: "city", label: "עיר / מיקום" },
+    { key: "radius", label: "רדיוס חיפוש" },
+];
+
+const flattenExtraData = (rawExtra: any): Record<string, any> => {
+    let extra: Record<string, any> = {};
+    try {
+        extra = typeof rawExtra === "string" ? JSON.parse(rawExtra) : rawExtra;
+    } catch {}
+    if (!extra || typeof extra !== "object" || Array.isArray(extra)) extra = {};
+    
+    const getVal = (val: any) => Array.isArray(val) ? String(val[0] || "") : String(val || "");
+    if (extra.narrativeState && typeof extra.narrativeState === "object") {
+        const ns = extra.narrativeState;
+        if (ns.brand && !extra.brand) extra.brand = getVal(ns.brand);
+        if (ns.cpu && !extra.processor) extra.processor = getVal(ns.processor || ns.cpu);
+        if (ns.ram && !extra.ram) extra.ram = getVal(ns.ram);
+        if (ns.storage && !extra.storage) extra.storage = getVal(ns.storage);
+        if (ns.gpu && !extra.gpu) extra.gpu = getVal(ns.gpu);
+        if (ns.screen && !extra.screen) extra.screen = getVal(ns.screen);
+        if (ns.display && !extra.display) extra.display = getVal(ns.display);
+    }
+    return extra;
+};
+
+function parseSpecsFromText(text: string, currentExtra: Record<string, any>): Record<string, any> {
+    const extra = { ...currentExtra };
+    const lowerText = text.toLowerCase();
+
+    // 1. BRAND
+    if (!extra.brand) {
+        const brands = ["lenovo", "asus", "apple", "samsung", "dell", "hp", "msi", "gigabyte", "acer", "xiaomi", "lg", "intel", "amd"];
+        const brandMatch = brands.find(b => lowerText.includes(b));
+        if (brandMatch) {
+            extra.brand = brandMatch.charAt(0).toUpperCase() + brandMatch.slice(1);
+        } else if (text.includes("לנובו")) {
+            extra.brand = "Lenovo";
+        } else if (text.includes("אסוס")) {
+            extra.brand = "Asus";
+        } else if (text.includes("אפל") || text.includes("אייפון")) {
+            extra.brand = "Apple";
+        } else if (text.includes("סמסונג")) {
+            extra.brand = "Samsung";
+        } else if (text.includes("דל")) {
+            extra.brand = "Dell";
+        }
+    }
+
+    // 2. RAM
+    if (!extra.ram) {
+        const ramMatch = lowerText.match(/\b(8|16|32|64|128)\s*(?:gb|ג"ב|גיגה|ג'יגה)\b/);
+        if (ramMatch) {
+            extra.ram = `${ramMatch[1]}GB`;
+        }
+    }
+
+    // 3. STORAGE
+    if (!extra.storage) {
+        const storageMatch = lowerText.match(/\b(128|256|512)\s*(?:gb|ג"ב|גיגה|ג'יגה)\b|\b(1|2)\s*(?:tb|טרה)\b/);
+        if (storageMatch) {
+            if (storageMatch[1]) {
+                extra.storage = `${storageMatch[1]}GB`;
+            } else if (storageMatch[2]) {
+                extra.storage = `${storageMatch[2]}TB`;
+            }
+        }
+    }
+
+    // 4. PROCESSOR (CPU)
+    if (!extra.processor) {
+        if (lowerText.includes("i5") || lowerText.includes("core i5")) extra.processor = "Intel Core i5";
+        else if (lowerText.includes("i7") || lowerText.includes("core i7")) extra.processor = "Intel Core i7";
+        else if (lowerText.includes("i9") || lowerText.includes("core i9")) extra.processor = "Intel Core i9";
+        else if (lowerText.includes("ryzen 5")) extra.processor = "AMD Ryzen 5";
+        else if (lowerText.includes("ryzen 7")) extra.processor = "AMD Ryzen 7";
+        else if (lowerText.includes("ryzen 9")) extra.processor = "AMD Ryzen 9";
+        else if (lowerText.includes("m1")) extra.processor = "Apple M1";
+        else if (lowerText.includes("m2")) extra.processor = "Apple M2";
+        else if (lowerText.includes("m3")) extra.processor = "Apple M3";
+    }
+
+    // 5. GPU
+    if (!extra.gpu) {
+        if (lowerText.includes("rtx 3060")) extra.gpu = "NVIDIA RTX 3060";
+        else if (lowerText.includes("rtx 3070")) extra.gpu = "NVIDIA RTX 3070";
+        else if (lowerText.includes("rtx 3080")) extra.gpu = "NVIDIA RTX 3080";
+        else if (lowerText.includes("rtx 4060")) extra.gpu = "NVIDIA RTX 4060";
+        else if (lowerText.includes("rtx 4070")) extra.gpu = "NVIDIA RTX 4070";
+        else if (lowerText.includes("rtx 4080")) extra.gpu = "NVIDIA RTX 4080";
+        else if (lowerText.includes("rtx 4090")) extra.gpu = "NVIDIA RTX 4090";
+    }
+
+    // 6. Display spec (OLED, IPS, Hz, etc.)
+    if (!extra.display) {
+        const displayRegex = /(oled|ips|hz|dci-p3|retina|amoled|fhd|qhd|4k|2\.8k|120hz|144hz|60hz|90hz|240hz)/i;
+        const displayMatch = lowerText.match(displayRegex);
+        if (displayMatch) {
+            const fullMatch = lowerText.match(/([a-z0-9\.\-%]+(?:\s+[a-z0-9\.\-%]+){0,5}\s*(?:oled|ips|hz|dci-p3|retina|amoled|fhd|qhd|4k|2\.8k|120hz|144hz|60hz|90hz|240hz)\b[a-z0-9\.\-%\s]*)/i);
+            if (fullMatch) {
+                extra.display = fullMatch[1].trim();
+            }
+        }
+    }
+
+    return extra;
+}
+
+function formatRadarValue(key: string, value: any, extraData: any): string {
+    if (value === "Flexible" || value === "flexible" || value === "Flexible (any)" || value === "Flexible (Any)") {
+        return "גמיש";
+    }
+    if (key === "budgetRange") {
+        let arr = value;
+        if (typeof value === "string") {
+            try { arr = JSON.parse(value); } catch { arr = value.split(",").map(Number); }
+        }
+        if (Array.isArray(arr) && arr.length >= 2) {
+            const min = Number(arr[0]);
+            const max = Number(arr[1]);
+            if (min === 0 || isNaN(min)) {
+                return `עד ₪${max.toLocaleString()}`;
+            }
+            return `מ-₪${min.toLocaleString()} עד ₪${max.toLocaleString()}`;
+        }
+        if (extraData.budget) {
+            return `עד ₪${Number(extraData.budget).toLocaleString()}`;
+        }
+        return "לא צוין";
+    }
+    if (key === "radius") {
+        return `${value} ק״מ`;
+    }
+    if (key === "category") {
+        if (!value || value === "General" || value === "GENERAL") return "כללי";
+        if (value === "LAPTOPS" || value === "laptops") return "מחשבים ניידים";
+        if (value === "SMARTPHONES" || value === "smartphones" || value === "MOBILE" || value === "PHONE") return "טלפונים סלולריים";
+        return String(value);
+    }
+    return String(value);
+}
+
 
 export default async function ShipmentLinkPage({ params, searchParams }: { params: { shortId: string }, searchParams: { buyerId?: string } }) {
     const { success, shipment, error } = await getShipmentByShortId(params.shortId);
@@ -50,6 +203,29 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
 
     const viewerIsBuyer = user && (shipment.buyer?.clerkId === user.id || (user.id in negotiations));
     const currentBuyerId = user?.id;
+
+    // Parse specs for displaying in details card
+    let rawExtra: Record<string, any> = {};
+    if (shipment.listing?.extraData) {
+        try {
+            rawExtra = typeof shipment.listing.extraData === "string" ? JSON.parse(shipment.listing.extraData) : shipment.listing.extraData;
+        } catch {}
+    } else if (flexibleData.buyerRequestData) {
+        try {
+            rawExtra = typeof flexibleData.buyerRequestData === "string" ? JSON.parse(flexibleData.buyerRequestData) : flexibleData.buyerRequestData;
+        } catch {}
+    }
+    
+    const extra = flattenExtraData(rawExtra);
+    const textToParse = `${details.itemName} ${details.sellerNotes || ""}`;
+    const extraData = parseSpecsFromText(textToParse, extra);
+
+    const fieldsToShow = VIEWABLE_RADAR_FIELDS.filter(field => {
+        if (field.key === "budgetRange") {
+            return extraData.budgetRange || extraData.budget;
+        }
+        return extraData[field.key] !== undefined && extraData[field.key] !== null && String(extraData[field.key]).trim() !== "";
+    });
 
     // --- VIEW LOGIC ---
 
@@ -111,8 +287,14 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
         return (
             <main className="min-h-screen bg-muted/20 flex flex-col items-center p-4 md:p-8">
                 <div className="w-full max-w-2xl">
-                    <div className="mb-4">
+                    <div className="mb-4 flex items-center justify-between">
                         <BackButton label="חזור לשליטה" />
+                        <Link 
+                            href="/" 
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-xs font-bold backdrop-blur-md"
+                        >
+                            <span>חזרה להמשך חיפוש</span>
+                        </Link>
                     </div>
                     {/* Intimate Dual-Party Header */}
                     <div className="flex items-center justify-between bg-card p-4 rounded-3xl shadow-lg border border-primary/20 mb-6 bg-gradient-to-b from-card to-card/50">
@@ -195,6 +377,24 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
                                                 <span className="text-sm text-muted-foreground block mb-1">מחיר העלאה:</span>
                                                 <span className="text-2xl font-bold font-mono text-primary">₪{details.value}</span>
                                             </div>
+                                            {fieldsToShow.length > 0 && (
+                                                <div className="bg-muted/40 p-4 rounded-2xl border border-border space-y-2">
+                                                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-2">מפרט ופרטים נוספים:</span>
+                                                    <div className="divide-y divide-border">
+                                                        {fieldsToShow.map((field) => {
+                                                            const val = field.key === "budgetRange" ? extraData.budgetRange || extraData.budget : extraData[field.key];
+                                                            return (
+                                                                <div key={field.key} className="flex justify-between items-center py-2 text-sm">
+                                                                    <span className="text-muted-foreground">{field.label}</span>
+                                                                    <span className="font-bold text-foreground text-left max-w-[60%] break-words">
+                                                                        {formatRadarValue(field.key, val, extraData)}
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
                                             {details.sellerNotes && (
                                                 <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-2xl border border-amber-200 dark:border-amber-900/50">
                                                     <span className="text-xs font-bold text-amber-800 dark:text-amber-500 uppercase tracking-widest block mb-1">הערות מוכר / תיאור:</span>
@@ -208,7 +408,29 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
                             </Dialog>
                         </div>
 
-                        <div className="p-4 md:p-6 bg-slate-50 dark:bg-transparent">
+                        <div className="p-4 md:p-6 bg-slate-50 dark:bg-transparent flex flex-col gap-6">
+                            {fieldsToShow.length > 0 && (
+                                <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-primary/20 overflow-hidden shadow-inner">
+                                    <div className="px-4 py-2.5 bg-primary/10 border-b border-primary/20 flex items-center gap-2">
+                                        <Zap className="w-4 h-4 text-cyan-400" />
+                                        <span className="text-xs font-bold text-foreground">מפרט מבוקש ודרישות</span>
+                                    </div>
+                                    <div className="divide-y divide-border/40 px-4">
+                                        {fieldsToShow.map((field) => {
+                                            const val = field.key === "budgetRange" ? extraData.budgetRange || extraData.budget : extraData[field.key];
+                                            return (
+                                                <div key={field.key} className="flex justify-between items-center py-2.5 text-xs">
+                                                    <span className="text-muted-foreground">{field.label}</span>
+                                                    <span className="text-foreground font-bold text-left max-w-[60%] break-words">
+                                                        {formatRadarValue(field.key, val, extraData)}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Seller Approval Component with Thread Context */}
                             <SellerApproval
                                 shipmentId={shipment.id}
@@ -284,8 +506,14 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
             <LastSeenUpdater shipmentId={shipment.id} role={viewerIsSeller ? 'seller' : 'buyer'} />
             
             <div className="w-full max-w-2xl">
-                <div className="mb-4">
-                    <BackButton label="חזור" className="text-muted-foreground hover:text-foreground mb-4" />
+                <div className="mb-4 flex items-center justify-between">
+                    <BackButton label="חזור" className="text-muted-foreground hover:text-foreground" />
+                    <Link 
+                        href="/" 
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white transition-all text-xs font-bold backdrop-blur-md"
+                    >
+                        <span>חזרה להמשך חיפוש</span>
+                    </Link>
                 </div>
                 
                 {/* Intimate Dual-Party Header */}
@@ -375,6 +603,24 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
                                             <span className="text-sm text-muted-foreground block mb-1">מחיר מבוקש:</span>
                                             <span className="text-2xl font-bold font-mono text-primary">₪{details.value}</span>
                                         </div>
+                                        {fieldsToShow.length > 0 && (
+                                            <div className="bg-muted/40 p-4 rounded-2xl border border-border space-y-2">
+                                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest block mb-2">מפרט ופרטים נוספים:</span>
+                                                <div className="divide-y divide-border">
+                                                    {fieldsToShow.map((field) => {
+                                                        const val = field.key === "budgetRange" ? extraData.budgetRange || extraData.budget : extraData[field.key];
+                                                        return (
+                                                            <div key={field.key} className="flex justify-between items-center py-2 text-sm">
+                                                                <span className="text-muted-foreground">{field.label}</span>
+                                                                <span className="font-bold text-foreground text-left max-w-[60%] break-words">
+                                                                    {formatRadarValue(field.key, val, extraData)}
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
                                         {details.sellerNotes && (
                                             <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-2xl border border-amber-200 dark:border-amber-900/50">
                                                 <span className="text-xs font-bold text-amber-800 dark:text-amber-500 uppercase tracking-widest block mb-1">הערות מוכר / תיאור:</span>
@@ -394,7 +640,29 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
                         </Dialog>
                     </div>
 
-                    <div className="p-4 md:p-6 bg-slate-50 dark:bg-transparent flex flex-col gap-4">
+                    <div className="p-4 md:p-6 bg-slate-50 dark:bg-transparent flex flex-col gap-6">
+                        {fieldsToShow.length > 0 && (
+                            <div className="bg-white/5 backdrop-blur-md rounded-2xl border border-primary/20 overflow-hidden shadow-inner">
+                                <div className="px-4 py-2.5 bg-primary/10 border-b border-primary/20 flex items-center gap-2">
+                                    <Zap className="w-4 h-4 text-cyan-400" />
+                                    <span className="text-xs font-bold text-foreground">מפרט מבוקש ודרישות</span>
+                                </div>
+                                <div className="divide-y divide-border/40 px-4">
+                                    {fieldsToShow.map((field) => {
+                                        const val = field.key === "budgetRange" ? extraData.budgetRange || extraData.budget : extraData[field.key];
+                                        return (
+                                            <div key={field.key} className="flex justify-between items-center py-2.5 text-xs">
+                                                <span className="text-muted-foreground">{field.label}</span>
+                                                <span className="text-foreground font-bold text-left max-w-[60%] break-words">
+                                                    {formatRadarValue(field.key, val, extraData)}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
                         {details.sellerNotes && (
                             <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-4 shadow-sm">
                                 <h4 className="text-[10px] font-bold text-amber-800 dark:text-amber-500 uppercase tracking-wider mb-1">הערת המוכר / תיאור מצב:</h4>

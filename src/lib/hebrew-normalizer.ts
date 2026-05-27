@@ -43,9 +43,9 @@ export function normalizeHebrew(text: string): string {
     .replace(/[\u0591-\u05C7]/g, "")
 
     // ─── Strip common Hebrew prefixes before Hebrew letters ───
-    // Matches: ה, ל, ב, כ, ו, מ, ש, from standalone form
+    // Matches: ה, ל, ב, כ, ו, ש, from standalone form
     // Uses a word-boundary-like approach: prefix followed by a Hebrew letter
-    .replace(/(?:^|\s)(ה|ל|ב|כ|ו|מ|ש)(?=[א-ת])/g, " ")
+    .replace(/(?:^|\s)(ה|ל|ב|כ|ו|ש)(?=[א-ת])/g, " ")
 
     // ─── Plural normalization (basic morphological heuristics) ───
     .replace(/ים\b/g, "")   // e.g. מחשבים → מחשב
@@ -75,7 +75,7 @@ export function normalizeHebrewLight(text: string): string {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0591-\u05C7]/g, "")
-    .replace(/(?:^|\s)(ה|ל|ב|כ|ו|מ)(?=[א-ת])/g, " ")
+    .replace(/(?:^|\s)(ה|ל|ב|כ|ו)(?=[א-ת])/g, " ")
     .replace(/[,"'״׳]/g, "")
     .trim();
 }

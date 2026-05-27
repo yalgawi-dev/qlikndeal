@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { getListings } from "@/app/actions/marketplace";
 import { Heart, X, ChevronLeft, RotateCcw, Star, MapPin, Clock, Tag, Layers } from "lucide-react";
@@ -24,6 +25,7 @@ interface Listing {
 type SwipeDecision = "like" | "skip";
 
 export default function BrowsePage() {
+    const router = useRouter();
     const [listings, setListings] = useState<Listing[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [decisions, setDecisions] = useState<Record<string, SwipeDecision>>({});
@@ -210,10 +212,15 @@ export default function BrowsePage() {
 
             {/* Top bar */}
             <div className="px-4 pt-4 pb-2 flex items-center justify-between max-w-lg mx-auto w-full">
-                <Link href="/dashboard/marketplace" className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors">
-                    <ChevronLeft className="w-5 h-5" />
-                    חזרה
-                </Link>
+                <div className="flex gap-3 items-center text-xs flex-wrap">
+                    <Link href="/" className="inline-flex items-center text-cyan-400 hover:text-cyan-300 transition-colors font-bold">
+                        חזרה למרקטפלייס
+                    </Link>
+                    <span className="text-gray-700">|</span>
+                    <button onClick={() => router.back()} className="inline-flex items-center text-gray-400 hover:text-gray-300 transition-colors font-bold">
+                        חזור
+                    </button>
+                </div>
                 <div className="text-center">
                     <p className="text-sm text-gray-400">גולש כרטיסיות</p>
                     <div className="flex gap-1 mt-1 justify-center">

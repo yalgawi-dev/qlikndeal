@@ -39,16 +39,43 @@ export async function detectCategory(query: string): Promise<CategoryKey> {
   const text = normalizedQuery;
   const CategoryRegistry = await getCategoryRegistry();
 
+  // Deterministic order: specific categories evaluated before generic fallbacks (like DESKTOPS)
+  const order: CategoryKey[] = [
+    "LAPTOPS",
+    "SMARTPHONES",
+    "VEHICLES",
+    "APPLIANCES",
+    "ELECTRONICS",
+    "MOTHERBOARDS",
+    "AIO",
+    "CUSTOM_COMPUTERS",
+    "DESKTOPS"
+  ];
+
   // Basic Heuristics + NLP using dynamic Category Registry
-  for (const key of Object.keys(CategoryRegistry)) {
+  for (const key of order) {
     const entry = CategoryRegistry[key];
-    const nlpStr = `(${entry.nlpKeywords.join('|')})`;
-    if (doc.has(nlpStr)) return entry.code as CategoryKey;
+    if (!entry) continue;
+
+    const withSpaces = entry.nlpKeywords.filter((kw: string) => kw.includes(' '));
+    const withoutSpaces = entry.nlpKeywords.filter((kw: string) => !kw.includes(' '));
+
+    // Check single-word keywords using parenthesized OR (fast)
+    if (withoutSpaces.length > 0) {
+      const nlpStr = `(${withoutSpaces.join('|')})`;
+      if (doc.has(nlpStr)) return entry.code as CategoryKey;
+    }
+
+    // Check multi-word keywords individually to bypass Compromise NLP OR-limitations for spaces
+    for (const kw of withSpaces) {
+      if (doc.has(kw)) return entry.code as CategoryKey;
+    }
   }
 
   // Fallback Regex for Hebrew terminology
-  for (const key of Object.keys(CategoryRegistry)) {
+  for (const key of order) {
     const entry = CategoryRegistry[key];
+    if (!entry) continue;
     if (entry.regex.test(text)) return entry.code as CategoryKey;
   }
 

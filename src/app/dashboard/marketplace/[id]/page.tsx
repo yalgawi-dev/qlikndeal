@@ -14,6 +14,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { ShareModal } from "@/components/marketplace/ShareModal";
 import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 
 export default function ListingPage() {
     const params = useParams();
@@ -105,14 +106,17 @@ export default function ListingPage() {
             <Navbar />
 
             <div className="container mx-auto px-4 py-8 max-w-6xl">
-                {/* Back Button */}
-                <Button
-                    variant="ghost"
-                    onClick={() => router.back()}
-                    className="mb-6 text-gray-400 hover:text-white flex gap-2 p-0 hover:bg-transparent"
-                >
-                    <ArrowRight className="w-4 h-4" /> חזור למרקטפלייס
-                </Button>
+                {/* Back Buttons */}
+                <div className="flex gap-4 items-center mb-6 text-sm flex-wrap" dir="rtl">
+                    <Link href="/" className="inline-flex items-center text-cyan-400 hover:text-cyan-300 transition-colors font-bold">
+                        <ArrowRight className="w-4 h-4 ml-1.5" />
+                        חזרה למרקטפלייס
+                    </Link>
+                    <span className="text-gray-700">|</span>
+                    <button onClick={() => router.back()} className="inline-flex items-center text-gray-400 hover:text-gray-300 transition-colors font-bold">
+                        חזור שלב אחורה
+                    </button>
+                </div>
 
                 <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
 
@@ -339,9 +343,9 @@ export default function ListingPage() {
                 <ShareModal
                     isOpen={shareModalOpen}
                     onClose={() => setShareModalOpen(false)}
-                    url={typeof window !== "undefined" ? window.location.href : ""}
+                    url={`https://qlikndeal.vercel.app/listing/${listing.id}`}
                     title={`Qlikndeal - ${listing.title}`}
-                    text={`כנסו לראות את ${listing.title} ב-Qlikndeal! המקום הבטוח לקנות ולמכור.`}
+                    text={`כנסו לראות את ${listing.title} ב-Qlikndeal! מחיר: ₪${listing.price.toLocaleString()}`}
                 />
             )}
 

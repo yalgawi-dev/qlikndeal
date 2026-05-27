@@ -76,7 +76,7 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
     // ─────────────────────────────────────────────────────────────────────────
     const FIELD_ALIAS_MAP: Record<string, string> = {
         'series':         'family',       // legacy catalog column
-        'display':        'screen',       // legacy
+        'display':        'display',      // screen specifications
         'screenSize':     'screen',       // legacy
         'BatteryStatus':  'batteryHealth',// legacy casing
         'SKU':            'sku',          // legacy casing
@@ -289,7 +289,7 @@ export async function masterAnalyze(text: string, providedCategory?: string) {
             }
         }
     } catch (e) {
-        ['ram', 'storage', 'enginesize', 'screen', 'batteryhealth', 'battery'].forEach(f => numericFields.add(f.toLowerCase()));
+        ['ram', 'storage', 'extrastorage1', 'extrastorage2', 'enginesize', 'screen', 'batteryhealth', 'battery'].forEach(f => numericFields.add(f.toLowerCase()));
         console.error("Numeric Fields auto-discovery error", e);
     }
 

@@ -1,14 +1,63 @@
 // @ts-nocheck
 import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
+import { auth } from "@clerk/nextjs/server";
 import { analyzeListingText } from "@/lib/listing-ai";
 
 export const dynamic = "force-dynamic";
 
+const brandGroups: Record<string, { hebrewVariants: string[]; englishVariants: string[]; models: string[] }> = {
+    APPLE:    { hebrewVariants: ["אפל"],           englishVariants: ["apple", "Apple"],          models: ["macbook", "MacBook", "מקבוק", "iphone", "iPhone", "ipad", "iPad", "mac", "air", "pro", "m1", "m2", "m3", "m4", "macos", "ios"] },
+    DELL:     { hebrewVariants: ["דל"],            englishVariants: ["dell", "Dell"],            models: ["inspiron", "xps", "latitude", "vostro", "alienware", "precision", "g15", "g16"] },
+    LENOVO:   { hebrewVariants: ["לנובו"],         englishVariants: ["lenovo", "Lenovo"],        models: ["thinkpad", "ideapad", "legion", "yoga", "xiaoxin"] },
+    ASUS:     { hebrewVariants: ["אסוס"],          englishVariants: ["asus", "Asus"],            models: ["rog", "tuf", "vivobook", "zenbook", "proart", "strix"] },
+    HP:       { hebrewVariants: ["אייצ פי", "hp"],  englishVariants: ["hp", "HP"],               models: ["pavilion", "spectre", "envy", "omen", "probook", "elitebook", "victus"] },
+    ACER:     { hebrewVariants: ["אייסר", "איסר"], englishVariants: ["acer", "Acer"],            models: ["predator", "aspire", "swift", "nitro", "helios", "extensa"] },
+    MSI:      { hebrewVariants: ["מסאי", "msi"],   englishVariants: ["msi", "MSI"],              models: ["raider", "stealth", "katana", "vector", "crosshair", "titan"] },
+    SAMSUNG:  { hebrewVariants: ["סמסונג"],        englishVariants: ["samsung", "Samsung"],      models: ["galaxy", "Galaxy", "גלקסי", "s22", "s23", "s24", "a55", "a35", "note", "galaxy book"] },
+    XIAOMI:   { hebrewVariants: ["שיאומי", "שיומי"], englishVariants: ["xiaomi", "Xiaomi"],     models: ["redmi", "poco", "mi", "note", "lite"] },
+    SONY:     { hebrewVariants: ["סוני"],          englishVariants: ["sony", "Sony"],            models: ["xperia", "wh", "wf", "ps5", "ps4", "playstation"] },
+    LG:       { hebrewVariants: ["לג", "אל גי"],   englishVariants: ["lg", "LG"],               models: ["oled", "qled", "gram", "velvet", "wing"] },
+    HUAWEI:   { hebrewVariants: ["וואווי", "הואווי"], englishVariants: ["huawei", "Huawei"],   models: ["mate", "nova", "p30", "p40", "p50", "watch"] },
+    TOYOTA:   { hebrewVariants: ["טויוטה"],        englishVariants: ["toyota", "Toyota"],       models: ["corolla", "קורולה", "yaris", "יאריס", "c-hr", "rav4"] },
+    HYUNDAI:  { hebrewVariants: ["יונדאי"],        englishVariants: ["hyundai", "Hyundai"],     models: ["ioniq", "איוניק", "tucson", "טוסון", "i20", "i30"] },
+    KIA:      { hebrewVariants: ["קיה"],           englishVariants: ["kia", "Kia"],             models: ["sportage", "ספורטאז", "picanto", "פיקנטו", "niro", "sorento"] },
+    BMW:      { hebrewVariants: ["במוו", "ב.מ.וו"], englishVariants: ["bmw", "BMW"],            models: ["series 3", "series 5", "x3", "x5", "m3", "m5"] },
+    MERCEDES: { hebrewVariants: ["מרצדס"],         englishVariants: ["mercedes", "Mercedes"],   models: ["c-class", "e-class", "a-class", "glc", "gle", "amg"] },
+};
+
+const GLOBAL_CPU_TIERS = [
+    ["i9", "ultra 9", "ryzen 9", "m3 max", "m4 max"],
+    ["i7", "ultra 7", "ryzen 7", "m3 pro", "m2 max", "m4 pro"],
+    ["i5", "ultra 5", "ryzen 5", "m3", "m2 pro", "m2"],
+    ["i3", "ryzen 3", "m1 pro", "m1", "celeron", "pentium"],
+];
+
+function getCpuTierIndex(text: string): number {
+    const cleanText = text.toLowerCase();
+    for (let i = 0; i < GLOBAL_CPU_TIERS.length; i++) {
+        if (GLOBAL_CPU_TIERS[i].some(cpu => cleanText.includes(cpu))) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function getRamFromText(text: string): number {
+    const m = text.toLowerCase().match(/(\d+)\s*(gb|giga|ram)/i);
+    return m ? parseInt(m[1], 10) : 0;
+}
+
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { query, lat, lng, radiusKm, category, listingType = "SELL", isAutocomplete = false } = body;
+        const { query, lat, lng, radiusKm, category, listingType = "SELL", isAutocomplete = false, consultantFilter } = body;
+
+        let currentClerkId: string | null = null;
+        try {
+            const { userId } = await auth();
+            currentClerkId = userId;
+        } catch {}
 
         let aiFilters: any = {};
         let searchKeywords: string[] = [];
@@ -38,27 +87,47 @@ export async function POST(req: Request) {
 
             searchKeywords = query.split(' ').filter((t: string) => t.trim().length >= 2);
             
-            if (analysis.make && !searchKeywords.includes(analysis.make)) searchKeywords.push(analysis.make);
-            if (analysis.model && !searchKeywords.includes(analysis.model)) searchKeywords.push(analysis.model);
-
             // Smart Learning Dictionary - Maps typos and Hebrew aliases to English brands
             // Smart Learning Dictionary - Massive mapping for ALL marketplace categories
             const brandMappings: Record<string, string[]> = {
-                // Computers & Phones
-                "אפל": ["Apple", "iPhone", "MacBook", "iPad", "mac", "אייפד", "מקבוק", "אייפון"], 
-                "דל": ["Dell", "del", "inspiron", "latitude", "xps"], 
-                "לנובו": ["Lenovo", "lanovo", "linovo", "thinkpad", "ideapad"], 
-                "אסוס": ["Asus", "assus", "rog", "vivobook", "zenbook", "טוף", "tuf"], 
-                "אייסר": ["Acer", "acer", "איסר", "predator"],
-                "acer": ["Acer", "אייסר", "איסר"],
-                "hp": ["HP", "hp", "אייצ' פי", "אייצ פי", "h.p", "pavilion", "spectre"],
-                "אייפון": ["iPhone", "apple", "איפון", "אפון", "aifon"], 
-                "גלקסי": ["Galaxy", "Samsung", "גלאקסי", "גלכסי"], 
-                "סמסונג": ["Samsung", "Galaxy", "samsong"],
-                "שיאומי": ["Xiaomi", "שיומי", "xiaomi", "redmi", "poco", "פוקו"],
-                "שיומי": ["Xiaomi", "שיאומי", "xiaomi"],
-                
-                // Electronics & Audio
+                // ── Apple / אפל — ALL product lines ───────────────────────────
+                // CRITICAL: "מחשב אפל", "לפטופ אפל", "אפל" must all find MacBooks
+                "אפל": ["Apple", "apple", "macbook", "MacBook", "מקבוק", "iphone", "iPhone", "ipad", "iPad", "mac", "macos", "ios", "air", "pro"],
+                "apple": ["Apple", "apple", "macbook", "MacBook", "מקבוק", "iphone", "iPhone", "ipad", "iPad", "mac", "macos", "ios"],
+                "מקבוק": ["MacBook", "macbook", "mac", "אפל", "Apple", "apple", "air", "pro", "m1", "m2", "m3", "m4"],
+                "macbook": ["MacBook", "macbook", "mac", "מקבוק", "אפל", "Apple", "apple", "air", "pro"],
+
+                // ── Other Brands ──────────────────────────────────────────────
+                "דל": ["Dell", "del"],
+                "לנובו": ["Lenovo", "lanovo", "linovo"],
+                "אסוס": ["Asus", "assus"],
+                "אייסר": ["Acer", "acer", "איסר"],
+                "hp": ["HP", "hp", "אייצ' פי", "אייצ פי", "h.p"],
+                "סמסונג": ["Samsung", "samsong"],
+                "שיאומי": ["Xiaomi", "שיומי", "xiaomi"],
+
+                // ── Laptop Models ─────────────────────────────────────────────
+                "inspiron": ["inspiron"],
+                "latitude": ["latitude"],
+                "xps": ["xps"],
+                "thinkpad": ["thinkpad"],
+                "ideapad": ["ideapad"],
+                "rog": ["rog"],
+                "vivobook": ["vivobook"],
+                "zenbook": ["zenbook"],
+                "טוף": ["tuf", "TUF"],
+                "predator": ["predator"],
+                "pavilion": ["pavilion"],
+                "spectre": ["spectre"],
+
+                // ── Phones ────────────────────────────────────────────────────
+                "אייפון": ["iPhone", "iphone", "איפון", "אפון", "aifon"],
+                "גלקסי": ["Galaxy", "galaxy", "גלאקסי", "גלכסי"],
+                "redmi": ["redmi", "רדמי"],
+                "poco": ["poco", "פוקו"],
+                "אייפד": ["iPad", "ipad"],
+
+                // ── Electronics & Audio ───────────────────────────────────────
                 "סוני": ["Sony", "sony", "ps4", "ps5", "פלייסטיישן", "playstation"],
                 "פלייסטיישן": ["Playstation", "ps4", "ps5", "sony", "סוני"],
                 "אקסבוקס": ["Xbox", "xbox", "אקס בוקס", "מיקרוסופט", "microsoft"],
@@ -70,7 +139,7 @@ export async function POST(req: Request) {
                 "אל ג'י": ["LG", "lg", "אל גי", "אל גי'"],
                 "פנסוניק": ["Panasonic", "panasonic", "פנסוניק"],
 
-                // Home Appliances
+                // ── Home Appliances ───────────────────────────────────────────
                 "בוש": ["Bosch", "bosch", "בוס", "מכונת כביסה בוש"],
                 "מילה": ["Miele", "miele"],
                 "דייסון": ["Dyson", "dyson", "שואב דייסון"],
@@ -78,43 +147,123 @@ export async function POST(req: Request) {
                 "אלקטרולוקס": ["Electrolux", "electrolux", "אלקטרולוקס"],
                 "סימנס": ["Siemens", "siemens", "סימנס"],
 
-                // Cars
-                "טויוטה": ["Toyota", "toyota", "טיוטה", "קורולה", "יאריס"], 
-                "יונדאי": ["Hyundai", "hyundai", "hundai", "יונדאי", "איוניק", "טוסון"], 
-                "קיה": ["Kia", "kia", "פיקנטו", "ספורטאז"], 
+                // ── Cars ──────────────────────────────────────────────────────
+                "טויוטה": ["Toyota", "toyota", "טיוטה", "קורולה", "יאריס"],
+                "יונדאי": ["Hyundai", "hyundai", "hundai", "יונדאי", "איוניק", "טוסון"],
+                "קיה": ["Kia", "kia", "פיקנטו", "ספורטאז"],
                 "מאזדה": ["Mazda", "mazda", "מזדה"],
                 "מזדה": ["Mazda", "מאזדה"],
-                "הונדה": ["Honda", "honda", "hunda", "סיוויק"], 
-                "מרצדס": ["Mercedes", "mercedes", "mercedes-benz"], 
+                "הונדה": ["Honda", "honda", "hunda", "סיוויק"],
+                "מרצדס": ["Mercedes", "mercedes", "mercedes-benz"],
                 "טסלה": ["Tesla", "tesla", "tsla"],
                 "במוו": ["BMW", "bmw", "ב.מ.וו", "בי אמוו"],
                 "אאודי": ["Audi", "audi", "אודי"],
-                
-                // Furniture & Home
+
+                // ── Furniture & Home ──────────────────────────────────────────
                 "איקאה": ["IKEA", "ikea", "אקאה"],
                 "עמינח": ["Aminach", "עמינח"],
 
-                // Fashion
+                // ── Fashion ───────────────────────────────────────────────────
                 "נייק": ["Nike", "nike", "נייקי"],
                 "אדידס": ["Adidas", "adidas", "אדידאס"],
                 "זארה": ["Zara", "zara", "זרה"],
 
-                // General Marketplace Aliases
+                // ── General Marketplace Aliases ───────────────────────────────
                 "דירה": ["דירה", "בית", "נכס", "וילה", "פנטהאוז"],
                 "השכרה": ["להשכרה", "שכירות"],
                 "מכירה": ["למכירה", "למכור"],
                 "אופניים חשמליות": ["אופניים חשמליים", "חשמליות", "E-bike"],
                 "קורקינט": ["קורקינט חשמלי", "scooter"],
-                
-                // Super Category Synonyms
-                "לפטופ": ["מחשב נייד", "לפטופ", "laptop", "נייד"],
-                "נייד": ["מחשב נייד", "לפטופ", "laptop", "נייד"],
+
+                // ── Super Category Synonyms ───────────────────────────────────
+                // "מחשב" alone = could be laptop OR desktop — keep broad
+                "לפטופ": ["מחשב נייד", "לפטופ", "laptop", "נייד", "macbook", "מקבוק"],
+                "נייד": ["מחשב נייד", "לפטופ", "laptop", "נייד", "macbook", "מקבוק"],
+                "מחשב נייד": ["מחשב נייד", "לפטופ", "laptop", "נייד", "macbook", "מקבוק"],
                 "מחשב שניח": ["מחשב נייח", "מחשב שולחני", "PC", "נייח", "שולחני", "desktop"],
                 "טלוויזיה": ["טלוויזיה", "טלויזיה", "מסך", "tv"],
                 "אוזניות": ["אוזניות", "headset", "headphones"],
-                "טלפון": ["טלפון", "סלולרי", "סמארטפון", "smartphone", "נייד"],
+                "טלפון": ["טלפון", "סלולרי", "סמארטפון", "smartphone", "פלאפון"],
+                "סלולרי": ["טלפון", "סלולרי", "סמארטפון", "smartphone", "פלאפון"],
                 "רכב": ["רכב", "מכונית", "אוטו", "car"]
             };
+
+            // ── Compound Phrase Pre-Expansion (Full Matrix Engine) ────────────
+            // Auto-generates all [category × brand] patterns.
+            // Handles both orders: "מחשב דל" and "דל מחשב"
+            // User can type in Hebrew or English — all combos are resolved.
+            
+            // Category groups: words the user might say for a product TYPE
+            const categoryGroups: Record<string, string[]> = {
+                LAPTOP:   ["מחשב", "לפטופ", "נייד", "laptop", "notebook"],
+                DESKTOP:  ["מחשב", "נייח", "שולחני", "desktop", "pc"],
+                PHONE:    ["טלפון", "סלולרי", "פלאפון", "smartphone", "mobile"],
+                TABLET:   ["טאבלט", "tablet", "אייפד", "ipad"],
+                HEADPHONE:["אוזניות", "headphones", "headset", "earbuds"],
+                TV:       ["טלוויזיה", "טלויזיה", "tv", "מסך", "screen"],
+                CAR:      ["רכב", "מכונית", "אוטו", "car"],
+                WATCH:    ["שעון", "watch", "smartwatch"],
+                CAMERA:   ["מצלמה", "camera"],
+                CONSOLE:  ["קונסולה", "console", "גיימינג", "gaming"],
+            };
+
+            // Brand groups: [hebrewVariants..., englishVariants..., models...] (Defined at module scope)
+
+            // Build compound search terms for LAPTOP + any brand
+            const laptopBrands = ["APPLE", "DELL", "LENOVO", "ASUS", "HP", "ACER", "MSI", "SAMSUNG"];
+            // Build compound search terms for PHONE + any brand
+            const phoneBrands  = ["APPLE", "SAMSUNG", "XIAOMI", "SONY", "HUAWEI", "LG"];
+            // Build compound search terms for CAR + any brand
+            const carBrands    = ["TOYOTA", "HYUNDAI", "KIA", "BMW", "MERCEDES"];
+            // Build compound search terms for TV + any brand
+            const tvBrands     = ["SAMSUNG", "LG", "SONY", "HUAWEI"];
+            // Build compound search terms for HEADPHONE + any brand
+            const headphoneBrands = ["SONY", "SAMSUNG", "LG", "APPLE"];
+
+            // ── Build dynamic patterns from the matrix ────────────────────────
+            type CompoundPattern = { pattern: RegExp; terms: string[] };
+            const compoundBrandPatterns: CompoundPattern[] = [];
+
+            const buildPattern = (catWords: string[], brandKey: string, extra?: string[]) => {
+                const brand = brandGroups[brandKey];
+                if (!brand) return;
+                const allBrandWords = [...brand.hebrewVariants, ...brand.englishVariants];
+                const allTerms = [...brand.hebrewVariants, ...brand.englishVariants, ...brand.models, ...(extra || [])];
+                const catRegex = catWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+                const brandRegex = allBrandWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+                // Both orders: "מחשב דל" and "דל מחשב"
+                compoundBrandPatterns.push({
+                    pattern: new RegExp(`(?:${catRegex})\\s+(?:${brandRegex})`, "i"),
+                    terms: allTerms
+                });
+                compoundBrandPatterns.push({
+                    pattern: new RegExp(`(?:${brandRegex})\\s+(?:${catRegex})`, "i"),
+                    terms: allTerms
+                });
+            };
+
+            // LAPTOPS
+            laptopBrands.forEach(b => buildPattern(categoryGroups.LAPTOP, b));
+            // PHONES
+            phoneBrands.forEach(b => buildPattern(categoryGroups.PHONE, b));
+            // CARS
+            carBrands.forEach(b => buildPattern(categoryGroups.CAR, b));
+            // TVs
+            tvBrands.forEach(b => buildPattern(categoryGroups.TV, b));
+            // HEADPHONES
+            headphoneBrands.forEach(b => buildPattern(categoryGroups.HEADPHONE, b));
+
+            // ── Apply compound match ──────────────────────────────────────────
+            let compoundMatchApplied = false;
+            for (const cp of compoundBrandPatterns) {
+                if (cp.pattern.test(query || "")) {
+                    // Replace all individual keyword groups with ONE merged OR group
+                    keywordGroups = [cp.terms];
+                    searchKeywords = cp.terms;
+                    compoundMatchApplied = true;
+                    break;
+                }
+            }
 
             // Smart Interactive Insight (AI Questioning)
             const genericQueries: Record<string, string> = {
@@ -177,7 +326,7 @@ export async function POST(req: Request) {
                 }
             }
 
-            if (capabilityMatch) {
+            if (false && capabilityMatch) { // Temporarily disabled the Thinking Brain per user request
                 capabilityApplied = true;
                 const cpuTierMap: Record<number, string> = { 1: "i3 / Ryzen 3", 2: "i5 / Ryzen 5", 3: "i7 / Ryzen 7", 4: "i9 / Ryzen 9" };
                 const gpuTierMap: Record<number, string> = { 1: "GTX 1050", 2: "GTX 1660 / RTX 3050", 3: "RTX 3060 / RX 6700", 4: "RTX 3080+" };
@@ -236,17 +385,185 @@ export async function POST(req: Request) {
         }
 
         // 3. Construct Where Clause - ONLY published MarketplaceListings
+        if (listingType === "BUY") {
+            const buyerWhereClause: any = {
+                status: "ACTIVE"
+            };
+
+            if (currentClerkId) {
+                buyerWhereClause.user = {
+                    clerkId: {
+                        not: currentClerkId
+                    }
+                };
+            }
+
+            // Keyword Filter - AND logic first
+            if (keywordGroups.length > 0) {
+                buyerWhereClause.AND = keywordGroups.map(group => ({
+                    OR: group.flatMap(term => [
+                        { query: { contains: term, mode: "insensitive" as const } },
+                        { extraData: { contains: term, mode: "insensitive" as const } },
+                    ])
+                }));
+            } else if (searchKeywords.length > 0) {
+                buyerWhereClause.AND = searchKeywords.map(term => ({
+                    OR: [
+                        { query: { contains: term, mode: "insensitive" as const } },
+                        { extraData: { contains: term, mode: "insensitive" as const } }
+                    ]
+                }));
+            }
+
+            const buyerRequests = await prismadb.buyerRequest.findMany({
+                where: buyerWhereClause,
+                include: {
+                    user: {
+                        select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
+                    }
+                },
+                take: 150,
+                orderBy: { createdAt: "desc" }
+            });
+
+            let mappedListings = buyerRequests.map((req: any) => {
+                let parsedExtra: any = {};
+                try {
+                    if (req.extraData) {
+                        parsedExtra = JSON.parse(req.extraData);
+                    }
+                } catch (e) {
+                    console.error("Error parsing extraData for buyerRequest", req.id, e);
+                }
+
+                const budget = parsedExtra.budgetRange && Array.isArray(parsedExtra.budgetRange) && parsedExtra.budgetRange[1]
+                    ? parsedExtra.budgetRange[1]
+                    : (parsedExtra.budget || 0);
+
+                const latVal = typeof parsedExtra.lat === "number" ? parsedExtra.lat : null;
+                const lngVal = typeof parsedExtra.lng === "number" ? parsedExtra.lng : null;
+
+                return {
+                    id: req.id,
+                    sellerId: req.userId || "",
+                    seller: req.user ? {
+                        clerkId: req.user.clerkId,
+                        firstName: req.user.firstName,
+                        lastName: req.user.lastName,
+                        imageUrl: req.user.imageUrl,
+                        city: req.user.city,
+                        roles: req.user.roles
+                    } : {
+                        clerkId: "system",
+                        firstName: "משתמש",
+                        lastName: "שומר סוד",
+                        imageUrl: null,
+                        city: parsedExtra.city || null,
+                        roles: ["BUYER"]
+                    },
+                    title: req.query,
+                    description: parsedExtra.details || req.query,
+                    price: budget,
+                    condition: "דרוש לקנייה 🏷️",
+                    images: "[]",
+                    videos: null,
+                    category: parsedExtra.category || "כללי",
+                    extraData: req.extraData,
+                    latitude: latVal,
+                    longitude: lngVal,
+                    locationName: parsedExtra.city || null,
+                    status: "ACTIVE",
+                    listingType: "BUY",
+                    createdAt: req.createdAt,
+                    updatedAt: req.updatedAt
+                };
+            });
+
+            // Filter by Category
+            if (category && category !== "all") {
+                mappedListings = mappedListings.filter((l: any) => {
+                    const lCat = l.category ? l.category.toLowerCase().trim() : "";
+                    const targetCat = category.toLowerCase().trim();
+                    return lCat.includes(targetCat) || targetCat.includes(lCat);
+                });
+            }
+
+            // Filter by distance if lat, lng and radius are supplied
+            if (typeof lat === "number" && typeof lng === "number" && typeof radiusKm === "number" && radiusKm > 0) {
+                const toRad = (v: number) => v * Math.PI / 180;
+                const R = 6371;
+                mappedListings = mappedListings.map((l: any) => {
+                    let distance: number | null = null;
+                    if (l.latitude && l.longitude) {
+                        const dLat = toRad(l.latitude - lat);
+                        const dLon = toRad(l.longitude - lng);
+                        const a = Math.sin(dLat / 2) ** 2 +
+                                  Math.cos(toRad(lat)) * Math.cos(toRad(l.latitude)) *
+                                  Math.sin(dLon / 2) ** 2;
+                        distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    }
+                    return { ...l, distanceKm: distance };
+                }).filter((l: any) => l.distanceKm === null || l.distanceKm <= radiusKm);
+
+                // Sort by distance (nulls at the end)
+                mappedListings.sort((a: any, b: any) => {
+                    if (a.distanceKm === null && b.distanceKm === null) return 0;
+                    if (a.distanceKm === null) return 1;
+                    if (b.distanceKm === null) return -1;
+                    return a.distanceKm - b.distanceKm;
+                });
+            }
+
+            return NextResponse.json({
+                success: true,
+                results: mappedListings,
+                total: mappedListings.length,
+                aiFilters,
+                isFallback: false,
+                aiInsight: aiInsight || null,
+                capabilityMatch: null,
+                adviceCard: null,
+                smartFallbackMessage: null
+            });
+        }
+
         const whereClause: any = {
             status: "ACTIVE",
             listingType: listingType,
             ...latLngFilter
         };
 
-        if (category && category !== "all") {
+        if (currentClerkId) {
+            whereClause.seller = {
+                clerkId: {
+                    not: currentClerkId
+                }
+            };
+        }
+
+        if (consultantFilter) {
+            // Include ALL Hebrew and English category name variants stored in the DB
+            if (consultantFilter.preferredFormFactor === "laptop") {
+                whereClause.category = { in: ["מחשבים ניידים", "מחשב נייד", "לפטופ", "LAPTOPS", "Laptops", "laptops", "notebook", "notebooks"] };
+            } else if (consultantFilter.preferredFormFactor === "desktop") {
+                whereClause.category = { in: ["מחשבים שולחניים", "מחשב שולחני", "שולחני", "DESKTOPS", "Desktops", "desktops", "desktop", "pc"] };
+            } else {
+                whereClause.category = { in: ["מחשבים ניידים", "מחשב נייד", "לפטופ", "LAPTOPS", "Laptops", "laptops", "מחשבים שולחניים", "מחשב שולחני", "שולחני", "DESKTOPS", "Desktops", "desktops"] };
+            }
+            if (consultantFilter.userBudget && consultantFilter.userBudget > 0) {
+                whereClause.price = { lte: consultantFilter.userBudget };
+            }
+        } else if (category && category !== "all") {
             whereClause.category = category;
         }
 
-        if (aiFilters.maxPrice) whereClause.price = { lte: aiFilters.maxPrice };
+        if (aiFilters.maxPrice) {
+            if (whereClause.price) {
+                whereClause.price.lte = Math.min(whereClause.price.lte, aiFilters.maxPrice);
+            } else {
+                whereClause.price = { lte: aiFilters.maxPrice };
+            }
+        }
 
         // Keyword Filter - AND logic first
         if (keywordGroups.length > 0) {
@@ -277,14 +594,195 @@ export async function POST(req: Request) {
                     select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
                 }
             },
-            take: 60,
+            take: consultantFilter ? 200 : 60,
             orderBy: { createdAt: "desc" }
         });
+
+        // Apply dynamic consultant filtering rules if present
+        if (consultantFilter) {
+            const { minRamGb, minStorageGb, minCpuTier, recommendedGpu, userBudget, preferredFormFactor } = consultantFilter;
+
+            listings = listings.filter((l: any) => {
+                let extra: any = {};
+                try {
+                    if (l.extraData) {
+                        extra = JSON.parse(l.extraData);
+                    }
+                } catch (e) {
+                    console.error("Error parsing extraData for listing", l.id, e);
+                }
+
+                // 1. Budget Filter
+                if (userBudget && userBudget > 0) {
+                    if (l.price > userBudget) return false;
+                }
+
+                // 2. Form Factor Heuristics (Laptop vs Desktop)
+                const combinedText = `${l.title} ${l.description || ""} ${l.category || ""} ${l.extraData || ""}`.toLowerCase();
+                if (preferredFormFactor) {
+                    if (preferredFormFactor === "laptop") {
+                        const hasForbidden = ["נייח", "שולחני", "desktop", "מארז", "tower", "all-in-one", "aio", "mac mini", "mac pro", "mac studio", "imac"].some(term => combinedText.includes(term));
+                        if (hasForbidden) return false;
+                    } else if (preferredFormFactor === "desktop") {
+                        const hasForbidden = ["נייד", "לפטופ", "laptop", "notebook", "macbook", "מקבוק"].some(term => combinedText.includes(term));
+                        if (hasForbidden) return false;
+                    }
+                }
+
+                // 3. RAM Filter
+                // Canonical fieldId stored by DynamicListingForm is always lowercase 'ram'
+                if (minRamGb && minRamGb > 0) {
+                    const ramStr = extra["ram"] || "";
+                    let listingRam = 0;
+                    if (ramStr) {
+                        const m = String(ramStr).match(/(\d+)/);
+                        if (m) listingRam = parseInt(m[1], 10);
+                    }
+                    // Fallback: try to extract from combined text (title + description)
+                    if (listingRam === 0) {
+                        listingRam = getRamFromText(combinedText);
+                    }
+                    // Strict: RAM must be specified and meet the requirement
+                    if (listingRam < minRamGb) return false;
+                }
+
+                // 4. Storage Filter
+                // Canonical fieldId stored by DynamicListingForm is 'storage' (aliases: 'נפח אחסון', 'אחסון' → 'storage')
+                if (minStorageGb && minStorageGb > 0) {
+                    const storageStr = (
+                        extra["storage"] ||  // ← canonical key (DynamicListingForm fieldId)
+                        extra["נפח אחסון"] || 
+                        extra["אחסון"] ||
+                        extra["נפח"] ||
+                        extra["SSD"] || 
+                        extra["HDD"] ||
+                        extra["Storage"] ||
+                        ""
+                    ).toLowerCase();
+                    let listingStorage = 0;
+                    if (storageStr) {
+                        const m = storageStr.match(/(\d+)/);
+                        if (m) {
+                            listingStorage = parseInt(m[1], 10);
+                            if (storageStr.includes("tb") || storageStr.includes("טרב")) {
+                                listingStorage *= 1024;
+                            }
+                        }
+                    }
+                    if (listingStorage === 0) {
+                        const m = combinedText.match(/(\d+)\s*(gb|tb|ssd|hdd|אחסון|גיגה)/i);
+                        if (m) {
+                            listingStorage = parseInt(m[1], 10);
+                            if (m[0].toLowerCase().includes("tb")) {
+                                listingStorage *= 1024;
+                            }
+                        }
+                    }
+                    // Strict: Storage must be specified and meet the requirement
+                    if (listingStorage < minStorageGb) return false;
+                }
+
+                // 5. CPU Tier Filter
+                // Canonical fieldId stored by DynamicListingForm is 'cpu' (aliases: 'מעבד' → 'cpu')
+                if (minCpuTier) {
+                    const requiredCpuIndex = getCpuTierIndex(minCpuTier);
+                    if (requiredCpuIndex >= 0) {
+                        const cpuStr = extra["cpu"] || extra["מעבד"] || "";
+                        let listingCpuIndex = getCpuTierIndex(cpuStr);
+                        if (listingCpuIndex < 0) {
+                            // Fallback: search combined text for CPU mentions
+                            listingCpuIndex = getCpuTierIndex(combinedText);
+                        }
+                        // Strict: CPU must be specified and meet the requirement
+                        if (listingCpuIndex < 0 || listingCpuIndex > requiredCpuIndex) return false;
+                    }
+                }
+
+                // 6. GPU Filter
+                // Canonical fieldId stored by DynamicListingForm is 'gpu' (aliases: 'כרטיס מסך' → 'gpu')
+                if (recommendedGpu && recommendedGpu !== "Integrated" && recommendedGpu !== "מובנה") {
+                    const gpuStr = (extra["gpu"] || extra["כרטיס מסך"] || "").toLowerCase();
+                    const hasDedicatedInText = ["rtx", "gtx", "geforce", "radeon rx", "nvidia"].some(term => 
+                        combinedText.includes(term)
+                    );
+                    const isDedicated = ["rtx", "gtx", "geforce", "radeon rx", "nvidia", "dedicated"].some(term => 
+                        gpuStr.includes(term)
+                    ) || hasDedicatedInText;
+                    
+                    // Strict: Dedicated GPU must be present
+                    if (!isDedicated) return false;
+                }
+
+                return true;
+            });
+
+
+            // ── Relevance Scoring: rank by data completeness ─────────────────────────
+            // Listings that passed the soft-gate but have NO hardware data should appear
+            // AFTER listings that have confirmed matching specs. Score 0–8 per filled field.
+            const scoreConsultantListing = (l: any): number => {
+                let score = 0;
+                let extra: any = {};
+                try { if (l.extraData) extra = JSON.parse(l.extraData); } catch {}
+                const txt = `${l.title} ${l.description || ""} ${l.extraData || ""}`.toLowerCase();
+
+                // RAM: present and meets requirement
+                const ramStr = extra["ram"] || "";
+                let ram = 0;
+                if (ramStr) { const m = String(ramStr).match(/(\d+)/); if (m) ram = parseInt(m[1], 10); }
+                if (ram === 0) ram = getRamFromText(txt);
+                if (ram >= (consultantFilter!.minRamGb || 0) && ram > 0) score += 2;
+                else if (ram > 0) score -= 1;
+
+                // Storage: present and meets requirement
+                const storStr = (extra["storage"] || extra["נפח אחסון"] || extra["SSD"] || "").toLowerCase();
+                let stor = 0;
+                if (storStr) {
+                    const m2 = storStr.match(/(\d+)/);
+                    if (m2) { stor = parseInt(m2[1], 10); if (storStr.includes("tb")) stor *= 1024; }
+                }
+                if (stor === 0) {
+                    const m3 = txt.match(/(\d+)\s*(gb|tb|ssd|hdd)/i);
+                    if (m3) { stor = parseInt(m3[1], 10); if (m3[0].toLowerCase().includes("tb")) stor *= 1024; }
+                }
+                if (stor >= (consultantFilter!.minStorageGb || 0) && stor > 0) score += 2;
+                else if (stor > 0) score -= 1;
+
+                // CPU: present and meets required tier
+                const cpuStr = extra["cpu"] || extra["מעבד"] || "";
+                const reqIdx = getCpuTierIndex(consultantFilter!.minCpuTier || "");
+                let cpuIdx = getCpuTierIndex(cpuStr);
+                if (cpuIdx < 0) cpuIdx = getCpuTierIndex(txt);
+                if (cpuIdx >= 0 && reqIdx >= 0 && cpuIdx <= reqIdx) score += 2;
+                else if (cpuIdx >= 0) score -= 1;
+
+                // GPU: present and dedicated (if required)
+                const { recommendedGpu } = consultantFilter!;
+                if (recommendedGpu && recommendedGpu !== "Integrated" && recommendedGpu !== "מובנה") {
+                    const gpuStr = (extra["gpu"] || extra["כרטיס מסך"] || "").toLowerCase();
+                    const hasDedicated = ["rtx", "gtx", "geforce", "radeon rx", "nvidia"].some((t: string) =>
+                        gpuStr.includes(t) || txt.includes(t)
+                    );
+                    if (hasDedicated) score += 2;
+                }
+
+                return score;
+            };
+
+            listings = [...listings].sort((a: any, b: any) => {
+                const diff = scoreConsultantListing(b) - scoreConsultantListing(a);
+                if (diff !== 0) return diff;
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            });
+        }
+
 
         // 4b. Smart Category-Aware Similar Suggestions
         // When no exact match is found, find similar items ONLY within the exact same product segment.
         // e.g. "laptop I9" → only show I7/I5 laptops. NEVER desktops, phones, or other categories.
-        if (listings.length === 0 && searchKeywords.length > 0) {
+        // Skip fallback if isAutocomplete is true so the dropdown only shows exact matches!
+        if (listings.length === 0 && searchKeywords.length > 0 && !isAutocomplete) {
+
             delete whereClause.AND;
             delete whereClause.OR;
 
@@ -580,7 +1078,7 @@ export async function POST(req: Request) {
 
             if (detectedSegment || aiDetectedCategory) {
                 // Build WHERE clause — BROAD DB query, will filter strictly in JS
-                const similarWhere: any = { status: "ACTIVE", ...latLngFilter };
+                const similarWhere: any = { status: "ACTIVE", listingType, ...latLngFilter };
 
                 if (detectedSegment) {
                     // Broad category query — catches all variations of category names used in DB
@@ -645,6 +1143,9 @@ export async function POST(req: Request) {
                         let score = 0;
                         let disqualified = false;
 
+                        const listingCpuTier = getCpuTierIndex(combinedText);
+                        const listingRam = getRamFromText(combinedText);
+
                         // ── HARD DISQUALIFICATION ─────────────────────────────
                         // If any forbidden term appears anywhere in the listing → skip entirely
                         if (forbiddenTerms.some(term => combinedText.includes(term.toLowerCase()))) {
@@ -656,6 +1157,26 @@ export async function POST(req: Request) {
                         if (requiredTerms.length > 0) {
                             const hasRequired = requiredTerms.some(term => combinedText.includes(term.toLowerCase()));
                             if (!hasRequired) disqualified = true;
+                        }
+
+                        // Strict Price / Budget constraint
+                        if (aiFilters.maxPrice && listing.price && listing.price > aiFilters.maxPrice) {
+                            disqualified = true;
+                        }
+
+                        // Anti-Spam: Obvious fake price check (e.g., <= 5 ILS listing) when there is a real budget
+                        if (aiFilters.maxPrice && aiFilters.maxPrice > 100 && listing.price <= 5) {
+                            disqualified = true;
+                        }
+
+                        // Strict RAM constraint (no downgrades)
+                        if (queryRam > 0 && listingRam > 0 && listingRam < queryRam) {
+                            disqualified = true;
+                        }
+
+                        // Strict CPU constraint (no downgrades)
+                        if (queryCpuTier >= 0 && listingCpuTier >= 0 && listingCpuTier > queryCpuTier) {
+                            disqualified = true;
                         }
 
                         if (disqualified) return null;
@@ -787,6 +1308,97 @@ export async function POST(req: Request) {
             });
         }
 
+        // Brand constraint verification to prevent cross-brand matching in results
+        if (query && listingType === "SELL") {
+            const queryLowerStr = query.toLowerCase();
+            const mentionedBrands: string[] = [];
+
+            for (const [brandKey, brandInfo] of Object.entries(brandGroups)) {
+                const variants = [...brandInfo.hebrewVariants, ...brandInfo.englishVariants, ...brandInfo.models];
+                const matches = variants.some(variant => {
+                    const v = variant.toLowerCase();
+                    const regex = new RegExp(`(?:^|\\s|\\b)${v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:$|\\s|\\b)`, 'i');
+                    return regex.test(queryLowerStr);
+                });
+                if (matches) {
+                    mentionedBrands.push(brandKey);
+                }
+            }
+
+            if (mentionedBrands.length > 0) {
+                listings = listings.filter((l: any) => {
+                    const combinedText = `${l.title} ${l.description || ""} ${l.category || ""} ${l.extraData || ""}`.toLowerCase();
+                    
+                    // 1. Check if the listing matches the brand(s) that WERE mentioned in the query
+                    const matchesMentioned = mentionedBrands.some(brandKey => {
+                        const brandInfo = brandGroups[brandKey];
+                        const variants = [...brandInfo.hebrewVariants, ...brandInfo.englishVariants, ...brandInfo.models];
+                        return variants.some(v => combinedText.includes(v.toLowerCase()));
+                    });
+
+                    if (matchesMentioned) return true;
+
+                    // 2. If it doesn't match the mentioned brand, check if it matches a different brand in our list
+                    const matchesOtherBrand = Object.keys(brandGroups).some(brandKey => {
+                        if (mentionedBrands.includes(brandKey)) return false;
+                        const brandInfo = brandGroups[brandKey];
+                        const variants = [...brandInfo.hebrewVariants, ...brandInfo.englishVariants, ...brandInfo.models];
+                        return variants.some(v => combinedText.includes(v.toLowerCase()));
+                    });
+
+                    if (matchesOtherBrand) {
+                        return false;
+                    }
+
+                    return false; // If a brand was requested, do not show unbranded generic listings either
+                });
+            }
+        }
+
+        // Strict specification and price verification for all final results (preventing downgrades and spam)
+        if (query && listingType === "SELL") {
+            const queryLowerStr = query.toLowerCase();
+            const queryRam = getRamFromText(queryLowerStr);
+            const queryCpuTier = getCpuTierIndex(queryLowerStr);
+
+            listings = listings.filter((l: any) => {
+                const combinedText = `${l.title} ${l.description || ""} ${l.category || ""} ${l.extraData || ""}`.toLowerCase();
+                
+                // 1. Strict Price / Budget check
+                if (aiFilters.maxPrice && l.price && l.price > aiFilters.maxPrice) {
+                    return false;
+                }
+
+                // 2. Anti-Spam check: filter out listings with price <= 5 if query implies a high-value category or has a budget > 100
+                const isHighValueCategory = ["מחשבים", "טלפונים", "רכב", "נדלן", "מוצרי חשמל לבית", "laptops", "computers", "smartphones", "desktops"].some(cat => 
+                    (l.category || "").toLowerCase().includes(cat)
+                );
+                const hasSignificantBudget = aiFilters.maxPrice && aiFilters.maxPrice > 100;
+                const isSpamPrice = l.price <= 5;
+                if (isSpamPrice && (hasSignificantBudget || isHighValueCategory)) {
+                    return false;
+                }
+
+                // 3. Strict RAM check (no downgrades)
+                if (queryRam > 0) {
+                    const listingRam = getRamFromText(combinedText);
+                    if (listingRam > 0 && listingRam < queryRam) {
+                        return false;
+                    }
+                }
+
+                // 4. Strict CPU check (no downgrades)
+                if (queryCpuTier >= 0) {
+                    const listingCpuTier = getCpuTierIndex(combinedText);
+                    if (listingCpuTier >= 0 && listingCpuTier > queryCpuTier) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+        }
+
         // 5. Precise Distance Calculation & Sorting
         let finalResults: any[] = listings;
         
@@ -816,12 +1428,196 @@ export async function POST(req: Request) {
                 });
         }
 
+        // ─────────────────────────────────────────────────────────────
+        // STEP 6 — Catalog Search (MobileCatalog + LaptopCatalog + ElectronicsCatalog)
+        // Fires when the user typed a query. Searches the product catalogs for matching
+        // models. Returns "catalogSuggestions" — products that exist but have no listing yet.
+        // ─────────────────────────────────────────────────────────────
+        let catalogSuggestions: any[] = [];
+
+        if (processedQuery.trim().length > 0 && !isAutocomplete && listingType === "SELL") {
+            // Build a broad OR across all search terms for catalog search
+            const flatTerms = searchKeywords.length > 0 ? searchKeywords : [processedQuery.trim()];
+            // Only use meaningful terms (length > 1, skip single digits/letters)
+            const catalogTerms = flatTerms.filter((t: string) => t.length > 1 && !/^\d$/.test(t));
+
+            if (catalogTerms.length > 0) {
+                // ── Helper: build OR conditions for a String[] (hebrewAliases) ──
+                // NeonDB (Postgres array) — use hasSome for String[] fields
+                const buildCatalogWhere = (extraConditions: any[] = []) => ({
+                    OR: [
+                        ...catalogTerms.flatMap((term: string) => [
+                            { brand:     { contains: term, mode: "insensitive" as const } },
+                            { series:    { contains: term, mode: "insensitive" as const } },
+                            { modelName: { contains: term, mode: "insensitive" as const } },
+                        ]),
+                        ...extraConditions
+                    ]
+                });
+
+                // ── 6a. MobileCatalog ────────────────────────────────────────────
+                try {
+                    const mobileResults = await prismadb.mobileCatalog.findMany({
+                        where: {
+                            OR: [
+                                ...catalogTerms.flatMap((term: string) => [
+                                    { brand:     { contains: term, mode: "insensitive" as const } },
+                                    { series:    { contains: term, mode: "insensitive" as const } },
+                                    { modelName: { contains: term, mode: "insensitive" as const } },
+                                ]),
+                                // hebrewAliases is String[] — use hasSome (matches any element)
+                                { hebrewAliases: { hasSome: catalogTerms } },
+                            ]
+                        },
+                        take: 6
+                    });
+
+                    // Also search inside the alias text (contains, since hasSome is exact-match only)
+                    const mobileByAlias = await prismadb.mobileCatalog.findMany({
+                        where: {
+                            OR: catalogTerms.flatMap((term: string) =>
+                                // Prisma doesn't support contains on String[] directly — we use raw contains on JSON representation
+                                // Workaround: search via json string match on extraData — not available.
+                                // Instead, rely on brand/series/modelName + hasSome above.
+                                // Additional fallback: search by cpu field
+                                [{ cpu: { contains: term, mode: "insensitive" as const } }]
+                            )
+                        },
+                        take: 3
+                    });
+
+                    const allMobile = [...mobileResults, ...mobileByAlias];
+                    const seenMobile = new Set<string>();
+                    allMobile.forEach(item => {
+                        if (seenMobile.has(item.id)) return;
+                        seenMobile.add(item.id);
+                        // Display name: use first hebrewAlias or brand+series
+                        const displayName = item.hebrewAliases?.[0] || `${item.brand} ${item.series}`.trim();
+                        const specsArr: string[] = [];
+                        if (item.cpu)      specsArr.push(item.cpu);
+                        if (item.ramG)     specsArr.push(`${item.ramG}GB RAM`);
+                        if (item.battery)  specsArr.push(item.battery);
+                        if (item.screenSize) specsArr.push(`${item.screenSize}"`);
+
+                        catalogSuggestions.push({
+                            isCatalogResult: true,
+                            catalogType: "MOBILE",
+                            id: `catalog-mobile-${item.id}`,
+                            title: displayName,
+                            brand: item.brand,
+                            series: item.series,
+                            modelName: item.modelName,
+                            specs: specsArr.join(" | "),
+                            category: "סלולרי",
+                            releaseYear: item.releaseYear,
+                            hebrewAliases: item.hebrewAliases,
+                            storages: item.storages,
+                            // Placeholder for listing fields expected by UI
+                            price: null,
+                            condition: null,
+                            images: "[]",
+                            status: "CATALOG",
+                            listingType: "SELL",
+                            description: specsArr.join(", "),
+                            seller: null,
+                        });
+                    });
+                } catch (e) { /* catalog search is non-critical */ }
+
+                // ── 6b. LaptopCatalog ────────────────────────────────────────────
+                try {
+                    const laptopResults = await prismadb.laptopCatalog.findMany({
+                        where: buildCatalogWhere(),
+                        take: 6
+                    });
+
+                    laptopResults.forEach(item => {
+                        const displayName = `${item.brand} ${item.series} ${item.modelName}`.trim();
+                        const specsArr: string[] = [];
+                        if (item.cpu?.[0])     specsArr.push(item.cpu[0]);
+                        if (item.ram?.[0])     specsArr.push(`${item.ram[0]} RAM`);
+                        if (item.storage?.[0]) specsArr.push(item.storage[0]);
+                        if (item.screenSize?.[0]) specsArr.push(`${item.screenSize[0]}"`);
+
+                        catalogSuggestions.push({
+                            isCatalogResult: true,
+                            catalogType: "LAPTOP",
+                            id: `catalog-laptop-${item.id}`,
+                            title: displayName,
+                            brand: item.brand,
+                            series: item.series,
+                            modelName: item.modelName,
+                            specs: specsArr.join(" | "),
+                            category: "LAPTOPS",
+                            releaseYear: item.releaseYear ? parseInt(item.releaseYear) : null,
+                            price: null,
+                            condition: null,
+                            images: "[]",
+                            status: "CATALOG",
+                            listingType: "SELL",
+                            description: specsArr.join(", "),
+                            seller: null,
+                        });
+                    });
+                } catch (e) { /* non-critical */ }
+
+                // ── 6c. ElectronicsCatalog ───────────────────────────────────────
+                try {
+                    const electronicsResults = await prismadb.electronicsCatalog.findMany({
+                        where: {
+                            OR: [
+                                ...catalogTerms.flatMap((term: string) => [
+                                    { brand:     { contains: term, mode: "insensitive" as const } },
+                                    { modelName: { contains: term, mode: "insensitive" as const } },
+                                    { category:  { contains: term, mode: "insensitive" as const } },
+                                ]),
+                                { hebrewAliases: { hasSome: catalogTerms } },
+                            ]
+                        },
+                        take: 4
+                    });
+
+                    electronicsResults.forEach(item => {
+                        const displayName = item.hebrewAliases?.[0] || `${item.brand} ${item.modelName}`.trim();
+                        catalogSuggestions.push({
+                            isCatalogResult: true,
+                            catalogType: "ELECTRONICS",
+                            id: `catalog-elec-${item.id}`,
+                            title: displayName,
+                            brand: item.brand,
+                            modelName: item.modelName,
+                            specs: item.specs || "",
+                            category: item.category,
+                            releaseYear: item.releaseYear,
+                            price: null,
+                            condition: null,
+                            images: "[]",
+                            status: "CATALOG",
+                            listingType: "SELL",
+                            description: item.specs || "",
+                            seller: null,
+                        });
+                    });
+                } catch (e) { /* non-critical */ }
+
+                // De-duplicate catalog results (same brand+series combo)
+                const seen = new Set<string>();
+                catalogSuggestions = catalogSuggestions.filter(s => {
+                    const key = `${s.brand}-${s.series || s.modelName}`.toLowerCase();
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+
+                // Limit to 8 catalog suggestions max
+                catalogSuggestions = catalogSuggestions.slice(0, 8);
+            }
+        }
+
         // Smart Fallback: If capabilityApplied but no results — show smart message
         let smartFallbackMessage: string | null = null;
         if (capabilityApplied && capabilityMatch && finalResults.length === 0) {
-            // Try a broader search without spec filters to find ANY matching hardware
             smartFallbackMessage = `לא מצאתי מחשב בשם "${capabilityMatch.keyword}", אבל מצאתי מחשבים שיריצו אותו מצוין — מסנן תוצאות רלוונטיות עבורך.`;
-            // Reset filters to just category to show what we have
             isFallback = true;
         }
 
@@ -834,7 +1630,10 @@ export async function POST(req: Request) {
             aiInsight: aiInsight || null,
             capabilityMatch,
             adviceCard,
-            smartFallbackMessage
+            smartFallbackMessage,
+            // ── NEW: Catalog suggestions (products with no listings yet) ──────
+            catalogSuggestions,
+            hasCatalogSuggestions: catalogSuggestions.length > 0,
         });
 
     } catch (error) {

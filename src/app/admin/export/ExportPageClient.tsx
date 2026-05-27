@@ -196,7 +196,9 @@ export default function ExportPageClient() {
     const IMPORT_MAPPING: Record<string, string> = {
         "יצרן": "brand", "מותג": "brand", "make": "brand", "brand": "brand",
         "סדרה": "series", "series": "series",
-        "דגם": "modelName", "model": "modelName", "modelname": "modelName",
+        "דגם": importType === "motherboard" ? "model" : "modelName",
+        "model": importType === "motherboard" ? "model" : "modelName",
+        "modelname": importType === "motherboard" ? "model" : "modelName",
         "סוג": "type", "type": "type",
         "מסך": "screenSize", "screen": "screenSize", "גודל מסך": "screenSize", "screensize": "screenSize",
         "מעבד": "cpu", "cpu": "cpu", "processor": "cpu",
@@ -204,6 +206,7 @@ export default function ExportPageClient() {
         "אחסון": "storage", "storage": "storage", "אחסון (gb)": "storages", "storages": "storages", "storagegb": "storages",
         "מאיץ גרפי": "gpu", "כרטיס מסך": "gpu", "gpu": "gpu",
         "שנה": "releaseYear", "year": "releaseYear", "releaseyear": "releaseYear",
+        "שנת יציאה": "releaseYear", "שנת השקה": "releaseYear", "שנת שחרור": "releaseYear", "release_year": "releaseYear",
         "הערות": "notes", "notes": "notes",
         "מק\"ט": "sku", "sku": "sku",
         "משקל": "weight", "weight": "weight",
@@ -217,7 +220,18 @@ export default function ExportPageClient() {
         "קטגוריה": "category", "category": "category",
         "קיבולת": "capacity", "capacity": "capacity",
         "דירוג אנרגטי": "energyRating", "energy rating": "energyRating", "energyrating": "energyRating",
-        "מערכת הפעלה": "os", "os": "os"
+        "מערכת הפעלה": "os", "os": "os",
+        // Motherboard specific fields
+        "chipset": "chipset", "צ'יפסט": "chipset",
+        "socket": "socket", "סוקט": "socket", "תושבת": "socket",
+        "formfactor": "formFactor", "form factor": "formFactor", "פורם פקטור": "formFactor", "גודל לוח": "formFactor",
+        "ramtype": "ramType", "ram type": "ramType", "סוג ram": "ramType", "סוג זיכרון": "ramType",
+        "maxram": "maxRam", "max ram": "maxRam", "ram מקסימלי": "maxRam", "זיכרון מקסימלי": "maxRam",
+        "pcie": "pcie",
+        "m2": "m2", "m.2": "m2",
+        "lan": "lan",
+        "wifi": "wifi",
+        "סטטוס": "condition", "מצב": "condition", "status": "condition"
     };
 
     const checkUnrecognizedFields = (headers: string[]) => {

@@ -234,7 +234,8 @@ export function UniversalCatalogSearch({ category, onApplySpecs }: UniversalCata
                 const params = new URLSearchParams({
                     q,
                     cat: config.catalogKey,
-                    ...(config.subCategory ? { sub: config.subCategory } : {})
+                    ...(config.subCategory ? { sub: config.subCategory } : {}),
+                    t: Date.now().toString()
                 });
                 const res = await fetch(`/api/marketplace/catalog-search?${params}`);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
