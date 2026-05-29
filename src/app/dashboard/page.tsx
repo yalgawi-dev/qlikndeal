@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { ShipmentForm } from "@/components/ShipmentForm";
 import { ReferralCard } from "@/components/ReferralCard";
 import { Button } from "@/components/ui/button";
-import { Package, Plus, Search, Filter, Inbox, Send, CheckCircle, Clock, Trash2, User, Store, Sparkles, Radar, Eye, ArrowRight, ShoppingBag } from "lucide-react";
+import { Package, Plus, Search, Filter, Inbox, Send, CheckCircle, Clock, Trash2, User, Store, Sparkles, Radar, Eye, ArrowRight, ShoppingBag, Heart, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CameraCapture } from "@/components/mobile/CameraCapture";
@@ -17,7 +17,7 @@ import { getUserShipments, cancelShipment } from "@/app/actions";
 import { BadgeCheck } from "lucide-react"; // Import filled badge icon
 import { PhoneOnboarding } from "@/components/PhoneOnboarding";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
-import { getMyListings, getMyRequests, deleteListing } from "@/app/actions/marketplace";
+import { getMyListings, getMyRequests, deleteListing, getListingsByIds } from "@/app/actions/marketplace";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { BuyerRequestCard } from "@/components/marketplace/BuyerRequestCard";
 
@@ -120,20 +120,26 @@ function DashboardContent() {
             if (urlMode === "seller" || urlMode === "buyer") {
                 setUserMode(urlMode);
                 localStorage.setItem("dashboard_user_mode", urlMode);
-                return;
+            } else {
+                const savedMode = localStorage.getItem("dashboard_user_mode");
+                if (savedMode === "seller" || savedMode === "buyer") {
+                    setUserMode(savedMode);
+                }
             }
             
-            const savedMode = localStorage.getItem("dashboard_user_mode");
-            if (savedMode === "seller" || savedMode === "buyer") {
-                setUserMode(savedMode);
+            const urlTab = searchParams.get("tab");
+            if (urlTab === "favorites" || urlTab === "inbox" || urlTab === "sent" || urlTab === "active" || urlTab === "history" || urlTab === "recycle") {
+                setActiveTab(urlTab as any);
             }
         }
     }, [searchParams]);
     const [showForm, setShowForm] = useState(false);
-    const [activeTab, setActiveTab] = useState<"inbox" | "sent" | "active" | "history" | "recycle">("sent");
+    const [activeTab, setActiveTab] = useState<"inbox" | "sent" | "active" | "history" | "recycle" | "favorites">("sent");
     const [shipments, setShipments] = useState<any[]>([]);
     const [listings, setListings] = useState<any[]>([]);
     const [requests, setRequests] = useState<any[]>([]);
+    const [favListings, setFavListings] = useState<any[]>([]);
+    const [hideSplitAlert, setHideSplitAlert] = useState(false);
     const [dbImage, setDbImage] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedShipment, setSelectedShipment] = useState<any>(null); // For Details Modal
@@ -185,10 +191,16 @@ function DashboardContent() {
             }, 5000);
 
             try {
-                const [res, listingsRes, requestsRes] = await Promise.all([
+                let favs: string[] = [];
+                try {
+                    favs = JSON.parse(localStorage.getItem("qlik_favorites") || "[]");
+                } catch (e) {}
+
+                const [res, listingsRes, requestsRes, favsRes] = await Promise.all([
                     getUserShipments(userMode),
                     getMyListings(),
-                    getMyRequests()
+                    getMyRequests(),
+                    favs.length > 0 ? getListingsByIds(favs) : Promise.resolve({ success: true, listings: [] })
                 ]);
 
                 if (mounted) {
@@ -208,6 +220,9 @@ function DashboardContent() {
                     }
                     if (requestsRes.success) {
                         setRequests(requestsRes.requests || []);
+                    }
+                    if (favsRes.success) {
+                        setFavListings(favsRes.listings || []);
                     }
                 }
             } catch (err) {
@@ -373,10 +388,18 @@ function DashboardContent() {
 
             <div className="container px-4 py-8 md:py-10 flex-1 max-w-5xl mx-auto">
                 {/* Account Split Alert Banner */}
-                {user?.primaryEmailAddress?.emailAddress === "yalgawi@gmail.com" && (
-                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-3xl p-5 mb-6 flex items-start gap-4 text-right shadow-[0_0_15px_rgba(234,179,8,0.05)] animate-in fade-in slide-in-from-top-2 duration-300" dir="rtl">
+                {!hideSplitAlert && user?.primaryEmailAddress?.emailAddress === "yalgawi@gmail.com" && (
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-3xl p-5 mb-6 flex items-start gap-4 text-right shadow-[0_0_15px_rgba(234,179,8,0.05)] animate-in fade-in slide-in-from-top-2 duration-300 relative" dir="rtl">
+                        <button
+                            type="button"
+                            onClick={() => setHideSplitAlert(true)}
+                            className="absolute top-4 left-4 p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-yellow-500 hover:text-yellow-400 transition-colors z-10"
+                            title="סגור"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
                         <span className="text-2xl mt-0.5">⚠️</span>
-                        <div className="space-y-1">
+                        <div className="space-y-1 pl-6">
                             <h4 className="font-bold text-yellow-500 text-base">חשבונות מפוצלים זוהו במערכת</h4>
                             <p className="text-sm text-yellow-100/80 leading-relaxed">
                                 שים לב! במאגר הנתונים קיימות מודעות המפוצלות בין חשבון זה (<span className="font-mono text-white">yalgawi@gmail.com</span>)
@@ -387,10 +410,18 @@ function DashboardContent() {
                         </div>
                     </div>
                 )}
-                {user?.primaryEmailAddress?.emailAddress === "darohadd@walla.com" && (
-                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-3xl p-5 mb-6 flex items-start gap-4 text-right shadow-[0_0_15px_rgba(234,179,8,0.05)] animate-in fade-in slide-in-from-top-2 duration-300" dir="rtl">
+                {!hideSplitAlert && user?.primaryEmailAddress?.emailAddress === "darohadd@walla.com" && (
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-3xl p-5 mb-6 flex items-start gap-4 text-right shadow-[0_0_15px_rgba(234,179,8,0.05)] animate-in fade-in slide-in-from-top-2 duration-300 relative" dir="rtl">
+                        <button
+                            type="button"
+                            onClick={() => setHideSplitAlert(true)}
+                            className="absolute top-4 left-4 p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-yellow-500 hover:text-yellow-400 transition-colors z-10"
+                            title="סגור"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
                         <span className="text-2xl mt-0.5">⚠️</span>
-                        <div className="space-y-1">
+                        <div className="space-y-1 pl-6">
                             <h4 className="font-bold text-yellow-500 text-base">חשבונות מפוצלים זוהו במערכת</h4>
                             <p className="text-sm text-yellow-100/80 leading-relaxed">
                                 שים לב! במאגר הנתונים קיימות מודעות המפוצלות בין חשבון זה (<span className="font-mono text-white">darohadd@walla.com</span>)
@@ -656,69 +687,32 @@ function DashboardContent() {
                             </div>
                         )}
 
-                        {/* Recent Activity / Inbox Section */}
-                        <div className="space-y-6 bg-card border border-white/5 rounded-3xl p-6 shadow-sm">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-xl font-bold">מעקב עסקאות</h2>
+                        {/* ── My Favorites Section ── */}
+                        <div className="space-y-4 bg-card border border-white/5 rounded-3xl p-6 shadow-sm">
+                            <div className="flex items-center gap-2">
+                                <Heart className="w-5 h-5 text-rose-500 fill-rose-500" />
+                                <h2 className="text-xl font-bold">המועדפים שלי ({favListings.length})</h2>
                             </div>
 
-                            {/* Tabs */}
-                            {/* Tabs */}
-                            <div className="flex border-b border-border/60 gap-6 px-2 overflow-x-auto pb-4">
-                                <button onClick={() => setActiveTab("inbox")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'inbox' ? 'border-primary text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                    בקשות שנכנסו
-                                    {inboxCount > 0 && <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.8)] border border-red-400">{inboxCount}</span>}
-                                </button>
-                                <button onClick={() => setActiveTab("sent")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'sent' ? 'border-primary text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                    בקשות שנשלחו
-                                    {sentItems.length > 0 && <span className="bg-primary/20 text-primary text-[10px] px-2 py-0.5 rounded-full">{sentItems.length}</span>}
-                                </button>
-                                <button onClick={() => setActiveTab("active")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'active' ? 'border-blue-400 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                    פעילים
-                                    {activeItems.length > 0 && <span className="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-full border border-blue-500/50 shadow-[0_0_10px_rgba(59,130,246,0.5)]">{activeItems.length}</span>}
-                                </button>
-                                <button onClick={() => setActiveTab("history")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'history' ? 'border-purple-500 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                    היסטוריה
-                                </button>
-                                <button onClick={() => setActiveTab("recycle")} className={`pb-3 text-sm font-bold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === 'recycle' ? 'border-orange-500 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-                                    סל מחזור
-                                </button>
-                            </div>
-
-                            {/* Cards List */}
-                            <div className="space-y-4 min-h-[300px]">
-                                {loading ? (
-                                    [1, 2].map(i => <div key={i} className="h-32 bg-white rounded-2xl animate-pulse" />)
-                                ) : (
-                                    <>
-                                        {activeTab === "inbox" && (
-                                            inboxItems.length > 0 ? inboxItems.map(shipment => (
-                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="inbox" onDelete={handleDelete} onView={() => setSelectedShipment(shipment)} />
-                                            )) : renderEmptyState("inbox")
-                                        )}
-                                        {activeTab === "sent" && (
-                                            sentItems.length > 0 ? sentItems.map(shipment => (
-                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="sent" onDelete={handleDelete} onView={() => setSelectedShipment(shipment)} />
-                                            )) : renderEmptyState("sent")
-                                        )}
-                                        {activeTab === "active" && (
-                                            activeItems.length > 0 ? activeItems.map(shipment => (
-                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="active" onView={() => setSelectedShipment(shipment)} />
-                                            )) : renderEmptyState("active")
-                                        )}
-                                        {activeTab === "history" && (
-                                            historyItems.length > 0 ? historyItems.map(shipment => (
-                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="history" onView={() => setSelectedShipment(shipment)} />
-                                            )) : renderEmptyState("history")
-                                        )}
-                                        {activeTab === "recycle" && (
-                                            recycledItems.length > 0 ? recycledItems.map(shipment => (
-                                                <ActionCard key={shipment.id} shipment={shipment} userMode={userMode} type="recycle" onView={() => setSelectedShipment(shipment)} />
-                                            )) : renderEmptyState("recycle")
-                                        )}
-                                    </>
-                                )}
-                            </div>
+                            {loading ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {[1, 2].map(i => <div key={i} className="h-48 bg-white/5 rounded-2xl animate-pulse" />)}
+                                </div>
+                            ) : favListings.length === 0 ? (
+                                <div className="text-center py-10 rounded-2xl border border-dashed border-border/50 bg-[#0a0a0a]/50">
+                                    <Heart className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-40" />
+                                    <p className="text-sm text-muted-foreground mb-4">עדיין לא סימנת מוצרים במועדפים.</p>
+                                    <Button asChild size="sm" className="bg-rose-600 hover:bg-rose-700">
+                                        <Link href="/">עבור למרקטפלייס</Link>
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {favListings.map((listing) => (
+                                        <ListingCard key={listing.id} listing={listing} />
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div> {/* <--- Added missing closing div for Left Column */}
 

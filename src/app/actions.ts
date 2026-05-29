@@ -162,18 +162,22 @@ export async function getShipmentByShortId(shortId: string) {
                 listing: true,
                 seller: {
                     select: {
-                        clerkId: true, // Needed for permission check
+                        id: true,
+                        clerkId: true,
                         firstName: true,
                         lastName: true,
                         imageUrl: true,
+                        lastActiveAt: true
                     }
                 },
-                buyer: { // Added buyer inclusion
+                buyer: {
                     select: {
-                        clerkId: true, // Needed for permission check
+                        id: true,
+                        clerkId: true,
                         firstName: true,
                         lastName: true,
                         imageUrl: true,
+                        lastActiveAt: true
                     }
                 }
             }
@@ -244,7 +248,11 @@ export async function finalizeShipment(shipmentId: string, guestDetails: any, pa
             receiverAddress: {
                 city: guestDetails.city,
                 street: guestDetails.street
-            }
+            },
+            buyerRealName: guestDetails.buyerRealName,
+            buyerIdNo: guestDetails.buyerIdNo,
+            buyerSignature: guestDetails.buyerSignature,
+            buyerSignedAt: guestDetails.buyerSignedAt || new Date().toISOString()
         };
 
         await prismadb.shipmentDetails.update({
@@ -377,6 +385,7 @@ export async function updateUserDetails(data: any) {
                 firstName: data.firstName,
                 lastName: data.lastName,
                 phone: data.phone,
+                idNo: data.idNo,
                 city: data.city,
                 street: data.street,
                 houseNumber: data.houseNumber
@@ -384,6 +393,7 @@ export async function updateUserDetails(data: any) {
         });
 
         revalidatePath("/dashboard");
+        revalidatePath("/link/[shortId]");
         return { success: true };
     } catch (error) {
         console.error("Failed to update user details:", error);
@@ -410,6 +420,7 @@ export async function updateShipmentBySeller(shipmentId: string, data: any) {
         const newFlexible = {
             ...currentFlexible,
             packageSize: data.packageSize, // Store package size in flexible data for now
+            ...data.flexibleDataUpdates,
             sellerApprovedAt: new Date().toISOString()
         };
 
@@ -693,5 +704,110 @@ export async function updateLastSeen(shipmentId: string, role: 'buyer' | 'seller
     } catch (error) {
         console.error("Failed to update last seen", error);
         return { success: false };
+    }
+}
+
+export async function updateTypingStatus(shipmentId: string, role: 'buyer' | 'seller', isTyping: boolean) {
+    try {
+        if (!prismadb) return { success: false };
+        const shipment = await prismadb.shipment.findUnique({
+            where: { id: shipmentId },
+            include: { details: true }
+        });
+        if (!shipment || !shipment.details) return { success: false };
+
+        let currentFlexible = {};
+        try { currentFlexible = JSON.parse(shipment.details.flexibleData || '{}'); } catch (e) { }
+
+        const fieldToUpdate = role === 'buyer' ? 'buyerIsTyping' : 'sellerIsTyping';
+        const timestampField = role === 'buyer' ? 'buyerTypingTime' : 'sellerTypingTime';
+
+        const newFlexible = {
+            ...currentFlexible,
+            [fieldToUpdate]: isTyping,
+            [timestampField]: isTyping ? new Date().toISOString() : null
+        };
+
+        await prismadb.shipmentDetails.update({
+            where: { shipmentId },
+            data: { flexibleData: JSON.stringify(newFlexible) }
+        });
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to update typing status", error);
+        return { success: false };
+    }
+}
+
+export async function updateUserActivity() {
+    try {
+        const user = await currentUser();
+        if (!user || !prismadb) return { success: false };
+
+        const dbUser = await prismadb.user.findFirst({
+            where: { clerkId: user.id },
+            select: { id: true }
+        });
+        if (!dbUser) return { success: false };
+
+        await prismadb.user.update({
+            where: { id: dbUser.id },
+            data: { lastActiveAt: new Date() }
+        });
+        return { success: true };
+    } catch (e) {
+        console.error("Failed to update user activity:", e);
+        return { success: false };
+    }
+}
+
+export async function sendMessageInChat(shipmentId: string, text: string, role: 'buyer' | 'seller', buyerId?: string) {
+    try {
+        if (!prismadb) return { success: false, error: "Database error" };
+
+        const shipment = await prismadb.shipment.findUnique({ where: { id: shipmentId }, include: { details: true } });
+        if (!shipment || !shipment.details) return { success: false, error: "Not found" };
+
+        let flexibleData: any = {};
+        try { flexibleData = JSON.parse(shipment.details.flexibleData || '{}'); } catch (e) { }
+
+        const newMessage = {
+            id: Math.random().toString(36).substring(2, 9),
+            sender: role,
+            text: text,
+            timestamp: new Date().toISOString()
+        };
+
+        const newData = { ...flexibleData };
+
+        if (buyerId && (buyerId !== shipment.buyerId || (flexibleData.negotiations && flexibleData.negotiations[buyerId]))) {
+            // Multi-buyer mode
+            const negotiations = flexibleData.negotiations || {};
+            const thread = negotiations[buyerId] || { offers: [], status: 'active', messages: [] };
+            
+            if (!thread.messages) thread.messages = [];
+            thread.messages.push(newMessage);
+            thread.updatedAt = new Date().toISOString();
+
+            negotiations[buyerId] = thread;
+            newData.negotiations = negotiations;
+        } else {
+            // Legacy / Single Buyer Mode
+            const messages = [...(flexibleData.messages || []), newMessage];
+            newData.messages = messages;
+        }
+
+        await prismadb.shipmentDetails.update({
+            where: { shipmentId },
+            data: {
+                flexibleData: JSON.stringify(newData)
+            }
+        });
+
+        revalidatePath("/link/[shortId]");
+        return { success: true };
+    } catch (error) {
+        console.error("sendMessageInChat error:", error);
+        return { success: false, error: "Failed to send message" };
     }
 }

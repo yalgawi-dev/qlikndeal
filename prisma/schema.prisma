@@ -62,6 +62,7 @@ model User {
   clerkId     String? @unique // ─────────────────────────────────────────────────────────────
   email       String? @unique
   phone       String?
+  idNo        String?
   firstName   String?
   lastName    String?
   imageUrl    String?
@@ -71,6 +72,8 @@ model User {
   isGuest     Boolean @default(false)
 
   roles UserRole[] @default([BUYER])
+
+  lastActiveAt DateTime @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -133,6 +136,9 @@ model MarketplaceListing {
 
   status ListingStatus @default(ACTIVE)
   listingType ListingType @default(SELL)
+
+  viewsCount     Int @default(0)
+  favoritesCount Int @default(0)
 
   // ─────────────────────────────────────────────────────────────
   shipments Shipment[] // ─────────────────────────────────────────────────────────────

@@ -36,11 +36,11 @@ export function StatusStepper({ currentStep, isCancelled = false, buyerLastSeen,
         return 'pending';
     };
 
-    // Helper to check if online (within last 15 seconds)
+    // Helper to check if online (within last 2 minutes)
     const isOnline = (lastSeen?: string) => {
         if (!lastSeen) return false;
         const diff = new Date().getTime() - new Date(lastSeen).getTime();
-        return diff < 15000; // 15 seconds
+        return diff < 120000; // 2 minutes (safely accounts for network delay & clock drift)
     };
 
     const buyerOnline = isOnline(buyerLastSeen);

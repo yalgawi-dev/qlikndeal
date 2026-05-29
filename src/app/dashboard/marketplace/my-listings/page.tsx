@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { DynamicListingForm } from "@/components/marketplace/DynamicListingForm";
 import { ShareModal } from "@/components/marketplace/ShareModal";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { getMyListings, getMyRequests, deleteListing, deleteRequest, updateRequest } from "@/app/actions/marketplace";
+import { getMyListings, getMyRequests, deleteListing, deleteRequest, updateRequest, getListingsByIds } from "@/app/actions/marketplace";
 import { RadarDetailModal } from "@/components/marketplace/RadarDetailModal";
 import Link from "next/link";
 import {
     Loader2, Plus, ArrowRight, Pencil, Trash2, Share2, Sparkles,
     ShoppingBag, Tag, Search, Clock, CheckCircle2, XCircle, AlertCircle,
-    ChevronLeft, ChevronRight, Calendar, Package, ExternalLink, Zap, X
+    ChevronLeft, ChevronRight, Calendar, Package, ExternalLink, Zap, X, Heart
 } from "lucide-react";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
@@ -218,6 +218,16 @@ function ListingDetailModal({
                                 <Calendar className="w-3 h-3" />
                                 {new Date(listing.createdAt).toLocaleDateString("he-IL")}
                             </span>
+                            {!isBuyer && (
+                                <>
+                                    <span className="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-full flex items-center gap-1">
+                                        👁️ {listing.viewsCount ?? 0} צפיות
+                                    </span>
+                                    <span className="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-1 rounded-full flex items-center gap-1 font-bold">
+                                        ❤️ {listing.favoritesCount ?? 0} שמרו במועדפים
+                                    </span>
+                                </>
+                            )}
                         </div>
 
                         {/* Description */}
@@ -366,6 +376,16 @@ function ListingRow({ listing, onClick }: { listing: any; onClick: () => void })
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />{listing.shipments.length} הצעות
                             </span>
                         )}
+                        {!isBuyer && (
+                            <>
+                                <span className="text-[11px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                                    👁️ {listing.viewsCount ?? 0}
+                                </span>
+                                <span className="text-[11px] bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                                    ❤️ {listing.favoritesCount ?? 0}
+                                </span>
+                            </>
+                        )}
                     </div>
                     {listing.description && (
                         <p className="text-gray-500 text-xs mt-1 line-clamp-1 text-right">{listing.description}</p>
@@ -418,11 +438,13 @@ function BuyerRequestCard({ request, onClick }: { request: any; onClick: () => v
 }
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
-export default function MyListingsPage() {
+function MyListingsPageContent() {
     const router = useRouter();
-    const [tab, setTab] = useState<"seller" | "buyer">("seller");
+    const searchParams = useSearchParams();
+    const [tab, setTab] = useState<"seller" | "buyer" | "favorites">("seller");
     const [allListings, setAllListings] = useState<any[]>([]);
     const [requests, setRequests] = useState<any[]>([]);
+    const [favListings, setFavListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [editingListing, setEditingListing] = useState<any>(null);
     const [detailListing, setDetailListing] = useState<any>(null);
@@ -433,11 +455,29 @@ export default function MyListingsPage() {
     const [detailRequest, setDetailRequest] = useState<any>(null);
     const [isDeletingReq, setIsDeletingReq] = useState<string | null>(null);
 
+    useEffect(() => {
+        const urlTab = searchParams.get("tab");
+        if (urlTab === "favorites" || urlTab === "seller" || urlTab === "buyer") {
+            setTab(urlTab as any);
+        }
+    }, [searchParams]);
+
     const fetchAll = async () => {
         setLoading(true);
-        const [lr, rr] = await Promise.all([getMyListings(), getMyRequests()]);
+        let favs: string[] = [];
+        try {
+            favs = JSON.parse(localStorage.getItem("qlik_favorites") || "[]");
+        } catch (e) {}
+
+        const [lr, rr, fr] = await Promise.all([
+            getMyListings(),
+            getMyRequests(),
+            favs.length > 0 ? getListingsByIds(favs) : Promise.resolve({ success: true, listings: [] })
+        ]);
+
         if (lr.success) setAllListings(lr.listings ?? []);
         if (rr.success) setRequests(rr.requests ?? []);
+        if (fr.success) setFavListings(fr.listings ?? []);
         setLoading(false);
     };
     useEffect(() => { fetchAll(); }, []);
@@ -614,9 +654,10 @@ export default function MyListingsPage() {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-1 mb-8 p-1 bg-gray-900/80 rounded-2xl border border-gray-800 w-fit">
+                <div className="flex gap-1 mb-8 p-1 bg-gray-900/80 rounded-2xl border border-gray-800 w-fit flex-wrap">
                     {([["seller", Tag, "אני מוכר", sellers.length, "from-purple-600 to-indigo-600 shadow-purple-500/20"],
-                       ["buyer",  Search, "אני קונה", buyers.length + requests.length, "from-cyan-600 to-teal-600 shadow-cyan-500/20"]] as any[]).map(
+                       ["buyer",  Search, "אני קונה", buyers.length + requests.length, "from-cyan-600 to-teal-600 shadow-cyan-500/20"],
+                       ["favorites", Heart, "מועדפים ❤️", favListings.length, "from-red-600 to-rose-600 shadow-red-500/25"]] as any[]).map(
                         ([id, Icon, label, count, grad]) => (
                             <button key={id} onClick={() => setTab(id)}
                                 className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all ${
@@ -651,7 +692,7 @@ export default function MyListingsPage() {
                             {sellers.map(l => <ListingRow key={l.id} listing={l} onClick={() => openDetail(l)} />)}
                         </div>
                     )
-                ) : (
+                ) : tab === "buyer" ? (
                     buyers.length === 0 && requests.length === 0 ? (
                         <div className="text-center py-20 bg-gray-900/50 rounded-2xl border border-cyan-900/30">
                             <Search className="w-16 h-16 text-gray-700 mx-auto mb-4" />
@@ -686,6 +727,28 @@ export default function MyListingsPage() {
                             )}
                         </div>
                     )
+                ) : (
+                    favListings.length === 0 ? (
+                        <div className="text-center py-20 bg-gray-900/50 rounded-2xl border border-gray-800">
+                            <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold mb-2">אין לך מוצרים במועדפים</h3>
+                            <p className="text-gray-400 mb-6">סמן מוצרים בלב כדי לשמור אותם להמשך.</p>
+                            <Link href="/dashboard/marketplace">
+                                <Button className="bg-rose-600 hover:bg-rose-700">עבור למרקטפלייס</Button>
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            <p className="text-xs text-gray-600 mb-1">לחץ על מוצר לצפייה בפרטים ↓</p>
+                            {favListings.map(l => (
+                                <ListingRow 
+                                    key={l.id} 
+                                    listing={l} 
+                                    onClick={() => router.push(`/dashboard/marketplace/${l.id}`)} 
+                                />
+                            ))}
+                        </div>
+                    )
                 )}
             </div>
 
@@ -697,5 +760,13 @@ export default function MyListingsPage() {
                 text={`כנסו לראות את ${shareData.title} ב-Qlikndeal! המקום הבטוח לקנות ולמכור.`}
             />
         </div>
+    );
+}
+
+export default function MyListingsPage() {
+    return (
+        <Suspense fallback={<div className="flex justify-center py-20"><Loader2 className="w-10 h-10 animate-spin text-purple-500" /></div>}>
+            <MyListingsPageContent />
+        </Suspense>
     );
 }

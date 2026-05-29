@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,14 +7,17 @@ import { Check, Clock, Edit2, Shield, Truck, Video, X, CheckCircle, Smartphone, 
 import { updateShipmentBySeller, finalizeShipment } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { NegotiationPanel } from "./NegotiationPanel";
+import { LegalContract } from "@/components/LegalContract";
 
 interface SellerApprovalProps {
     shipmentId: string;
     details: any;
     buyerName?: string;
+    buyerId?: string;
+    shipmentStatus?: string;
 }
 
-export function SellerApproval({ shipmentId, details, buyerName = "הקונה" }: SellerApprovalProps) {
+export function SellerApproval({ shipmentId, details, buyerName = "הקונה", buyerId, shipmentStatus }: SellerApprovalProps) {
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -37,17 +39,19 @@ export function SellerApproval({ shipmentId, details, buyerName = "הקונה" }
     const lastOfferBy = flexibleData.lastOfferBy || 'buyer';
     const isPriceAgreed = negotiationStatus === 'agreed';
     const offers = flexibleData.offers || [];
+    const messages = flexibleData.messages || [];
 
-    // Seller needs to sign the contract
-    const [formData, setFormData] = useState({
-        agreement: false
-    });
-
-    const handleApprove = async () => {
+    const handleApprove = async (signatureData: { realName: string; idNo: string; signatureBase64: string }) => {
         setLoading(true);
         try {
             const res = await updateShipmentBySeller(shipmentId, {
-                status: "SELLER_APPROVED" // Updated status
+                status: "SELLER_APPROVED", // Updated status
+                flexibleDataUpdates: {
+                    sellerRealName: signatureData.realName,
+                    sellerIdNo: signatureData.idNo,
+                    sellerSignature: signatureData.signatureBase64,
+                    sellerSignedAt: new Date().toISOString()
+                }
             });
 
             if (res.success) {
@@ -113,56 +117,48 @@ export function SellerApproval({ shipmentId, details, buyerName = "הקונה" }
                 )}
             </div>
 
-            {/* Negotiation Panel */}
-            {!isPriceAgreed && (
-                <NegotiationPanel
-                    shipmentId={shipmentId}
-                    currentOffer={details.value}
-                    lastOfferBy={lastOfferBy}
-                    currentUserRole="seller"
-                    offers={offers}
-                />
-            )}
+            {/* Negotiation Panel - always visible (shows agreement banner when price agreed) */}
+            {(() => {
+                const otherTyping = !!(flexibleData.buyerIsTyping && 
+                    flexibleData.buyerTypingTime && 
+                    (new Date().getTime() - new Date(flexibleData.buyerTypingTime).getTime() < 8000));
+                const contractSection = document.getElementById('seller-contract-section');
+                return (
+                    <NegotiationPanel
+                        shipmentId={shipmentId}
+                        currentOffer={details.value}
+                        lastOfferBy={lastOfferBy}
+                        currentUserRole="seller"
+                        onAgreement={() => contractSection?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                        offers={offers}
+                        messages={messages}
+                        buyerId={buyerId}
+                        otherUserIsTyping={otherTyping}
+                        shipmentStatus={shipmentStatus}
+                        itemName={details.itemName}
+                        itemCondition={details.itemCondition}
+                        sellerNotes={details.sellerNotes}
+                        buyerName={buyerName}
+                        flexibleData={flexibleData}
+                    />
+                );
+            })()}
 
             {/* Main Form - Only visible if price agreed */}
             {isPriceAgreed && (
-                <div className="space-y-6 animate-in slide-in-from-bottom-4 fade-in duration-500">
-                    
-                    {/* Contract Box */}
-                    <div className="border border-border rounded-3xl overflow-hidden bg-card shadow-sm">
-                        <div className="bg-muted p-4 border-b border-border flex items-center gap-2">
-                            <CheckCircle className="w-5 h-5 text-foreground" />
-                            <h4 className="font-bold text-foreground">הסכם סחר מוגן מקדמי</h4>
-                        </div>
-                        <div className="p-6">
-                            <div className="bg-background/50 rounded-2xl border border-dashed p-6 text-center mb-6">
-                                <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                                    מסמך ההסכם המלא ייכתב בשלב הבא של הפיתוח. בעתיד שני הצדדים יוכלו לראות פה חוזה מפורט המגן על כללי העסקה.
-                                </p>
-                            </div>
-                            
-                            {/* Agreement Checkbox */}
-                            <label className="flex items-start gap-4 cursor-pointer p-5 bg-background border border-border/60 hover:border-primary/50 hover:bg-primary/5 rounded-2xl transition-all shadow-sm group">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.agreement}
-                                    onChange={e => setFormData({ ...formData, agreement: e.target.checked })}
-                                    className="mt-1 rounded-md border-primary text-primary focus:ring-primary h-6 w-6 shrink-0 transition-transform group-active:scale-95 cursor-pointer"
-                                />
-                                <span className="text-sm font-medium leading-relaxed text-foreground cursor-pointer">
-                                    אני מאשר שהמחיר לעסקה הוא <strong className="text-primary text-base">₪{details.value}</strong> ושאני מסכים לטיוטת ההסכם.
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <Button
-                        onClick={handleApprove}
-                        disabled={!formData.agreement || loading}
-                        className="w-full font-bold h-14 text-base shadow-lg shadow-primary/20 rounded-2xl bg-gradient-to-l from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-primary-foreground transform transition-all active:scale-[0.98]"
-                    >
-                        {loading ? "מעבד חתימה..." : "חתום על ההסכם והתקדם לעסקה 🤝"}
-                    </Button>
+                <div id="seller-contract-section" className="space-y-6 animate-in slide-in-from-bottom-4 fade-in duration-500">
+                    <LegalContract
+                        itemName={details.itemName}
+                        value={details.value}
+                        itemCondition={details.itemCondition}
+                        sellerNotes={details.sellerNotes}
+                        sellerName="את/ה"
+                        buyerName={buyerName}
+                        flexibleData={flexibleData}
+                        isSigning={true}
+                        role="seller"
+                        onSign={handleApprove}
+                    />
                 </div>
             )}
         </div>

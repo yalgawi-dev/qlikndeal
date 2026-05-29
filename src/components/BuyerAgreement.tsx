@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CheckCircle, Lock, Truck, Clock, Video } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,20 +11,28 @@ import { Switch } from "@/components/ui/switch";
 import { NegotiationPanel } from "./NegotiationPanel";
 import { finalizeShipment } from "@/app/actions";
 import { createServiceRequest } from "@/app/actions/service-provider";
+import { LegalContract } from "@/components/LegalContract";
 
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 interface BuyerAgreementProps {
     shipmentId: string;
     sellerName: string;
-    details: any; // Added details prop
+    details: any;
+    shipmentStatus?: string;
 }
 
-export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreementProps) {
+export function BuyerAgreement({ shipmentId, sellerName, details, shipmentStatus }: BuyerAgreementProps) {
     const { user, isLoaded } = useUser();
     const [isOpen, setIsOpen] = useState(false);
     const [step, setStep] = useState(1); // 1 = Details, 2 = Payment/Finalize
     const [loading, setLoading] = useState(false);
+    const [buyerSignatureData, setBuyerSignatureData] = useState<{
+        realName: string;
+        idNo: string;
+        signatureBase64: string;
+    } | null>(null);
 
     // Guest Form State
     const [guestDetails, setGuestDetails] = useState({
@@ -35,7 +43,6 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
         needsDelivery: false
     });
 
-    const [agreementChecked, setAgreementChecked] = useState(false);
     const [payer, setPayer] = useState<'buyer' | 'seller'>('buyer'); // Default to buyer pays
 
 
@@ -48,6 +55,7 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
     const isPriceAgreed = negotiationStatus === 'agreed';
     const isSellerFinalized = flexibleData.sellerApprovedAt;
     const offers = flexibleData.offers || [];
+    const messages = flexibleData.messages || [];
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setGuestDetails({ ...guestDetails, [e.target.name]: e.target.value });
@@ -59,7 +67,10 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
             // 1. Finalize shipment (Payment/Order)
             const res = await finalizeShipment(shipmentId, {
                 ...guestDetails,
-                // Remove non-standard fields if finalizeShipment is strict, or assume it handles extras gracefully
+                buyerRealName: buyerSignatureData?.realName,
+                buyerIdNo: buyerSignatureData?.idNo,
+                buyerSignature: buyerSignatureData?.signatureBase64,
+                buyerSignedAt: new Date().toISOString()
             }, payer);
 
             if (res.success) {
@@ -89,85 +100,115 @@ export function BuyerAgreement({ shipmentId, sellerName, details }: BuyerAgreeme
     const isMissingPhone = isLoaded && !!user && (!user.phoneNumbers || user.phoneNumbers.length === 0);
     const needsIdentification = isGuestUser || isMissingPhone;
 
-    // Auto-Polling for Seller Approval (every 3 seconds)
-    // MOVED TO TOP LEVEL - Run always, but logic inside might depend on state if needed. 
-    // Actually, we only want this to run when waiting for seller.
+    const router = useRouter();
+
+    // Auto-polling: refresh every 5s when waiting for seller to sign
     useEffect(() => {
-        let interval: NodeJS.Timeout;
         if (isPriceAgreed && !isSellerFinalized) {
-            interval = setInterval(() => {
-                window.location.reload(); // Simple reload to check status
-            }, 3000);
+            const interval = setInterval(() => {
+                router.refresh();
+            }, 5000);
+            return () => clearInterval(interval);
         }
-        return () => clearInterval(interval);
-    }, [isPriceAgreed, isSellerFinalized]);
+    }, [isPriceAgreed, isSellerFinalized, router]);
+
+    // Ref for scrolling to contract section
+    const contractRef = useRef<HTMLDivElement>(null);
+
+    const scrollToContract = () => {
+        contractRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     if (!isPriceAgreed) {
+        const otherTyping = !!(flexibleData.sellerIsTyping && 
+            flexibleData.sellerTypingTime && 
+            (new Date().getTime() - new Date(flexibleData.sellerTypingTime).getTime() < 8000));
         return (
             <NegotiationPanel
                 shipmentId={shipmentId}
                 currentOffer={details.value}
                 lastOfferBy={lastOfferBy}
                 currentUserRole="buyer"
-                isGuest={needsIdentification} // Pass combined flag
+                onAgreement={() => setStep(2)}
+                isGuest={needsIdentification}
                 offers={offers}
+                messages={messages}
+                otherUserIsTyping={otherTyping}
+                buyerId={user?.id || undefined}
+                shipmentStatus={shipmentStatus}
+                itemName={details.itemName}
+                itemCondition={details.itemCondition}
+                sellerNotes={details.sellerNotes}
+                sellerName={sellerName}
+                buyerName={user?.firstName || "קונה"}
+                flexibleData={flexibleData}
             />
         );
     }
 
-    if (isPriceAgreed && !isSellerFinalized) {
-        return (
-            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 text-center animate-pulse shadow-inner">
-                <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-                    <Clock className="w-8 h-8 animate-spin-slow" />
-                </div>
-                <h3 className="font-bold text-lg text-foreground mb-2">ממתין לחתימת המוכר...</h3>
-                <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                    המחיר סוכם! כעת המוכר מאשר את טיוטת העסקה מצידו.<br />
-                    העמוד יתעדכן אוטומטית ברגע שהמוכר יחתום ותוכל להתקדם.
-                </p>
-            </div>
-        );
-    }
+    // Price Agreed — show NegotiationPanel (with agreement banner) + Contract below
+    const otherTyping = !!(flexibleData.sellerIsTyping && 
+        flexibleData.sellerTypingTime && 
+        (new Date().getTime() - new Date(flexibleData.sellerTypingTime).getTime() < 8000));
 
-    // Original Flow (Ready to Pay)
     return (
-        <div className="space-y-6 animate-in slide-in-from-bottom-4 fade-in duration-500">
-            {/* Contract Box for Buyer */}
-            <div className="border border-border rounded-3xl overflow-hidden bg-card shadow-sm">
-                <div className="bg-muted p-4 border-b border-border flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-foreground" />
-                    <h4 className="font-bold text-foreground">הסכם סחר מוגן מקדמי</h4>
-                </div>
-                <div className="p-6">
-                    <div className="bg-background/50 rounded-2xl border border-dashed p-6 text-center mb-6">
-                        <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                            המוכר חתם על ההסכם! מסמך ההסכם המלא ייכתב בשלב הבא של הפיתוח. בעתיד תוכלו לראות פה חוזה מפורט המגן על כללי העסקה.
+        <div className="space-y-6">
+            {/* Keep showing the negotiation panel with chat history + agreement banner */}
+            <NegotiationPanel
+                shipmentId={shipmentId}
+                currentOffer={details.value}
+                lastOfferBy={lastOfferBy}
+                currentUserRole="buyer"
+                onAgreement={scrollToContract}
+                isGuest={needsIdentification}
+                offers={offers}
+                messages={messages}
+                otherUserIsTyping={otherTyping}
+                buyerId={user?.id || undefined}
+                shipmentStatus={shipmentStatus}
+                itemName={details.itemName}
+                itemCondition={details.itemCondition}
+                sellerNotes={details.sellerNotes}
+                sellerName={sellerName}
+                buyerName={user?.firstName || "קונה"}
+                flexibleData={flexibleData}
+            />
+
+            {/* Contract / Waiting Section */}
+            <div ref={contractRef}>
+                {isPriceAgreed && !isSellerFinalized ? (
+                    /* Waiting for seller to sign first */
+                    <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-6 text-center shadow-inner animate-in fade-in slide-in-from-bottom-4">
+                        <div className="bg-blue-500/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-500">
+                            <Clock className="w-8 h-8 animate-spin" style={{ animationDuration: '3s' }} />
+                        </div>
+                        <h3 className="font-bold text-lg text-foreground mb-2">ממתין לחתימת המוכר...</h3>
+                        <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
+                            המחיר סוכם! כעת המוכר צריך לאשר ולחתום על טיוטת ההסכם מצידו.<br />
+                            <span className="text-xs opacity-70">העמוד יתעדכן אוטומטית ברגע שהמוכר יחתום ותוכל להתקדם.</span>
                         </p>
                     </div>
-                    
-                    {/* Agreement Checkbox */}
-                    <label className="flex items-start gap-4 cursor-pointer p-5 bg-background border border-border/60 hover:border-primary/50 hover:bg-primary/5 rounded-2xl transition-all shadow-sm group">
-                        <input
-                            type="checkbox"
-                            checked={agreementChecked}
-                            onChange={e => setAgreementChecked(e.target.checked)}
-                            className="mt-1 rounded-md border-primary text-primary focus:ring-primary h-6 w-6 shrink-0 transition-transform group-active:scale-95 cursor-pointer"
+                ) : (
+                    /* Seller has signed — buyer can sign now */
+                    <div className="animate-in slide-in-from-bottom-4 fade-in duration-500">
+                        <LegalContract
+                            itemName={details.itemName}
+                            value={details.value}
+                            itemCondition={details.itemCondition}
+                            sellerNotes={details.sellerNotes}
+                            sellerName={sellerName}
+                            buyerName={user?.firstName || "קונה"}
+                            flexibleData={flexibleData}
+                            isSigning={true}
+                            role="buyer"
+                            onSign={(sigData) => {
+                                setBuyerSignatureData(sigData);
+                                setIsOpen(true);
+                            }}
                         />
-                        <span className="text-sm font-medium leading-relaxed text-foreground cursor-pointer">
-                            אני מאשר שהמחיר לעסקה הוא <strong className="text-primary text-base">₪{details.value}</strong> ושאני מסכים לטיוטת ההסכם לקניית המוצר.
-                        </span>
-                    </label>
-                </div>
+                    </div>
+                )}
             </div>
-
-            <Button
-                onClick={() => setIsOpen(true)}
-                disabled={!agreementChecked}
-                className="w-full font-bold h-14 text-base shadow-lg shadow-primary/20 rounded-2xl bg-gradient-to-l from-primary to-primary/80 hover:from-primary/90 hover:to-primary text-primary-foreground transform transition-all active:scale-[0.98]"
-            >
-                {"חתום על ההסכם והתקדם לתשלום 💳"} <ArrowLeft className="mr-2 h-5 w-5" />
-            </Button>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent className="sm:max-w-[425px]">

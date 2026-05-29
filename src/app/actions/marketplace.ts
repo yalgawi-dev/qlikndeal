@@ -200,7 +200,8 @@ export async function getListings() {
                         firstName: true,
                         lastName: true,
                         imageUrl: true,
-                        roles: true
+                        roles: true,
+                        lastActiveAt: true
                     }
                 }
             },
@@ -216,43 +217,66 @@ export async function getListings() {
 export async function createShipmentFromListing(listingId: string) {
     try {
         const user = await currentUser();
-        if (!user) return { success: false, error: "Unauthorized" };
+        if (!user) return { success: false, error: "יש להתחבר כדי לפתוח זירת סחר" };
 
         const dbUser = await prismadb.user.findUnique({ where: { clerkId: user.id } });
-        if (!dbUser) return { success: false, error: "User not found" };
+        if (!dbUser) return { success: false, error: "משתמש לא נמצא במערכת" };
 
         // Fetch the listing
         const listing = await prismadb.marketplaceListing.findUnique({
             where: { id: listingId }
         });
 
-        if (!listing) return { success: false, error: "Listing not found" };
+        if (!listing) return { success: false, error: "המודעה לא נמצאה" };
+        if (listing.status !== "ACTIVE") return { success: false, error: "המודעה כבר לא פעילה" };
+
+        // 🛡️ GUARD: Prevent seller from opening trade with themselves
+        if (listing.sellerId === dbUser.id) {
+            return { success: false, error: "SELF_LISTING" };
+        }
+
+        // Check if a DRAFT shipment already exists between these parties for this listing
+        const existingDraft = await prismadb.shipment.findFirst({
+            where: {
+                listingId: listing.id,
+                buyerId: dbUser.id,
+                status: { in: ["DRAFT", "NEEDS_REVISION", "SHARED"] }
+            }
+        });
+
+        // If draft already exists, redirect to it instead of creating a duplicate
+        if (existingDraft) {
+            return { success: true, shipmentId: existingDraft.id, shortId: existingDraft.shortId, isExisting: true };
+        }
 
         // Create a new Shipment (Draft) linked to this listing
         const shipment = await prismadb.shipment.create({
             data: {
                 shortId: Math.random().toString(36).substring(2, 7).toUpperCase(),
                 sellerId: listing.sellerId,
-                buyerId: dbUser.id, // The current user is the buyer
+                buyerId: dbUser.id,
                 listingId: listing.id,
-                status: "DRAFT",
-                details: {
-                    create: {
-                        itemName: listing.title,
-                        value: listing.price,
-                        itemCondition: listing.condition,
-                        sellerNotes: listing.description,
-                        images: listing.images
-                    }
-                }
+                status: "DRAFT"
             }
         });
 
-        return { success: true, shipmentId: shipment.id, shortId: shipment.shortId };
+        // Create the ShipmentDetails separately to avoid Prisma nested transaction error in Neon HTTP
+        await prismadb.shipmentDetails.create({
+            data: {
+                shipmentId: shipment.id,
+                itemName: listing.title,
+                value: listing.price,
+                itemCondition: listing.condition,
+                sellerNotes: listing.description,
+                images: listing.images
+            }
+        });
+
+        return { success: true, shipmentId: shipment.id, shortId: shipment.shortId, isExisting: false };
 
     } catch (error) {
         console.error("Create Shipment from Listing Error:", error);
-        return { success: false, error: "Failed to start transaction" };
+        return { success: false, error: "שגיאה בפתיחת זירת הסחר, נסה שנית" };
     }
 }
 
@@ -272,7 +296,8 @@ export async function getListingById(id: string) {
                         phone: true,
                         createdAt: true,
                         city: true,
-                        roles: true
+                        roles: true,
+                        lastActiveAt: true
                     }
                 }
             }
@@ -813,6 +838,150 @@ export async function createShipmentFromRequest(requestId: string) {
     } catch (error) {
         console.error("Create Shipment from Request Error:", error);
         return { success: false, error: "Failed to start transaction" };
+    }
+}
+
+export async function getListingsByIds(ids: string[]) {
+    try {
+        if (!ids || ids.length === 0) return { success: true, listings: [] };
+        
+        const [listings, shadowLeads, buyerRequests] = await Promise.all([
+            prismadb.marketplaceListing.findMany({
+                where: { id: { in: ids }, status: "ACTIVE" },
+                include: {
+                    seller: {
+                        select: {
+                            clerkId: true,
+                            firstName: true,
+                            lastName: true,
+                            imageUrl: true,
+                            roles: true,
+                            lastActiveAt: true
+                        }
+                    }
+                }
+            }),
+            prismadb.shadowLead.findMany({
+                where: { id: { in: ids } }
+            }),
+            prismadb.buyerRequest.findMany({
+                where: { id: { in: ids }, status: "ACTIVE" },
+                include: {
+                    user: {
+                        select: {
+                            clerkId: true,
+                            firstName: true,
+                            lastName: true,
+                            imageUrl: true,
+                            roles: true,
+                            lastActiveAt: true
+                        }
+                    }
+                }
+            })
+        ]);
+
+        const mappedShadowLeads = shadowLeads.map((lead: any) => ({
+            id: lead.id,
+            title: lead.sellerName ? `מודעה של ${lead.sellerName}` : "מודעה מפייסבוק",
+            description: lead.postText || "",
+            price: 0,
+            condition: "משומש",
+            images: lead.images || "[]",
+            videos: lead.videos || "[]",
+            category: "כללי",
+            status: "ACTIVE",
+            listingType: "SELL",
+            type: "external",
+            sourceUrl: lead.sourceUrl,
+            seller: {
+                clerkId: "external",
+                firstName: lead.sellerName || "מפרסם חיצוני",
+                lastName: "",
+                imageUrl: null,
+                roles: ["SELLER"]
+            }
+        }));
+
+        const mappedBuyerRequests = buyerRequests.map((req: any) => {
+            let parsedExtra: any = {};
+            try {
+                if (req.extraData) {
+                    parsedExtra = JSON.parse(req.extraData);
+                }
+            } catch (e) {
+                console.error("Error parsing extraData for buyerRequest", req.id, e);
+            }
+
+            const budget = parsedExtra.budgetRange && Array.isArray(parsedExtra.budgetRange) && parsedExtra.budgetRange[1]
+                ? parsedExtra.budgetRange[1]
+                : (parsedExtra.budget || 0);
+
+            return {
+                id: req.id,
+                sellerId: req.userId || "",
+                seller: req.user ? {
+                    clerkId: req.user.clerkId,
+                    firstName: req.user.firstName,
+                    lastName: req.user.lastName,
+                    imageUrl: req.user.imageUrl,
+                    roles: req.user.roles,
+                    lastActiveAt: req.user.lastActiveAt
+                } : {
+                    clerkId: "system",
+                    firstName: "משתמש",
+                    lastName: "שומר סוד",
+                    imageUrl: null,
+                    roles: ["BUYER"]
+                },
+                title: req.query,
+                description: parsedExtra.details || req.query,
+                price: budget,
+                condition: "דרוש לקנייה 🏷️",
+                images: "[]",
+                videos: null,
+                category: parsedExtra.category || "כללי",
+                status: "ACTIVE",
+                listingType: "BUY",
+                createdAt: req.createdAt
+            };
+        });
+
+        const combined = [...listings, ...mappedShadowLeads, ...mappedBuyerRequests];
+        return { success: true, listings: combined };
+    } catch (error) {
+        console.error("Get Listings By IDs Error:", error);
+        return { success: false, error: "Failed to fetch listings" };
+    }
+}
+
+export async function incrementListingViews(id: string) {
+    try {
+        await prismadb.marketplaceListing.update({
+            where: { id },
+            data: {
+                viewsCount: { increment: 1 }
+            }
+        });
+        return { success: true };
+    } catch (e) {
+        console.error("Failed to increment views count:", e);
+        return { success: false };
+    }
+}
+
+export async function toggleListingFavoriteCount(id: string, isFavorited: boolean) {
+    try {
+        await prismadb.marketplaceListing.update({
+            where: { id },
+            data: {
+                favoritesCount: { increment: isFavorited ? 1 : -1 }
+            }
+        });
+        return { success: true };
+    } catch (e) {
+        console.error("Failed to toggle favorite count:", e);
+        return { success: false };
     }
 }
 

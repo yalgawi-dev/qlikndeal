@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/marketplace/catalog-cascade?category=LAPTOPS&brand=Asus&series=ROG&model=X
 // Bidirectional cascade: any field can filter all others
 // Returns filtered brands, series, models + autoFill specs

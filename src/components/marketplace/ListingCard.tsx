@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { User, ShoppingBag, MessageCircle, Edit, Trash2, Loader2, Radar } from "lucide-react";
-import { createShipmentFromListing } from "@/app/actions/marketplace";
+import { User, ShoppingBag, MessageCircle, Edit, Trash2, Loader2, Radar, Heart, Share2 } from "lucide-react";
+import { createShipmentFromListing, toggleListingFavoriteCount } from "@/app/actions/marketplace";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
+import { ShareModal } from "@/components/marketplace/ShareModal";
 
 interface ListingCardProps {
     listing: any;
@@ -74,10 +76,60 @@ function translateCategory(cat: string | null | undefined): string | null {
     return cat;
 }
 
+function getOnlineStatus(lastActiveAt: string | Date | null | undefined) {
+    if (!lastActiveAt) return { isOnline: false, label: "לא היה מחובר לאחרונה" };
+    const activeDate = new Date(lastActiveAt);
+    const now = new Date();
+    const diffMs = now.getTime() - activeDate.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 5) {
+        return { isOnline: true, label: "פעיל כעת" };
+    }
+    if (diffMins < 60) {
+        return { isOnline: false, label: `נראה לאחרונה: לפני ${diffMins} דק'` };
+    }
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) {
+        return { isOnline: false, label: `נראה לאחרונה: לפני ${diffHours} שעות` };
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    return { isOnline: false, label: `נראה לאחרונה: לפני ${diffDays} ימים` };
+}
+
 export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete, isDeleting }: ListingCardProps) {
     const router = useRouter();
     const { user, isLoaded } = useUser();
     const [loading, setLoading] = useState(false);
+    const [shareOpen, setShareOpen] = useState(false);
+    const [isFav, setIsFav] = useState<boolean>(() => {
+        try {
+            const favs = JSON.parse(typeof window !== "undefined" ? localStorage.getItem("qlik_favorites") || "[]" : "[]");
+            return favs.includes(listing.id);
+        } catch {
+            return false;
+        }
+    });
+
+    const toggleFavorite = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        try {
+            const favs = JSON.parse(localStorage.getItem("qlik_favorites") || "[]");
+            if (favs.includes(listing.id)) {
+                const updated = favs.filter((id: string) => id !== listing.id);
+                localStorage.setItem("qlik_favorites", JSON.stringify(updated));
+                setIsFav(false);
+                toast.success("המוצר הוסר מהמועדפים");
+                toggleListingFavoriteCount(listing.id, false);
+            } else {
+                favs.push(listing.id);
+                localStorage.setItem("qlik_favorites", JSON.stringify(favs));
+                setIsFav(true);
+                toast.success("המוצר נוסף למועדפים ❤️");
+                toggleListingFavoriteCount(listing.id, true);
+            }
+        } catch (e) {}
+    };
 
     const actualIsOwner = isOwner || (isLoaded && user && listing?.seller?.clerkId === user.id);
 
@@ -86,12 +138,19 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
         try {
             const res = await createShipmentFromListing(listing.id);
             if (res.success) {
+                if (res.isExisting) {
+                    toast.info("יש לך כבר זירת סחר פתוחה למודעה זו — מעביר אותך...");
+                } else {
+                    toast.success("זירת הסחר נפתחה! 🤝");
+                }
                 router.push(`/link/${res.shortId}`);
+            } else if (res.error === "SELF_LISTING") {
+                toast.error("זו המודעה שלך — לא ניתן לפתוח זירת סחר עם עצמך 😅");
             } else {
-                alert("שגיאה ביצירת עסקה: " + res.error);
+                toast.error(res.error || "שגיאה בפתיחת זירת הסחר, נסה שנית");
             }
         } catch (e) {
-            alert("שגיאה לא צפויה");
+            toast.error("שגיאה לא צפויה, נסה שנית");
         } finally {
             setLoading(false);
         }
@@ -160,22 +219,51 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                         <ShoppingBag className="w-12 h-12 opacity-20" />
                     </div>
                 )}
-                <div className="absolute top-2 right-2 flex gap-1">
-                    {actualIsOwner && (
-                        <div className="bg-blue-600/90 backdrop-blur-md border border-blue-400 text-white px-2 py-1 rounded text-xs font-bold shadow-[0_0_8px_rgba(37,99,235,0.5)]">
+                {/* Top Right Overlay: Status Badge (or Owner Badge) */}
+                <div className="absolute top-2 right-2 z-10 flex flex-col gap-1.5">
+                    {actualIsOwner ? (
+                        <div className="bg-blue-600/90 backdrop-blur-md border border-blue-400 text-white px-2.5 py-1 rounded-full text-xs font-bold shadow-[0_0_8px_rgba(37,99,235,0.5)]">
                             {listing.listingType === "BUY" ? "הבקשה שלי 👤" : "המודעה שלי 👤"}
                         </div>
+                    ) : (() => {
+                        const status = getOnlineStatus(listing.seller?.lastActiveAt);
+                        return (
+                            <div className="bg-black/75 backdrop-blur-md border border-white/10 text-white px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md">
+                                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${status.isOnline ? "bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"}`} />
+                                <span className={status.isOnline ? "text-green-400" : "text-red-400 text-[10px]"}>
+                                    {status.label}
+                                </span>
+                            </div>
+                        );
+                    })()}
+                    {actualIsOwner && (listing.viewsCount !== undefined || listing.favoritesCount !== undefined) && (
+                        <div className="bg-gray-900/95 backdrop-blur-md border border-gray-700 text-white px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5 shadow-md self-end">
+                            <span title="מספר צפיות במודעה">👁️ {listing.viewsCount ?? 0}</span>
+                            <span className="text-gray-600">|</span>
+                            <span title="מספר אנשים שסימנו כמועדף">❤️ {listing.favoritesCount ?? 0}</span>
+                        </div>
                     )}
-                    <div className={`bg-black/60 backdrop-blur-md border border-white/10 text-white px-2 py-1 rounded text-xs font-bold`}>
-                        {isCatalog ? "קטלוג 📚" : (listing.condition === "New" ? "חדש" : listing.condition === "Used" ? "משומש" : listing.condition)}
-                    </div>
+                </div>
+
+                {/* Bottom Right Overlay: Metadata Chips */}
+                <div className="absolute bottom-2 right-2 flex gap-1 flex-wrap max-w-[90%] z-10">
+                    {listing.condition && listing.condition !== "לא צוין" && (
+                        <div className={`bg-black/60 backdrop-blur-md border border-white/10 text-white px-2 py-0.5 rounded text-[10px] font-bold`}>
+                            {listing.condition === "New" ? "חדש" : listing.condition === "Used" ? "משומש" : listing.condition}
+                        </div>
+                    )}
+                    {isCatalog && (
+                        <div className={`bg-black/60 backdrop-blur-md border border-white/10 text-white px-2 py-0.5 rounded text-[10px] font-bold`}>
+                            קטלוג 📚
+                        </div>
+                    )}
                     {listing.matchLevel && (
-                        <div className={`backdrop-blur-md border px-2 py-1 rounded text-xs font-bold flex items-center gap-1 ${
+                        <div className={`backdrop-blur-md border px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 ${
                             listing.matchLevel === 'green' ? 'bg-green-600/80 border-green-400 text-white shadow-[0_0_10px_rgba(34,197,94,0.6)]' :
                             listing.matchLevel === 'yellow' ? 'bg-yellow-600/80 border-yellow-400 text-white shadow-[0_0_10px_rgba(234,179,8,0.6)]' :
                             'bg-red-600/80 border-red-400 text-white shadow-[0_0_10px_rgba(239,68,68,0.6)]'
                         }`}>
-                            <div className={`w-2 h-2 rounded-full ${
+                            <div className={`w-1.5 h-1.5 rounded-full ${
                                 listing.matchLevel === 'green' ? 'bg-green-300' :
                                 listing.matchLevel === 'yellow' ? 'bg-yellow-300' : 'bg-red-300'
                             }`} />
@@ -183,19 +271,19 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                         </div>
                     )}
                     {listing.isGamingReady && (
-                        <div className="bg-purple-600/80 backdrop-blur-md border border-purple-400 text-white px-2 py-1 rounded text-xs font-bold shadow-[0_0_8px_rgba(168,85,247,0.5)]">
-                            🎮 Gaming Ready
+                        <div className="bg-purple-600/80 backdrop-blur-md border border-purple-400 text-white px-2 py-0.5 rounded text-[10px] font-bold shadow-[0_0_8px_rgba(168,85,247,0.5)]">
+                            🎮 Gaming
                         </div>
                     )}
                     {isExternal && (
-                        <div className="bg-blue-600/80 backdrop-blur-md border border-blue-400/30 text-white px-2 py-1 rounded text-xs">
+                        <div className="bg-blue-600/80 backdrop-blur-md border border-blue-400/30 text-white px-2 py-0.5 rounded text-[10px]">
                            פייסבוק 🌐
                         </div>
                     )}
                     {(() => {
                         const displayCat = translateCategory(listing.category);
                         return displayCat ? (
-                            <div className="bg-purple-600/80 backdrop-blur-md border border-purple-400/30 text-white px-2 py-1 rounded text-xs">
+                            <div className="bg-purple-600/80 backdrop-blur-md border border-purple-400/30 text-white px-2 py-0.5 rounded text-[10px]">
                                 {displayCat}
                             </div>
                         ) : null;
@@ -204,7 +292,7 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
 
                 {/* Owner Controls */}
                 {isOwner && (
-                    <div className="absolute top-2 left-2 flex gap-2">
+                    <div className="absolute top-2 left-2 flex gap-2 z-10">
                         <Button
                             variant="secondary"
                             size="icon"
@@ -230,15 +318,32 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                         </Button>
                     </div>
                 )}
+                {/* Favorite Toggle Button for Visitor */}
+                {!actualIsOwner && !isCatalog && (
+                    <div className="absolute top-2 left-2 flex gap-2 z-10">
+                        <Button
+                            variant="secondary"
+                            size="icon"
+                            className="h-8 w-8 bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-gray-800 rounded-full"
+                            onClick={toggleFavorite}
+                        >
+                            <Heart className={`w-4 h-4 transition-colors ${isFav ? "fill-rose-500 text-rose-500" : "text-gray-300 hover:text-rose-400"}`} />
+                        </Button>
+                    </div>
+                )}
             </div>
 
             <CardHeader className="p-4 pb-2">
                 <div className="flex justify-between items-start">
                     <div className="flex-1">
                         <h3 className="font-bold text-lg text-white leading-tight mb-1 group-hover:text-blue-400 transition-colors line-clamp-2 min-h-[3rem]">{listing.title}</h3>
-                        <div className="text-sm text-gray-400 flex items-center gap-1">
-                            <User className="w-3 h-3" />
-                            {listing.seller?.firstName || "Unknown"} {listing.seller?.lastName || ""}
+                        <div className="flex flex-col gap-1 mt-1">
+                            <div className="text-sm text-gray-300 flex items-center gap-2 font-medium flex-wrap">
+                                <span className="flex items-center gap-1">
+                                    <User className="w-3.5 h-3.5 text-gray-400" />
+                                    {listing.seller?.firstName || "Unknown"} {listing.seller?.lastName || ""}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div className="text-right ml-2">
@@ -262,7 +367,7 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                 </p>
             </CardContent>
 
-            <CardFooter className="p-4 pt-2 flex gap-2 mt-auto">
+            <CardFooter className="p-2 sm:p-4 pt-1 sm:pt-2 flex gap-1.5 sm:gap-2 mt-auto">
                 {isCatalog ? (
                     <Button
                         variant="outline"
@@ -291,9 +396,10 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                                 router.push(`/dashboard/marketplace/my-listings`);
                             }
                         }}
-                        className="flex-1 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-bold border-0 shadow-md text-xs sm:text-sm h-auto py-2 whitespace-normal leading-tight"
+                        className="flex-1 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-bold border-0 shadow-md text-[10px] sm:text-xs h-auto py-1.5 sm:py-2 whitespace-normal leading-tight"
                     >
-                        {listing.listingType === "BUY" ? "הבקשה שלי - צפה בהצעות שקיבלת 📊" : "המודעה שלי - ניהול ועריכה 📊"}
+                        <span className="sm:hidden">{listing.listingType === "BUY" ? "הצעות שקיבלתי 📊" : "ניהול מודעה 📊"}</span>
+                        <span className="hidden sm:inline">{listing.listingType === "BUY" ? "הבקשה שלי - הצעות שקיבלת 📊" : "המודעה שלי - ניהול 📊"}</span>
                     </Button>
                 ) : listing.listingType === "BUY" ? (
                     <Button
@@ -301,9 +407,10 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                             e.stopPropagation(); 
                             router.push(`/wish/${listing.id}`);
                         }}
-                        className="flex-1 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-bold border-0 shadow-md shadow-cyan-900/20 text-xs sm:text-sm h-auto py-2 whitespace-normal leading-tight"
+                        className="flex-1 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-bold border-0 shadow-md shadow-cyan-900/20 text-[10px] sm:text-xs h-auto py-1.5 sm:py-2 whitespace-normal leading-tight"
                     >
-                        יש לי כזה - הצע מוצר 🤝
+                        <span className="sm:hidden">יש לי כזה 🤝</span>
+                        <span className="hidden sm:inline">יש לי כזה - הצע מוצר 🤝</span>
                     </Button>
                 ) : (
                     <Button
@@ -312,16 +419,34 @@ export function ListingCard({ listing, currentUserId, isOwner, onEdit, onDelete,
                             handleBuyNow();
                         }}
                         disabled={loading}
-                        className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-bold border-0 shadow-md shadow-teal-900/20 text-xs sm:text-sm h-auto py-2 whitespace-normal leading-tight"
+                        className="flex-1 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-bold border-0 shadow-md shadow-teal-900/20 text-[10px] sm:text-xs h-auto py-1.5 sm:py-2 whitespace-normal leading-tight"
                     >
-                        {loading ? "פותח זירה..." : "לפתיחת זירת סחר ומשא ומתן 🤝"}
+                        {loading ? "פותח..." : <><span className="sm:hidden">פתח זירה 🤝</span><span className="hidden sm:inline">פתח זירת סחר 🤝</span></>}
                     </Button>
                 )}
                 
-                {!isCatalog && (
-                    <Button variant="outline" size="icon" className="border-gray-700 hover:bg-gray-800 text-gray-300">
-                        <MessageCircle className="w-5 h-5" />
-                    </Button>
+                {/* Share - hidden on mobile to save space */}
+                {!isCatalog && !actualIsOwner && (
+                    <>
+                        <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="hidden sm:flex h-8 w-8 border-gray-700 hover:bg-gray-800 text-gray-300 hover:text-blue-400 shrink-0"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShareOpen(true);
+                            }}
+                        >
+                            <Share2 className="w-4 h-4" />
+                        </Button>
+                        <ShareModal
+                            isOpen={shareOpen}
+                            onClose={() => setShareOpen(false)}
+                            url={`https://qlikndeal.vercel.app/dashboard/marketplace/${listing.id}`}
+                            title={`Qlikndeal - ${listing.title}`}
+                            text={listing.description}
+                        />
+                    </>
                 )}
             </CardFooter>
         </Card>

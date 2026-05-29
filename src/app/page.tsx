@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useState, useRef, Suspense } from "react";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { useUser, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Search, Filter, Plus, Sparkles, ScanSearch, Settings, MapPin, LocateFixed, Loader2, User, Tag, ShieldCheck, Zap, Package, Map as MapIcon, X, BrainCircuit, Cpu, MonitorPlay } from "lucide-react";
+import { Search, Filter, Plus, Sparkles, ScanSearch, Settings, MapPin, LocateFixed, Loader2, User, Tag, ShieldCheck, Zap, Package, Map as MapIcon, X, BrainCircuit, Cpu, MonitorPlay, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -38,25 +38,52 @@ const ISRAELI_CITIES: Record<string, { lat: number, lng: number }> = {
 const ADMIN_EMAILS = ["yalgawi@gmail.com", "darohadd@walla.com", "itay@qlikndeal.com", "dpccomp@gmail.com"];
 const CATEGORIES = ["אוזניות ושמע","אופנועים וקטנועים","ביגוד ואופנה","טלוויזיות ומסכים","טאבלטים","מוצרי חשמל ביתיים","מחשבים ניידים","מחשבים שולחניים","מצלמות","נדל\"ן","קונסולות ומשחקים","ריהוט וצרכי בית","רכבים","טלפונים סלולריים"].sort();
 
-function TopNav() {
+function TopNav({ onPublish }: { onPublish?: () => void }) {
   const { user } = useUser();
   const isAdmin = ADMIN_EMAILS.includes(user?.primaryEmailAddress?.emailAddress || "");
   return (
     <nav className="sticky top-0 z-50 border-b border-white/5 bg-black/80 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
         <Logo />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <SignedOut>
             <SignInButton mode="modal">
-              <div className="cursor-pointer text-sm px-4 py-2 bg-blue-600 hover:bg-blue-500 font-bold rounded-md text-white inline-flex items-center justify-center transition-colors">כניסה / הרשמה</div>
+              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white px-2 sm:px-3">
+                <User className="w-4 h-4 sm:ml-1" />
+                <span className="hidden sm:inline">האזור האישי</span>
+              </Button>
+            </SignInButton>
+            <SignInButton mode="modal">
+              <Button
+                size="sm"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold px-3 sm:px-4 rounded-lg flex items-center gap-1.5 shadow-[0_0_12px_rgba(99,102,241,0.3)] transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">פרסם מודעה</span>
+                <span className="sm:hidden">פרסם</span>
+              </Button>
+            </SignInButton>
+            <SignInButton mode="modal">
+              <div className="cursor-pointer text-xs sm:text-sm px-3 py-2 bg-blue-600 hover:bg-blue-500 font-bold rounded-md text-white inline-flex items-center justify-center transition-colors">כניסה</div>
             </SignInButton>
           </SignedOut>
           <SignedIn>
             {isAdmin && (
-              <Button asChild variant="ghost" size="sm" className="text-purple-400 px-2 sm:px-3"><Link href="/admin"><Settings className="w-4 h-4 sm:ml-1"/><span className="hidden sm:inline">ניהול</span></Link></Button>
+              <Button asChild variant="ghost" size="sm" className="text-purple-400 px-2"><Link href="/admin"><Settings className="w-4 h-4"/></Link></Button>
             )}
             <Button asChild variant="ghost" size="sm" className="text-gray-300 hover:text-white px-2 sm:px-3"><Link href="/dashboard/marketplace/my-listings"><Package className="w-4 h-4 sm:ml-1"/><span className="hidden sm:inline">המודעות שלי</span></Link></Button>
-            <Button asChild variant="outline" size="sm" className="border-white/10 text-white hover:bg-white/10 gap-2 px-2 sm:px-3"><Link href="/dashboard"><User className="w-4 h-4"/><span className="hidden sm:inline">האזור שלי</span></Link></Button>
+            <Button asChild variant="ghost" size="sm" className="text-gray-300 hover:text-white px-2"><Link href="/dashboard?tab=favorites"><Heart className="w-4 h-4 text-rose-500 fill-rose-500"/></Link></Button>
+            {/* ── Publish CTA in Navbar ── */}
+            <Button
+              size="sm"
+              onClick={onPublish}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold px-3 sm:px-4 rounded-lg flex items-center gap-1.5 shadow-[0_0_12px_rgba(99,102,241,0.3)] transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">פרסם מודעה</span>
+              <span className="sm:hidden">פרסם</span>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="border border-white/10 text-white hover:bg-white/10 px-2 sm:px-3"><Link href="/dashboard"><User className="w-4 h-4"/></Link></Button>
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
         </div>
@@ -66,11 +93,14 @@ function TopNav() {
 }
 
 function MarketplaceContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [publishStep, setPublishStep] = useState<"TYPE" | "SELLER_METHOD">("TYPE");
   const [isFallback, setIsFallback] = useState(false);
+  const [hideFallbackBanner, setHideFallbackBanner] = useState(false);
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [capabilityMatch, setCapabilityMatch] = useState<any>(null);
   const [adviceCard, setAdviceCard] = useState<any>(null);
@@ -88,19 +118,25 @@ function MarketplaceContent() {
   const [radiusKm, setRadiusKm] = useState(155);
   const [showMap, setShowMap] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("cat") || "all");
-  const [listingType, setListingType] = useState<"SELL" | "BUY">("SELL"); // NEW TOGGLE
+  const [listingType, setListingType] = useState<"SELL" | "BUY">("SELL");
   const [showFilters, setShowFilters] = useState(false);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [showCityDialog, setShowCityDialog] = useState(false);
   const [citySearch, setCitySearch] = useState("");
   const [cityResults, setCityResults] = useState<any[]>([]);
   const [isNavigatingTo, setIsNavigatingTo] = useState<string | null>(null);
-  const cityDebounceRef = useRef<NodeJS.Timeout | null>(null);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const [showConsultantSheet, setShowConsultantSheet] = useState(false);
+
+  useEffect(() => {
+    if (!showCreateModal) {
+      setPublishStep("TYPE");
+    }
+  }, [showCreateModal]);
+  
+  const heroRef = useRef<HTMLDivElement>(null);
   const autocompleteRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-  const { user } = useUser();
-  const isAdmin = ADMIN_EMAILS.includes(user?.primaryEmailAddress?.emailAddress || "");
+  const debounceRef = useRef<any>(null);
+  const cityDebounceRef = useRef<any>(null);
 
   // Consultant wizard states
   const [showConsultantModal, setShowConsultantModal] = useState(false);
@@ -126,6 +162,7 @@ function MarketplaceContent() {
 
   const fetchSearch = async (q = searchInput, latV = lat, lngV = lng, type = listingType, filterV = consultantFilter, catV = selectedCategory) => {
     setLoading(true); setShowAutocomplete(false);
+    setHideFallbackBanner(false);
     setAdviceCard(null); setShowAdviceModal(false); setSmartFallbackMessage(null); setCatalogSuggestions([]);
     try {
       const res = await fetch("/api/marketplace/smart-search", {
@@ -151,7 +188,6 @@ function MarketplaceContent() {
           setShowAdviceModal(true);
         }
         if (data.smartFallbackMessage) setSmartFallbackMessage(data.smartFallbackMessage);
-        // ── Catalog suggestions (models with no listings yet) ──
         if (data.catalogSuggestions?.length > 0) setCatalogSuggestions(data.catalogSuggestions);
       }
     } catch { toast.error("שגיאה בחיפוש"); }
@@ -285,7 +321,6 @@ function MarketplaceContent() {
     return null;
   };
 
-
   const getDeviceLocation = () => {
     setLocationMode("LIVE");
     setGettingLocation(true);
@@ -311,143 +346,91 @@ function MarketplaceContent() {
 
   return (
     <main className="min-h-screen bg-black text-white" dir="rtl">
-      <TopNav />
+      <SignedIn>
+        <TopNav onPublish={() => setShowCreateModal(true)} />
+      </SignedIn>
+      <SignedOut>
+        <TopNav />
+      </SignedOut>
 
-      {/* ══ HERO ══════════════════════════════════════════════════ */}
-      <div className="relative border-b border-white/5">
-        {/* Ambient background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-blue-700/10 rounded-full blur-3xl" />
-          <div className="absolute top-10 right-1/4 w-64 h-64 bg-purple-700/8 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative max-w-5xl mx-auto px-4 pt-12 pb-4 text-center">
-
-          {/* Trust badge */}
-          <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 mb-4">
-            <ShieldCheck className="w-3.5 h-3.5 text-green-400" />
-            <span className="text-gray-300 text-xs font-semibold">מרקטפלייס ישראלי — קנייה ומכירה בטוחה</span>
-          </div>
-
-          {/* Main title */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 leading-tight tracking-tight">
-            פשוט לעשות <br className="sm:hidden" /> <span className="text-blue-500">QLIK</span> ולסגור <span className="bg-gradient-to-l from-purple-400 to-pink-400 bg-clip-text text-transparent">DEAL</span>
-          </h1>
-          <p className="text-gray-400 text-sm sm:text-base md:text-lg mb-6 max-w-xl mx-auto leading-relaxed px-2">
-            פרסם מה יש לך למכור, או הצהר שאתה מחפש — המוכרים יגיעו אליך ישירות
-          </p>
-
-          {/* ── Dual CTA Buttons ── */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
-
-            {/* SELLER CTA */}
-            <SignedIn>
-              <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-                <DialogTrigger asChild>
-                  <button className="group relative flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-base transition-all hover:shadow-lg hover:shadow-blue-600/30 active:scale-95">
-                    <Plus className="w-5 h-5" />
-                    <div className="text-right leading-tight">
-                      <div>פרסם כמוכר</div>
-                      <div className="text-[11px] font-normal text-blue-200 opacity-80">יש לי מוצר למכירה</div>
-                    </div>
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-2xl p-0">
-                  <div className="p-6 text-center border-b border-gray-800"><DialogTitle className="text-2xl font-bold">איך תרצה לפרסם?</DialogTitle><p className="text-gray-400 mt-2">בחר את הדרך הנוחה לך ביותר</p></div>
-                  <div className="grid md:grid-cols-2 gap-4 p-6">
-                    <button onClick={() => { setIsNavigatingTo("/dashboard/marketplace/create-ai"); router.push("/dashboard/marketplace/create-ai"); }} disabled={!!isNavigatingTo} className={`group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all cursor-pointer ${isNavigatingTo === "/dashboard/marketplace/create-ai" ? "border-indigo-500 bg-indigo-500/20 opacity-80 cursor-wait" : "border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 hover:border-indigo-500"}`}>
-                      {isNavigatingTo === "/dashboard/marketplace/create-ai" ? (
-                         <div className="h-16 w-16 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4"><Loader2 className="w-8 h-8 text-indigo-400 animate-spin" /></div>
-                      ) : (
-                         <>
-                           <div className="absolute top-3 left-3 bg-indigo-500 text-xs px-2 py-1 rounded-full font-bold animate-pulse">מומלץ ✨</div>
-                           <div className="h-16 w-16 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Sparkles className="w-8 h-8 text-indigo-400" /></div>
-                         </>
-                      )}
-                      <h3 className="text-xl font-bold mb-2">יצירה חכמה עם AI</h3>
-                      <p className="text-sm text-gray-400 text-center">
-                        {isNavigatingTo === "/dashboard/marketplace/create-ai" ? "טוען מערכת חכמה..." : "ספר לנו במילים פשוטות — ה-AI יבנה מודעה מושלמת."}
-                      </p>
-                    </button>
-                    <button onClick={() => { setIsNavigatingTo("/dashboard/marketplace/create"); router.push("/dashboard/marketplace/create"); }} disabled={!!isNavigatingTo} className={`group flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all cursor-pointer ${isNavigatingTo === "/dashboard/marketplace/create" ? "border-gray-500 bg-gray-800 opacity-80 cursor-wait" : "border-gray-700 bg-gray-800/50 hover:bg-gray-800 hover:border-gray-600"}`}>
-                      {isNavigatingTo === "/dashboard/marketplace/create" ? (
-                         <div className="h-16 w-16 bg-gray-700/50 rounded-full flex items-center justify-center mb-4"><Loader2 className="w-8 h-8 text-gray-400 animate-spin" /></div>
-                      ) : (
-                         <div className="h-16 w-16 bg-gray-700/50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Plus className="w-8 h-8 text-gray-400" /></div>
-                      )}
-                      <h3 className="text-xl font-bold mb-2">יצירה ידנית</h3>
-                      <p className="text-sm text-gray-400 text-center">
-                        {isNavigatingTo === "/dashboard/marketplace/create" ? "פותח טופס ידני..." : "מילוי ידני מלא לכל הקטגוריות."}
-                      </p>
-                    </button>
+      {/* ── Create Modal ── */}
+      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+        <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-2xl p-0">
+          {publishStep === "TYPE" ? (
+            <>
+              <div className="p-6 text-center border-b border-gray-800">
+                <DialogTitle className="text-2xl font-bold">מה ברצונך לפרסם?</DialogTitle>
+                <p className="text-gray-400 mt-2">בחר את סוג הפרסום המתאים לך</p>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4 p-6">
+                <button 
+                  onClick={() => setPublishStep("SELLER_METHOD")} 
+                  className="group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 hover:border-indigo-500 transition-all cursor-pointer text-right"
+                >
+                  <div className="h-16 w-16 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Package className="w-8 h-8 text-indigo-400" />
                   </div>
-                </DialogContent>
-              </Dialog>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton mode="modal">
-                <div className="cursor-pointer group relative flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-base transition-all hover:shadow-lg hover:shadow-blue-600/30 active:scale-95">
-                  <Plus className="w-5 h-5" />
-                  <div className="text-right leading-tight">
-                    <div>פרסם כמוכר</div>
-                    <div className="text-[11px] font-normal text-blue-200 opacity-80">יש לי מוצר למכירה</div>
+                  <h3 className="text-xl font-bold mb-2">פרסם כמוכר</h3>
+                  <p className="text-sm text-gray-400 text-center">אני רוצה להציע מוצר או מכשיר למכירה במרקטפלייס</p>
+                </button>
+                <button 
+                  onClick={() => { setIsNavigatingTo("/dashboard/marketplace/my-requests"); router.push("/dashboard/marketplace/my-requests"); }} 
+                  disabled={!!isNavigatingTo} 
+                  className={`group flex flex-col items-center justify-center p-6 rounded-2xl border-2 border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 hover:border-purple-500 transition-all cursor-pointer text-right ${isNavigatingTo === "/dashboard/marketplace/my-requests" ? "opacity-80 cursor-wait" : ""}`}
+                >
+                  <div className="h-16 w-16 bg-purple-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    {isNavigatingTo === "/dashboard/marketplace/my-requests" ? <Loader2 className="w-8 h-8 text-purple-400 animate-spin" /> : <Tag className="w-8 h-8 text-purple-400" />}
                   </div>
-                </div>
-              </SignInButton>
-            </SignedOut>
+                  <h3 className="text-xl font-bold mb-2">פרסם כקונה</h3>
+                  <p className="text-sm text-gray-400 text-center">אני מחפש מוצר ספציפי לקנייה ומעוניין לקבל הצעות ממוכרים</p>
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="p-6 text-center border-b border-gray-800 relative">
+                <button onClick={() => setPublishStep("TYPE")} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-sm font-bold flex items-center gap-1">
+                  <span>חזור ➔</span>
+                </button>
+                <DialogTitle className="text-2xl font-bold">איך תרצה ליצור את המודעה?</DialogTitle>
+                <p className="text-gray-400 mt-2">בחר את הדרך הנוחה לך ביותר לפרסום כמוכר</p>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4 p-6">
+                <button onClick={() => { setIsNavigatingTo("/dashboard/marketplace/create-ai"); router.push("/dashboard/marketplace/create-ai"); }} disabled={!!isNavigatingTo} className={`group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all cursor-pointer ${isNavigatingTo === "/dashboard/marketplace/create-ai" ? "border-indigo-500 bg-indigo-500/20 opacity-80 cursor-wait" : "border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 hover:border-indigo-500"}`}>
+                  <div className="absolute top-3 left-3 bg-indigo-500 text-xs px-2 py-1 rounded-full font-bold animate-pulse">מומלץ ✨</div>
+                  <div className="h-16 w-16 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">{isNavigatingTo === "/dashboard/marketplace/create-ai" ? <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" /> : <Sparkles className="w-8 h-8 text-indigo-400" />}</div>
+                  <h3 className="text-xl font-bold mb-2">יצירה חכמה עם AI</h3>
+                  <p className="text-sm text-gray-400 text-center">{isNavigatingTo === "/dashboard/marketplace/create-ai" ? "טוען..." : "ספר לנו במילים פשוטות — ה-AI יבנה מודעה מושלמת."}</p>
+                </button>
+                <button onClick={() => { setIsNavigatingTo("/dashboard/marketplace/create"); router.push("/dashboard/marketplace/create"); }} disabled={!!isNavigatingTo} className={`group flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all cursor-pointer ${isNavigatingTo === "/dashboard/marketplace/create" ? "border-gray-500 bg-gray-800 opacity-80 cursor-wait" : "border-gray-700 bg-gray-800/50 hover:bg-gray-800 hover:border-gray-600"}`}>
+                  <div className="h-16 w-16 bg-gray-700/50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">{isNavigatingTo === "/dashboard/marketplace/create" ? <Loader2 className="w-8 h-8 text-gray-400 animate-spin" /> : <Plus className="w-8 h-8 text-gray-400" />}</div>
+                  <h3 className="text-xl font-bold mb-2">יצירה ידנית</h3>
+                  <p className="text-sm text-gray-400 text-center">{isNavigatingTo === "/dashboard/marketplace/create" ? "פותח..." : "מילוי ידני מלא לכל הקטגוריות."}</p>
+                </button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
-            {/* BUYER CTA */}
-            <SignedIn>
-              <button onClick={() => { setIsNavigatingTo("/dashboard/marketplace/my-requests"); router.push("/dashboard/marketplace/my-requests"); }} disabled={!!isNavigatingTo} className="group relative flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-bold text-base transition-all hover:shadow-lg hover:shadow-purple-600/30 active:scale-95">
-                  {isNavigatingTo === "/dashboard/marketplace/my-requests" ? <Loader2 className="w-5 h-5 animate-spin" /> : <Tag className="w-5 h-5" />}
-                  <div className="text-right leading-tight">
-                    <div>פרסם כקונה</div>
-                    <div className="text-[11px] font-normal text-purple-200 opacity-80">
-                      {isNavigatingTo === "/dashboard/marketplace/my-requests" ? "מעביר..." : "אני מחפש מוצר"}
-                    </div>
-                  </div>
+      {/* ── STICKY SEARCH BAR (fixed under TopNav: top-14) ── */}
+      <div className="sticky top-14 z-40 bg-black/95 backdrop-blur-xl border-b border-white/5 py-4">
+        <div className="max-w-5xl mx-auto px-4">
+          
+          {/* Sell/Buy Tabs */}
+          <div className="flex justify-center mb-3">
+            <div className="bg-gray-900/80 p-1 rounded-xl border border-gray-800 flex gap-1">
+              <button 
+                onClick={() => { setListingType("SELL"); fetchSearch(searchInput, lat, lng, "SELL"); }} 
+                className={`px-4 sm:px-6 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${listingType === "SELL" ? "bg-purple-600 text-white shadow-[0_0_12px_rgba(147,51,234,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+              >
+                📦 מוכרים
               </button>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton mode="modal">
-                <div className="cursor-pointer group relative flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-xl font-bold text-base transition-all hover:shadow-lg hover:shadow-purple-600/30 active:scale-95">
-                  <Tag className="w-5 h-5" />
-                  <div className="text-right leading-tight">
-                    <div>פרסם כקונה</div>
-                    <div className="text-[11px] font-normal text-purple-200 opacity-80">אני מחפש מוצר</div>
-                  </div>
-                </div>
-              </SignInButton>
-            </SignedOut>
-          </div>
-
-          {/* Trust strip */}
-          <div className="flex justify-center gap-6 text-gray-600 text-xs flex-wrap mb-4">
-            {[{icon: <Zap className="w-3.5 h-3.5 text-yellow-500"/>, label: "AI חיפוש חכם"}, {icon: <ShieldCheck className="w-3.5 h-3.5 text-green-500"/>, label: "תשלום מאובטח"}, {icon: <Sparkles className="w-3.5 h-3.5 text-purple-400"/>, label: "מוכרים וקונים בישראל"}].map(({icon, label}) => (
-              <div key={label} className="flex items-center gap-1.5">{icon}<span>{label}</span></div>
-            ))}
-          </div>
-
-        </div>
-
-        {/* Divider label */}
-        <div className="relative max-w-5xl mx-auto px-4 pb-6">
-          <div className="flex items-center gap-4">
-            <div className="flex-1 h-px bg-white/5" />
-            <span className="text-gray-600 text-xs font-semibold tracking-widest uppercase">מה יש עכשיו במרקטפלייס</span>
-            <div className="flex-1 h-px bg-white/5" />
-          </div>
-        </div>
-
-        {/* Search Bar */}
-        <div className="relative max-w-5xl mx-auto px-4 pb-8">
-          <div className="flex justify-center mb-6">
-            <div className="bg-gray-900/50 p-1 rounded-2xl border border-gray-800 flex flex-col sm:flex-row gap-1 w-full sm:w-auto">
-              <button onClick={() => { setListingType("SELL"); fetchSearch(searchInput, lat, lng, "SELL"); }} className={`px-3 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex-1 ${listingType === "SELL" ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
-                📦 מיון לפי מוכרים
-              </button>
-              <button onClick={() => { setListingType("BUY"); fetchSearch(searchInput, lat, lng, "BUY"); }} className={`px-3 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex-1 ${listingType === "BUY" ? "bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
-                🏷️ מיון לפי קונים
+              <button 
+                onClick={() => { setListingType("BUY"); fetchSearch(searchInput, lat, lng, "BUY"); }} 
+                className={`px-4 sm:px-6 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all ${listingType === "BUY" ? "bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+              >
+                🏷️ קונים
               </button>
             </div>
           </div>
@@ -572,7 +555,9 @@ function MarketplaceContent() {
             )}
           </div>
         </div>
-      </div>
+      </div>{/* end sticky search */}
+
+      {/* Spacer for sticky bar height */}
 
       {showMap && lat && lng && (
         <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
@@ -682,82 +667,85 @@ function MarketplaceContent() {
       </Dialog>
 
       {/* ── Listings ── */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-6">
         {consultantFilter && (
-          <div className="bg-[#0f1422]/90 border border-purple-500/20 rounded-2xl p-5 mb-6 space-y-4 shadow-xl shadow-purple-900/5 animate-in fade-in duration-300" dir="rtl">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-800 pb-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-400 animate-pulse" />
-                <h3 className="font-bold text-sm sm:text-base text-gray-100">דרישות יועץ הרכישה האוטומטי</h3>
+          <>
+            {/* ── Desktop: inline panel (md+) ── */}
+            <div className="hidden md:block bg-[#0f1422]/90 border border-purple-500/20 rounded-2xl p-5 mb-6 space-y-4 shadow-xl shadow-purple-900/5 animate-in fade-in duration-300" dir="rtl">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-400 animate-pulse" />
+                  <h3 className="font-bold text-sm sm:text-base text-gray-100">דרישות יועץ הרכישה האוטומטי</h3>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setShowConsultantModal(true)} className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 text-xs font-bold rounded-xl px-3 py-1.5 h-8">ערוך דרישות ⚙️</Button>
+                  <Button variant="ghost" size="sm" onClick={() => { setConsultantFilter(null); setSelectedCategory("all"); fetchSearch(searchInput, lat, lng, listingType, null, "all"); }} className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs font-bold rounded-xl px-3 py-1.5 h-8">בטל ❌</Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setShowConsultantModal(true)}
-                  className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 text-xs font-bold rounded-xl px-3 py-1.5 h-8"
-                >
-                  ערוך דרישות ⚙️
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => {
-                    setConsultantFilter(null);
-                    setSelectedCategory("all");
-                    fetchSearch(searchInput, lat, lng, listingType, null, "all");
-                  }}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 text-xs font-bold rounded-xl px-3 py-1.5 h-8"
-                >
-                  בטל סינון ❌
-                </Button>
+              <div className="flex flex-wrap gap-2">
+                {consultantFilter.selectedApps && consultantFilter.selectedApps.length > 0 && (
+                  <div className="w-full flex flex-wrap gap-1.5 pb-2 border-b border-gray-800/60">
+                    <span className="text-[11px] text-purple-400 font-bold w-full mb-0.5">תוכנות ומשחקים שנבחרו:</span>
+                    {consultantFilter.selectedApps.map(app => (
+                      <span key={app.id} className="inline-flex items-center gap-1 bg-indigo-900/40 border border-indigo-500/30 rounded-full px-2.5 py-1 text-[11px] text-indigo-200 font-semibold">✦ {app.appNameHe || app.appNameEn}</span>
+                    ))}
+                  </div>
+                )}
+                {[`${consultantFilter.preferredFormFactor === "laptop" ? "נייד 💻" : "נייח 🖥️"}`, `מעבד ${consultantFilter.minCpuTier}+`, `${consultantFilter.minRamGb}GB RAM`, `${consultantFilter.minStorageGb >= 1024 ? `${consultantFilter.minStorageGb/1024}TB` : `${consultantFilter.minStorageGb}GB`} SSD`, ...(consultantFilter.userBudget > 0 ? [`עד ₪${consultantFilter.userBudget.toLocaleString()}`] : [])].map(chip => (
+                  <div key={chip} className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">{chip}</div>
+                ))}
               </div>
             </div>
-            
-            <div className="flex flex-wrap gap-2">
-              {/* Selected Apps Chips */}
-              {consultantFilter.selectedApps && consultantFilter.selectedApps.length > 0 && (
-                <div className="w-full flex flex-wrap gap-1.5 pb-2 border-b border-gray-800/60">
-                  <span className="text-[11px] text-purple-400 font-bold w-full mb-0.5">תוכנות ומשחקים שנבחרו:</span>
-                  {consultantFilter.selectedApps.map(app => (
-                    <span key={app.id} className="inline-flex items-center gap-1 bg-indigo-900/40 border border-indigo-500/30 rounded-full px-2.5 py-1 text-[11px] text-indigo-200 font-semibold">
-                      ✦ {app.appNameHe || app.appNameEn}
-                    </span>
-                  ))}
+
+            {/* ── Mobile: compact banner + bottom sheet ── */}
+            <div className="md:hidden mb-4" dir="rtl">
+              <button
+                onClick={() => setShowConsultantSheet(true)}
+                className="w-full flex items-center justify-between gap-3 bg-purple-900/30 border border-purple-500/30 rounded-2xl px-4 py-3 text-right"
+              >
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-400 animate-pulse shrink-0" />
+                  <span className="text-xs font-bold text-purple-200">יועץ פעיל: {consultantFilter.preferredFormFactor === "laptop" ? "נייד" : "נייח"} · {consultantFilter.minRamGb}GB · עד {consultantFilter.userBudget > 0 ? `₪${consultantFilter.userBudget.toLocaleString()}` : "ללא הגבלה"}</span>
                 </div>
-              )}
-              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
-                <span className="font-semibold text-purple-400">סוג מחשב: </span>
-                {consultantFilter.preferredFormFactor === "laptop" ? "מחשב נייד 💻" : "מחשב נייח 🖥️"}
-              </div>
-              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
-                <span className="font-semibold text-purple-400">מעבד מינימלי: </span>
-                {consultantFilter.minCpuTier}+
-              </div>
-              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
-                <span className="font-semibold text-purple-400">זיכרון מינימלי: </span>
-                {consultantFilter.minRamGb}GB RAM
-              </div>
-              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
-                <span className="font-semibold text-purple-400">נפח אחסון מינימלי: </span>
-                {consultantFilter.minStorageGb >= 1024 ? `${consultantFilter.minStorageGb / 1024}TB` : `${consultantFilter.minStorageGb}GB`} SSD
-              </div>
-              {consultantFilter.recommendedGpu && consultantFilter.recommendedGpu !== "Integrated" && consultantFilter.recommendedGpu !== "מובנה" && (
-                <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
-                  <span className="font-semibold text-purple-400">כרטיס מסך: </span>
-                  {consultantFilter.recommendedGpu}
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-[11px] text-purple-400 font-bold">פרטים ↑</span>
+                  <button onClick={(e) => { e.stopPropagation(); setConsultantFilter(null); setSelectedCategory("all"); fetchSearch(searchInput, lat, lng, listingType, null, "all"); }} className="p-1 rounded-full hover:bg-white/10"><X className="w-3.5 h-3.5 text-red-400" /></button>
                 </div>
-              )}
-              <div className="bg-purple-950/30 border border-purple-500/20 rounded-xl px-3 py-1.5 text-xs text-purple-300">
-                <span className="font-semibold text-purple-400">תקציב: </span>
-                {consultantFilter.userBudget > 0 ? `עד ₪${consultantFilter.userBudget.toLocaleString()}` : "ללא הגבלה"}
-              </div>
+              </button>
             </div>
-          </div>
+
+            {/* Bottom Sheet for mobile consultant details */}
+            {showConsultantSheet && (
+              <div className="fixed inset-0 z-[300] flex items-end" onClick={() => setShowConsultantSheet(false)}>
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+                <div
+                  className="relative w-full bg-[#0d0d1f] border-t border-purple-500/30 rounded-t-3xl p-6 space-y-4 animate-in slide-in-from-bottom duration-300 max-h-[80vh] overflow-y-auto"
+                  onClick={e => e.stopPropagation()}
+                  dir="rtl"
+                >
+                  {/* Handle */}
+                  <div className="w-12 h-1 bg-gray-600 rounded-full mx-auto mb-2" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-purple-400" /><h3 className="font-bold text-white">יועץ רכישה פעיל</h3></div>
+                    <button onClick={() => setShowConsultantSheet(false)} className="p-2 rounded-full bg-gray-800 text-gray-400"><X className="w-4 h-4" /></button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[`${consultantFilter.preferredFormFactor === "laptop" ? "💻 מחשב נייד" : "🖥️ מחשב נייח"}`, `מעבד ${consultantFilter.minCpuTier}+`, `${consultantFilter.minRamGb}GB RAM`, `${consultantFilter.minStorageGb >= 1024 ? `${consultantFilter.minStorageGb/1024}TB` : `${consultantFilter.minStorageGb}GB`} SSD`, ...(consultantFilter.recommendedGpu && consultantFilter.recommendedGpu !== "Integrated" && consultantFilter.recommendedGpu !== "מובנה" ? [consultantFilter.recommendedGpu] : []), ...(consultantFilter.userBudget > 0 ? [`עד ₪${consultantFilter.userBudget.toLocaleString()}`] : ["ללא הגבלת תקציב"])].map(chip => (
+                      <div key={chip} className="bg-purple-950/50 border border-purple-500/30 rounded-xl px-3 py-2 text-sm text-purple-200 font-semibold">{chip}</div>
+                    ))}
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <Button onClick={() => { setShowConsultantSheet(false); setShowConsultantModal(true); }} className="flex-1 bg-purple-600 hover:bg-purple-700 rounded-xl">ערוך דרישות ⚙️</Button>
+                    <Button variant="outline" onClick={() => { setShowConsultantSheet(false); setConsultantFilter(null); setSelectedCategory("all"); fetchSearch(searchInput, lat, lng, listingType, null, "all"); }} className="flex-1 border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl">בטל סינון</Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{[1,2,3,4,5,6].map(i => <div key={i} className="h-96 bg-gray-900/30 rounded-3xl animate-pulse"/>)}</div>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">{[1,2,3,4,5,6].map(i => <div key={i} className="h-72 sm:h-96 bg-gray-900/30 rounded-3xl animate-pulse"/>)}</div>
         ) : listings.length > 0 ? (
           <div className="space-y-6">
             {/* Neon Advice Modal */}
@@ -827,10 +815,18 @@ function MarketplaceContent() {
             )}
 
             {/* Smart Fallback Banner */}
-            {smartFallbackMessage && (
-              <div className="bg-gradient-to-r from-emerald-900/30 to-teal-900/30 border border-emerald-500/30 rounded-2xl p-4 flex items-start gap-3" dir="rtl">
+            {smartFallbackMessage && !hideFallbackBanner && (
+              <div className="bg-gradient-to-r from-emerald-900/30 to-teal-900/30 border border-emerald-500/30 rounded-2xl p-4 flex items-start gap-3 relative" dir="rtl">
+                <button
+                  type="button"
+                  onClick={() => setHideFallbackBanner(true)}
+                  className="absolute top-3 left-3 p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-emerald-400 hover:text-emerald-200 transition-colors z-10"
+                  title="סגור"
+                >
+                  <X className="w-4 h-4" />
+                </button>
                 <Sparkles className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                <p className="text-emerald-200 text-sm">{smartFallbackMessage}</p>
+                <p className="text-emerald-200 text-sm pr-1">{smartFallbackMessage}</p>
               </div>
             )}
             {capabilityMatch ? (
@@ -878,8 +874,16 @@ function MarketplaceContent() {
                     <div><h4 className="text-indigo-300 font-bold mb-1">המלצת AI</h4><p className="text-indigo-100">{aiInsight}</p></div>
                 </div>
             ) : null}
-            {isFallback && searchInput.trim().length > 0 && (
-              <div className="bg-gradient-to-r from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-2xl p-5">
+            {isFallback && searchInput.trim().length > 0 && !hideFallbackBanner && (
+              <div className="bg-gradient-to-r from-amber-900/20 to-orange-900/20 border border-amber-500/30 rounded-2xl p-5 relative">
+                <button
+                  type="button"
+                  onClick={() => setHideFallbackBanner(true)}
+                  className="absolute top-4 left-4 p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-amber-400 hover:text-amber-200 transition-colors z-10"
+                  title="סגור"
+                >
+                  <X className="w-4 h-4" />
+                </button>
                 <div className="flex items-start gap-4"><div className="bg-amber-500/20 p-2.5 rounded-xl shrink-0 hidden sm:block"><Sparkles className="w-5 h-5 text-amber-400"/></div>
                   <div className="flex-1 text-right" dir="rtl"><h3 className="text-base font-bold text-amber-200 mb-1">לא נמצא &quot;{searchInput}&quot; — מציג הצעות דומות</h3>{aiInsight && <p className="text-amber-100/80 text-sm">{aiInsight}</p>}</div>
                 </div>
@@ -890,10 +894,10 @@ function MarketplaceContent() {
             )}
 
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
               {listings.map(listing => (
                 <div key={listing.id} className="relative">
-                  {listing.distanceKm != null && <div className="absolute top-4 left-4 z-10 bg-black/70 backdrop-blur-md border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1"><MapPin className="w-3 h-3 text-purple-400"/>{listing.distanceKm < 1 ? "קרוב אליך" : `${Math.round(listing.distanceKm)} ק״מ`}</div>}
+                  {listing.distanceKm != null && <div className="absolute top-2 left-2 z-10 bg-black/70 backdrop-blur-md border border-white/10 text-white text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-full flex items-center gap-1"><MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-400"/>{listing.distanceKm < 1 ? "קרוב" : `${Math.round(listing.distanceKm)} ק״מ`}</div>}
                   <ListingCard listing={listing}/>
                 </div>
               ))}

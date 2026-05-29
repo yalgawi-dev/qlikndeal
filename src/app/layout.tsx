@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 
 import { ClerkProvider } from '@clerk/nextjs';
 import { Toaster } from 'sonner';
+import { UserActivityTracker } from "@/components/UserActivityTracker";
 
 export default function RootLayout({
     children,
@@ -35,6 +36,7 @@ export default function RootLayout({
             <html lang="he" dir="rtl" className={`dark ${outfit.variable}`}>
                 <body className="min-h-screen bg-background font-sans antialiased selection:bg-primary selection:text-white">
                     {children}
+                    <UserActivityTracker />
                     <Toaster richColors position="bottom-right" />
                 </body>
             </html>

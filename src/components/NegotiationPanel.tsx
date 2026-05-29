@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, X, ArrowLeftRight, Clock, AlertCircle } from "lucide-react";
-import { submitOffer, acceptOffer } from "@/app/actions";
+import { Check, X, ArrowLeftRight, Clock, Send, DollarSign, Video, FileText, Shield, UserCheck, CheckCircle, ArrowLeft } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { submitOffer, acceptOffer, sendMessageInChat, updateTypingStatus } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { toggleVideoRequest } from "@/app/actions";
-import { Video } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
+import { LegalContract } from "@/components/LegalContract";
 
 interface NegotiationPanelProps {
     shipmentId: string;
@@ -19,6 +20,16 @@ interface NegotiationPanelProps {
     isGuest?: boolean;
     hasVideoRequest?: boolean;
     offers?: { amount: number; by: 'buyer' | 'seller'; timestamp: string }[];
+    messages?: { id: string; sender: 'buyer' | 'seller'; text: string; timestamp: string }[];
+    buyerId?: string;
+    otherUserIsTyping?: boolean;
+    shipmentStatus?: string;
+    itemName?: string;
+    itemCondition?: string;
+    sellerNotes?: string;
+    sellerName?: string;
+    buyerName?: string;
+    flexibleData?: any;
 }
 
 export function NegotiationPanel({
@@ -29,7 +40,17 @@ export function NegotiationPanel({
     onAgreement,
     isGuest = false,
     hasVideoRequest = false,
-    offers = []
+    offers = [],
+    messages = [],
+    buyerId,
+    otherUserIsTyping = false,
+    shipmentStatus = "DRAFT",
+    itemName = "מוצר",
+    itemCondition,
+    sellerNotes,
+    sellerName = "המוכר",
+    buyerName = "הקונה",
+    flexibleData = {}
 }: NegotiationPanelProps) {
 
     const router = useRouter();
@@ -37,17 +58,38 @@ export function NegotiationPanel({
     const [counterAmount, setCounterAmount] = useState(currentOffer.toString());
     const [loading, setLoading] = useState(false);
     const [videoRequested, setVideoRequested] = useState(hasVideoRequest);
+    const [chatText, setChatText] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
+    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        };
+    }, []);
+
+    const handleInputChange = (val: string) => {
+        setChatText(val);
+
+        if (!isTyping) {
+            setIsTyping(true);
+            updateTypingStatus(shipmentId, currentUserRole, true);
+        }
+
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+            setIsTyping(false);
+            updateTypingStatus(shipmentId, currentUserRole, false);
+        }, 4000);
+    };
 
     // Guest Details State
     const { user } = useUser();
-    // Pre-fill from Clerk user if available
     const [guestName, setGuestName] = useState(user?.fullName || "");
     const [guestPhone, setGuestPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || "");
 
     let isMyTurn = lastOfferBy !== currentUserRole;
     if (offers.length === 0) {
-        // If no offers yet, it is ONLY the buyer's turn to make the first move.
-        // The seller must wait for the buyer to submit an offer or accept the list price.
         isMyTurn = currentUserRole === 'buyer';
     }
 
@@ -88,7 +130,7 @@ export function NegotiationPanel({
             if (!amount || amount <= 0) return;
 
             const guestDetails = needsGuestDetails ? { name: guestName, phone: guestPhone } : undefined;
-            const res = await submitOffer(shipmentId, amount, currentUserRole, undefined, guestDetails);
+            const res = await submitOffer(shipmentId, amount, currentUserRole, buyerId, guestDetails);
             if (res.success) {
                 setIsCountering(false);
                 router.refresh();
@@ -102,7 +144,26 @@ export function NegotiationPanel({
         }
     };
 
-
+    const handleSendText = async () => {
+        if (!chatText.trim()) return;
+        setLoading(true);
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        setIsTyping(false);
+        updateTypingStatus(shipmentId, currentUserRole, false);
+        try {
+            const res = await sendMessageInChat(shipmentId, chatText, currentUserRole, buyerId);
+            if (res.success) {
+                setChatText("");
+                router.refresh();
+            } else {
+                alert("שגיאה בשליחת ההודעה");
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleVideoToggle = async () => {
         setVideoRequested(!videoRequested);
@@ -110,220 +171,358 @@ export function NegotiationPanel({
         router.refresh();
     };
 
+    // Combine offers and text messages chronologically
+    const timeline = [
+        ...offers.map(o => ({
+            type: 'offer' as const,
+            id: `offer-${o.timestamp || o.amount}`,
+            by: o.by,
+            amount: o.amount,
+            timestamp: o.timestamp || new Date().toISOString()
+        })),
+        ...messages.map(m => ({
+            type: 'message' as const,
+            id: m.id,
+            by: m.sender,
+            text: m.text,
+            timestamp: m.timestamp
+        }))
+    ].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    // Calculate contract status
+    let contractStatusLabel = "משא ומתן פעיל 📝";
+    let contractStatusColor = "text-yellow-400 bg-yellow-500/10 border-yellow-500/20";
+    let contractProgressText = "שני הצדדים בעיצומו של משא ומתן להסכמה על המחיר.";
+    if (shipmentStatus === "SELLER_APPROVED") {
+        contractStatusLabel = "חתום ע״י המוכר ⏳";
+        contractStatusColor = "text-blue-400 bg-blue-500/10 border-blue-500/20";
+        contractProgressText = "המוכר חתם על ההסכם. ממתין לחתימה של הקונה לסגירת העסקה.";
+    } else if (shipmentStatus === "AGREED" || shipmentStatus === "PAID" || shipmentStatus === "DELIVERED") {
+        contractStatusLabel = "חוזה חתום ומאושר 🔒";
+        contractStatusColor = "text-green-400 bg-green-500/10 border-green-500/20";
+        contractProgressText = "העסקה נחתמה בהצלחה על ידי שני הצדדים ומאובטחת בנאמנות!";
+    }
+
+    const translatedCondition = itemCondition === "New" ? "חדש באריזה" : itemCondition === "Used" ? "משומש" : itemCondition || "לא צוין";
+
+    // Check if negotiation is agreed (price accepted by both sides)
+    const isNegotiationAgreed = flexibleData.negotiationStatus === 'agreed';
+
     return (
-        <div className="bg-card/95 backdrop-blur-xl border border-primary/20 rounded-3xl p-5 mb-6 shadow-2xl shadow-primary/5">
+        <div className="bg-card/95 backdrop-blur-xl border border-primary/20 rounded-3xl p-5 mb-6 shadow-2xl shadow-primary/5 flex flex-col h-[75vh] min-h-[550px]" dir="rtl">
+            {/* ═══════ AGREEMENT REACHED BANNER ═══════ */}
+            {isNegotiationAgreed && (
+                <div className="mb-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="relative bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 rounded-2xl p-5 text-white overflow-hidden shadow-xl shadow-emerald-500/20">
+                        {/* Decorative background */}
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
+                        <div className="absolute top-2 left-2 w-12 h-12 rounded-full bg-white/10 blur-xl" />
+                        
+                        <div className="relative flex flex-col sm:flex-row items-center gap-4">
+                            <div className="flex-shrink-0">
+                                <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-inner">
+                                    <CheckCircle className="w-7 h-7 text-white drop-shadow-md" />
+                                </div>
+                            </div>
+                            <div className="flex-1 text-center sm:text-right">
+                                <h3 className="text-lg font-black tracking-tight mb-0.5">🎉 הסכמה הושגה!</h3>
+                                <p className="text-emerald-100 text-sm leading-relaxed">
+                                    שני הצדדים הסכימו על מחיר של <span className="font-black text-white text-lg mx-1">₪{currentOffer}</span>
+                                </p>
+                                <p className="text-emerald-200/80 text-xs mt-1">
+                                    כעת יש לחתום על ההסכם הרשמי כדי להתקדם לשלב התשלום וההובלה.
+                                </p>
+                            </div>
+                            <div className="flex-shrink-0">
+                                <Button
+                                    onClick={() => onAgreement?.()}
+                                    className="bg-white text-emerald-700 hover:bg-emerald-50 font-extrabold h-12 px-6 rounded-xl shadow-lg shadow-black/10 text-sm gap-2 transition-all hover:scale-105"
+                                >
+                                    <FileText className="w-4 h-4" />
+                                    המשך לחתימה על החוזה
+                                    <ArrowLeft className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
-            <div className="flex justify-between items-center mb-5 pb-4 border-b border-primary/10">
+            <div className="flex justify-between items-center mb-4 pb-3 border-b border-primary/10 gap-2 flex-wrap sm:flex-nowrap">
                 <div className="flex items-center gap-3">
-                    <div className="bg-gradient-to-br from-primary/20 to-primary/5 p-3 rounded-2xl text-primary shadow-inner">
-                        <ArrowLeftRight className="w-6 h-6" />
+                    <div className="bg-gradient-to-br from-primary/20 to-primary/5 p-2 rounded-2xl text-primary shadow-inner">
+                        <ArrowLeftRight className="w-5 h-5" />
                     </div>
                     <div>
-                        <h3 className="font-extrabold text-base tracking-tight text-foreground">זירת סחר ומשא ומתן</h3>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5">
-                            <span className={`w-2 h-2 rounded-full ${isMyTurn ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`}></span>
-                            {isMyTurn ? "תורך! הצע או קבל" : "ממתין לתגובת הצד השני..."}
+                        <h3 className="font-extrabold text-sm sm:text-base tracking-tight text-foreground">זירת סחר ומשא ומתן</h3>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                            {isNegotiationAgreed ? (
+                                <>
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-emerald-500 font-bold">✓ מחיר סוכם — ממתין לחתימות</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className={`w-2 h-2 rounded-full ${isMyTurn ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`} />
+                                    {isMyTurn ? "תורך! הצע או קבל" : "ממתין לתגובת הצד השני..."}
+                                </>
+                            )}
                         </p>
                     </div>
                 </div>
-                <div className="text-right bg-primary/5 px-4 py-2 rounded-2xl border border-primary/10">
-                    <span className="text-xs text-muted-foreground block font-medium">הצעה אחרונה מונחת</span>
-                    <span className="text-2xl font-black text-primary font-mono">₪{currentOffer}</span>
+
+                <div className="flex items-center gap-2">
+                    {/* Contract Status Dialog Trigger */}
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="rounded-2xl border-primary/30 text-primary hover:bg-primary/5 text-xs font-bold gap-1 h-9 px-3">
+                                <FileText className="w-3.5 h-3.5" />
+                                <span>סטטוס החוזה</span>
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-[650px] w-[95vw] p-0 overflow-hidden bg-background rounded-3xl border border-primary/20 text-right" dir="rtl">
+                            <LegalContract
+                                itemName={itemName}
+                                value={currentOffer}
+                                itemCondition={translatedCondition}
+                                sellerNotes={sellerNotes}
+                                sellerName={sellerName}
+                                buyerName={buyerName}
+                                flexibleData={flexibleData}
+                            />
+                        </DialogContent>
+                    </Dialog>
+
+                    <div className="text-right bg-primary/5 px-3 py-1.5 rounded-2xl border border-primary/10">
+                        <span className="text-[10px] text-muted-foreground block font-medium">{isNegotiationAgreed ? 'מחיר מוסכם' : 'הצעה אחרונה מונחת'}</span>
+                        <span className={`text-xl font-black font-mono ${isNegotiationAgreed ? 'text-emerald-500' : 'text-primary'}`}>₪{currentOffer}</span>
+                    </div>
                 </div>
             </div>
 
-            {/* Chat History Area (The Arena) */}
-            <div className="relative rounded-2xl mb-6 shadow-inner border border-primary/10 overflow-hidden bg-slate-100 dark:bg-[#0b141a]">
-                {/* Subtle chat background pattern (WhatsApp style dots/doodles placeholder using CSS gradient dots) */}
+            {/* Chat Timeline (The Arena) */}
+            <div className="relative flex-1 rounded-2xl mb-4 shadow-inner border border-primary/10 overflow-hidden bg-slate-100 dark:bg-[#0b141a]">
                 <div className="absolute inset-0 opacity-5 dark:opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
                 
-                <div className="relative h-[45vh] max-h-[500px] overflow-y-auto custom-scrollbar p-4 space-y-4 flex flex-col">
-                {offers.length === 0 ? (
-                    <div className="flex-1 flex items-center justify-center">
-                        <div className="text-center bg-card shadow-[0_0_20px_rgba(0,0,0,0.4)] dark:shadow-none border border-border/50 text-foreground text-sm py-5 px-6 rounded-3xl max-w-[85%] relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500"></div>
-                            <span className="block text-3xl mb-3 drop-shadow-md">🤝</span>
-                            <b className="text-base tracking-tight mb-2 block">זירת הסחר פתוחה ומוכנה</b>
-                            <p className="text-muted-foreground leading-relaxed mb-3">
-                                מחירו ההתחלתי של המוצר הוא: <span className="text-primary font-bold text-lg">₪{currentOffer}</span>.
-                            </p>
-                            <p className="text-xs opacity-80 leading-relaxed bg-muted/50 p-2 rounded-xl">
-                                ניתן להגיש הצעת מחיר בהתאם לתקציבכם, או לסגור את העסקה במחיר המקורי באופן מיידי ולחסוך זמן.
-                            </p>
+                <div className="relative h-full overflow-y-auto custom-scrollbar p-4 space-y-4 flex flex-col">
+                    {timeline.length === 0 ? (
+                        <div className="flex-1 flex items-center justify-center">
+                            <div className="text-center bg-card shadow-[0_0_20px_rgba(0,0,0,0.4)] dark:shadow-none border border-border/50 text-foreground text-sm py-5 px-6 rounded-3xl max-w-[85%] relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-500"></div>
+                                <span className="block text-3xl mb-3 drop-shadow-md">🤝</span>
+                                <b className="text-base tracking-tight mb-2 block">זירת הסחר פתוחה ומוכנה</b>
+                                <p className="text-muted-foreground leading-relaxed mb-3">
+                                    מחירו ההתחלתי של המוצר הוא: <span className="text-primary font-bold text-lg">₪{currentOffer}</span>.
+                                </p>
+                                <p className="text-xs opacity-80 leading-relaxed bg-muted/50 p-2 rounded-xl">
+                                    ניתן לכתוב הודעה בצ'אט או להגיש הצעת מחיר חלופית בעזרת הכפתורים למטה.
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                ) : (
-                    <>
-                        {/* System Message for opening */}
-                        <div className="flex justify-center flex-shrink-0 animate-in fade-in zoom-in duration-500">
-                             <div className="bg-muted/80 backdrop-blur-sm border border-border/50 text-muted-foreground text-[10px] font-medium py-1 px-3 rounded-full shadow-sm">
-                                זירת הסחר נפתחה. מחירו המקורי: ₪{currentOffer}
-                             </div>
-                        </div>
+                    ) : (
+                        <>
+                            <div className="flex justify-center flex-shrink-0 animate-in fade-in zoom-in duration-500">
+                                 <div className="bg-muted/80 backdrop-blur-sm border border-border/50 text-muted-foreground text-[10px] font-medium py-1 px-3 rounded-full shadow-sm">
+                                    זירת הסחר נפתחה. מחיר מקורי: ₪{currentOffer}
+                                 </div>
+                            </div>
 
-                        {/* Messages */}
-                        {offers.map((offer, idx) => {
-                            const isMe = offer.by === currentUserRole;
-                            /* WhatsApp-like colors: #d9fdd3 for light mode outgoing, #005c4b for dark mode outgoing */
-                            const bgColor = isMe 
-                                ? "bg-[#d9fdd3] dark:bg-[#005c4b] text-zinc-900 dark:text-zinc-100" 
-                                : "bg-white dark:bg-[#202c33] text-zinc-900 dark:text-zinc-100";
-                            const alignment = isMe ? "justify-end" : "justify-start";
-                            const borderRadius = isMe ? "rounded-l-2xl rounded-tr-2xl rounded-br-sm" : "rounded-r-2xl rounded-tl-2xl rounded-bl-sm";
-                            const labelStr = isMe ? "הצעת:" : (offer.by === 'seller' ? 'המוכר הציע:' : 'הקונה הציע:');
-                            
-                            return (
-                                <div key={idx} className={`flex ${alignment} w-full animate-in fade-in slide-in-from-bottom-2 flex-shrink-0`}>
-                                    <div className={`px-4 py-3 ${borderRadius} ${bgColor} max-w-[80%] shadow-md relative group border border-black/5 dark:border-white/5`}>
-                                        {/* Tail element mimicking chat bubble */}
-                                        <div className={`absolute top-0 ${isMe ? '-right-2 border-l-[12px] border-l-[#d9fdd3] dark:border-l-[#005c4b]' : '-left-2 border-r-[12px] border-r-white dark:border-r-[#202c33]'} border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent w-0 h-0`}></div>
-                                        
-                                        <div className="text-[11px] font-bold opacity-60 mb-0.5 uppercase tracking-wider">
-                                            {labelStr}
+                            {timeline.map((item) => {
+                                const isMe = item.by === currentUserRole;
+                                const alignment = isMe ? "justify-end" : "justify-start";
+                                const borderRadius = isMe ? "rounded-l-2xl rounded-tr-2xl rounded-br-sm" : "rounded-r-2xl rounded-tl-2xl rounded-bl-sm";
+                                
+                                if (item.type === 'offer') {
+                                    // Price Offer bubble (distinct styling, green-tinted for outgoing, purple for incoming)
+                                    const bgColor = isMe
+                                        ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-100"
+                                        : "bg-purple-500/20 border-purple-500/40 text-purple-100";
+                                    const labelStr = isMe ? "הצעתך:" : (item.by === 'seller' ? 'הצעת המוכר:' : 'הצעת הקונה:');
+
+                                    return (
+                                        <div key={item.id} className={`flex ${alignment} w-full animate-in fade-in slide-in-from-bottom-2`}>
+                                            <div className={`px-4 py-3 rounded-2xl border ${bgColor} max-w-[80%] shadow-lg relative flex flex-col gap-1`}>
+                                                <span className="text-[10px] font-bold opacity-75 tracking-wider">{labelStr}</span>
+                                                <div className="text-2xl font-black font-mono leading-none my-1 flex items-baseline gap-0.5">
+                                                    <span className="text-sm opacity-80">₪</span>{item.amount}
+                                                </div>
+                                                <span className="text-[9px] opacity-60 text-left">
+                                                    {new Date(item.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="text-2xl font-black font-mono leading-none my-1 flex items-baseline gap-1">
-                                            <span className="text-lg opacity-70">₪</span>{offer.amount}
+                                    );
+                                } else {
+                                    // Regular chat message bubble
+                                    const bgColor = isMe 
+                                        ? "bg-indigo-600 text-white" 
+                                        : "bg-white dark:bg-[#202c33] text-zinc-900 dark:text-zinc-100";
+
+                                    return (
+                                        <div key={item.id} className={`flex ${alignment} w-full animate-in fade-in slide-in-from-bottom-2`}>
+                                            <div className={`px-4 py-2.5 ${borderRadius} ${bgColor} max-w-[80%] shadow-md relative border border-black/5 dark:border-white/5`}>
+                                                <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{item.text}</p>
+                                                <div className="text-[9px] opacity-60 mt-1 flex justify-end items-center gap-1">
+                                                    {new Date(item.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+                                                    {isMe && <Check className="w-3 h-3 opacity-70" />}
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="text-[10px] opacity-50 mt-1 flex justify-end items-center gap-1">
-                                            {new Date(offer.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
-                                            {isMe && <Check className="w-3 h-3 opacity-70" />}
-                                        </div>
+                                    );
+                                }
+                            })}
+
+                            {otherUserIsTyping && (
+                                <div className="flex justify-start w-full animate-in fade-in slide-in-from-bottom-2">
+                                    <div className="px-4 py-2.5 rounded-r-2xl rounded-tl-2xl rounded-bl-sm bg-white dark:bg-[#202c33] text-zinc-850 dark:text-zinc-100 shadow-md border border-black/5 dark:border-white/5 flex items-center gap-1.5">
+                                        <span className="text-xs text-muted-foreground ml-1">כותב/ת</span>
+                                        <span className="flex gap-1 items-center pt-0.5">
+                                            <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                            <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                            <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                        </span>
                                     </div>
                                 </div>
-                            );
-                        })}
-                    </>
-                )}
+                            )}
+                        </>
+                    )}
                 </div>
             </div>
 
-            {/* Video Call Request */}
-            <div className="mb-4 flex justify-end">
-                <Button
-                    variant={videoRequested ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={handleVideoToggle}
-                    className={`text-xs gap-2 ${videoRequested ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'text-muted-foreground'}`}
-                >
-                    <Video className={`w-4 h-4 ${videoRequested ? 'animate-pulse' : 'opacity-50'}`} />
-                    {videoRequested ? "ביקשת שיחת וידאו" : "בקש שיחת וידאו"}
-                </Button>
+            {/* Action Buttons Area */}
+            <div className="mb-3 flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                    {isNegotiationAgreed ? (
+                        /* Agreement reached — show proceed CTA */
+                        <Button
+                            size="sm"
+                            onClick={() => onAgreement?.()}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-9 rounded-xl text-xs gap-1.5 shadow-md shadow-emerald-500/20 animate-pulse"
+                        >
+                            <FileText className="w-3.5 h-3.5" />
+                            המשך לחתימה
+                            <ArrowLeft className="w-3.5 h-3.5" />
+                        </Button>
+                    ) : isMyTurn ? (
+                        /* My turn — show Accept & Counter */
+                        <>
+                            <Button
+                                size="sm"
+                                onClick={handleAccept}
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-9 rounded-xl text-xs"
+                                disabled={loading}
+                            >
+                                <Check className="w-3.5 h-3.5 ml-1" />
+                                {offers.length === 0 ? "קנה במחיר זה" : "קבל הצעה"}
+                            </Button>
+                            <Button
+                                size="sm"
+                                onClick={() => setIsCountering(true)}
+                                variant="outline"
+                                className="border-primary/30 text-primary hover:bg-primary/5 font-bold h-9 rounded-xl text-xs"
+                                disabled={loading}
+                            >
+                                <DollarSign className="w-3.5 h-3.5 ml-1" />
+                                הצע מחיר
+                            </Button>
+                        </>
+                    ) : (
+                        /* Waiting for other party */
+                        <div className="flex items-center gap-2 text-muted-foreground text-xs bg-muted/50 px-3 py-2 rounded-xl border border-border">
+                            <Clock className="w-3.5 h-3.5 animate-spin-slow" />
+                            <span>ממתין שהצד השני יגיב להצעה שלך...</span>
+                        </div>
+                    )}
+                </div>
+                
+                {!isNegotiationAgreed && (
+                    <Button
+                        variant={videoRequested ? "secondary" : "ghost"}
+                        size="sm"
+                        onClick={handleVideoToggle}
+                        className={`text-xs gap-1.5 h-8 ${videoRequested ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'text-muted-foreground'}`}
+                    >
+                        <Video className={`w-3.5 h-3.5 ${videoRequested ? 'animate-pulse' : 'opacity-50'}`} />
+                        {videoRequested ? "ביקשת שיחת וידאו" : "בקש שיחת וידאו"}
+                    </Button>
+                )}
             </div>
 
-            {
-                isMyTurn ? (
-                    <div className="space-y-3">
-                        {/* Identification Fields (Guest or Logged In without phone) */}
-                        {(isGuest && (!user?.fullName || !user?.primaryPhoneNumber?.phoneNumber)) && (
-                            <div className="bg-muted/50 p-3 rounded-xl border border-primary/20 space-y-3 mb-2 animate-in fade-in slide-in-from-top-2">
-                                <h4 className="text-xs font-bold text-primary flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                                    פרטי התקשרות {(!user) ? "(חובה למשתמש אורח)" : "(השלם פרטים חסרים)"}
-                                </h4>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-muted-foreground">שם מלא</label>
-                                        <Input
-                                            placeholder="ישראל ישראלי"
-                                            className="h-8 text-xs bg-background"
-                                            value={guestName}
-                                            onChange={(e) => setGuestName(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-bold text-muted-foreground">הטלפון שלך (לעדכונים)</label>
-                                        <Input
-                                            placeholder="050-0000000"
-                                            className="h-8 text-xs bg-background"
-                                            value={guestPhone}
-                                            onChange={(e) => setGuestPhone(e.target.value)}
-                                            type="tel"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {!isCountering ? (
-                            <div className="flex flex-col gap-3 animate-in slide-in-from-bottom-2 fade-in">
-                                <Button
-                                    onClick={handleAccept}
-                                    className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 h-14 rounded-2xl text-lg font-bold shadow-lg shadow-green-900/20 text-white"
-                                    disabled={loading}
-                                >
-                                    <Check className="w-6 h-6 mr-2" />
-                                    {currentUserRole === 'buyer' 
-                                        ? (offers.length === 0 ? "הסכם וקנה במחיר זה 🤝" : "קבל הצעה זו וקנה 🤝") 
-                                        : "קבל הצעה זו וסגור עסקה"}
-                                </Button>
-
-                                <div className="relative flex items-center py-2">
-                                    <div className="grow border-t border-border/50"></div>
-                                    <span className="shrink-0 px-4 text-[10px] uppercase font-bold tracking-widest text-muted-foreground/60 bg-transparent">או</span>
-                                    <div className="grow border-t border-border/50"></div>
-                                </div>
-
-                                <Button
-                                    onClick={() => setIsCountering(true)}
-                                    variant="outline"
-                                    className="w-full h-12 rounded-2xl text-base border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 text-primary tracking-wide font-bold"
-                                    disabled={loading}
-                                >
-                                    {currentUserRole === 'buyer' ? "הצע מחיר אחר 💬" : "שלח הצעה נגדית 💬"}
-                                </Button>
-                            </div>
-                        ) : (
-                            <div className="animate-in slide-in-from-bottom-4 fade-in bg-card border border-primary/20 p-4 rounded-2xl shadow-lg">
-                                <h4 className="text-sm font-bold text-foreground mb-3">{currentUserRole === 'buyer' ? "כמה תרצה להציע על המוצר?" : "הצעת מחיר חלופית לקונה"}</h4>
-                                <div className="flex gap-2 relative">
-                                    <div className="relative flex-1">
-                                        <span className="absolute right-4 top-3 text-muted-foreground/70 font-mono text-xl">₪</span>
-                                        <Input
-                                            type="number"
-                                            value={counterAmount}
-                                            onChange={e => setCounterAmount(e.target.value)}
-                                            className="pr-10 h-14 text-2xl font-black font-mono bg-background border-primary/30 rounded-xl focus-visible:ring-primary shadow-inner"
-                                            autoFocus
-                                        />
-                                    </div>
-                                    <Button
-                                        onClick={handleCounter}
-                                        className="h-14 px-6 rounded-xl font-bold bg-primary hover:bg-primary/90 text-white shadow-md"
-                                        disabled={loading}
-                                    >
-                                        שלח הצעה
-                                    </Button>
-                                    <Button
-                                        onClick={() => setIsCountering(false)}
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-14 w-12 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                                    >
-                                        <X className="w-5 h-5" />
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
+            {/* Guest details fields inside chat card if required */}
+            {isGuest && (!user?.fullName || !user?.primaryPhoneNumber?.phoneNumber) && (
+                <div className="bg-muted/50 p-2.5 rounded-xl border border-primary/20 space-y-2 mb-2">
+                    <h4 className="text-[11px] font-bold text-primary flex items-center gap-1">
+                        <span className="w-1 h-1 rounded-full bg-primary animate-pulse" />
+                        {user ? "השלמת פרטי התקשרות לחבר רשום (חובה להצעת מחיר)" : "פרטי התקשרות לאורח (חובה להצעת מחיר)"}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                        <Input
+                            placeholder="שם מלא"
+                            className="h-7 text-xs bg-background"
+                            value={guestName}
+                            onChange={(e) => setGuestName(e.target.value)}
+                        />
+                        <Input
+                            placeholder="טלפון"
+                            className="h-7 text-xs bg-background"
+                            value={guestPhone}
+                            onChange={(e) => setGuestPhone(e.target.value)}
+                            type="tel"
+                        />
                     </div>
-                ) : (
-                    <div className="bg-muted/30 backdrop-blur-md p-6 rounded-3xl text-center border border-dashed border-primary/30 shadow-inner flex flex-col items-center justify-center gap-4 py-8">
-                        <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2 relative shadow-lg shadow-primary/5">
-                            <Clock className="w-7 h-7 animate-pulse" />
-                            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-4 w-4 bg-primary"></span>
-                            </span>
+                </div>
+            )}
+
+            {/* Price Counter Offer Overlay Dialog/Card */}
+            {isCountering && (
+                <div className="absolute inset-x-4 bottom-16 z-30 animate-in slide-in-from-bottom-4 fade-in bg-slate-900 border border-primary/20 p-4 rounded-2xl shadow-2xl">
+                    <div className="flex justify-between items-center mb-2">
+                        <h4 className="text-xs font-bold text-white">הצעת מחיר חלופית</h4>
+                        <button onClick={() => setIsCountering(false)} className="text-gray-400 hover:text-white"><X className="w-4 h-4" /></button>
+                    </div>
+                    <div className="flex gap-2">
+                        <div className="relative flex-1">
+                            <span className="absolute right-3 top-2.5 text-muted-foreground font-mono text-base">₪</span>
+                            <Input
+                                type="number"
+                                value={counterAmount}
+                                onChange={e => setCounterAmount(e.target.value)}
+                                className="pr-8 h-10 text-lg font-black font-mono bg-background border-primary/30 rounded-xl"
+                                autoFocus
+                            />
                         </div>
-                        <h4 className="font-extrabold text-lg text-foreground tracking-tight">
-                            {offers.length === 0 ? "הזירה מוכנה ופעילה 🚀" : "הצעתך שוגרה בהצלחה! 🚀"}
-                        </h4>
-                        <p className="text-muted-foreground text-sm max-w-[250px] leading-relaxed">
-                            {offers.length === 0 
-                                ? (currentUserRole === 'seller' ? "אנו ממתינים כעת לקונה שיעיין במוצר ויגיש את הצעתו הראשונה או יסכים למחיר המקורי." : "התחל את המשא ומתן על ידי הגשת הצעה.") 
-                                : "הצד השני קיבל התראה, אנו ממתינים כעת לתגובתו לעדכון העסקה..."}
-                        </p>
+                        <Button
+                            onClick={handleCounter}
+                            className="h-10 px-4 rounded-xl font-bold bg-primary text-white text-xs"
+                            disabled={loading}
+                        >
+                            שלח הצעה
+                        </Button>
                     </div>
-                )
-            }
-        </div >
+                </div>
+            )}
+
+            {/* Sticky Chat Input Bar */}
+            <div className="flex gap-2 items-center mt-1 border-t border-primary/10 pt-3 flex-shrink-0">
+                <Input
+                    placeholder="הקלד הודעה..."
+                    className="flex-1 h-10 bg-muted/60 dark:bg-slate-800/60 border-border focus:border-primary/50 text-foreground rounded-xl placeholder:text-muted-foreground text-sm"
+                    value={chatText}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSendText();
+                    }}
+                />
+                <Button
+                    size="icon"
+                    onClick={handleSendText}
+                    className="h-10 w-10 rounded-xl shadow-md flex items-center justify-center shrink-0 transition-all duration-200 bg-indigo-600 hover:bg-indigo-700 text-white disabled:bg-muted disabled:text-muted-foreground"
+                    disabled={loading || !chatText.trim()}
+                >
+                    <Send className="w-4 h-4 rotate-180" />
+                </Button>
+            </div>
+        </div>
     );
 }

@@ -4,6 +4,8 @@ import prismadb from "@/lib/prismadb";
 import { dbCache } from "@/lib/db-cache";
 import { detectConditionFromText } from "@/lib/computer-data";
 
+export const dynamic = 'force-dynamic';
+
 /**
  * מפת הקטגוריות המלאה לפי ה-Schema שלך.
  */

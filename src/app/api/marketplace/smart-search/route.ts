@@ -419,7 +419,7 @@ export async function POST(req: Request) {
                 where: buyerWhereClause,
                 include: {
                     user: {
-                        select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
+                        select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true, lastActiveAt: true }
                     }
                 },
                 take: 150,
@@ -452,7 +452,8 @@ export async function POST(req: Request) {
                         lastName: req.user.lastName,
                         imageUrl: req.user.imageUrl,
                         city: req.user.city,
-                        roles: req.user.roles
+                        roles: req.user.roles,
+                        lastActiveAt: req.user.lastActiveAt
                     } : {
                         clerkId: "system",
                         firstName: "משתמש",
@@ -591,7 +592,7 @@ export async function POST(req: Request) {
             where: whereClause,
             include: {
                 seller: {
-                    select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true }
+                    select: { clerkId: true, firstName: true, lastName: true, imageUrl: true, city: true, roles: true, lastActiveAt: true }
                 }
             },
             take: consultantFilter ? 200 : 60,

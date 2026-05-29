@@ -57,14 +57,24 @@ interface DialogContextType {
 const DialogContext = React.createContext<DialogContextType | null>(null);
 
 const Root = ({
-    open = false,
-    onOpenChange = () => { },
+    open: controlledOpen,
+    onOpenChange: controlledOnOpenChange,
     children,
 }: {
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
     children: React.ReactNode;
 }) => {
+    const [localOpen, setLocalOpen] = React.useState(false);
+    const open = controlledOpen !== undefined ? controlledOpen : localOpen;
+    const onOpenChange = (val: boolean) => {
+        if (controlledOnOpenChange) {
+            controlledOnOpenChange(val);
+        } else {
+            setLocalOpen(val);
+        }
+    };
+
     return (
         <DialogContext.Provider value={{ open, onOpenChange }}>
             {children}

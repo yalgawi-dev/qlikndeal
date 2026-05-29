@@ -8,12 +8,23 @@ import { notFound, redirect } from "next/navigation";
 import { BuyerAgreement } from "@/components/BuyerAgreement";
 import { SellerApproval } from "@/components/SellerApproval";
 import { SellerOffersDashboard } from "@/components/SellerOffersDashboard";
+import prismadb from "@/lib/prismadb";
+import { UserProfileForcer } from "@/components/UserProfileForcer";
 import { currentUser } from "@clerk/nextjs/server";
 import { StatusStepper } from "@/components/StatusStepper";
 import { LastSeenUpdater } from "@/components/LastSeenUpdater";
 import { BackButton } from "@/components/BackButton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+function getOnlineStatus(lastActiveAt: string | Date | null | undefined) {
+    if (!lastActiveAt) return false;
+    const activeDate = new Date(lastActiveAt);
+    const now = new Date();
+    const diffMs = now.getTime() - activeDate.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    return diffMins < 5;
+}
 
 const VIEWABLE_RADAR_FIELDS = [
     { key: "category", label: "קטגוריה" },
@@ -176,6 +187,13 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
         return notFound();
     }
 
+    let dbUser: any = null;
+    if (user && prismadb) {
+        dbUser = await prismadb.user.findUnique({
+            where: { clerkId: user.id }
+        });
+    }
+
     const details = shipment.details;
     const seller = shipment.seller;
 
@@ -203,6 +221,17 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
 
     const viewerIsBuyer = user && (shipment.buyer?.clerkId === user.id || (user.id in negotiations));
     const currentBuyerId = user?.id;
+
+    let currentBuyerName = "קונה";
+    if (user) {
+        currentBuyerName = user.firstName || "קונה";
+    }
+    const selectedBuyerId = searchParams.buyerId;
+    if (selectedBuyerId && negotiations[selectedBuyerId]) {
+        currentBuyerName = negotiations[selectedBuyerId].buyerName || "קונה";
+    } else if (currentBuyerId && negotiations[currentBuyerId]) {
+        currentBuyerName = negotiations[currentBuyerId].buyerName || user?.firstName || "קונה";
+    }
 
     // Parse specs for displaying in details card
     let rawExtra: Record<string, any> = {};
@@ -232,7 +261,6 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
     // A. SELLER VIEW
     if (viewerIsSeller) {
         // 1. If specific buyer selected via URL or only 1 active negotiation exists (and not public dashboard mode)
-        const selectedBuyerId = searchParams.buyerId;
 
         // If we are in "Public Dashboard Mode" and no buyer selected -> Show Dashboard
         const showDashboard = isPublicListing && !selectedBuyerId && Object.keys(negotiations).length > 0;
@@ -264,13 +292,14 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
         // 2. Specific Negotiation View (Selected Buyer or Single Buyer)
         // If specific buyer selected, we temporarily override "details" to show THAT negotiation's state
         let effectiveDetails = { ...details, flexibleData: JSON.stringify(flexibleData) };
-        let currentBuyerName = "קונה";
+        currentBuyerName = "קונה";
 
         if (selectedBuyerId && negotiations[selectedBuyerId]) {
             const thread = negotiations[selectedBuyerId];
             const threadFlexible = {
                 ...flexibleData,
                 offers: thread.offers,
+                messages: thread.messages || [],
                 lastOfferBy: thread.lastOfferBy,
                 negotiationStatus: thread.status
             };
@@ -286,6 +315,7 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
 
         return (
             <main className="min-h-screen bg-muted/20 flex flex-col items-center p-4 md:p-8">
+                <UserProfileForcer dbUser={dbUser} />
                 <div className="w-full max-w-2xl">
                     <div className="mb-4 flex items-center justify-between">
                         <BackButton label="חזור לשליטה" />
@@ -299,16 +329,23 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
                     {/* Intimate Dual-Party Header */}
                     <div className="flex items-center justify-between bg-card p-4 rounded-3xl shadow-lg border border-primary/20 mb-6 bg-gradient-to-b from-card to-card/50">
                         <div className="flex flex-col items-center">
-                            <div className="w-16 h-16 overflow-hidden bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center font-bold relative shadow-inner ring-2 ring-background">
-                                {user?.imageUrl ? <img src={user.imageUrl} className="w-full h-full object-cover" alt="Me" /> : <User className="w-8 h-8" />}
-                                <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></span>
+                            <div className="relative">
+                                <div className="w-16 h-16 overflow-hidden bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center font-bold shadow-inner ring-2 ring-background">
+                                    {user?.imageUrl ? <img src={user.imageUrl} className="w-full h-full object-cover" alt="Me" /> : <User className="w-8 h-8" />}
+                                </div>
+                                {(() => {
+                                    return (
+                                        <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-background z-20 bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                                    );
+                                })()}
                             </div>
                             <span className="text-xs font-bold mt-2">{user?.firstName || "את/ה"} (המוכר)</span>
                         </div>
                         
                         <div className="flex flex-col items-center justify-center px-4 flex-1">
-                            <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] md:text-xs font-bold whitespace-nowrap mb-2 shadow-sm border border-primary/20">
-                                סחר חי 🔴
+                            <div className="bg-emerald-500/10 text-green-400 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold whitespace-nowrap mb-2 shadow-sm border border-emerald-500/20 flex items-center gap-1.5">
+                                <span>סחר חי</span>
+                                <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
                             </div>
                             <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent relative">
                                 <ArrowRight className="w-4 h-4 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background rounded-full rotate-180" />
@@ -316,8 +353,16 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
                         </div>
 
                         <div className="flex flex-col items-center">
-                            <div className="w-16 h-16 overflow-hidden bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-300 rounded-full flex items-center justify-center font-bold shadow-inner ring-2 ring-background text-2xl">
-                                {shipment.buyer?.imageUrl ? <img src={shipment.buyer?.imageUrl} className="w-full h-full object-cover" alt="Buyer" /> : currentBuyerName.charAt(0)}
+                            <div className="relative">
+                                <div className="w-16 h-16 overflow-hidden bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-300 rounded-full flex items-center justify-center font-bold shadow-inner ring-2 ring-background text-2xl">
+                                    {shipment.buyer?.imageUrl ? <img src={shipment.buyer?.imageUrl} className="w-full h-full object-cover" alt="Buyer" /> : currentBuyerName.charAt(0)}
+                                </div>
+                                {(() => {
+                                    const online = getOnlineStatus(flexibleData.buyerLastSeen);
+                                    return (
+                                        <span className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-background z-20 ${online ? "bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"}`} />
+                                    );
+                                })()}
                             </div>
                             <span className="text-xs font-bold mt-2">{currentBuyerName} (הקונה)</span>
                         </div>
@@ -457,6 +502,7 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
         const threadFlexible = {
             ...flexibleData,
             offers: thread.offers,
+            messages: thread.messages || [],
             lastOfferBy: thread.lastOfferBy,
             negotiationStatus: thread.status
         };
@@ -502,6 +548,7 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
 
     return (
         <main className="min-h-screen bg-muted/20 flex flex-col items-center p-4 md:p-8 relative">
+            <UserProfileForcer dbUser={dbUser} />
             {/* Auto-Update Last Seen Component (Client Side Logic Wrapper) */}
             <LastSeenUpdater shipmentId={shipment.id} role={viewerIsSeller ? 'seller' : 'buyer'} />
             
@@ -519,16 +566,24 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
                 {/* Intimate Dual-Party Header */}
                 <div className="flex items-center justify-between bg-card p-4 rounded-3xl shadow-lg border border-primary/20 mb-6 bg-gradient-to-b from-card to-card/50">
                     <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 overflow-hidden bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-300 rounded-full flex items-center justify-center font-bold relative shadow-inner ring-2 ring-background">
-                             {user?.imageUrl ? <img src={user.imageUrl} className="w-full h-full object-cover" alt="Me" /> : <User className="w-8 h-8" />}
-                             <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></span>
+                        <div className="relative">
+                            <div className="w-16 h-16 overflow-hidden bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center font-bold shadow-inner ring-2 ring-background text-2xl">
+                                {seller.imageUrl ? <img src={seller.imageUrl} className="w-full h-full object-cover" alt="Seller" /> : (seller.firstName || "מ").charAt(0)}
+                            </div>
+                            {(() => {
+                                const online = getOnlineStatus(flexibleData.sellerLastSeen);
+                                return (
+                                    <span className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-background z-20 ${online ? "bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"}`} />
+                                );
+                            })()}
                         </div>
-                        <span className="text-xs font-bold mt-2">{user?.firstName || "את/ה"} (הקונה)</span>
+                        <span className="text-xs font-bold mt-2">{seller.firstName || "המוכר"} (המוכר)</span>
                     </div>
-                    
+
                     <div className="flex flex-col items-center justify-center px-4 flex-1">
-                        <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] md:text-xs font-bold whitespace-nowrap mb-2 shadow-sm border border-primary/20">
-                            סחר חי 🔴
+                        <div className="bg-emerald-500/10 text-green-400 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold whitespace-nowrap mb-2 shadow-sm border border-emerald-500/20 flex items-center gap-1.5 animate-pulse">
+                            <span>סחר חי</span>
+                            <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
                         </div>
                         <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent relative">
                             <ArrowRight className="w-4 h-4 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background rounded-full" />
@@ -536,10 +591,17 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
                     </div>
 
                     <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 overflow-hidden bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center font-bold shadow-inner ring-2 ring-background text-2xl">
-                            {seller.imageUrl ? <img src={seller.imageUrl} className="w-full h-full object-cover" alt="Seller" /> : (seller.firstName || "מ").charAt(0)}
+                        <div className="relative">
+                            <div className="w-16 h-16 overflow-hidden bg-emerald-100 dark:bg-emerald-900 text-emerald-600 dark:text-emerald-300 rounded-full flex items-center justify-center font-bold shadow-inner ring-2 ring-background">
+                                {user?.imageUrl ? <img src={user.imageUrl} className="w-full h-full object-cover" alt="Me" /> : <User className="w-8 h-8" />}
+                            </div>
+                            {(() => {
+                                return (
+                                    <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-background z-20 bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                                );
+                            })()}
                         </div>
-                        <span className="text-xs font-bold mt-2">{seller.firstName || "המוכר"} (המוכר)</span>
+                        <span className="text-xs font-bold mt-2">{currentBuyerName} (הקונה)</span>
                     </div>
                 </div>
 
