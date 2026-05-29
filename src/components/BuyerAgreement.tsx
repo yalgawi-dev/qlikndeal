@@ -102,15 +102,13 @@ export function BuyerAgreement({ shipmentId, sellerName, details, shipmentStatus
 
     const router = useRouter();
 
-    // Auto-polling: refresh every 5s when waiting for seller to sign
+    // Auto-polling: refresh every 5s to keep chat, offers and status in sync
     useEffect(() => {
-        if (isPriceAgreed && !isSellerFinalized) {
-            const interval = setInterval(() => {
-                router.refresh();
-            }, 5000);
-            return () => clearInterval(interval);
-        }
-    }, [isPriceAgreed, isSellerFinalized, router]);
+        const interval = setInterval(() => {
+            router.refresh();
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [router]);
 
     // Ref for scrolling to contract section
     const contractRef = useRef<HTMLDivElement>(null);

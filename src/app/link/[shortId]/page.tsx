@@ -316,6 +316,7 @@ export default async function ShipmentLinkPage({ params, searchParams }: { param
         return (
             <main className="min-h-screen bg-muted/20 flex flex-col items-center p-4 md:p-8">
                 <UserProfileForcer dbUser={dbUser} />
+                <LastSeenUpdater shipmentId={shipment.id} role="seller" />
                 <div className="w-full max-w-2xl">
                     <div className="mb-4 flex items-center justify-between">
                         <BackButton label="חזור לשליטה" />

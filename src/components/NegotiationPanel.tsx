@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { toggleVideoRequest } from "@/app/actions";
 import { useUser } from "@clerk/nextjs";
 import { LegalContract } from "@/components/LegalContract";
+import { toast } from "sonner";
 
 interface NegotiationPanelProps {
     shipmentId: string;
@@ -61,6 +62,29 @@ export function NegotiationPanel({
     const [chatText, setChatText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Track message count and show notification for new incoming messages
+    const prevMessagesLength = useRef(messages.length);
+    useEffect(() => {
+        if (messages.length > prevMessagesLength.current) {
+            const newMessages = messages.slice(prevMessagesLength.current);
+            newMessages.forEach((msg) => {
+                if (msg.sender !== currentUserRole) {
+                    try {
+                        const audio = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-84.wav");
+                        audio.volume = 0.4;
+                        audio.play().catch(() => {});
+                    } catch (e) {}
+
+                    toast.info(`הודעה חדשה מ${currentUserRole === 'buyer' ? sellerName : buyerName}`, {
+                        description: msg.text,
+                        duration: 5000,
+                    });
+                }
+            });
+        }
+        prevMessagesLength.current = messages.length;
+    }, [messages, currentUserRole, sellerName, buyerName]);
 
     useEffect(() => {
         return () => {

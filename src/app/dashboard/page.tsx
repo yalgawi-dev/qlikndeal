@@ -687,6 +687,65 @@ function DashboardContent() {
                             </div>
                         )}
 
+                        {/* ── My Trade Transactions & Negotiations Section (Request 3) ── */}
+                        <div className="space-y-4 bg-card border border-white/5 rounded-3xl p-6 shadow-sm">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex items-center gap-2">
+                                    <Inbox className="w-5 h-5 text-indigo-400" />
+                                    <h2 className="text-xl font-bold">ניהול משא ומתן ועסקאות ({shipments.length})</h2>
+                                </div>
+                                <div className="flex bg-muted/60 p-1 rounded-xl gap-1 text-[11px] font-bold overflow-x-auto self-start sm:self-auto">
+                                    <button
+                                        onClick={() => setActiveTab("inbox")}
+                                        className={`px-3 py-1.5 rounded-lg transition-all relative whitespace-nowrap ${activeTab === "inbox" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                                    >
+                                        בקשות נכנסות
+                                        {inboxCount > 0 && (
+                                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-[9px] animate-pulse font-black">
+                                                {inboxCount}
+                                            </span>
+                                        )}
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab("sent")}
+                                        className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${activeTab === "sent" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                                    >
+                                        עסקאות שיצרתי
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab("active")}
+                                        className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${activeTab === "active" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                                    >
+                                        עסקאות פעילות
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab("history")}
+                                        className={`px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${activeTab === "history" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                                    >
+                                        הושלמו
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 mt-4">
+                                {activeTab === "inbox" && (inboxItems.length > 0 ? inboxItems.map(item => (
+                                    <ActionCard key={item.id} shipment={item} userMode={userMode} type="inbox" onDelete={handleDelete} />
+                                )) : renderEmptyState("inbox"))}
+
+                                {activeTab === "sent" && (sentItems.length > 0 ? sentItems.map(item => (
+                                    <ActionCard key={item.id} shipment={item} userMode={userMode} type="sent" onDelete={handleDelete} />
+                                )) : renderEmptyState("sent"))}
+
+                                {activeTab === "active" && (activeItems.length > 0 ? activeItems.map(item => (
+                                    <ActionCard key={item.id} shipment={item} userMode={userMode} type="active" onDelete={handleDelete} />
+                                )) : renderEmptyState("active"))}
+
+                                {activeTab === "history" && (historyItems.length > 0 ? historyItems.map(item => (
+                                    <ActionCard key={item.id} shipment={item} userMode={userMode} type="history" onDelete={handleDelete} />
+                                )) : renderEmptyState("history"))}
+                            </div>
+                        </div>
+
                         {/* ── My Favorites Section ── */}
                         <div className="space-y-4 bg-card border border-white/5 rounded-3xl p-6 shadow-sm">
                             <div className="flex items-center gap-2">
@@ -756,7 +815,6 @@ function DashboardContent() {
     );
 }
 
-// Sub-component for individual Action Cards
 function ActionCard({ shipment, userMode, type, onDelete, onView }: { shipment: any, userMode: string, type: string, onDelete?: (id: string, e: React.MouseEvent) => void, onView?: () => void }) {
     const router = useRouter();
     const details = shipment.details || {};
@@ -764,12 +822,23 @@ function ActionCard({ shipment, userMode, type, onDelete, onView }: { shipment: 
 
     let isMatchSuggestion = false;
     let originalQuery = "";
+    let messages: any[] = [];
     if (details.flexibleData) {
         try {
             const flex = JSON.parse(details.flexibleData);
             isMatchSuggestion = !!flex.isMatchSuggestion;
             originalQuery = flex.originalQuery || "";
+            messages = flex.messages || [];
         } catch (e) {}
+    }
+
+    // Check if last message was sent by the counterparty (unread message indicator)
+    let hasNewMessage = false;
+    if (messages.length > 0) {
+        const lastMsg = messages[messages.length - 1];
+        if (lastMsg.sender !== (userMode === 'seller' ? 'seller' : 'buyer')) {
+            hasNewMessage = true;
+        }
     }
 
     // Status Logic
@@ -821,14 +890,29 @@ function ActionCard({ shipment, userMode, type, onDelete, onView }: { shipment: 
             <div className="flex-1 space-y-1">
                 <div className="flex justify-between items-start">
                     <h4 className="font-bold text-base text-foreground">{details.itemName || "פריט ללא שם"}</h4>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${statusColor}`}>
-                        {statusText}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                        {hasNewMessage && (
+                            <span className="flex h-2 w-2 relative">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                            </span>
+                        )}
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${statusColor}`}>
+                            {statusText}
+                        </span>
+                    </div>
                 </div>
 
-                <p className="text-2xl font-black text-foreground tracking-tight">
-                    ₪{details.value}
-                </p>
+                <div className="flex items-center justify-between">
+                    <p className="text-2xl font-black text-foreground tracking-tight">
+                        ₪{details.value}
+                    </p>
+                    {hasNewMessage && (
+                        <span className="text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full flex items-center gap-1 font-bold animate-pulse">
+                            💬 הודעה חדשה
+                        </span>
+                    )}
+                </div>
 
                 {isMatchSuggestion && (
                     <div className="text-xs text-cyan-400 font-bold flex items-center gap-1 mt-1">
