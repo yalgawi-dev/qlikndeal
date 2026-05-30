@@ -93,6 +93,22 @@ export const BaseCategoryRegistry: Record<string, CategoryRegistryEntry> = {
     regex: /(?:^|[^a-zA-Z0-9א-ת])[הבלמכוש]?(?:לוח אם|motherboard)(?![a-zA-Z0-9א-ת])/i,
     learnFields: ["brand", "chipset", "socket", "formFactor", "ramType", "maxRam", "pcie", "m2", "lan", "wifi"],
     uniqueKeys: ["brand", "model"],
+  },
+  GPUS: {
+    code: "GPUS",
+    prismaModel: "gpuCatalog",
+    nlpKeywords: ["gpu", "graphics card", "video card", "כרטיס מסך"],
+    regex: /(?:^|[^a-zA-Z0-9א-ת])[הבלמכוש]?(?:כרטיס מסך|gpu|graphics card|video card)(?![a-zA-Z0-9א-ת])/i,
+    learnFields: ["brand", "model", "chipsetBrand", "vramSize", "vramType", "interface", "powerConnectors", "recommendedPsu", "length"],
+    uniqueKeys: ["brand", "model"],
+  },
+  SCREENS: {
+    code: "SCREENS",
+    prismaModel: "screenCatalog",
+    nlpKeywords: ["screen", "monitor", "display", "מסך", "מוניטור"],
+    regex: /(?:^|[^a-zA-Z0-9א-ת])[הבלמכוש]?(?:מסך|מוניטור|screen|monitor|display)(?![a-zA-Z0-9א-ת])/i,
+    learnFields: ["brand", "model", "size", "resolution", "refreshRate", "panelType", "aspectRatio", "curved", "ports"],
+    uniqueKeys: ["brand", "model"],
   }
 };
 

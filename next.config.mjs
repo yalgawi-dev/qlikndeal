@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    distDir: process.env.NODE_ENV === 'development' ? '.next_dev' : '.next',
     images: {
         remotePatterns: [
             {
@@ -9,7 +10,10 @@ const nextConfig = {
         ]
     },
     experimental: {
-        serverComponentsExternalPackages: ["natural"]
+        serverComponentsExternalPackages: ["natural"],
+        serverActions: {
+            bodySizeLimit: "10mb"
+        }
     },
     async redirects() {
         return [

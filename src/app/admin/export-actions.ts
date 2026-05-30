@@ -23,6 +23,8 @@ export async function getDatabaseStats() {
             { key: "motherboard", prisma: prisma.motherboardCatalog },
             { key: "electronics", prisma: prisma.electronicsCatalog },
             { key: "appliance", prisma: prisma.applianceCatalog },
+            { key: "gpu", prisma: prisma.gpuCatalog },
+            { key: "screen", prisma: prisma.screenCatalog },
         ];
 
         const stats: Record<string, { count: number; lastUpdate: Date | null }> = {};
@@ -64,7 +66,7 @@ export async function getDatabaseStats() {
     }
 }
 
-export async function getUniqueBrands(type: "laptop" | "desktop" | "aio" | "mobile" | "motherboard" | "electronics" | "appliance") {
+export async function getUniqueBrands(type: "laptop" | "desktop" | "aio" | "mobile" | "motherboard" | "electronics" | "appliance" | "gpu" | "screen") {
     noStore();
     try {
         let brands: string[] = [];
@@ -88,6 +90,12 @@ export async function getUniqueBrands(type: "laptop" | "desktop" | "aio" | "mobi
             brands = raw.map(r => r.brand);
         } else if (type === "appliance") {
             const raw = await prisma.applianceCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
+            brands = raw.map(r => r.brand);
+        } else if (type === "gpu") {
+            const raw = await prisma.gpuCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
+            brands = raw.map(r => r.brand);
+        } else if (type === "screen") {
+            const raw = await prisma.screenCatalog.findMany({ select: { brand: true }, distinct: ['brand'] });
             brands = raw.map(r => r.brand);
         }
 
@@ -505,6 +513,53 @@ export async function exportMotherboardsToCSV() {
     return html;
 }
 
+export async function exportGpusToCSV() {
+    noStore();
+    let html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            td { mso-number-format:"\\@"; } 
+            th { background-color: #f4f4f4; font-weight: bold; }
+            .new-row { background-color: #fee2e2; color: #991b1b; }
+        </style>
+    </head>
+    <body dir="rtl">
+    <table border="1">
+    <thead>
+        <tr>
+            <th>סטטוס</th><th>מותג</th><th>דגם</th><th>יצרן שבבים</th><th>נפח VRAM</th><th>סוג VRAM</th><th>ממשק חיבור</th><th>חיבורי מתח</th><th>ספק כוח מומלץ</th><th>אורך (מ"מ)</th><th>שנת יציאה</th>
+        </tr>
+    </thead>
+    <tbody>`;
+
+    const gpus = await prisma.gpuCatalog.findMany({ orderBy: { brand: "asc" } });
+
+    for (const g of gpus) {
+        const isNew = g.createdAt && (new Date().getTime() - new Date(g.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+
+        html += `
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
+            <td>${clean(g.brand)}</td>
+            <td>${clean(g.model)}</td>
+            <td>${clean(g.chipsetBrand)}</td>
+            <td>${clean(g.vramSize)}</td>
+            <td>${clean(g.vramType)}</td>
+            <td>${clean(g.interface)}</td>
+            <td>${clean(g.powerConnectors)}</td>
+            <td>${clean(g.recommendedPsu)}</td>
+            <td>${clean(g.length)}</td>
+            <td>${clean(g.releaseYear)}</td>
+        </tr>`;
+    }
+
+    html += `</tbody></table></body></html>`;
+    return html;
+}
+
 // ─────────────────────────────────────────────────────────────
 // SYNC ACTIONS (Build Database from Code)
 // ─────────────────────────────────────────────────────────────
@@ -749,4 +804,51 @@ export async function syncAio() {
         console.error("Sync AIO Error:", error);
         return { success: false, error: error.message };
     }
+}
+
+export async function exportScreensToCSV() {
+    noStore();
+    let html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+        <meta charset="utf-8" />
+        <style>
+            td { mso-number-format:"\\@"; } 
+            th { background-color: #f4f4f4; font-weight: bold; }
+            .new-row { background-color: #fee2e2; color: #991b1b; }
+        </style>
+    </head>
+    <body dir="rtl">
+    <table border="1">
+    <thead>
+        <tr>
+            <th>סטטוס</th><th>מותג</th><th>דגם</th><th>גודל</th><th>רזולוציה</th><th>קצב רענון</th><th>סוג פאנל</th><th>יחס גובה-רוחב</th><th>קעור</th><th>חיבורים</th><th>שנת יציאה</th>
+        </tr>
+    </thead>
+    <tbody>`;
+
+    const screens = await prisma.screenCatalog.findMany({ orderBy: { brand: "asc" } });
+
+    for (const s of screens) {
+        const isNew = s.createdAt && (new Date().getTime() - new Date(s.createdAt).getTime()) < 1000 * 60 * 60 * 24;
+        const rowClass = isNew ? 'class="new-row"' : '';
+
+        html += `
+        <tr ${rowClass}>
+            <td>${isNew ? "חדש" : ""}</td>
+            <td>${clean(s.brand)}</td>
+            <td>${clean(s.model)}</td>
+            <td>${clean(s.size)}</td>
+            <td>${clean(s.resolution)}</td>
+            <td>${clean(s.refreshRate)}</td>
+            <td>${clean(s.panelType)}</td>
+            <td>${clean(s.aspectRatio)}</td>
+            <td>${clean(s.curved)}</td>
+            <td>${clean(s.ports)}</td>
+            <td>${clean(s.releaseYear)}</td>
+        </tr>`;
+    }
+
+    html += `</tbody></table></body></html>`;
+    return html;
 }

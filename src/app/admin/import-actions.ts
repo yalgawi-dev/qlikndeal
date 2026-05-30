@@ -603,6 +603,108 @@ export async function importMotherboardAction(data: any[]): Promise<ImportResult
     } catch (error: any) { throw new Error("נכשל ייבוא Motherboards: " + error.message); }
 }
 
+export async function importGpuAction(data: any[]): Promise<ImportResult> {
+    const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
+    try {
+        const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
+            `${item.brand}-${item.model}`.toLowerCase()
+        );
+        result.duplicatesInFile = duplicatesInFile;
+        result.skipped += duplicatesInFile;
+
+        for (const item of unique) {
+            try {
+                if (!item.brand || !item.model) { result.skipped++; continue; }
+                const existing = await prismadb.gpuCatalog.findFirst({ where: { brand: item.brand, model: item.model } });
+                if (existing) { result.skipped++; continue; }
+
+                await prismadb.gpuCatalog.create({
+                    data: {
+                        brand: item.brand,
+                        model: item.model,
+                        chipsetBrand: item.chipsetBrand || "",
+                        vramSize: item.vramSize || "",
+                        vramType: item.vramType || "",
+                        interface: item.interface || "",
+                        powerConnectors: item.powerConnectors || "",
+                        recommendedPsu: item.recommendedPsu || "",
+                        length: item.length || "",
+                        releaseYear: item.releaseYear ? String(item.releaseYear) : null,
+                        importBatchId: batchId
+                    }
+                });
+
+                const learnFields = ['brand', 'model', 'chipsetBrand', 'vramSize', 'vramType', 'interface', 'powerConnectors', 'recommendedPsu', 'length'];
+                for (const f of learnFields) {
+                    if (item[f] && item[f] !== 'לא ידוע') {
+                        await learnFromImport(f, item[f], "GPUS");
+                    }
+                }
+
+                result.added++;
+            } catch (err: any) { result.errors.push(`שגיאה בכרטיס מסך ${item.model}: ${err.message}`); }
+        }
+
+        const finalCount = await prismadb.gpuCatalog.count();
+        result.newTotal = finalCount;
+        revalidatePath("/", "layout"); revalidatePath("/admin/export"); revalidatePath("/admin/logs");
+        await logImport({ category: "gpu", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
+        return result;
+    } catch (error: any) { throw new Error("נכשל ייבוא Gpu: " + error.message); }
+}
+
+export async function importScreenAction(data: any[]): Promise<ImportResult> {
+    const result: ImportResult = { total: data.length, added: 0, skipped: 0, duplicatesInFile: 0, errors: [] };
+    const batchId = crypto.randomUUID();
+    try {
+        const { unique, duplicatesInFile } = deduplicateInFile(data, item =>
+            `${item.brand}-${item.model}`.toLowerCase()
+        );
+        result.duplicatesInFile = duplicatesInFile;
+        result.skipped += duplicatesInFile;
+
+        for (const item of unique) {
+            try {
+                if (!item.brand || !item.model) { result.skipped++; continue; }
+                const existing = await prismadb.screenCatalog.findFirst({ where: { brand: item.brand, model: item.model } });
+                if (existing) { result.skipped++; continue; }
+
+                await prismadb.screenCatalog.create({
+                    data: {
+                        brand: item.brand,
+                        model: item.model,
+                        size: item.size || "",
+                        resolution: item.resolution || "",
+                        refreshRate: item.refreshRate || "",
+                        panelType: item.panelType || "",
+                        aspectRatio: item.aspectRatio || "",
+                        curved: item.curved || "",
+                        ports: item.ports || "",
+                        releaseYear: item.releaseYear ? String(item.releaseYear) : null,
+                        importBatchId: batchId
+                    }
+                });
+
+                const learnFields = ['brand', 'model', 'size', 'resolution', 'refreshRate', 'panelType', 'aspectRatio', 'curved', 'ports'];
+                for (const f of learnFields) {
+                    if (item[f] && item[f] !== 'לא ידוע') {
+                        await learnFromImport(f, item[f], "SCREENS");
+                    }
+                }
+
+                result.added++;
+            } catch (err: any) { result.errors.push(`שגיאה במסך ${item.model}: ${err.message}`); }
+        }
+
+        const finalCount = await prismadb.screenCatalog.count();
+        result.newTotal = finalCount;
+        revalidatePath("/", "layout"); revalidatePath("/admin/export"); revalidatePath("/admin/logs");
+        await logImport({ category: "screen", totalInFile: data.length, ...result, errors: result.errors, newTotal: finalCount, batchId });
+        return result;
+    } catch (error: any) { throw new Error("נכשל ייבוא Screens: " + error.message); }
+}
+
 /**
  * מחיקת רשומות ייבוא אחרון לפי קטגוריה וקבוצת ייבוא ספציפית
  */
@@ -638,7 +740,9 @@ export async function undoRecentInCategoryAction(category: string): Promise<{ de
             "vehicle": "vehicleCatalog",
             "electronics": "electronicsCatalog",
             "appliance": "applianceCatalog",
-            "motherboard": "motherboardCatalog"
+            "motherboard": "motherboardCatalog",
+            "gpu": "gpuCatalog",
+            "screen": "screenCatalog"
         };
         
         if (legacyMapping[category]) {

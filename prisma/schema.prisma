@@ -588,6 +588,54 @@ model MotherboardCatalog {
   @@index([model])
 }
 
+model GpuCatalog {
+  id            String  @id @default(uuid())
+  brand         String
+  model         String
+  chipsetBrand  String? // NVIDIA, AMD, Intel
+  vramSize      String? // e.g. "12GB"
+  vramType      String? // e.g. "GDDR6X"
+  interface     String? // e.g. "PCIe 4.0 x16"
+  powerConnectors String? // e.g. "1x 16-pin"
+  recommendedPsu  String? // e.g. "750W"
+  length        String? // e.g. "300mm"
+  releaseYear   String?
+  importBatchId String?
+
+  constraints Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([brand, model])
+  @@index([brand])
+  @@index([model])
+}
+
+model ScreenCatalog {
+  id            String  @id @default(uuid())
+  brand         String
+  model         String
+  size          String? // e.g. "27"
+  resolution    String? // e.g. "2560x1440"
+  refreshRate   String? // e.g. "144Hz"
+  panelType     String? // e.g. "IPS"
+  aspectRatio   String? // e.g. "16:9"
+  curved        String? // e.g. "Yes" or "No"
+  ports         String? // e.g. "HDMI + DP"
+  releaseYear   String?
+  importBatchId String?
+
+  constraints Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([brand, model])
+  @@index([brand])
+  @@index([model])
+}
+
 model CatalogImportLog {
   id               String   @id @default(uuid())
   category         String

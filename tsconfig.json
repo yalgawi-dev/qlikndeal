@@ -1,53 +1,54 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "lib": [
-            "dom",
-            "dom.iterable",
-            "esnext",
-            "ES2018"
-        ],
-        "target": "ES2018",
-        "allowJs": true,
-        "skipLibCheck": true,
-        "strict": true,
-        "noImplicitAny": false,
-        "noEmit": true,
-        "esModuleInterop": true,
-        "module": "esnext",
-        "moduleResolution": "bundler",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "jsx": "preserve",
-        "incremental": true,
-        "plugins": [
-            {
-                "name": "next"
-            }
-        ],
-        "paths": {
-            "@/*": [
-                "./src/*"
-            ]
-        }
-    },
-    "include": [
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        ".next/types/**/*.ts"
+  "compilerOptions": {
+    "baseUrl": ".",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "ES2018"
     ],
-    "exclude": [
-        "node_modules",
-        "backup_today",
-        "scripts",
-        "tmp",
-        "ai-training-archive",
-        "test_*.ts",
-        "test_*.tsx",
-        "check-layers.ts",
-        "reset-weights.ts",
-        "seed-config.ts",
-        "*.js"
-    ]
+    "target": "ES2018",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next_dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "backup_today",
+    "scripts",
+    "tmp",
+    "ai-training-archive",
+    "test_*.ts",
+    "test_*.tsx",
+    "check-layers.ts",
+    "reset-weights.ts",
+    "seed-config.ts",
+    "*.js"
+  ]
 }

@@ -3,7 +3,7 @@
 import prismadb from "@/lib/prismadb";
 import { revalidatePath } from "next/cache";
 
-export type CatalogType = "laptop" | "desktop" | "aio" | "mobile" | "motherboard" | "electronics" | "appliance" | "vehicle";
+export type CatalogType = "laptop" | "desktop" | "aio" | "mobile" | "motherboard" | "electronics" | "appliance" | "vehicle" | "gpu" | "screen";
 
 // Generic record type
 export type CatalogRecord = Record<string, any>;
@@ -70,6 +70,24 @@ export async function getCatalogRecords(
             } : {};
             total = await prismadb.vehicleCatalog.count({ where: vWhere as any });
             records = await prismadb.vehicleCatalog.findMany({ where: vWhere as any, skip, take, orderBy: { make: "asc" } });
+        } else if (type === "gpu") {
+            const gpuWhere = search ? {
+                OR: [
+                    { brand: { contains: search, mode: "insensitive" as const } },
+                    { model: { contains: search, mode: "insensitive" as const } },
+                ],
+            } : {};
+            total = await prismadb.gpuCatalog.count({ where: gpuWhere as any });
+            records = await prismadb.gpuCatalog.findMany({ where: gpuWhere as any, skip, take, orderBy: { brand: "asc" } });
+        } else if (type === "screen") {
+            const scrWhere = search ? {
+                OR: [
+                    { brand: { contains: search, mode: "insensitive" as const } },
+                    { model: { contains: search, mode: "insensitive" as const } },
+                ],
+            } : {};
+            total = await prismadb.screenCatalog.count({ where: scrWhere as any });
+            records = await prismadb.screenCatalog.findMany({ where: scrWhere as any, skip, take, orderBy: { brand: "asc" } });
         }
 
         return { records, total };
@@ -92,6 +110,8 @@ export async function deleteCatalogRecords(type: CatalogType, ids: string[]): Pr
     else if (type === "electronics") count = (await prismadb.electronicsCatalog.deleteMany(filter)).count;
     else if (type === "appliance") count = (await prismadb.applianceCatalog.deleteMany(filter)).count;
     else if (type === "vehicle") count = (await prismadb.vehicleCatalog.deleteMany(filter)).count;
+    else if (type === "gpu") count = (await prismadb.gpuCatalog.deleteMany(filter)).count;
+    else if (type === "screen") count = (await prismadb.screenCatalog.deleteMany(filter)).count;
 
     revalidatePath("/admin/export");
     return { deleted: count };
@@ -110,6 +130,8 @@ export async function updateCatalogRecord(type: CatalogType, id: string, data: C
     else if (type === "electronics") await prismadb.electronicsCatalog.update({ where: { id }, data: patch });
     else if (type === "appliance") await prismadb.applianceCatalog.update({ where: { id }, data: patch });
     else if (type === "vehicle") await prismadb.vehicleCatalog.update({ where: { id }, data: patch });
+    else if (type === "gpu") await prismadb.gpuCatalog.update({ where: { id }, data: patch });
+    else if (type === "screen") await prismadb.screenCatalog.update({ where: { id }, data: patch });
 
     revalidatePath("/admin/export");
 }

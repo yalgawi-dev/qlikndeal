@@ -555,7 +555,8 @@ function MyListingsPageContent() {
                         initialListingType={editingListing.listingType ?? "SELL"}
                         initialCategory={
                             editingListing.category === "Computers" ? "LAPTOPS" :
-                            ["PHONES", "MOBILE"].includes(editingListing.category?.toUpperCase()) ? "SMARTPHONES" :
+                            ["PHONES", "MOBILE", "SMARTPHONES"].includes(editingListing.category?.toUpperCase()) ? "SMARTPHONES" :
+                            ["DESKTOPS", "AIO", "CUSTOM_COMPUTERS"].includes(editingListing.category?.toUpperCase()) ? editingListing.category.toUpperCase() :
                             "GENERAL"
                         }
                     />

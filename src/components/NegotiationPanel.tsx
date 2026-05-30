@@ -61,7 +61,40 @@ export function NegotiationPanel({
     const [videoRequested, setVideoRequested] = useState(hasVideoRequest);
     const [chatText, setChatText] = useState("");
     const [isTyping, setIsTyping] = useState(false);
+    const [isContractOpen, setIsContractOpen] = useState(false);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // ═══ OPTIMISTIC MESSAGES — instant UI updates ═══
+    const [optimisticMessages, setOptimisticMessages] = useState<
+        { id: string; sender: 'buyer' | 'seller'; text: string; timestamp: string; pending?: boolean }[]
+    >([]);
+
+    // Merge server messages with optimistic ones (dedup by matching text+sender within 30s)
+    const allMessages = (() => {
+        const serverMsgs = [...messages];
+        const pending = optimisticMessages.filter(opt => {
+            // If a server message matches this optimistic one, skip it
+            return !serverMsgs.some(srv =>
+                srv.sender === opt.sender &&
+                srv.text === opt.text &&
+                Math.abs(new Date(srv.timestamp).getTime() - new Date(opt.timestamp).getTime()) < 30000
+            );
+        });
+        return [...serverMsgs, ...pending];
+    })();
+
+    // Cleanup: remove optimistic messages that are now in server props
+    useEffect(() => {
+        if (optimisticMessages.length > 0 && messages.length > 0) {
+            setOptimisticMessages(prev => prev.filter(opt =>
+                !messages.some(srv =>
+                    srv.sender === opt.sender &&
+                    srv.text === opt.text &&
+                    Math.abs(new Date(srv.timestamp).getTime() - new Date(opt.timestamp).getTime()) < 30000
+                )
+            ));
+        }
+    }, [messages]);
 
     // Track message count and show notification for new incoming messages
     const prevMessagesLength = useRef(messages.length);
@@ -80,6 +113,26 @@ export function NegotiationPanel({
                         description: msg.text,
                         duration: 5000,
                     });
+
+                    // Flash tab title if document is hidden (user is in another tab)
+                    if (document.hidden) {
+                        let isFlashed = false;
+                        const originalTitle = document.title;
+                        const partnerName = currentUserRole === 'buyer' ? sellerName : buyerName;
+                        const intervalId = setInterval(() => {
+                            document.title = isFlashed 
+                                ? originalTitle 
+                                : `✉️ (1) הודעה חדשה מ-${partnerName}!`;
+                            isFlashed = !isFlashed;
+                        }, 1000);
+
+                        const handleFocus = () => {
+                            clearInterval(intervalId);
+                            document.title = originalTitle;
+                            window.removeEventListener("focus", handleFocus);
+                        };
+                        window.addEventListener("focus", handleFocus);
+                    }
                 }
             });
         }
@@ -91,6 +144,11 @@ export function NegotiationPanel({
             if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         };
     }, []);
+
+    const scrollRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    }, [allMessages.length, otherUserIsTyping]);
 
     const handleInputChange = (val: string) => {
         setChatText(val);
@@ -109,8 +167,9 @@ export function NegotiationPanel({
 
     // Guest Details State
     const { user } = useUser();
-    const [guestName, setGuestName] = useState(user?.fullName || "");
-    const [guestPhone, setGuestPhone] = useState(user?.primaryPhoneNumber?.phoneNumber || "");
+    const needsGuestDetails = isGuest && (!user?.fullName || !user?.primaryPhoneNumber?.phoneNumber);
+    const [guestName, setGuestName] = useState("");
+    const [guestPhone, setGuestPhone] = useState("");
 
     let isMyTurn = lastOfferBy !== currentUserRole;
     if (offers.length === 0) {
@@ -118,7 +177,6 @@ export function NegotiationPanel({
     }
 
     const handleAccept = async () => {
-        const needsGuestDetails = isGuest && (!user?.fullName || !user?.primaryPhoneNumber?.phoneNumber);
         if (needsGuestDetails && (!guestName || !guestPhone)) {
             alert("אנא מלא שם וטלפון כדי להמשיך");
             return;
@@ -168,25 +226,43 @@ export function NegotiationPanel({
         }
     };
 
+    // ═══ OPTIMISTIC SEND — instant message display ═══
     const handleSendText = async () => {
-        if (!chatText.trim()) return;
-        setLoading(true);
+        const text = chatText.trim();
+        if (!text) return;
+
+        // 1. Clear input and stop typing indicator IMMEDIATELY
+        setChatText("");
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         setIsTyping(false);
-        updateTypingStatus(shipmentId, currentUserRole, false);
-        try {
-            const res = await sendMessageInChat(shipmentId, chatText, currentUserRole, buyerId);
-            if (res.success) {
-                setChatText("");
-                router.refresh();
-            } else {
-                alert("שגיאה בשליחת ההודעה");
-            }
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
+
+        // 2. Add optimistic message to local state — appears INSTANTLY
+        const optimisticMsg = {
+            id: `opt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            sender: currentUserRole,
+            text,
+            timestamp: new Date().toISOString(),
+            pending: true,
+        };
+        setOptimisticMessages(prev => [...prev, optimisticMsg]);
+
+        // 3. Fire server action in background (non-blocking)
+        sendMessageInChat(shipmentId, text, currentUserRole, buyerId)
+            .then(res => {
+                if (!res.success) {
+                    // Mark as failed — remove from optimistic and show error
+                    setOptimisticMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
+                    toast.error("שגיאה בשליחת ההודעה, נסה שוב");
+                }
+                // No router.refresh() needed — the 5s polling handles sync
+            })
+            .catch(() => {
+                setOptimisticMessages(prev => prev.filter(m => m.id !== optimisticMsg.id));
+                toast.error("שגיאת רשת, ההודעה לא נשלחה");
+            });
+
+        // 4. Stop typing status in background (fire-and-forget)
+        updateTypingStatus(shipmentId, currentUserRole, false).catch(() => {});
     };
 
     const handleVideoToggle = async () => {
@@ -204,12 +280,13 @@ export function NegotiationPanel({
             amount: o.amount,
             timestamp: o.timestamp || new Date().toISOString()
         })),
-        ...messages.map(m => ({
+        ...allMessages.map(m => ({
             type: 'message' as const,
             id: m.id,
             by: m.sender,
             text: m.text,
-            timestamp: m.timestamp
+            timestamp: m.timestamp,
+            pending: (m as any).pending,
         }))
     ].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
@@ -298,13 +375,11 @@ export function NegotiationPanel({
 
                 <div className="flex items-center gap-2">
                     {/* Contract Status Dialog Trigger */}
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="rounded-2xl border-primary/30 text-primary hover:bg-primary/5 text-xs font-bold gap-1 h-9 px-3">
-                                <FileText className="w-3.5 h-3.5" />
-                                <span>סטטוס החוזה</span>
-                            </Button>
-                        </DialogTrigger>
+                    <Dialog open={isContractOpen} onOpenChange={setIsContractOpen}>
+                        <Button onClick={() => setIsContractOpen(true)} variant="outline" size="sm" className="rounded-2xl border-primary/30 text-primary hover:bg-primary/5 text-xs font-bold gap-1 h-9 px-3">
+                            <FileText className="w-3.5 h-3.5" />
+                            <span>סטטוס החוזה</span>
+                        </Button>
                         <DialogContent className="max-w-[650px] w-[95vw] p-0 overflow-hidden bg-background rounded-3xl border border-primary/20 text-right" dir="rtl">
                             <LegalContract
                                 itemName={itemName}
@@ -329,7 +404,7 @@ export function NegotiationPanel({
             <div className="relative flex-1 rounded-2xl mb-4 shadow-inner border border-primary/10 overflow-hidden bg-slate-100 dark:bg-[#0b141a]">
                 <div className="absolute inset-0 opacity-5 dark:opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
                 
-                <div className="relative h-full overflow-y-auto custom-scrollbar p-4 space-y-4 flex flex-col">
+                <div ref={scrollRef} className="relative h-full overflow-y-auto custom-scrollbar p-4 space-y-4 flex flex-col">
                     {timeline.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center">
                             <div className="text-center bg-card shadow-[0_0_20px_rgba(0,0,0,0.4)] dark:shadow-none border border-border/50 text-foreground text-sm py-5 px-6 rounded-3xl max-w-[85%] relative overflow-hidden">
@@ -385,11 +460,15 @@ export function NegotiationPanel({
 
                                     return (
                                         <div key={item.id} className={`flex ${alignment} w-full animate-in fade-in slide-in-from-bottom-2`}>
-                                            <div className={`px-4 py-2.5 ${borderRadius} ${bgColor} max-w-[80%] shadow-md relative border border-black/5 dark:border-white/5`}>
+                                            <div className={`px-4 py-2.5 ${borderRadius} ${bgColor} max-w-[80%] shadow-md relative border border-black/5 dark:border-white/5 ${item.pending ? 'opacity-70' : ''}`}>
                                                 <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{item.text}</p>
                                                 <div className="text-[9px] opacity-60 mt-1 flex justify-end items-center gap-1">
                                                     {new Date(item.timestamp).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
-                                                    {isMe && <Check className="w-3 h-3 opacity-70" />}
+                                                    {isMe && (
+                                                        item.pending 
+                                                            ? <Clock className="w-3 h-3 opacity-50 animate-spin" style={{ animationDuration: '2s' }} />
+                                                            : <Check className="w-3 h-3 opacity-70" />
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -529,6 +608,16 @@ export function NegotiationPanel({
 
             {/* Sticky Chat Input Bar */}
             <div className="flex gap-2 items-center mt-1 border-t border-primary/10 pt-3 flex-shrink-0">
+                <Button
+                    type="button"
+                    onClick={() => setIsContractOpen(true)}
+                    variant="outline"
+                    className="h-10 px-3 bg-[#1e1b4b]/40 border-indigo-500/30 hover:bg-[#1e1b4b]/80 text-indigo-400 hover:text-indigo-300 rounded-xl text-xs font-bold flex items-center gap-1 shrink-0"
+                    title="הצג חוזה משפטי"
+                >
+                    <FileText className="w-4 h-4" />
+                    <span className="hidden sm:inline">הצג חוזה</span>
+                </Button>
                 <Input
                     placeholder="הקלד הודעה..."
                     className="flex-1 h-10 bg-muted/60 dark:bg-slate-800/60 border-border focus:border-primary/50 text-foreground rounded-xl placeholder:text-muted-foreground text-sm"

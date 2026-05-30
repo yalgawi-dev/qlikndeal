@@ -519,3 +519,71 @@ export async function getMotherboardSpecs(modelName: string) {
         return null;
     }
 }
+
+export async function searchGpus(query: string) {
+    const q = query.trim();
+    if (!q) return [];
+    try {
+        const results = await prisma.gpuCatalog.findMany({
+            where: {
+                OR: [
+                    { brand: { contains: q, mode: 'insensitive' } },
+                    { model: { contains: q, mode: 'insensitive' } },
+                    { chipsetBrand: { contains: q, mode: 'insensitive' } }
+                ]
+            },
+            take: 20
+        });
+        return results;
+    } catch (e) {
+        console.error("Error searching GPUs:", e);
+        return [];
+    }
+}
+
+export async function getGpuSpecs(modelName: string) {
+    if (!modelName) return null;
+    try {
+        const gpu = await prisma.gpuCatalog.findFirst({
+            where: { model: { equals: modelName.trim(), mode: 'insensitive' } }
+        });
+        return gpu;
+    } catch (e) {
+        console.error("Error fetching GPU specs:", e);
+        return null;
+    }
+}
+
+export async function searchScreens(query: string) {
+    const q = query.trim();
+    if (!q) return [];
+    try {
+        const results = await prisma.screenCatalog.findMany({
+            where: {
+                OR: [
+                    { brand: { contains: q, mode: 'insensitive' } },
+                    { model: { contains: q, mode: 'insensitive' } }
+                ]
+            },
+            take: 20
+        });
+        return results;
+    } catch (e) {
+        console.error("Error searching screens:", e);
+        return [];
+    }
+}
+
+export async function getScreenSpecs(modelName: string) {
+    if (!modelName) return null;
+    try {
+        const screen = await prisma.screenCatalog.findFirst({
+            where: { model: { equals: modelName.trim(), mode: 'insensitive' } }
+        });
+        return screen;
+    } catch (e) {
+        console.error("Error fetching screen specs:", e);
+        return null;
+    }
+}
+

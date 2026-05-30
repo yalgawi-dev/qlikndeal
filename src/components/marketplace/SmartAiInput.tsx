@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2, SendHorizontal, Database, CheckCircle2, ArrowRightLeft, HelpCircle } from "lucide-react";
 import { WordWeightDebugger } from "./WordWeightDebugger";
 import { CATEGORY_CATALOG_CONFIG } from "./UniversalCatalogSearch";
+import { toast } from "sonner";
 
 interface SmartAiInputProps {
     isAnalyzing?: boolean;
@@ -84,33 +85,49 @@ export function SmartAiInput({ isAnalyzing: externalLoading, onResult, category 
     };
 
     const runAiAnalysis = async () => {
-        const response = await fetch("/api/marketplace/analyze", {
-            method: "POST",
-            body: JSON.stringify({ text: text.trim(), category: category }),
-            headers: { "Content-Type": "application/json" }
-        });
-        const data = await response.json();
-        if (data.success && data.result) {
-            try {
-                const logRes = await fetch("/api/parser-log", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        originalText: text.trim(),
-                        aiParsed: JSON.stringify(data.result),
-                        category: data.result.category || category || "GENERAL",
-                        inputMode: "טופס_פנימי"
-                    }),
-                    headers: { "Content-Type": "application/json" }
-                });
-                const logData = await logRes.json();
-                if (logData.id) {
-                    localStorage.setItem("currentParserLogId", logData.id);
-                }
-            } catch (e) {
-                console.error("Failed to create initial parser log:", e);
+        try {
+            const response = await fetch("/api/marketplace/analyze", {
+                method: "POST",
+                body: JSON.stringify({ text: text.trim(), category: category }),
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                const errMsg = errData.error || `שגיאת שרת (${response.status})`;
+                toast.error(`ניתוח המודעה נכשל: ${errMsg}`);
+                return;
             }
 
-            onResult(data.result);
+            const data = await response.json();
+            if (data.success && data.result) {
+                try {
+                    const logRes = await fetch("/api/parser-log", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            originalText: text.trim(),
+                            aiParsed: JSON.stringify(data.result),
+                            category: data.result.category || category || "GENERAL",
+                            inputMode: "טופס_פנימי"
+                        }),
+                        headers: { "Content-Type": "application/json" }
+                    });
+                    const logData = await logRes.json();
+                    if (logData.id) {
+                        localStorage.setItem("currentParserLogId", logData.id);
+                    }
+                } catch (e) {
+                    console.error("Failed to create initial parser log:", e);
+                }
+
+                onResult(data.result);
+                toast.success("פרטי המודעה נותחו בהצלחה והוזנו לטופס! 🎉");
+            } else {
+                toast.error(data.error || "לא הצלחנו לנתח את פרטי המודעה הזו. אנא וודא שהטקסט מכיל מידע רלוונטי.");
+            }
+        } catch (e: any) {
+            console.error("SmartAiInput analyze error:", e);
+            toast.error(`שגיאת רשת: לא הצלחנו לתקשר עם שרת הניתוח (${e.message || "בדוק חיבור רשת"})`);
         }
     };
 
@@ -133,8 +150,9 @@ export function SmartAiInput({ isAnalyzing: externalLoading, onResult, category 
 
                 // ── שלב 2: Fallback ל-AI ──────────────────────────────────
                 await runAiAnalysis();
-            } catch (e) {
+            } catch (e: any) {
                 console.error("SmartAiInput analyze error:", e);
+                toast.error(`תקלה בתהליך הניתוח: ${e.message || "נסה שוב"}`);
             } finally {
                 setInternalLoading(false);
             }
@@ -229,6 +247,7 @@ export function SmartAiInput({ isAnalyzing: externalLoading, onResult, category 
 
                 <div className="absolute bottom-3 left-3 flex items-center gap-2">
                     <Button
+                        type="button"
                         onClick={handleButtonClick}
                         disabled={isLoading || text.length < 5}
                         className="bg-gradient-to-l from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white border-none px-6 py-5 rounded-xl shadow-lg transition-all active:scale-95"

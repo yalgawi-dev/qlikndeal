@@ -13,6 +13,8 @@ import {
     exportElectronicsToCSV,
     exportAppliancesToCSV,
     exportMotherboardsToCSV,
+    exportGpusToCSV,
+    exportScreensToCSV,
     syncVehicles,
     syncElectronicsAndAppliances,
     syncMotherboards,
@@ -29,6 +31,8 @@ import {
     importElectronicsAction,
     importApplianceAction,
     importMotherboardAction,
+    importGpuAction,
+    importScreenAction,
     undoRecentInCategoryAction,
     ImportResult
 } from "../import-actions";
@@ -128,6 +132,12 @@ export default function ExportPageClient() {
             } else if (type === "motherboard") {
                 content = await exportMotherboardsToCSV();
                 fileName = `motherboards_database_${dateStr}.xls`;
+            } else if (type === "gpu") {
+                content = await exportGpusToCSV();
+                fileName = `gpus_database_${dateStr}.xls`;
+            } else if (type === "screen") {
+                content = await exportScreensToCSV();
+                fileName = `screens_database_${dateStr}.xls`;
             }
 
             downloadFile(content, fileName);
@@ -179,6 +189,17 @@ export default function ExportPageClient() {
         }
     };
 
+    const getFriendlyErrorMsg = (err: string) => {
+        const lower = err.toLowerCase();
+        if (lower.includes("חסר מותג/דגם") || lower.includes("missing brand") || lower.includes("modelname")) {
+            return "❌ שורה נפסלה: חסר ערך בשדה 'מותג' (יצרן) או 'דגם'. אלו שדות חובה לצורך קטלוג.";
+        }
+        if (lower.includes("already exists") || lower.includes("unique constraint") || lower.includes("כבר קיים")) {
+            return "⚠️ כפילות במאגר: מזהה המוצר או ה-SKU כבר קיימים במסד הנתונים.";
+        }
+        return `⚠️ שגיאת מערכת: ${err}`;
+    };
+
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -196,11 +217,19 @@ export default function ExportPageClient() {
     const IMPORT_MAPPING: Record<string, string> = {
         "יצרן": "brand", "מותג": "brand", "make": "brand", "brand": "brand",
         "סדרה": "series", "series": "series",
-        "דגם": importType === "motherboard" ? "model" : "modelName",
-        "model": importType === "motherboard" ? "model" : "modelName",
-        "modelname": importType === "motherboard" ? "model" : "modelName",
+        "דגם": ["motherboard", "gpu", "screen", "vehicle"].includes(importType || "") ? "model" : "modelName",
+        "model": ["motherboard", "gpu", "screen", "vehicle"].includes(importType || "") ? "model" : "modelName",
+        "modelname": ["motherboard", "gpu", "screen", "vehicle"].includes(importType || "") ? "model" : "modelName",
+        "model name": ["motherboard", "gpu", "screen", "vehicle"].includes(importType || "") ? "model" : "modelName",
+        "model_name": ["motherboard", "gpu", "screen", "vehicle"].includes(importType || "") ? "model" : "modelName",
         "סוג": "type", "type": "type",
-        "מסך": "screenSize", "screen": "screenSize", "גודל מסך": "screenSize", "screensize": "screenSize",
+        "מסך": importType === "screen" ? "size" : "screenSize", 
+        "screen": importType === "screen" ? "size" : "screenSize", 
+        "גודל מסך": importType === "screen" ? "size" : "screenSize", 
+        "screensize": importType === "screen" ? "size" : "screenSize",
+        "screen size": importType === "screen" ? "size" : "screenSize",
+        "screen_size": importType === "screen" ? "size" : "screenSize",
+        "size": importType === "screen" ? "size" : "screenSize",
         "מעבד": "cpu", "cpu": "cpu", "processor": "cpu",
         "זיכרון ram": "ram", "זיכרון": "ram", "ram": "ram", "ramg": "ramG",
         "אחסון": "storage", "storage": "storage", "אחסון (gb)": "storages", "storages": "storages", "storagegb": "storages",
@@ -208,7 +237,7 @@ export default function ExportPageClient() {
         "שנה": "releaseYear", "year": "releaseYear", "releaseyear": "releaseYear",
         "שנת יציאה": "releaseYear", "שנת השקה": "releaseYear", "שנת שחרור": "releaseYear", "release_year": "releaseYear",
         "הערות": "notes", "notes": "notes",
-        "מק\"ט": "sku", "sku": "sku",
+        "מק\"ט": "sku", "sku": "sku", "mpn": "sku", "code": "sku", "mpn/code": "sku", "mpn / code": "sku",
         "משקל": "weight", "weight": "weight",
         "חיבורים": "ports", "ports": "ports", "connection": "ports", "connections": "ports",
         "תצוגה": "display", "display": "display",
@@ -221,6 +250,47 @@ export default function ExportPageClient() {
         "קיבולת": "capacity", "capacity": "capacity",
         "דירוג אנרגטי": "energyRating", "energy rating": "energyRating", "energyrating": "energyRating",
         "מערכת הפעלה": "os", "os": "os",
+        // Screen specific fields
+        "resolution": "resolution",
+        "רזולוציה": "resolution",
+        "refresh rate": "refreshRate",
+        "refresh_rate": "refreshRate",
+        "refreshrate": "refreshRate",
+        "קצב רענון": "refreshRate",
+        "תדר רענון": "refreshRate",
+        "panel type": "panelType",
+        "panel_type": "panelType",
+        "paneltype": "panelType",
+        "סוג פאנל": "panelType",
+        "aspect ratio": "aspectRatio",
+        "aspect_ratio": "aspectRatio",
+        "aspectratio": "aspectRatio",
+        "curved": "curved",
+        "קעור": "curved",
+        // GPU specific fields
+        "chipset brand": "chipsetBrand",
+        "chipsetbrand": "chipsetBrand",
+        "chipset_brand": "chipsetBrand",
+        "card manufacturer": "brand",
+        "cardmanufacturer": "brand",
+        "card_manufacturer": "brand",
+        "manufacturer": "brand",
+        "memory size": "vramSize",
+        "memorysize": "vramSize",
+        "memory_size": "vramSize",
+        "memory type": "vramType",
+        "memorytype": "vramType",
+        "memory_type": "vramType",
+        "memory bus": "memoryBus",
+        "memorybus": "memoryBus",
+        "memory_bus": "memoryBus",
+        "mpn / product code": "sku",
+        "mpn/product code": "sku",
+        "product code": "sku",
+        "productcode": "sku",
+        "product_code": "sku",
+        "interface": "interface",
+        "חיבור": "interface",
         // Motherboard specific fields
         "chipset": "chipset", "צ'יפסט": "chipset",
         "socket": "socket", "סוקט": "socket", "תושבת": "socket",
@@ -239,7 +309,8 @@ export default function ExportPageClient() {
         const unmapped: string[] = [];
         headers.forEach(h => {
             const lower = h.toLowerCase();
-            if (lower !== "id" && !recognizedVals.has(h)) {
+            const mapped = IMPORT_MAPPING[lower];
+            if (lower !== "id" && !mapped && !recognizedVals.has(h) && !recognizedVals.has(lower)) {
                 unmapped.push(h);
             }
         });
@@ -453,6 +524,10 @@ export default function ExportPageClient() {
                 res = await importApplianceAction(importPreview);
             } else if (type === "motherboard") {
                 res = await importMotherboardAction(importPreview);
+            } else if (type === "gpu") {
+                res = await importGpuAction(importPreview);
+            } else if (type === "screen") {
+                res = await importScreenAction(importPreview);
             } else {
                 toast.error("ייבוא לקטגוריה זו טרם נתמך");
                 return;
@@ -511,6 +586,12 @@ export default function ExportPageClient() {
         } else if (id === "motherboard") {
             headers = "brand,model,chipset,socket,formFactor,ramType,maxRam,pcie,m2,lan,wifi,releaseYear";
             example = "ASUS,ROG STRIX Z790-E,Z790,LGA1700,ATX,DDR5,128GB,PCIe 5.0,5x M.2,2.5Gb,WiFi 6E,2023";
+        } else if (id === "gpu") {
+            headers = "brand,model,chipsetBrand,vramSize,vramType,interface,powerConnectors,recommendedPsu,length,releaseYear";
+            example = "ASUS,NVIDIA GeForce RTX 4070,NVIDIA,12GB,GDDR6X,PCIe 4.0 x16,1x 16-pin,650W,244mm,2024";
+        } else if (id === "screen") {
+            headers = "brand,model,size,resolution,refreshRate,panelType,aspectRatio,curved,ports,releaseYear";
+            example = "Samsung,Odyssey G7,27\",2560x1440,240Hz,VA,16:9,1000R,2x DP / 1x HDMI,2020";
         }
 
         const content = `${headers}\n${example}`;
@@ -745,6 +826,14 @@ export default function ExportPageClient() {
                         id="appliance" title="מוצרי חשמל" desc="מקררים, מכונות כביסה, מזגנים ומדיחי כלים."
                         icon={Package} color="emerald" neonColor="emerald" statsKey="appliance"
                     />
+                    <CatalogCard
+                        id="gpu" title="כרטיסי מסך (GPU)" desc="מאגר כרטיסי מסך של NVIDIA, AMD ו-Intel לשימוש במנוע הבנייה."
+                        icon={Cpu} color="emerald" neonColor="emerald" statsKey="gpu"
+                    />
+                    <CatalogCard
+                        id="screen" title="מסכים" desc="מאגר מסכים ומסכי מחשב כולל רזולוציות, פאנלים וקצבי רענון."
+                        icon={Monitor} color="blue" neonColor="blue" statsKey="screen"
+                    />
                 </div>
 
                 {/* Footer Insight */}
@@ -821,7 +910,7 @@ export default function ExportPageClient() {
                                         importPreview.slice(0, 20).map((p, i) => (
                                             <div key={i} className="text-[10px] p-2 bg-white/5 rounded border border-white/5 flex justify-between">
                                                 <span className="font-bold text-slate-300">
-                                                    {p.brand || Object.values(p)[0] || ""} {p.modelName || Object.values(p)[2] || ""}
+                                                    {p.brand || Object.values(p)[0] || ""} {p.modelName || p.model || Object.values(p)[2] || ""}
                                                 </span>
                                                 <span className="text-slate-500">
                                                     {Array.isArray(p.cpu) ? p.cpu[0] : (p.cpu || Object.values(p)[5] || "")}
@@ -876,10 +965,18 @@ export default function ExportPageClient() {
                                             )}
                                         </div>
                                         {importResult.errors.length > 0 && (
-                                            <div className="mt-2 max-h-24 overflow-y-auto space-y-1">
-                                                {importResult.errors.slice(0, 5).map((err, i) => (
-                                                    <div key={i} className="text-[10px] font-mono text-red-400 bg-red-950/30 px-2 py-1 rounded">{err}</div>
-                                                ))}
+                                            <div className="mt-3 p-3 bg-red-950/20 border border-red-500/30 rounded-xl space-y-2">
+                                                <h6 className="text-[11px] font-bold text-red-400">פירוט התקלות שנמצאו במהלך הייבוא:</h6>
+                                                <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+                                                    {importResult.errors.map((err, i) => (
+                                                        <div key={i} className="text-[10px] bg-red-950/40 border border-red-900/30 p-2 rounded-lg text-red-300 leading-normal text-right">
+                                                            {getFriendlyErrorMsg(err)}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <p className="text-[9px] text-slate-500 mt-1">
+                                                    * מומלץ לתקן את השדות בקובץ המקור (לוודא שאין עמודות ריקות של יצרן/דגם או כפילויות SKU) ולנסות לייבא שוב.
+                                                </p>
                                             </div>
                                         )}
                                     </div>

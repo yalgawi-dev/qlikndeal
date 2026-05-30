@@ -101,6 +101,24 @@ export async function GET(req: Request) {
                     if (item.make && !catalogMap.brand.includes(item.make)) catalogMap.brand.push(item.make);
                     if (item.model && !catalogMap.subModel.includes(item.model)) catalogMap.subModel.push(item.model);
                 });
+            } else if (category === "CUSTOM_COMPUTERS") {
+                const motherboards = await prismadb.motherboardCatalog.findMany({ select: { model: true } });
+                const gpus = await prismadb.gpuCatalog.findMany({ select: { model: true } });
+                const screens = await prismadb.screenCatalog.findMany({ select: { model: true } });
+
+                if (!options.motherboard) options.motherboard = [];
+                if (!options.gpu) options.gpu = [];
+                if (!options.screen) options.screen = [];
+
+                motherboards.forEach((m: any) => {
+                    if (m.model && !options.motherboard.includes(m.model)) options.motherboard.push(m.model);
+                });
+                gpus.forEach((g: any) => {
+                    if (g.model && !options.gpu.includes(g.model)) options.gpu.push(g.model);
+                });
+                screens.forEach((s: any) => {
+                    if (s.model && !options.screen.includes(s.model)) options.screen.push(s.model);
+                });
             }
         } catch (e) { console.error("Could not fetch catalog options", e); }
         // Sort alphabetically for UX
@@ -153,6 +171,19 @@ export async function GET(req: Request) {
         Object.keys(options).forEach(fieldId => {
             options[fieldId].sort((a, b) => a.localeCompare(b, 'he', { sensitivity: 'base', numeric: true }));
         });
+
+        if (category === "CUSTOM_COMPUTERS" && options.screen) {
+            options.screen = options.screen.filter((opt: string) => {
+                const clean = opt.replace(/[^\d.]/g, '');
+                if (clean) {
+                    const size = parseFloat(clean);
+                    if (size > 0 && size < 20) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
 
         return NextResponse.json({
             success: true,
